@@ -213,3 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// 全局图片加载失败降级处理 (防止 Unsplash 图片加载失败导致裂开)
+window.addEventListener('error', function(e) {
+  if (e.target && e.target.tagName === 'IMG') {
+    if (e.target.dataset.fallbackTriggered) return;
+    e.target.dataset.fallbackTriggered = 'true';
+    // 选用离线渲染、永不裂开的 SVG 货箱占位图
+    e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100' style='background:%23f2f3f5;'><rect width='100' height='100' fill='%23f5f7fa'/><path d='M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z' fill='none' stroke='%23a8abb2' stroke-width='2'/><path d='M50 20 L50 80 M20 35 L80 65 M80 35 L20 65' fill='none' stroke='%23c8c9cc' stroke-width='1.5'/><text x='50' y='53' font-size='10' font-family='sans-serif' fill='%23909399' text-anchor='middle'>享宇森云</text></svg>";
+  }
+}, true);

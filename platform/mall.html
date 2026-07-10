@@ -13,7 +13,7 @@
   <header class="mall-header">
     <div class="mall-container flex justify-between items-center" style="height: 100%;">
       <div class="flex items-center gap-8 h-full">
-        <div class="text-2xl font-bold text-primary flex items-center gap-2 cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-home\']').click()">
+        <div class="text-2xl font-bold text-primary flex items-center gap-2 cursor-pointer" style="margin-right: 40px;" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-home\']').click()">
           <svg class="icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           享宇森云
         </div>
@@ -60,7 +60,7 @@
         <div class="home-hero-section">
           <!-- 左侧类目菜单 -->
           <div class="home-category-menu" id="home-category-menu">
-            <div class="text-sm font-bold text-secondary px-5 mb-2">大宗农贸主分类</div>
+            <div style="padding: 16px 20px 8px; font-weight: bold; color: var(--text-main); font-size: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 8px;">📦 全部品类</div>
             <!-- JS 渲染 -->
           </div>
           <!-- 右侧 Banner -->
@@ -75,25 +75,38 @@
           <!-- JS 渲染 -->
         </div>
 
-        <div class="flex gap-6 mb-10">
+        <!-- 分割线 -->
+        <hr style="border:none; border-top: 1px solid var(--border-color); margin: 48px 0 32px;">
+
+        <div class="flex gap-6 mb-12">
           <!-- 首页: 热门求购 -->
           <div class="flex-1">
-            <div class="flex justify-between items-end mb-4">
-              <h2 class="text-xl font-bold flex items-center gap-2"><svg class="icon-svg text-danger" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 最新大宗求购</h2>
-              <a class="text-secondary hover:text-primary cursor-pointer text-sm" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-demand\']').click()">更多求购 ></a>
-            </div>
-            <div class="card-body bg-white rounded-lg shadow-sm border-0" id="list-home-demands">
-              <!-- JS 渲染 -->
+            <div class="card shadow-sm border-0" style="border: 1px solid var(--border-light); border-radius: var(--radius-md, 12px); overflow: hidden;">
+              <div class="card-header flex justify-between items-center" style="background: #ffffff; border-bottom: 1px solid var(--border-light); padding: 14px 20px;">
+                <h3 class="text-base font-bold flex items-center gap-2 m-0" style="font-size: 15px; margin: 0;">
+                  <svg class="icon-svg text-danger" style="width:18px; height:18px;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  最新大宗求购
+                </h3>
+                <a class="text-secondary hover:text-primary cursor-pointer text-xs" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-demand\']').click()">更多求购 &gt;</a>
+              </div>
+              <div class="card-body" id="list-home-demands" style="padding: 0;">
+                <!-- JS 渲染 -->
+              </div>
             </div>
           </div>
           <!-- 首页: 热门竞价 -->
           <div class="flex-1">
-            <div class="flex justify-between items-end mb-4">
-              <h2 class="text-xl font-bold flex items-center gap-2"><svg class="icon-svg text-warning" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 热门物资竞价</h2>
-              <a class="text-secondary hover:text-primary cursor-pointer text-sm" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-bid\']').click()">进入竞价大厅 ></a>
-            </div>
-            <div class="card-body bg-white rounded-lg shadow-sm border-0" id="list-home-bids">
-              <!-- JS 渲染 -->
+            <div class="card shadow-sm border-0" style="border: 1px solid var(--border-light); border-radius: var(--radius-md, 12px); overflow: hidden;">
+              <div class="card-header flex justify-between items-center" style="background: #ffffff; border-bottom: 1px solid var(--border-light); padding: 14px 20px;">
+                <h3 class="text-base font-bold flex items-center gap-2 m-0" style="font-size: 15px; margin: 0;">
+                  <svg class="icon-svg text-warning" style="width:18px; height:18px;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  热门物资竞价
+                </h3>
+                <a class="text-secondary hover:text-primary cursor-pointer text-xs" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-bid\']').click()">进入竞价大厅 &gt;</a>
+              </div>
+              <div class="card-body" id="list-home-bids" style="padding: 0;">
+                <!-- JS 渲染 -->
+              </div>
             </div>
           </div>
         </div>
@@ -142,38 +155,47 @@
     <!-- ================== 3. 求购大厅 ================== -->
     <div id="mall-demand" class="mall-view">
       <div class="mall-container">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-2xl font-bold mb-2">供需寻源大厅</h2>
-            <div class="text-secondary">发布大宗采购需求，获取海量商家极速报价</div>
+        
+        <!-- Filter Area & Action Button Combined Layout -->
+        <div class="card mb-8 shadow-sm border-0" style="border: 1px solid var(--border-light); border-radius: var(--radius-md, 12px);">
+          <div class="card-body flex flex-col gap-4" style="padding: 20px;">
+            <!-- Filter Fields Row -->
+            <div class="flex gap-4 items-center flex-wrap">
+              <input type="text" id="demand-search-keyword" class="form-control" placeholder="按采购方或标题搜索..." style="width: 250px; height: 38px;">
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-secondary">发布时间:</span>
+                <input type="date" id="demand-search-date-start" class="form-control" style="width: 135px; height: 38px;">
+                <span>-</span>
+                <input type="date" id="demand-search-date-end" class="form-control" style="width: 135px; height: 38px;">
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-secondary">交期要求:</span>
+                <input type="date" id="demand-search-delivery-start" class="form-control" style="width: 135px; height: 38px;">
+                <span>-</span>
+                <input type="date" id="demand-search-delivery-end" class="form-control" style="width: 135px; height: 38px;">
+              </div>
+              <button class="btn btn-primary" style="height: 38px; padding: 0 20px;" onclick="MallApp.doDemandSearch()">搜索筛查</button>
+            </div>
+            
+            <!-- Horizontal Divider inside Card -->
+            <hr style="border:none; border-top: 1px solid var(--border-light); margin: 4px 0;">
+            
+            <!-- Action Row -->
+            <div class="flex justify-between items-center">
+              <div class="text-xs text-secondary flex items-center gap-1">
+                <span>📢 意向大厅公开寻源</span>
+                <span style="color:#ddd;">|</span>
+                <span>请如实填写采购品类、数量与规格</span>
+              </div>
+              <button class="btn btn-primary px-6 flex items-center gap-2" style="height: 38px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); border-radius: 19px; border: none; font-size: 13px;" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.openModal('modal-publish-demand'))">
+                <svg class="icon-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                免费发布求购意向
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary h-[40px] px-6" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.openModal('modal-publish-demand'))">
-            <svg class="icon-svg mr-2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 免费发布求购意向
-          </button>
         </div>
         
-        <!-- Filter Area -->
-        <div class="card mb-6 shadow-sm border-0">
-          <div class="card-body flex gap-4 items-center flex-wrap">
-            <span class="font-bold text-secondary">筛查条件:</span>
-            <input type="text" id="demand-search-keyword" class="form-control" placeholder="按采购方或标题搜索..." style="width: 250px;">
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-secondary">发布时间:</span>
-              <input type="date" id="demand-search-date-start" class="form-control" style="width: 140px;">
-              <span>-</span>
-              <input type="date" id="demand-search-date-end" class="form-control" style="width: 140px;">
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-secondary">交期要求:</span>
-              <input type="date" id="demand-search-delivery-start" class="form-control" style="width: 140px;">
-              <span>-</span>
-              <input type="date" id="demand-search-delivery-end" class="form-control" style="width: 140px;">
-            </div>
-            <button class="btn btn-primary" onclick="MallApp.doDemandSearch()">应用筛查</button>
-          </div>
-        </div>
-        
-        <div class="mall-grid" id="grid-mall-demands" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="mall-grid" id="grid-mall-demands" style="grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px;">
           <!-- JS 渲染卡片 -->
         </div>
         
@@ -189,18 +211,28 @@
     <!-- ================== 4. 竞价大厅 ================== -->
     <div id="mall-bid" class="mall-view">
       <div class="mall-container">
-        <div class="mb-6 flex justify-between items-end">
-          <div>
-            <h2 class="text-2xl font-bold mb-2">大宗物资竞价中心</h2>
-            <div class="text-secondary">公开、透明、高效的物资处置与大宗集中采购</div>
-          </div>
-          <div class="flex gap-4">
-            <input type="text" class="form-control" placeholder="搜索竞价公告标题" style="width: 250px;">
-            <select class="form-control" style="width: 150px;"><option>全部状态</option><option>竞价中</option><option>未开始</option><option>已结束</option></select>
-            <button class="btn btn-primary">搜索</button>
+        
+        <!-- Filter Area inside Card -->
+        <div class="card mb-8 shadow-sm border-0" style="border: 1px solid var(--border-light); border-radius: var(--radius-md, 12px);">
+          <div class="card-body flex justify-between items-center flex-wrap gap-4" style="padding: 16px 20px;">
+            <div class="flex gap-3 items-center">
+              <input type="text" id="bid-search-keyword" class="form-control" placeholder="搜索竞价公告标题..." style="width: 280px; height: 38px;">
+              <select id="bid-search-status" class="form-control" style="width: 150px; height: 38px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none; padding: 0 10px;" onchange="MallApp.doBidSearch()">
+                <option value="">全部状态</option>
+                <option value="1">竞价中</option>
+                <option value="0">已结束</option>
+              </select>
+              <button class="btn btn-primary" style="height: 38px; padding: 0 20px;" onclick="MallApp.doBidSearch()">搜索</button>
+            </div>
+            <div class="text-xs text-secondary flex items-center gap-1.5">
+              <span>🔨 公开大宗竞价中心</span>
+              <span style="color:#ddd;">|</span>
+              <span>公平 · 公正 · 公开</span>
+            </div>
           </div>
         </div>
-        <div class="mall-grid" id="grid-mall-bids" style="grid-template-columns: repeat(2, 1fr);">
+        
+        <div class="mall-grid" id="grid-mall-bids" style="grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 8px;">
           <!-- JS 渲染 -->
         </div>
         
@@ -293,7 +325,10 @@
         <aside class="uc-sidebar">
           <div class="uc-user-info">
             <div class="uc-avatar">万</div>
-            <div class="font-bold text-lg">万通建材采购部</div>
+            <div class="font-bold text-lg flex items-center gap-1 justify-center">
+              <span id="uc-username-text">万通建材采购部</span>
+              <button class="btn btn-text p-0 text-xs" style="min-width:auto; font-size:12px; margin-top:2px;" onclick="MallApp.editNickname()">✏️</button>
+            </div>
             <div class="tag tag-primary mt-2" style="background:#e6f4ff; color:#1677ff; border:1px solid #91caff;">企业买家已认证</div>
           </div>
           <div id="uc-menu">

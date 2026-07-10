@@ -345,6 +345,19 @@ const H5App = {
     UI.toast(toastMsg + '，已同步至消息中心', 'success');
   },
 
+  editNickname() {
+    const textEl = document.getElementById('h5-username-text');
+    if (!textEl) return;
+    const newName = prompt('请输入新的个人/企业名称：', textEl.innerText);
+    if (newName && newName.trim()) {
+      const val = newName.trim();
+      textEl.innerText = val;
+      const avatarEl = document.querySelector('.h5-avatar');
+      if (avatarEl) avatarEl.innerText = val.charAt(0);
+      UI.toast('个人名称修改成功', 'success');
+    }
+  },
+
   renderBids(keyword = '') {
     const list = document.getElementById('h5-bid-list');
     let html = '';

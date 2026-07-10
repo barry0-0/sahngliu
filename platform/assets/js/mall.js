@@ -28,7 +28,7 @@ const MallApp = {
   renderCategories() {
     const menu = document.getElementById('home-category-menu');
     if (menu && MockData.productCategories && MockData.decorationConfig) {
-      let html = '<div class="text-sm font-bold text-secondary px-5 mb-2">大宗农贸主分类</div>';
+      let html = '<div style="padding: 14px 20px 8px; font-weight: bold; color: var(--text-main); font-size: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 8px;">📦 全部品类</div>';
       
       const displayIds = MockData.decorationConfig.displayCategories.slice(0, 5);
       const displayCats = MockData.productCategories.filter(c => displayIds.includes(c.id));
@@ -166,11 +166,16 @@ const MallApp = {
         <div class="product-card cursor-pointer" onclick="MallApp.showProductDetail('${p.id}')">
           <div style="position: relative; overflow: hidden;">
             <img src="${p.image}" class="product-img">
-            <div class="card-hover-overlay flex items-center justify-center gap-2" style="position: absolute; bottom: -60px; left: 0; width: 100%; height: 50px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); transition: bottom 0.3s ease; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);" onclick="event.stopPropagation()">
-              <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 16px; padding: 0 12px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">
-                💬 询价
-              </button>
-              <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 0 12px;" onclick="MallApp.addToCart('${p.id}', 1)">加入采购</button>
+            <div class="card-hover-overlay flex items-center justify-between gap-1" onclick="event.stopPropagation()">
+              <div class="flex items-center" style="background:#fff; border: 1px solid #dcdfe6; border-radius:4px; height: 26px; overflow:hidden; flex-shrink: 0;">
+                <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-cat-${p.id}'); if(parseInt(val.value)>1) val.value=parseInt(val.value)-1">-</button>
+                <input type="text" id="qty-cat-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
+                <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-cat-${p.id}'); val.value=parseInt(val.value)+1">+</button>
+              </div>
+              <div class="flex gap-1">
+                <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
+                <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-cat-${p.id}').value))">加入采购</button>
+              </div>
             </div>
           </div>
           <div class="product-info">
@@ -199,11 +204,16 @@ const MallApp = {
           <div class="product-card cursor-pointer" onclick="MallApp.showProductDetail('${p.id}')">
             <div style="position: relative; overflow: hidden;">
               <img src="${p.image}" class="product-img">
-              <div class="card-hover-overlay flex items-center justify-center gap-2" style="position: absolute; bottom: -60px; left: 0; width: 100%; height: 50px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); transition: bottom 0.3s ease; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);" onclick="event.stopPropagation()">
-                <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 16px; padding: 0 12px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">
-                  💬 询价
-                </button>
-                <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 0 12px;" onclick="MallApp.addToCart('${p.id}', 1)">加入采购</button>
+              <div class="card-hover-overlay flex items-center justify-between gap-1" onclick="event.stopPropagation()">
+                <div class="flex items-center" style="background:#fff; border: 1px solid #dcdfe6; border-radius:4px; height: 26px; overflow:hidden; flex-shrink: 0;">
+                  <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-home-${p.id}'); if(parseInt(val.value)>1) val.value=parseInt(val.value)-1">-</button>
+                  <input type="text" id="qty-home-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
+                  <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-home-${p.id}'); val.value=parseInt(val.value)+1">+</button>
+                </div>
+                <div class="flex gap-1">
+                  <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
+                  <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-home-${p.id}').value))">加入采购</button>
+                </div>
               </div>
             </div>
             <div class="product-info">
@@ -231,11 +241,16 @@ const MallApp = {
           <div class="product-card cursor-pointer" onclick="MallApp.showProductDetail('${p.id}')">
             <div style="position: relative; overflow: hidden;">
               <img src="${p.image}" class="product-img">
-              <div class="card-hover-overlay flex items-center justify-center gap-2" style="position: absolute; bottom: -60px; left: 0; width: 100%; height: 50px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); transition: bottom 0.3s ease; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);" onclick="event.stopPropagation()">
-                <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 16px; padding: 0 12px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">
-                  💬 询价
-                </button>
-                <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 0 12px;" onclick="MallApp.addToCart('${p.id}', 1)">加入采购</button>
+              <div class="card-hover-overlay flex items-center justify-between gap-1" onclick="event.stopPropagation()">
+                <div class="flex items-center" style="background:#fff; border: 1px solid #dcdfe6; border-radius:4px; height: 26px; overflow:hidden; flex-shrink: 0;">
+                  <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-spot-${p.id}'); if(parseInt(val.value)>1) val.value=parseInt(val.value)-1">-</button>
+                  <input type="text" id="qty-spot-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
+                  <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-spot-${p.id}'); val.value=parseInt(val.value)+1">+</button>
+                </div>
+                <div class="flex gap-1">
+                  <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
+                  <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-spot-${p.id}').value))">加入采购</button>
+                </div>
               </div>
             </div>
             <div class="product-info">
@@ -483,35 +498,55 @@ const MallApp = {
     if (keyword) {
       filtered = filtered.filter(b => b.title.includes(keyword));
     }
+    const statusVal = document.getElementById('bid-search-status')?.value || '';
+    if (statusVal !== '') {
+      filtered = filtered.filter(b => b.status === parseInt(statusVal));
+    }
     filtered.forEach(b => {
       let tag = b.status === 1 ? '<span class="tag tag-success">竞价中</span>' : '<span class="tag tag-secondary">已结束</span>';
       html += `
-        <div class="card shadow-sm border-0 cursor-pointer hover:shadow-md transition" onclick="MallApp.showBiddingDetail('${b.id}')">
-          <div class="card-body">
-            <div class="flex justify-between items-start mb-2">
-              <h3 class="font-bold text-lg m-0 flex-1">${b.title}</h3>
-              ${tag}
+        <div class="card shadow-sm border-0 cursor-pointer hover:shadow-md transition" style="overflow:hidden;" onclick="MallApp.showBiddingDetail('${b.id}')">
+          <div style="position: relative; overflow: hidden; height: 160px;">
+            <img src="${b.image}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <div style="position: absolute; top: 12px; right: 12px; z-index: 2;">${tag}</div>
+          </div>
+          <div class="card-body" style="padding: 16px;">
+            <h3 class="font-bold text-base m-0 truncate mb-1" title="${b.title}">${b.title}</h3>
+            <div class="text-xs text-secondary mb-3 flex items-center gap-1.5">
+              <span>🏢 ${b.shopName}</span>
+              <span style="color:#ddd;">|</span>
+              <span class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">No.${b.shopId}</span>
             </div>
-            <div class="text-sm text-secondary mb-4 flex items-center gap-2">
-              <span>${b.shopName}</span>
-              <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">No.${b.shopId}</span>
-            </div>
-            <div class="flex justify-between items-end mt-4">
+            <div class="flex justify-between items-end bg-gray-50 p-3 rounded-lg" style="border: 1px solid var(--border-light); margin-bottom: 12px;">
               <div>
-                <div class="text-xs text-secondary">底价/起拍价</div>
-                <div class="text-lg font-bold text-gray-600">${b.startPrice}</div>
+                <div class="text-[10px] text-secondary">底价/起拍价</div>
+                <div class="text-sm font-bold text-gray-600">${b.startPrice}</div>
               </div>
               <div class="text-right">
-                <div class="text-xs text-danger">当前最高出价</div>
-                <div class="text-2xl font-bold text-danger">${b.currentMaxOffer || b.startPrice}</div>
+                <div class="text-[10px] text-danger">当前最高出价</div>
+                <div class="text-lg font-bold text-danger">${b.currentMaxOffer || b.startPrice}</div>
               </div>
             </div>
-            <button class="btn btn-primary w-full mt-4" onclick="event.stopPropagation(); window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('进入竞价出价页面', 'info'))">参与竞价</button>
+            <button class="btn btn-primary w-full" style="height: 36px; border-radius: 18px; font-size: 13px;" onclick="event.stopPropagation(); MallApp.showBiddingDetail('${b.id}')">参与竞价</button>
           </div>
         </div>
       `;
     });
     if(grid) grid.innerHTML = html;
+  },
+
+  editNickname() {
+    const textEl = document.getElementById('uc-username-text');
+    if (!textEl) return;
+    const newName = prompt('请输入新的个人/企业名称：', textEl.innerText);
+    if (newName && newName.trim()) {
+      const val = newName.trim();
+      textEl.innerText = val;
+      const avatarEl = document.querySelector('.uc-avatar');
+      if (avatarEl) avatarEl.innerText = val.charAt(0);
+      this.currentBuyerName = val;
+      UI.toast('个人名称修改成功', 'success');
+    }
   },
 
   doBidSearch() {

@@ -110,12 +110,12 @@ window.MockData = {
 
   // --- 5. 商品库 (product & sku) ---
   products: [
-    { id: 'P1001', shopId: 'S001', shopName: '丰收粮油直营店', name: '东北一级大米 50kg装', category: '大米', image: 'https://images.unsplash.com/photo-1586201375761-83865001e8ac?auto=format&fit=crop&w=400&q=80', priceStr: '¥280.00 / 袋', sales: 12500, stock: 500, status: 1 },
-    { id: 'P1002', shopId: 'S002', shopName: '华东农副集散中心', name: '特级富士苹果 礼盒装', category: '苹果', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6fac6?auto=format&fit=crop&w=400&q=80', priceStr: '¥120.00 / 箱', sales: 800, stock: 3000, status: 1 },
+    { id: 'P1001', shopId: 'S001', shopName: '丰收粮油直营店', name: '东北一级大米 50kg装', category: '大米', image: 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=400&q=80', priceStr: '¥280.00 / 袋', sales: 12500, stock: 500, status: 1 },
+    { id: 'P1002', shopId: 'S002', shopName: '华东农副集散中心', name: '特级富士苹果 礼盒装', category: '苹果', image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=400&q=80', priceStr: '¥120.00 / 箱', sales: 800, stock: 3000, status: 1 },
     { id: 'P1003', shopId: 'S001', shopName: '丰收粮油直营店', name: '高筋面粉 25kg装 (烘焙专用)', category: '面粉', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80', priceStr: '¥145.00 / 袋', sales: 3200, stock: 1000, status: 1 },
-    { id: 'P1004', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '有机大白菜 散装批发', category: '白菜', image: 'https://images.unsplash.com/photo-1549424729-eb7dbb0e8c89?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.80 / 斤', sales: 45000, stock: 10000, status: 1 },
+    { id: 'P1004', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '有机大白菜 散装批发', category: '白菜', image: 'https://images.unsplash.com/photo-1550158464-672d98e24172?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.80 / 斤', sales: 45000, stock: 10000, status: 1 },
     { id: 'P1005', shopId: 'S001', shopName: '丰收粮油直营店', name: '非转基因大豆油 5L*4桶装', category: '豆油', image: 'https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?auto=format&fit=crop&w=400&q=80', priceStr: '¥210.00 / 箱', sales: 1120, stock: 450, status: 1 },
-    { id: 'P1006', shopId: 'S002', shopName: '华东农副集散中心', name: '山东红富士 原箱直发', category: '苹果', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=400&q=80', priceStr: '¥56.00 / 箱', sales: 50, stock: 200, status: 1 },
+    { id: 'P1006', shopId: 'S002', shopName: '华东农副集散中心', name: '山东红富士 原箱直发', category: '苹果', image: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=400&q=80', priceStr: '¥56.00 / 箱', sales: 50, stock: 200, status: 1 },
     { id: 'P1007', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '新鲜土豆 产地直供', category: '土豆', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.20 / 斤', sales: 89000, stock: 20000, status: 1 },
     { id: 'P1008', shopId: 'S001', shopName: '丰收粮油直营店', name: '优质玉米 特级品', category: '玉米', image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80', priceStr: '¥1,450.00 / 吨', sales: 150, stock: 60, status: 0 } // 待审核
   ],
