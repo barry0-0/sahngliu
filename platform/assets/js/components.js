@@ -178,29 +178,8 @@ window.MainApp = {
    * @param {function} successCallback 鉴权通过后的回调
    */
   checkAuth(type, successCallback) {
-    if (!window.MockData || !window.MockData.currentUser) {
-      UI.toast('用户数据异常，请重新登录', 'error');
-      if (successCallback) successCallback();
-      return;
-    }
-    
-    const user = window.MockData.currentUser;
-    
-    if (type === 'personal') {
-      if (user.personalAuthStatus !== 1) {
-        UI.toast('提示：您尚未完成【个人实名认证】', 'warning');
-      }
-      if (successCallback) successCallback();
-    } else if (type === 'merchant') {
-      if (user.merchantAuthStatus === 1) {
-        UI.toast('提示：您的【企业商家认证】正在审核中', 'warning');
-      } else if (user.merchantAuthStatus !== 2) {
-        UI.toast('提示：您尚未完成【企业商家认证】', 'warning');
-      }
-      if (successCallback) successCallback();
-    } else {
-      if (successCallback) successCallback();
-    }
+    // 解除认证卡控，直接放行
+    if (successCallback) successCallback();
   }
 };
 
