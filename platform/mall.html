@@ -147,7 +147,7 @@
             <h2 class="text-2xl font-bold mb-2">供需寻源大厅</h2>
             <div class="text-secondary">发布大宗采购需求，获取海量商家极速报价</div>
           </div>
-          <button class="btn btn-primary h-[40px] px-6" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.toast('进入发布求购页面', 'success'))">
+          <button class="btn btn-primary h-[40px] px-6" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.openModal('modal-publish-demand'))">
             <svg class="icon-svg mr-2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 免费发布求购意向
           </button>
         </div>
@@ -393,7 +393,7 @@
             <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
               <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold">我发表的求购意向 (寻源记录)</h3>
-                <button class="btn btn-primary" onclick="UI.toast('模拟发布需求表单弹窗', 'info')">新增求购意向</button>
+                <button class="btn btn-primary" onclick="UI.openModal('modal-publish-demand')">新增求购意向</button>
               </div>
               <table class="table" id="table-uc-demands-pub">
                 <thead style="background:#f8f9fa;"><tr><th>求购单号</th><th>意向标题</th><th>发布时间</th><th>收到的报价数</th><th>状态</th><th>操作</th></tr></thead>
@@ -565,6 +565,34 @@
     <div class="p-4 border-t border-light flex gap-2 bg-white">
       <input type="text" id="chat-input" class="form-control flex-1" placeholder="输入您想沟通的内容...">
       <button class="btn btn-primary px-6" onclick="let input=document.getElementById('chat-input'); if(!input.value) return; UI.toast('发送成功，已同步至消息中心(聊天室)', 'success'); input.value='';">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- 发布求购意向弹窗 (PC) -->
+<div class="modal-overlay" id="modal-publish-demand" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.6); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-publish-demand')">
+  <div class="modal-content flex flex-col" style="width: 500px; background: var(--surface-color); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; animation: fadeIn 0.2s ease;">
+    <div class="flex justify-between items-center p-4 border-b border-light">
+      <h3 class="font-bold text-lg">免费发布求购意向</h3>
+      <button class="btn btn-text text-secondary" onclick="UI.closeModal('modal-publish-demand')">✕</button>
+    </div>
+    <div class="p-5 flex flex-col gap-4">
+      <div>
+        <label class="block text-sm text-secondary mb-1">求购标题 <span class="text-danger">*</span></label>
+        <input type="text" id="pd-title" class="form-control w-full" placeholder="例如：急求某某型号原木100方">
+      </div>
+      <div>
+        <label class="block text-sm text-secondary mb-1">期望价格</label>
+        <input type="text" id="pd-price" class="form-control w-full" placeholder="例如：面议 或 3000元/方">
+      </div>
+      <div>
+        <label class="block text-sm text-secondary mb-1">求购详情说明</label>
+        <textarea id="pd-desc" class="form-control w-full" rows="3" placeholder="请详细描述您的需求，例如材质、交货地、交期等..."></textarea>
+      </div>
+    </div>
+    <div class="p-4 border-t border-light flex justify-end gap-3">
+      <button class="btn btn-outline" onclick="UI.closeModal('modal-publish-demand')">取消</button>
+      <button class="btn btn-primary px-6" onclick="UI.toast('求购意向发布成功！', 'success'); UI.closeModal('modal-publish-demand');">确认发布</button>
     </div>
   </div>
 </div>

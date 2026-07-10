@@ -67,7 +67,7 @@
     <!-- === 2. 找货源/现货市场 === -->
     <div id="view-demand" class="h5-view">
       <div style="padding: 16px; padding-bottom: 140px;">
-        <button class="btn btn-primary" style="width: 100%; height: 44px; border-radius: 22px; margin-bottom: 16px;" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.toast('已进入发布页', 'success'))">发布采购意向 (寻源)</button>
+        <button class="btn btn-primary" style="width: 100%; height: 44px; border-radius: 22px; margin-bottom: 16px;" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.openModal('sheet-h5-publish-demand'))">发布采购意向 (寻源)</button>
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
           <input type="text" id="h5-demand-search-keyword" class="form-control" placeholder="搜索标题或买家" style="flex: 1; border-radius: 20px; padding-left: 16px;">
           <button class="btn btn-primary" style="border-radius: 20px; padding: 0 16px;" onclick="H5App.doDemandSearch()">搜索</button>
@@ -374,6 +374,39 @@
     <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
       <input type="text" id="h5-chat-input" class="form-control flex-1 text-sm py-2" placeholder="输入沟通内容...">
       <button class="btn btn-primary px-4 py-2 text-sm" onclick="let input=document.getElementById('h5-chat-input'); if(!input.value) return; UI.toast('发送成功，已同步至消息中心(聊天室)', 'success'); input.value='';">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- H5 发布求购弹窗 (Bottom Sheet) -->
+<div class="modal-overlay" id="sheet-h5-publish-demand" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.6); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-publish-demand')">
+  <div class="modal-content flex flex-col" style="width: 100%; height: 80vh; background: var(--surface-color); border-radius: 20px 20px 0 0; animation: slideUp 0.3s ease-out; overflow: hidden;">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center p-4 border-b border-light" style="background: #fff;">
+      <h3 class="font-bold text-lg">发布采购意向</h3>
+      <button class="btn btn-text text-secondary p-1" onclick="UI.closeModal('sheet-h5-publish-demand')">✕</button>
+    </div>
+
+    <!-- 表单区域 -->
+    <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4">
+      <div>
+        <label class="block text-sm text-secondary mb-1">求购标题 <span class="text-danger">*</span></label>
+        <input type="text" id="h5-pd-title" class="form-control w-full" placeholder="例如：急求某某型号原木100方" style="height: 40px; font-size: 14px;">
+      </div>
+      <div>
+        <label class="block text-sm text-secondary mb-1">期望价格</label>
+        <input type="text" id="h5-pd-price" class="form-control w-full" placeholder="例如：面议 或 3000元/方" style="height: 40px; font-size: 14px;">
+      </div>
+      <div>
+        <label class="block text-sm text-secondary mb-1">求购详情说明</label>
+        <textarea id="h5-pd-desc" class="form-control w-full" rows="5" placeholder="请详细描述您的需求，例如材质、交货地、交期等..." style="font-size: 14px; padding: 10px;"></textarea>
+      </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
+      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="UI.toast('求购意向发布成功！', 'success'); UI.closeModal('sheet-h5-publish-demand');">确认发布</button>
     </div>
   </div>
 </div>
