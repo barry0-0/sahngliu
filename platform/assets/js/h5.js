@@ -160,17 +160,19 @@ const H5App = {
             </div>
             
             <div class="action-bar mt-4 flex items-center justify-between" onclick="event.stopPropagation()">
-              <button class="btn btn-outline text-xs px-2 py-1 flex items-center gap-1" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 12px;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
-                💬 询价
+              <button class="btn btn-outline flex items-center justify-center" style="width: 28px; height: 28px; padding: 0; color:var(--primary-color); border-color:var(--primary-color); border-radius: 50%; flex-shrink: 0;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
+                💬
               </button>
               
-              <div class="flex items-center gap-2">
-                <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center;">
+              <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
+                <div class="quantity-stepper" style="transform: scale(0.85); transform-origin: right center; margin-right: 0;">
                   <button class="stepper-btn minus" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
                   <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" onclick="event.stopPropagation()">
                   <button class="stepper-btn plus" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
                 </div>
-                <button class="btn btn-primary btn-sm" style="border-radius: 12px; padding: 4px 12px;" onclick="H5App.quickAddToCart('${p.id}')">加入采购</button>
+                <button class="btn btn-primary flex items-center justify-center" style="width: 28px; height: 28px; padding: 0; border-radius: 50%; flex-shrink: 0; font-size: 14px;" onclick="H5App.quickAddToCart('${p.id}')">
+                  🛒
+                </button>
               </div>
             </div>
           </div>
