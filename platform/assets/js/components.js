@@ -48,6 +48,20 @@ const UI = {
     }, 3000);
   },
 
+  openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  },
+
+  closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  },
+
   /**
    * 初始化 Tab 切换
    * DOM 结构要求:
