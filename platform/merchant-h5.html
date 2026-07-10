@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>享宇森云 - 商家移动工作台</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/h5.css">
+</head>
+<body>
+
+<div class="mobile-app-container">
+
+  <!-- 顶部 Header -->
+  <header class="h5-header">
+    <div class="h5-header-back" onclick="window.location.href='h5.html'">&lt; 返回商城</div>
+    <div id="mh5-header-title">商家工作台</div>
+  </header>
+
+  <main class="h5-content">
+    
+    <!-- === 1. 店铺管理 === -->
+    <div id="view-shop" class="h5-view active">
+      <div style="background: #fff; padding: 20px; text-align: center; border-bottom: 10px solid #f7f8fa;">
+        <img id="mh5-avatar" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80" style="width: 80px; height: 80px; border-radius: 8px; margin-bottom: 12px; object-fit: cover;">
+        <div style="font-weight: bold; font-size: 18px;" id="mh5-shop-name">远大钢铁官方直营店</div>
+        <div style="color: var(--success-color); font-size: 12px; margin-top: 4px;">企业已认证</div>
+        <div style="color: var(--secondary-color); font-size: 12px; margin-top: 8px; background: #f5f5f5; display: inline-block; padding: 2px 8px; border-radius: 4px;">商户号: <span id="mh5-shop-id"></span></div>
+      </div>
+      <div class="h5-menu-list" style="margin-top: 16px;">
+        <div class="h5-menu-row">
+          <div>修改店铺名称</div><div class="text-secondary">></div>
+        </div>
+        <div class="h5-menu-row">
+          <div>更换店铺 Logo 头像</div><div class="text-secondary">></div>
+        </div>
+        <div class="h5-menu-row">
+          <div>更换首页横幅 Banner</div><div class="text-secondary">></div>
+        </div>
+      </div>
+      <div style="padding: 20px;">
+        <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px;">保存店铺装潢</button>
+      </div>
+    </div>
+
+    <!-- === 2. 商品中心 === -->
+    <div id="view-products" class="h5-view">
+       <div class="flex" style="background:#fff; border-bottom:1px solid #eee; position:sticky; top:0; z-index:5;">
+         <div class="flex-1 text-center py-3 font-bold text-primary" style="border-bottom: 2px solid var(--primary-color);">已上架列表</div>
+         <div class="flex-1 text-center py-3 text-secondary">待审核/未上架</div>
+       </div>
+       <!-- 新增：商品上方筛选排版优化 -->
+       <div style="background:#fff; padding: 12px; display:flex; gap: 8px; border-bottom:1px solid #eee;">
+         <input type="text" id="mh5-product-search-kw" class="form-control" style="flex:1;" placeholder="搜索商品名称...">
+         <select id="mh5-product-search-cat" class="form-control" style="width: 100px;">
+           <option value="">全部分类</option>
+           <option value="钢材">钢材</option>
+           <option value="木材">木材</option>
+         </select>
+         <button class="btn btn-primary" onclick="MH5App.doProductSearch()">筛选</button>
+       </div>
+       <div id="mh5-product-list" style="padding: 12px;"></div>
+    </div>
+
+    <!-- === 3. 订单管理 === -->
+    <div id="view-orders" class="h5-view">
+      <div style="padding: 12px;" id="mh5-order-list"></div>
+    </div>
+
+    <!-- === 4. 竞价管理 === -->
+    <div id="view-bidding" class="h5-view">
+       <div class="flex" style="background:#fff; border-bottom:1px solid #eee; position:sticky; top:0; z-index:5;">
+         <div class="flex-1 text-center py-3 font-bold text-primary tab-mh5-bid" data-target="mh5-bid-res" style="border-bottom: 2px solid var(--primary-color);" onclick="MH5App.switchBidTab('mh5-bid-res')">资源管理</div>
+         <div class="flex-1 text-center py-3 text-secondary tab-mh5-bid" data-target="mh5-bid-ann" onclick="MH5App.switchBidTab('mh5-bid-ann')">公告列表</div>
+       </div>
+       
+       <div style="padding: 12px;" id="mh5-bid-res">
+         <button class="btn btn-primary" style="width:100%; margin-bottom: 12px;" onclick="UI.showModal('modal-mh5-add-res')">新增竞价资源</button>
+         <div id="mh5-bidding-res-list">
+           <!-- JS 渲染资源列表 -->
+           <div class="text-center py-8 text-secondary">资源管理列表</div>
+         </div>
+       </div>
+       
+       <div style="padding: 12px; display: none;" id="mh5-bid-ann">
+         <button class="btn btn-warning" style="width:100%; margin-bottom: 12px;" onclick="UI.showModal('modal-mh5-add-ann')">关联资源发布公告</button>
+         <div id="mh5-bidding-ann-list">
+           <!-- JS 渲染公告列表 -->
+         </div>
+       </div>
+    </div>
+
+  </main>
+
+  <!-- 底部 TabBar -->
+  <nav class="h5-tabbar">
+    <div class="h5-tab-item active" data-target="view-shop">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      店铺
+    </div>
+    <div class="h5-tab-item" data-target="view-products">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+      商品
+    </div>
+    <div class="h5-tab-item" data-target="view-orders">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+      订单
+    </div>
+    <div class="h5-tab-item" data-target="view-bidding">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      竞价
+    </div>
+  </nav>
+
+</div>
+
+<!-- 移动端发货弹窗 -->
+<div class="modal-overlay" id="modal-mh5-ship">
+  <div class="h5-bottom-sheet">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;">订单发货 (录入单号)</div>
+    <div class="form-group">
+      <label class="text-sm text-secondary">选择物流公司</label>
+      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;"><option>顺丰速运</option><option>德邦物流</option></select>
+    </div>
+    <div class="form-group mb-6">
+      <label class="text-sm text-secondary">纯文本运单号</label>
+      <input type="text" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="扫码或手动输入单号">
+    </div>
+    <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px;" onclick="MH5App.submitShip()">确认提交并标记发货</button>
+  </div>
+</div>
+
+<!-- 移动端发布资源弹窗 -->
+<div class="modal-overlay" id="modal-mh5-add-res">
+  <div class="h5-bottom-sheet" style="height: 80vh; overflow-y: auto;">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;">新增竞价资源</div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">资源名称</label>
+      <input type="text" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="输入资源标题">
+    </div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">规格描述</label>
+      <input type="text" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="例如: 500吨">
+    </div>
+    <div class="form-group mb-6">
+      <label class="text-sm text-secondary">上传照片 (手机拍照)</label>
+      <div style="border:2px dashed #ddd; padding:20px; text-align:center; color:#999; border-radius: 4px;">+ 点击拍照上传</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px;" onclick="UI.closeModal('modal-mh5-add-res'); UI.toast('资源已提交，待平台审核', 'success')">提交资源</button>
+  </div>
+</div>
+
+<!-- 移动端发布公告弹窗 -->
+<div class="modal-overlay" id="modal-mh5-add-ann">
+  <div class="h5-bottom-sheet" style="height: 80vh; overflow-y: auto;">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;">关联资源发公告</div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">选择已审核的资源</label>
+      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;"><option>RES001 - 报废钢材处理</option></select>
+    </div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">起拍底价 (元)</label>
+      <input type="number" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="输入最低起拍价">
+    </div>
+    <div class="form-group mb-6">
+      <label class="text-sm text-secondary">竞拍截止时间</label>
+      <input type="datetime-local" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+    </div>
+    <button class="btn btn-warning" style="width:100%; height:44px; border-radius:22px;" onclick="UI.closeModal('modal-mh5-add-ann'); UI.toast('竞价公告发布成功', 'success')">确认发布公告</button>
+  </div>
+</div>
+
+<script src="./assets/js/mock-data.js"></script>
+<script src="./assets/js/components.js"></script>
+<script src="./assets/js/merchant-h5.js"></script>
+
+</body>
+</html>

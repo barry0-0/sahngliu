@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>买家版 - 移动端 v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        .gradient-header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+    </style>
+    <script>
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.app-page').forEach(page => page.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-red-600');
+                btn.classList.add('text-slate-400');
+            });
+            el.classList.remove('text-slate-400');
+            el.classList.add('text-red-600');
+        }
+
+        function simulateMobilePay() {
+            const btn = document.getElementById('pay-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 调起微信...';
+            setTimeout(() => {
+                alert("微信支付成功！");
+                btn.innerHTML = '已付款，待发货';
+                btn.classList.replace('bg-red-600', 'bg-slate-300');
+                btn.classList.replace('text-white', 'text-slate-600');
+                btn.disabled = true;
+            }, 1500);
+        }
+        
+        function showProductModal() {
+            document.getElementById('mobile-product-modal').classList.remove('hidden');
+        }
+        function hideProductModal() {
+            document.getElementById('mobile-product-modal').classList.add('hidden');
+        }
+    </script>
+</head>
+<body class="bg-slate-200 flex justify-center items-center h-screen overflow-hidden font-sans">
+
+    <!-- Mobile Device Mockup Container -->
+    <div class="w-full max-w-[400px] h-full bg-slate-50 relative flex flex-col shadow-2xl sm:rounded-[2.5rem] sm:h-[800px] sm:border-[12px] border-slate-900 overflow-hidden">
+        
+        <!-- Header -->
+        <header class="gradient-header text-white pt-12 pb-3 px-5 flex justify-between items-center z-10 shadow-md">
+            <span class="font-black text-xl tracking-tight">大宗集采直营</span>
+            <i class="fas fa-search text-xl"></i>
+        </header>
+
+        <!-- Pages -->
+        <div class="flex-1 overflow-y-auto pb-20 relative scroll-smooth">
+            
+            <!-- Mall Home (New) -->
+            <div id="page-mall" class="app-page block">
+                <!-- Search Bar -->
+                <div class="bg-white p-3 sticky top-0 z-10 shadow-sm">
+                    <div class="bg-slate-100 rounded-full flex items-center px-4 py-2">
+                        <i class="fas fa-search text-slate-400 mr-2"></i>
+                        <input type="text" placeholder="搜索现货..." class="bg-transparent text-sm w-full outline-none text-slate-700">
+                    </div>
+                </div>
+                
+                <!-- Categories -->
+                <div class="grid grid-cols-4 gap-2 p-4 bg-white mb-2">
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-1"><i class="fas fa-cube"></i></div><span class="text-xs text-slate-600 font-bold">钢材</span></div>
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-xl mb-1"><i class="fas fa-layer-group"></i></div><span class="text-xs text-slate-600 font-bold">有色金属</span></div>
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl mb-1"><i class="fas fa-flask"></i></div><span class="text-xs text-slate-600 font-bold">化工</span></div>
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-xl mb-1"><i class="fas fa-bars"></i></div><span class="text-xs text-slate-600 font-bold">全部分类</span></div>
+                </div>
+
+                <!-- Product List -->
+                <div class="p-3 space-y-3">
+                    <h3 class="font-black text-slate-800 text-lg px-1">现货推荐</h3>
+                    
+                    <div class="bg-white rounded-xl p-3 flex gap-3 shadow-sm border border-slate-100" onclick="showProductModal()">
+                        <img src="https://placehold.co/200x200/e2e8f0/64748b?text=Steel" class="w-24 h-24 rounded-lg object-cover">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm line-clamp-2">沙钢 HRB400E 抗震螺纹钢 12mm</h4>
+                                <p class="text-[10px] text-slate-500 mt-1">无锡仓 | 现货500吨</p>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <p class="text-red-600 font-black"><span class="text-xs">¥</span>3,850<span class="text-xs font-normal text-slate-400">/吨</span></p>
+                                <i class="fas fa-cart-plus text-red-600 text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-3 flex gap-3 shadow-sm border border-slate-100" onclick="showProductModal()">
+                        <img src="https://placehold.co/200x200/e2e8f0/64748b?text=Copper" class="w-24 h-24 rounded-lg object-cover">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm line-clamp-2">T2 高纯紫铜排 10*100</h4>
+                                <p class="text-[10px] text-slate-500 mt-1">佛山仓 | 过磅交割</p>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <p class="text-red-600 font-black"><span class="text-xs">¥</span>68,200<span class="text-xs font-normal text-slate-400">/吨</span></p>
+                                <i class="fas fa-cart-plus text-red-600 text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Procure Hall -->
+            <div id="page-procure" class="app-page hidden p-4">
+                <div class="bg-red-50 rounded-2xl p-5 mb-5 border border-red-100 relative overflow-hidden">
+                    <i class="fas fa-bullhorn absolute -right-4 -bottom-4 text-7xl text-red-100"></i>
+                    <h3 class="font-black text-red-800 text-xl mb-1 relative z-10">极速发标寻源</h3>
+                    <p class="text-xs text-red-600/80 mb-4 font-bold relative z-10">千家源头货主在线为您出价盲报</p>
+                    <button class="bg-red-600 text-white w-full py-3 rounded-xl font-black shadow-lg shadow-red-500/30 active:scale-95 transition-transform relative z-10" onclick="alert('进入移动端发标表单')">
+                        发布大宗采购需求
+                    </button>
+                </div>
+
+                <h4 class="font-black text-slate-800 mb-3 px-1 border-l-4 border-red-600 pl-2">我发出的标单</h4>
+                
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100 mb-3">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded font-bold">商家报价中</span>
+                        <span class="text-[10px] text-slate-400">特急单</span>
+                    </div>
+                    <h5 class="font-bold text-slate-800 text-base mb-1">螺纹钢 HRB400E 12mm</h5>
+                    <p class="text-xs text-slate-500 mb-3">总需求量: 500吨</p>
+                    <div class="flex justify-between items-center pt-3 border-t border-slate-50">
+                        <span class="text-sm font-black text-blue-600">3 家已出价</span>
+                        <button class="text-xs font-bold border-2 border-slate-800 text-slate-800 px-4 py-1.5 rounded-full hover:bg-slate-800 hover:text-white">查看盲盒</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders & Bills -->
+            <div id="page-orders" class="app-page hidden p-4 space-y-4">
+                <h3 class="font-black text-xl text-slate-800 mb-2">支付账单</h3>
+                
+                <!-- Unpaid Order -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <div class="flex justify-between text-[10px] text-slate-400 border-b border-slate-100 pb-2 mb-3 font-mono">
+                        <span>ORD-20260702-X1</span>
+                        <span class="text-red-500 font-bold">等待您付款</span>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded flex items-center justify-center mr-3"><i class="fas fa-box text-slate-400"></i></div>
+                        <div>
+                            <h5 class="font-bold text-sm text-slate-800">冷轧不锈钢卷</h5>
+                            <p class="text-xs text-slate-500 mt-0.5">数量: 2卷</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] text-slate-400 mb-0.5">应付总额</p>
+                            <p class="text-xl font-black text-red-600">¥12,500.<span class="text-sm">00</span></p>
+                        </div>
+                        <button id="pay-btn" onclick="simulateMobilePay()" class="bg-[#07c160] text-white text-sm px-5 py-2 rounded-xl font-bold shadow-lg shadow-green-500/30 active:scale-95 transition-transform"><i class="fab fa-weixin mr-1"></i> 微信支付</button>
+                    </div>
+                </div>
+
+                <!-- Shipped Order -->
+                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 opacity-80">
+                    <div class="flex justify-between text-[10px] text-slate-400 border-b border-slate-100 pb-2 mb-3 font-mono">
+                        <span>ORD-20260701-A2</span>
+                        <span class="text-blue-500 font-bold">三方物流在途</span>
+                    </div>
+                    <div class="mb-3">
+                        <h5 class="font-bold text-sm text-slate-800">H型钢 80吨</h5>
+                        <p class="text-xs text-slate-500 mt-1">实付: ¥285,000</p>
+                    </div>
+                    <div class="bg-blue-50 p-2 rounded text-xs text-blue-800 font-mono mb-3">
+                        <i class="fas fa-truck mr-1"></i> 顺丰: SF18822993311
+                    </div>
+                    <button class="w-full border-2 border-slate-300 text-slate-600 font-bold text-sm py-2 rounded-xl">确认收货</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Tab Bar -->
+        <div class="absolute bottom-0 w-full bg-white/90 backdrop-blur border-t border-slate-200 flex justify-around py-2 pb-8 sm:pb-4 z-20">
+            <button onclick="switchTab('page-mall', this)" class="tab-btn flex flex-col items-center text-red-600 w-1/4">
+                <i class="fas fa-store text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">现货</span>
+            </button>
+            <button onclick="switchTab('page-procure', this)" class="tab-btn flex flex-col items-center text-slate-400 w-1/4">
+                <i class="fas fa-bullhorn text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">大厅</span>
+            </button>
+            <button onclick="switchTab('page-orders', this)" class="tab-btn flex flex-col items-center text-slate-400 w-1/4">
+                <i class="fas fa-file-invoice-dollar text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">账单</span>
+            </button>
+            <button class="tab-btn flex flex-col items-center text-slate-400 w-1/4">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">我的</span>
+            </button>
+        </div>
+
+        <!-- Mobile Product Modal Overlay -->
+        <div id="mobile-product-modal" class="absolute inset-0 bg-white z-30 hidden flex-col transform transition-transform">
+            <div class="relative h-64 bg-slate-100">
+                <button onclick="hideProductModal()" class="absolute top-10 left-4 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
+                <img src="https://placehold.co/600x600/e2e8f0/64748b?text=Item" class="w-full h-full object-cover">
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto">
+                <div class="flex items-end text-red-600 mb-2">
+                    <span class="text-sm font-bold">¥</span>
+                    <span class="text-3xl font-black">3,850</span>
+                    <span class="text-xs text-slate-500 ml-1">/吨</span>
+                </div>
+                <h2 class="text-lg font-black text-slate-800 leading-tight mb-2">沙钢 HRB400E 抗震螺纹钢 12mm</h2>
+                <div class="flex gap-2 mb-4">
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-1 rounded">无锡仓发货</span>
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-1 rounded">库存 500吨</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4">国标正品，带质保书，理计交割。现货直发，运费买家自理。</p>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-white flex gap-3 pb-8 sm:pb-4">
+                <button class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center"><i class="fas fa-comment-dots"></i></button>
+                <button class="flex-1 bg-red-600 text-white font-black text-lg rounded-xl shadow-lg" onclick="hideProductModal(); alert('已加入移动端采购车')">立即购买</button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>享宇森云 - 商家管理后台</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- 侧边栏 (Sidebar) -->
+  <aside class="sidebar">
+    <div class="logo">商家管理端后台</div>
+    <div class="menu-list">
+      <div class="menu-item has-submenu active">
+        <div class="menu-title" onclick="toggleSubmenu(this)">基础设置 <span class="arrow">▼</span></div>
+        <div class="sub-menu">
+          <div class="sub-menu-item active" data-page="page-shop">店铺装修</div>
+        </div>
+      </div>
+      <div class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">商品管理 <span class="arrow">▼</span></div>
+        <div class="sub-menu" style="display:none;">
+          <div class="sub-menu-item" data-page="page-products">商品上架管理</div>
+        </div>
+      </div>
+      <div class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">交易管理 <span class="arrow">▼</span></div>
+        <div class="sub-menu" style="display:none;">
+          <div class="sub-menu-item" data-page="page-orders">订单履约中心</div>
+        </div>
+      </div>
+      <div class="menu-item has-submenu">
+        <div class="menu-title" onclick="toggleSubmenu(this)">竞价业务 <span class="arrow">▼</span></div>
+        <div class="sub-menu" style="display:none;">
+          <div class="sub-menu-item" data-page="page-bidding-res">竞价资源管理</div>
+          <div class="sub-menu-item" data-page="page-bidding-ann">竞价公告发布</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主体内容区 -->
+  <main class="main-content">
+    <header class="top-header">
+      <div id="top-header-title" class="text-lg font-bold">商家工作台</div>
+      <div class="flex items-center gap-4">
+        <span class="tag tag-success">企业认证通过</span>
+        <span class="text-secondary text-sm">当前身份: 远大钢铁官方直营店</span>
+      </div>
+    </header>
+
+    <div class="page-container">
+      
+      <!-- ================== 1. 店铺管理 ================== -->
+      <div id="page-shop" class="page-view active">
+        <div class="card mb-4" style="max-width: 800px; padding: 24px;">
+          <div class="card-header" style="margin-bottom: 24px; border-bottom: 1px solid #eee; padding-bottom: 12px;">
+            <div class="card-title text-xl font-bold">基本信息与装潢</div>
+          </div>
+          <div class="card-body">
+            <div class="mb-4 form-group">
+              <label class="font-bold mb-2 block">商户号 (固定唯一标识)</label>
+              <input type="text" id="shop-id-display" class="form-control" style="width: 100%; max-width: 400px; padding: 8px; background: #f5f5f5; color: #888;" disabled readonly>
+            </div>
+            
+            <div class="mb-6 form-group">
+              <label class="font-bold mb-2 block">商户名 (店铺对外展示名称)</label>
+              <input type="text" id="shop-name-input" class="form-control" style="width: 100%; max-width: 400px; padding: 8px;">
+            </div>
+            
+            <div class="mb-6 form-group">
+              <label class="font-bold mb-2 block">商户头像 (Logo)</label>
+              <div class="flex items-center gap-4">
+                <img id="shop-avatar-preview" src="" width="100" height="100" style="border-radius: 8px; border: 1px solid #ddd; object-fit: cover;">
+                <button class="btn btn-primary" onclick="UI.toast('模拟上传成功', 'success')">上传新头像</button>
+                <div class="text-sm text-secondary">推荐尺寸: 200x200px</div>
+              </div>
+            </div>
+            
+            <div class="mb-8 form-group">
+              <label class="font-bold mb-2 block">横幅 Banner 变更</label>
+              <div class="mb-3">
+                <img id="shop-banner-preview" src="" width="100%" height="160" style="max-width: 600px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover;">
+              </div>
+              <div class="flex items-center gap-4">
+                <button class="btn btn-primary" onclick="UI.toast('模拟上传成功', 'success')">上传新横幅</button>
+                <div class="text-sm text-secondary">推荐尺寸: 1200x300px</div>
+              </div>
+            </div>
+            
+            <div style="border-top: 1px solid #eee; padding-top: 24px;">
+              <button class="btn btn-primary" style="padding: 10px 30px;" onclick="MerchantApp.saveShopInfo()">保存装潢</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================== 2. 商品中心 ================== -->
+      <div id="page-products" class="page-view" style="display: none;">
+        <div class="tabs">
+          <div class="tab-item active" data-target="tab-prod-all">商品列表 (全部)</div>
+          <div class="tab-item" data-target="tab-prod-listed">上架列表 (售卖中)</div>
+        </div>
+
+        <!-- 全部商品 -->
+        <div id="tab-prod-all" class="view-panel active">
+           <div class="card-body table-wrapper" style="background:#fff;">
+             <div class="mb-4 flex gap-4">
+               <button class="btn btn-primary">发布新商品</button>
+               <input type="text" class="form-control" placeholder="搜索我的商品" style="width: 250px;">
+             </div>
+             <table class="table" id="table-all-products">
+              <thead><tr><th>主图</th><th>商品名称</th><th>分类</th><th>单价</th><th>当前库存</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody><!-- JS 渲染 --></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 已上架商品 -->
+        <div id="tab-prod-listed" class="view-panel">
+           <div class="card-body table-wrapper" style="background:#fff;">
+             <table class="table" id="table-listed-products">
+              <thead><tr><th>主图</th><th>商品名称</th><th>分类</th><th>单价</th><th>累计销量</th><th>展示状态</th><th>操作</th></tr></thead>
+              <tbody><!-- JS 渲染 --></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================== 3. 订单管理 ================== -->
+      <div id="page-orders" class="page-view" style="display: none;">
+        <div class="tabs"><div class="tab-item active">全渠道订单台账</div></div>
+        <div class="card-body table-wrapper" style="background:#fff;">
+          <div class="flex gap-4 mb-4">
+            <input type="text" class="form-control" placeholder="输入买家名称或订单号" style="width: 250px;">
+            <select class="form-control" style="width: 150px;"><option>全部状态</option><option>待发货</option></select>
+            <button class="btn btn-primary">搜索</button>
+          </div>
+          <table class="table" id="table-orders">
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>商品信息</th>
+                <th>买家名称</th>
+                <th>订单金额</th>
+                <th>订单来源</th>
+                <th>履约状态</th>
+                <th>操作菜单</th>
+              </tr>
+            </thead>
+            <tbody><!-- JS 渲染 --></tbody>
+          </table>
+          <div class="pagination-container"></div>
+        </div>
+      </div>
+      <!-- ================== 4. 竞价资源管理 ================== -->
+      <div id="page-bidding-res" class="page-view" style="display:none;">
+        <div class="flex justify-between mb-4">
+          <h2 class="text-xl font-bold">我发布的竞价资源</h2>
+          <button class="btn btn-primary" onclick="UI.showModal('modal-add-res')">新增竞价资源</button>
+        </div>
+        <div class="card-body table-wrapper" style="background:#fff;">
+          <table class="table" id="table-merchant-res">
+            <thead><tr><th>资源图</th><th>资源编号</th><th>资源名称</th><th>数量/规格</th><th>平台审核状态</th><th>操作</th></tr></thead>
+            <tbody><!-- JS渲染 --></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================== 5. 竞价公告发布 ================== -->
+      <div id="page-bidding-ann" class="page-view" style="display:none;">
+        <div class="flex justify-between mb-4">
+          <h2 class="text-xl font-bold">竞价公告管理</h2>
+          <button class="btn btn-primary" onclick="UI.showModal('modal-add-ann')">关联资源发布公告</button>
+        </div>
+        <div class="card-body table-wrapper" style="background:#fff;">
+          <table class="table" id="table-merchant-ann">
+            <thead><tr><th>公告编号</th><th>公告标题</th><th>关联资源</th><th>起拍底价</th><th>竞价倒计时</th><th>当前状态</th><th>操作</th></tr></thead>
+            <tbody><!-- JS渲染 --></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- 新增：发布竞价资源弹窗 -->
+<div class="modal-overlay" id="modal-add-res">
+  <div class="modal" style="width: 500px;">
+    <div class="modal-header">
+      <div class="modal-title">新增竞价物资资源</div>
+      <button class="modal-close" data-close-modal="modal-add-res">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">资源名称</label>
+        <input type="text" class="form-control" placeholder="如：报废钢材一批" style="width:100%">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">规格描述与数量</label>
+        <input type="text" class="form-control" placeholder="如：约500吨" style="width:100%">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">物资照片 (最多5张)</label>
+        <div style="border:2px dashed #ddd; padding:20px; text-align:center; color:#999; cursor:pointer;">
+          + 点击上传物资实拍图片
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="UI.closeModal('modal-add-res'); UI.toast('资源已提交，请等待平台审核', 'success')">提交审核</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增：发布竞价公告弹窗 -->
+<div class="modal-overlay" id="modal-add-ann">
+  <div class="modal" style="width: 500px;">
+    <div class="modal-header">
+      <div class="modal-title">关联资源发布竞价公告</div>
+      <button class="modal-close" data-close-modal="modal-add-ann">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">选择已审核通过的资源</label>
+        <select class="form-control" style="width:100%">
+          <option>RES001 - 报废钢材处理竞标一批</option>
+          <option>RES003 - 南美白橡木 20个柜原木</option>
+        </select>
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">起拍底价 (元)</label>
+        <input type="number" class="form-control" placeholder="设置最低起拍价" style="width:100%">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold">竞拍截止时间</label>
+        <input type="datetime-local" class="form-control" style="width:100%">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="UI.closeModal('modal-add-ann'); UI.toast('公告发布成功，已开始倒计时', 'success')">发布公告</button>
+    </div>
+  </div>
+</div>
+
+<!-- 发货弹窗 -->
+<div class="modal-overlay" id="modal-ship">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">订单发货 (录入物流单)</div>
+      <button class="modal-close" data-close-modal="modal-ship">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-4 text-secondary">正在为订单 <span id="ship-order-id" class="font-bold text-main"></span> 发货</div>
+      <div class="form-group">
+        <label class="form-label">第三方物流公司</label>
+        <select class="form-control"><option>顺丰速运</option><option>安能物流</option><option>德邦物流</option><option>专线自建</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">纯文本物流单号 (必填)</label>
+        <input type="text" class="form-control" placeholder="请输入运单号">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-text" data-close-modal="modal-ship">取消</button>
+      <button class="btn btn-primary" onclick="MerchantApp.submitShip()">确认发货</button>
+    </div>
+  </div>
+</div>
+
+<!-- 收标/定标详情弹窗 -->
+<div class="modal-overlay" id="modal-bid-award">
+  <div class="modal" style="width: 700px;">
+    <div class="modal-header">
+      <div class="modal-title">竞价实况与定标</div>
+      <button class="modal-close" data-close-modal="modal-bid-award">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-4 text-secondary">
+        当前公告: <span id="award-bid-title" class="font-bold text-main"></span>
+      </div>
+      <table class="table" id="table-bid-offers">
+        <thead>
+          <tr>
+            <th>买家名称</th>
+            <th>出价时间</th>
+            <th>出价金额</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody><!-- JS渲染 --></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="./assets/js/mock-data.js"></script>
+<script src="./assets/js/components.js"></script>
+<script src="./assets/js/merchant.js"></script>
+
+</body>
+</html>

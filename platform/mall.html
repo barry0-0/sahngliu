@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>享宇森云 - 大宗现货商城 (PC端)</title>
+  <link rel="stylesheet" href="./assets/css/global.css">
+  <link rel="stylesheet" href="./assets/css/mall.css">
+</head>
+<body>
+
+  <!-- 商城顶部导航 -->
+  <header class="mall-header">
+    <div class="mall-container flex justify-between items-center" style="height: 100%;">
+      <div class="flex items-center gap-8 h-full">
+        <div class="text-2xl font-bold text-primary flex items-center gap-2 cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-home\']').click()">
+          <svg class="icon-svg" style="width:28px;height:28px;" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          享宇森云
+        </div>
+        <nav class="mall-nav">
+          <div class="mall-nav-item active" data-target="mall-home">首页</div>
+          <div class="mall-nav-item" data-target="mall-spot">现货市场</div>
+          <div class="mall-nav-item" data-target="mall-demand">求购大厅 (寻源)</div>
+          <div class="mall-nav-item" data-target="mall-bid">竞价大厅</div>
+        </nav>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="mall-search flex" style="align-items: stretch; border: 2px solid var(--primary-color); border-radius: 4px; overflow: hidden; height: 38px;">
+          <select id="search-type" style="border: none; background: #f8f9fa; padding: 0 10px; outline: none; border-right: 1px solid #e0e0e0;">
+            <option value="product">搜商品</option>
+            <option value="merchant">搜商户</option>
+          </select>
+          <input type="text" id="search-keyword" placeholder="搜索关键词..." style="border: none; outline: none; padding: 0 15px; width: 220px;">
+          <button class="btn btn-primary" style="border-radius: 0; border: none; height: 100%;" onclick="window.MallApp && window.MallApp.doSearch()">搜索</button>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="btn btn-text flex items-center gap-2" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click()">
+            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            购物车 <span class="tag tag-danger" style="border-radius:10px; padding:2px 6px;">0</span>
+          </button>
+          <button class="btn btn-text flex items-center gap-2" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-ucenter\']').click()">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            个人中心
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="mall-nav-item" style="display:none;" data-target="mall-cart"></div>
+  <div class="mall-nav-item" style="display:none;" data-target="mall-ucenter"></div>
+  <div class="mall-nav-item" style="display:none;" data-target="mall-shop"></div>
+
+  <main class="mall-main">
+    
+    <!-- ================== 1. 首页 ================== -->
+    <div id="mall-home" class="mall-view active">
+      <div class="mall-container">
+        
+        <div class="home-hero-section">
+          <!-- 左侧类目菜单 -->
+          <div class="home-category-menu" id="home-category-menu">
+            <div class="text-sm font-bold text-secondary px-5 mb-2">大宗农贸主分类</div>
+            <!-- JS 渲染 -->
+          </div>
+          <!-- 右侧 Banner -->
+          <div class="home-banner">享 宇 森 云 · 数 字 供 应 链</div>
+        </div>
+
+        <div class="flex justify-between items-end mb-6 mt-8">
+          <h2 class="text-2xl font-bold flex items-center gap-2"><svg class="icon-svg text-primary" viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l5.5 18H21M18.5 12h-5"/></svg> 精选现货推荐</h2>
+          <a class="text-secondary hover:text-primary cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-spot\']').click()">查看更多现货 ></a>
+        </div>
+        <div class="mall-grid mb-10" id="grid-home-products">
+          <!-- JS 渲染 -->
+        </div>
+
+        <div class="flex gap-6 mb-10">
+          <!-- 首页: 热门求购 -->
+          <div class="flex-1">
+            <div class="flex justify-between items-end mb-4">
+              <h2 class="text-xl font-bold flex items-center gap-2"><svg class="icon-svg text-danger" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 最新大宗求购</h2>
+              <a class="text-secondary hover:text-primary cursor-pointer text-sm" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-demand\']').click()">更多求购 ></a>
+            </div>
+            <div class="card-body bg-white rounded-lg shadow-sm border-0" id="list-home-demands">
+              <!-- JS 渲染 -->
+            </div>
+          </div>
+          <!-- 首页: 热门竞价 -->
+          <div class="flex-1">
+            <div class="flex justify-between items-end mb-4">
+              <h2 class="text-xl font-bold flex items-center gap-2"><svg class="icon-svg text-warning" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 热门物资竞价</h2>
+              <a class="text-secondary hover:text-primary cursor-pointer text-sm" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-bid\']').click()">进入竞价大厅 ></a>
+            </div>
+            <div class="card-body bg-white rounded-lg shadow-sm border-0" id="list-home-bids">
+              <!-- JS 渲染 -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================== 2. 现货市场 ================== -->
+    <div id="mall-spot" class="mall-view">
+      <div class="mall-container">
+        <div class="card mb-6 shadow-sm border-0">
+          <div class="card-body">
+            <div class="flex gap-4 items-center mb-4 pb-4 border-b border-light">
+              <span class="font-bold text-secondary w-20">综合筛选:</span>
+              <span class="tag tag-primary cursor-pointer">全部商品</span>
+              <span class="text-secondary cursor-pointer hover:text-primary">钢材</span>
+              <span class="text-secondary cursor-pointer hover:text-primary">木材</span>
+              <span class="text-secondary cursor-pointer hover:text-primary">水泥</span>
+              <span class="text-secondary cursor-pointer hover:text-primary">五金辅材</span>
+            </div>
+            <div class="flex gap-4 items-center">
+              <span class="font-bold text-secondary w-20">价格排序:</span>
+              <span class="text-secondary cursor-pointer hover:text-primary">默认</span>
+              <span class="text-secondary cursor-pointer hover:text-primary flex items-center">价格 <svg class="icon-svg" style="width:14px" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+              <span class="text-secondary cursor-pointer hover:text-primary flex items-center">销量 <svg class="icon-svg" style="width:14px" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </div>
+          </div>
+        </div>
+        <div class="mall-grid" id="grid-spot-products">
+          <!-- JS 渲染 -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <button class="btn btn-text" disabled>&lt; 上一页</button>
+          <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
+          <button class="btn btn-text" style="padding: 4px 12px;">2</button>
+          <button class="btn btn-text" style="padding: 4px 12px;">3</button>
+          <span class="text-secondary px-2">...</span>
+          <button class="btn btn-text" style="padding: 4px 12px;">10</button>
+          <button class="btn btn-text">下一页 &gt;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================== 3. 求购大厅 ================== -->
+    <div id="mall-demand" class="mall-view">
+      <div class="mall-container">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-2xl font-bold mb-2">供需寻源大厅</h2>
+            <div class="text-secondary">发布大宗采购需求，获取海量商家极速报价</div>
+          </div>
+          <button class="btn btn-primary h-[40px] px-6" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.toast('进入发布求购页面', 'success'))">
+            <svg class="icon-svg mr-2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 免费发布求购意向
+          </button>
+        </div>
+        
+        <!-- Filter Area -->
+        <div class="card mb-6 shadow-sm border-0">
+          <div class="card-body flex gap-4 items-center flex-wrap">
+            <span class="font-bold text-secondary">筛查条件:</span>
+            <input type="text" id="demand-search-keyword" class="form-control" placeholder="按采购方或标题搜索..." style="width: 250px;">
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-secondary">发布时间:</span>
+              <input type="date" id="demand-search-date-start" class="form-control" style="width: 140px;">
+              <span>-</span>
+              <input type="date" id="demand-search-date-end" class="form-control" style="width: 140px;">
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-secondary">交期要求:</span>
+              <input type="date" id="demand-search-delivery-start" class="form-control" style="width: 140px;">
+              <span>-</span>
+              <input type="date" id="demand-search-delivery-end" class="form-control" style="width: 140px;">
+            </div>
+            <button class="btn btn-primary" onclick="MallApp.doDemandSearch()">应用筛查</button>
+          </div>
+        </div>
+        
+        <div class="mall-grid" id="grid-mall-demands" style="grid-template-columns: repeat(3, 1fr);">
+          <!-- JS 渲染卡片 -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <button class="btn btn-text" disabled>&lt; 上一页</button>
+          <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
+          <button class="btn btn-text" style="padding: 4px 12px;">2</button>
+          <button class="btn btn-text">下一页 &gt;</button>
+        </div>
+      </div>
+    </div>
+    <!-- ================== 4. 竞价大厅 ================== -->
+    <div id="mall-bid" class="mall-view">
+      <div class="mall-container">
+        <div class="mb-6 flex justify-between items-end">
+          <div>
+            <h2 class="text-2xl font-bold mb-2">大宗物资竞价中心</h2>
+            <div class="text-secondary">公开、透明、高效的物资处置与大宗集中采购</div>
+          </div>
+          <div class="flex gap-4">
+            <input type="text" class="form-control" placeholder="搜索竞价公告标题" style="width: 250px;">
+            <select class="form-control" style="width: 150px;"><option>全部状态</option><option>竞价中</option><option>未开始</option><option>已结束</option></select>
+            <button class="btn btn-primary">搜索</button>
+          </div>
+        </div>
+        <div class="mall-grid" id="grid-mall-bids" style="grid-template-columns: repeat(2, 1fr);">
+          <!-- JS 渲染 -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <button class="btn btn-text" disabled>&lt; 上一页</button>
+          <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
+          <button class="btn btn-text" style="padding: 4px 12px;">2</button>
+          <button class="btn btn-text">下一页 &gt;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================== 5. 购物车 ================== -->
+    <div id="mall-cart" class="mall-view">
+      <div class="mall-container">
+        <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+          <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> 我的购物车
+          </h2>
+          <table class="table">
+            <thead style="background:#f8f9fa;"><tr><th>商品名称</th><th>单价</th><th>数量</th><th>小计</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td colspan="5" class="text-center py-12">
+                <div class="text-secondary mb-4">购物车空空如也，快去挑点好货吧！</div>
+                <button class="btn btn-primary" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-spot\']').click()">去逛逛</button>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================== 5.5 店铺主页 (商户主页) ================== -->
+    <div id="mall-shop" class="mall-view">
+      <div class="mall-container">
+        <!-- 店铺头部信息 -->
+        <div class="card mb-6 shadow-sm border-0 bg-white" style="border-radius: 8px; overflow: hidden;">
+          <div id="shop-banner-display" style="height: 120px; background-color: #f0f2f5; background-size: cover; background-position: center;"></div>
+          <div class="card-body flex gap-6 items-center" style="position: relative; margin-top: -40px;">
+            <div id="shop-avatar-display" class="w-24 h-24 bg-white rounded flex items-center justify-center text-primary font-bold text-2xl shadow-sm border-4 border-white" style="z-index: 1;">
+              店
+            </div>
+            <div class="flex-1 mt-6">
+              <div class="flex items-center gap-3 mb-2">
+                <h2 class="text-2xl font-bold m-0" id="shop-name-display">商户名称</h2>
+                <span class="tag tag-success">企业认证</span>
+                <span class="bg-gray-100 px-2 py-1 rounded text-sm text-gray-500 font-mono" id="shop-id-display">No.10001</span>
+              </div>
+              <div class="text-secondary text-sm" id="shop-biz-display">主营业务：钢材、木材、建筑材料</div>
+              <div class="text-secondary text-sm mt-1" id="shop-reg-display">入驻时间：2026-01-01</div>
+            </div>
+            <div class="mt-6">
+              <button class="btn btn-primary" id="shop-follow-btn" onclick="MallApp.toggleFollowShop()">关注店铺</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 店内搜索与筛选 -->
+        <div class="card mb-6 shadow-sm border-0">
+          <div class="card-body flex justify-between items-center">
+            <div class="flex gap-4 items-center">
+              <span class="font-bold text-secondary">店内分类:</span>
+              <div class="flex gap-2">
+                <span class="tag tag-primary cursor-pointer">全部商品</span>
+                <span class="tag tag-secondary cursor-pointer">钢材专区</span>
+                <span class="tag tag-secondary cursor-pointer">木材专区</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="shop-search-keyword" class="form-control" placeholder="在店内搜索商品..." style="width: 250px;">
+              <button class="btn btn-primary" onclick="UI.toast('执行店内搜索', 'info')">搜本店</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 店铺商品列表 -->
+        <div class="mall-grid" id="grid-shop-products" style="grid-template-columns: repeat(4, 1fr);">
+          <!-- JS 渲染 -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================== 6. 个人中心 ================== -->
+    <div id="mall-ucenter" class="mall-view">
+      <div class="mall-container flex gap-6">
+        
+        <!-- 左侧菜单 -->
+        <aside class="uc-sidebar">
+          <div class="uc-user-info">
+            <div class="uc-avatar">万</div>
+            <div class="font-bold text-lg">万通建材采购部</div>
+            <div class="tag tag-primary mt-2" style="background:#e6f4ff; color:#1677ff; border:1px solid #91caff;">企业买家已认证</div>
+          </div>
+          <div id="uc-menu">
+            <div class="text-sm font-bold text-secondary px-6 mb-2 mt-4">交易管理</div>
+            <div class="uc-menu-item active" data-target="uc-orders"><svg class="icon-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 我的订单</div>
+            <div class="uc-menu-item" data-target="uc-invoices"><svg class="icon-svg"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> 发票申请</div>
+            
+            <div class="text-sm font-bold text-secondary px-6 mb-2 mt-6">业务中心</div>
+            <div class="uc-menu-item" data-target="uc-demands-pub"><svg class="icon-svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 我发表的求购单</div>
+            <div class="uc-menu-item" data-target="uc-demands-join"><svg class="icon-svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 我参与的求购单</div>
+            <div class="uc-menu-item" data-target="uc-messages"><svg class="icon-svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 消息中心</div>
+            
+            <div class="text-sm font-bold text-secondary px-6 mb-2 mt-6">账户与认证</div>
+            <div class="uc-menu-item" data-target="uc-auth"><svg class="icon-svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 资质与认证</div>
+          </div>
+        </aside>
+
+        <!-- 右侧内容 -->
+        <div class="uc-content">
+          <!-- 新增：资质与认证 -->
+          <div id="uc-auth" class="uc-view">
+            <h2 class="text-xl font-bold mb-6">资质与认证</h2>
+            <div class="flex gap-6">
+              <!-- 个人认证卡片 -->
+              <div class="card flex-1 shadow-sm border-0 border-t-4" style="border-color: #52c41a; border-radius: 8px;">
+                <div class="card-body">
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="flex gap-3 items-center">
+                      <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center">
+                        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      </div>
+                      <div>
+                        <h3 class="font-bold text-lg">个人实名认证</h3>
+                        <div class="text-sm text-secondary">认证后可发布求购信息</div>
+                      </div>
+                    </div>
+                    <span class="tag tag-success" id="status-personal-auth">已认证</span>
+                  </div>
+                  <div class="text-sm text-secondary mb-6 border-t border-light pt-4">
+                    您的个人身份信息已通过系统审核，相关数据受隐私协议保护。
+                  </div>
+                  <button class="btn btn-outline" style="width:100%" disabled>认证已完成，不可更改</button>
+                </div>
+              </div>
+
+              <!-- 企业商家认证卡片 -->
+              <div class="card flex-1 shadow-sm border-0 border-t-4" style="border-color: #faad14; border-radius: 8px;">
+                <div class="card-body">
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="flex gap-3 items-center">
+                      <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center">
+                        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                      </div>
+                      <div>
+                        <h3 class="font-bold text-lg">企业商家认证</h3>
+                        <div class="text-sm text-secondary">认证后可发布商品并参与报价/竞价</div>
+                      </div>
+                    </div>
+                    <span class="tag tag-danger" id="status-merchant-auth">认证失败</span>
+                  </div>
+                  <div class="text-sm text-secondary mb-6 border-t border-light pt-4 text-danger">
+                    失败原因：营业执照不清晰，请重新上传。
+                  </div>
+                  <button class="btn btn-primary" style="width:100%" onclick="UI.toast('模拟重新提交企业认证资料', 'info')">重新认证</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. 订单管理 -->
+          <div id="uc-orders" class="uc-view active">
+            <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <h3 class="text-xl font-bold mb-6">我的订单台账</h3>
+              <table class="table" id="table-uc-orders">
+                <thead style="background:#f8f9fa;"><tr><th>订单编号</th><th>商品</th><th>卖家</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody><!-- JS 渲染 --></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. 发票申请 -->
+          <div id="uc-invoices" class="uc-view">
+            <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">增值税发票中心</h3>
+                <button class="btn btn-primary" onclick="UI.toast('已提交开票申请', 'success')">发起新发票申请</button>
+              </div>
+              <table class="table" id="table-uc-invoices">
+                <thead style="background:#f8f9fa;"><tr><th>发票流水号</th><th>类型</th><th>申请金额</th><th>申请时间</th><th>状态</th></tr></thead>
+                <tbody><!-- JS 渲染 --></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 3. 我发表的求购单 -->
+          <div id="uc-demands-pub" class="uc-view">
+            <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">我发表的求购意向 (寻源记录)</h3>
+                <button class="btn btn-primary" onclick="UI.toast('模拟发布需求表单弹窗', 'info')">新增求购意向</button>
+              </div>
+              <table class="table" id="table-uc-demands-pub">
+                <thead style="background:#f8f9fa;"><tr><th>求购单号</th><th>意向标题</th><th>发布时间</th><th>收到的报价数</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody><!-- JS 渲染 --></tbody>
+              </table>
+              
+              <div class="flex justify-center items-center gap-2 mt-6">
+                <button class="btn btn-text" disabled>&lt; 上一页</button>
+                <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
+                <button class="btn btn-text">下一页 &gt;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 我参与的求购单 -->
+          <div id="uc-demands-join" class="uc-view">
+            <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <h3 class="text-xl font-bold mb-6">我参与的求购单 (我的报价记录)</h3>
+              <table class="table" id="table-uc-demands-join">
+                <thead style="background:#f8f9fa;"><tr><th>求购单号</th><th>意向标题</th><th>买家</th><th>我的报价</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td colspan="6" class="text-center text-secondary py-8">暂无参与记录，快去求购大厅寻找商机吧</td></tr>
+                </tbody>
+              </table>
+              <div class="flex justify-center items-center gap-2 mt-6">
+                <button class="btn btn-text" disabled>&lt; 上一页</button>
+                <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
+                <button class="btn btn-text">下一页 &gt;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. 消息中心 -->
+          <div id="uc-messages" class="uc-view">
+             <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <h3 class="text-xl font-bold mb-6">系统消息通知</h3>
+              <table class="table" id="table-uc-messages">
+                <thead style="background:#f8f9fa;"><tr><th>时间</th><th>标题</th><th>内容</th></tr></thead>
+                <tbody><!-- JS 渲染 --></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 6. 升级为商家 -->
+          <div id="uc-upgrade" class="uc-view">
+            <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px; max-width:600px;">
+              <h3 class="text-xl font-bold mb-2 text-warning">申请成为平台入驻商家</h3>
+              <div class="text-secondary mb-6 pb-6 border-b border-light">提交企业资质，通过审核后即可在平台上架商品销售。</div>
+              <div class="form-group mb-4">
+                <label class="font-bold mb-2 block">企业名称主体</label>
+                <input type="text" class="form-control" placeholder="请输入营业执照上的完整名称" style="width:100%">
+              </div>
+              <div class="form-group mb-6">
+                <label class="font-bold mb-2 block">统一社会信用代码</label>
+                <input type="text" class="form-control" placeholder="18位信用代码" style="width:100%">
+              </div>
+              <button class="btn btn-warning w-full btn-lg" onclick="UI.toast('资质材料已提交，请等待平台运营审核', 'success')">提交企业认证资料</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 简易的 Footer -->
+  <footer style="background: #2b303b; color: #8890a4; padding: 40px 0; text-align: center; font-size: 14px;">
+    <div class="mall-container">
+      <div class="flex justify-center gap-8 mb-4">
+        <span class="cursor-pointer hover:text-white">关于平台</span>
+        <span class="cursor-pointer hover:text-white">联系客服</span>
+        <span class="cursor-pointer hover:text-white">入驻指南</span>
+        <span class="cursor-pointer hover:text-white">隐私政策</span>
+      </div>
+      <div>&copy; 2026 享宇森云 S2B2C 供应链交易平台 All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <!-- 竞价详情弹窗 (包含6步流程) -->
+  <div class="modal-overlay" id="modal-bidding-detail">
+    <div class="modal" style="width: 800px;">
+      <div class="modal-header">
+        <div class="modal-title">竞价项目详情</div>
+        <button class="modal-close" data-close-modal="modal-bidding-detail">&times;</button>
+      </div>
+      <div class="modal-body" id="bidding-detail-body">
+        <!-- JS 动态渲染 -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-close-modal="modal-bidding-detail">关闭</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 悬浮商品详情/购买弹窗 (PC) -->
+<div class="modal-overlay" id="modal-product-detail" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.6); position: fixed; inset: 0; z-index: 1000;">
+  <div class="modal-content" style="width: 500px; padding: 24px; background: var(--surface-color); border-radius: 4px; box-shadow: 0 10px 30px rgba(38,74,54,0.15);">
+    <div class="flex justify-between items-start mb-4 border-b border-light pb-4">
+      <h3 class="font-bold text-xl" id="pd-title">商品详情</h3>
+      <button class="btn btn-text text-secondary" onclick="UI.closeModal('modal-product-detail')">✕</button>
+    </div>
+    <div class="flex gap-4 mb-6">
+      <img id="pd-img" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; background:#f0f2f5;">
+      <div class="flex-1 flex flex-col justify-between">
+        <div>
+          <div class="text-danger font-bold text-2xl mb-1" id="pd-price">¥0.00</div>
+          <div class="text-sm text-secondary mb-2" id="pd-shop">商户: --</div>
+          <div class="text-sm text-secondary">库存: 充足</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex items-center justify-between mb-8 bg-gray-50 p-4 rounded">
+      <span class="font-bold">购买数量:</span>
+      <div class="flex items-center border border-light rounded overflow-hidden bg-white">
+        <button class="bg-gray-100 px-4 py-2 hover:bg-gray-200 text-lg border-r border-light" onclick="document.getElementById('pd-qty').value = Math.max(1, parseInt(document.getElementById('pd-qty').value || 1) - 1)">-</button>
+        <input type="number" id="pd-qty" value="1" min="1" class="w-20 text-center py-2 outline-none border-none">
+        <button class="bg-gray-100 px-4 py-2 hover:bg-gray-200 text-lg border-l border-light" onclick="document.getElementById('pd-qty').value = parseInt(document.getElementById('pd-qty').value || 1) + 1">+</button>
+      </div>
+    </div>
+    
+    <div class="flex gap-4">
+      <button class="btn btn-outline flex-1 py-3 text-lg" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail');">加入购物车</button>
+      <button class="btn btn-primary flex-1 py-3 text-lg" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click();">立即购买</button>
+    </div>
+  </div>
+</div>
+
+<!-- 聊天沟通弹窗 (PC) -->
+<div class="modal-overlay" id="modal-chat" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.6); position: fixed; inset: 0; z-index: 1100;">
+  <div class="modal-content flex flex-col" style="width: 600px; height: 500px; background: var(--surface-color); border-radius: 4px; box-shadow: 0 10px 30px rgba(38,74,54,0.15); overflow: hidden;">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center p-4 border-b border-light" style="background: var(--surface-alt);">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded bg-primary text-white flex items-center justify-center font-bold">服</div>
+        <div>
+          <div class="font-bold text-main" id="chat-shop-name">商家客服</div>
+          <div class="text-xs text-secondary">在线</div>
+        </div>
+      </div>
+      <button class="btn btn-text text-secondary" onclick="UI.closeModal('modal-chat')">✕</button>
+    </div>
+
+    <!-- 涉及商品区域 -->
+    <div class="p-3 flex items-center gap-3 border-b border-light" style="background: var(--surface-color);">
+      <img id="chat-prod-img" src="" style="width: 48px; height: 48px; object-fit: cover; border-radius: 2px;">
+      <div class="flex-1 overflow-hidden">
+        <div class="text-sm font-bold truncate text-main" id="chat-prod-title">--</div>
+        <div class="text-xs text-danger" id="chat-prod-price">--</div>
+      </div>
+      <button class="btn btn-outline text-xs px-2 py-1" onclick="alert('已发送商品卡片')">发送给客服</button>
+    </div>
+
+    <!-- 聊天记录区 -->
+    <div class="flex-1 p-4 overflow-y-auto" style="background: #F7F6F2; display: flex; flex-direction: column; gap: 16px;">
+      <div class="text-center text-xs text-secondary my-2">今天 10:24</div>
+      <div class="flex gap-3">
+        <div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center text-xs">服</div>
+        <div class="bg-white p-3 rounded shadow-sm text-sm" style="max-width: 70%; border-radius: 0 8px 8px 8px;">
+          您好！请问有什么可以帮您的？该商品目前库存充足。
+        </div>
+      </div>
+    </div>
+
+    <!-- 输入区 -->
+    <div class="p-4 border-t border-light flex gap-2 bg-white">
+      <input type="text" id="chat-input" class="form-control flex-1" placeholder="输入您想沟通的内容...">
+      <button class="btn btn-primary px-6" onclick="document.getElementById('chat-input').value=''; alert('发送成功');">发送</button>
+    </div>
+  </div>
+</div>
+
+<script src="./assets/js/mock-data.js"></script>
+<script src="./assets/js/components.js"></script>
+<script src="./assets/js/mall.js"></script>
+
+</body>
+</html>

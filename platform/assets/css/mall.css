@@ -1,0 +1,335 @@
+/* 
+ * 商城 PC 端专属样式表 (Mall CSS V2)
+ */
+
+body {
+  background-color: #f5f7fa;
+}
+
+/* --- 顶部导航区域 --- */
+.mall-header {
+  height: 70px;
+  background-color: var(--glass-bg, rgba(255,255,255,0.75));
+  backdrop-filter: var(--glass-blur, blur(16px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(16px));
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.mall-container {
+  width: 1200px;
+  margin: 0 auto;
+}
+.mall-nav {
+  display: flex;
+  gap: 32px;
+  height: 100%;
+}
+.mall-nav-item {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 15px;
+  color: var(--text-main);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.mall-nav-item:hover, .mall-nav-item.active {
+  color: var(--primary-color);
+}
+.mall-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+.mall-search {
+  display: flex;
+  width: 360px;
+  height: 40px;
+}
+.mall-search input {
+  flex: 1;
+  padding: 0 16px;
+  border: 2px solid var(--primary-color);
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+  outline: none;
+  background: var(--surface-alt);
+}
+.mall-search button {
+  width: 80px;
+  border-radius: 0 2px 2px 0;
+  font-size: 14px;
+}
+
+/* --- 页面视图切换 --- */
+.mall-main {
+  padding: 24px 0 60px;
+  min-height: calc(100vh - 70px);
+}
+.mall-view {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.mall-view.active {
+  display: block;
+}
+
+/* --- 首页特定排版 (左侧分类 + 右侧幻灯片模拟) --- */
+.home-hero-section {
+  display: flex;
+  gap: 16px;
+  height: 420px;
+  margin-bottom: 40px;
+}
+.home-category-menu {
+  width: 240px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+}
+.home-cat-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-main);
+  font-size: 14px;
+}
+.home-cat-item:hover {
+  background: var(--surface-alt);
+  color: var(--primary-color);
+  font-weight: 600;
+  padding-left: 24px; /* subtle motion */
+}
+.home-banner {
+  flex: 1;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 42px;
+  font-family: var(--font-serif);
+  font-weight: 900;
+  letter-spacing: 4px;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
+}
+.home-banner::after {
+  content: '大宗农业·木材供应链生态';
+  position: absolute;
+  bottom: 40px;
+  font-size: 20px;
+  opacity: 1;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* --- 商品网格与卡片 --- */
+.mall-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.bidding-card {
+  background: var(--bg-component);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.bidding-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.bidding-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 2px; }
+.bidding-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.bidding-title { font-size: 1.1rem; font-family: var(--font-serif); font-weight: bold; color: var(--text-main); line-height: 1.4; margin-bottom: 5px; }
+.bidding-meta { font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 15px; }
+.bidding-price { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 15px; border-top: 1px dashed var(--border-color); }
+.price-label { font-size: 0.85rem; color: var(--text-secondary); }
+.price-value { font-size: 1.4rem; font-weight: bold; color: var(--accent-color); font-family: var(--font-sans); }
+
+/* 步骤条 UI */
+.steps-container { display: flex; justify-content: space-between; position: relative; margin: 30px 0; }
+.steps-container::before { content: ''; position: absolute; top: 15px; left: 30px; right: 30px; height: 1px; background: var(--border-strong); z-index: 1; }
+.step-item { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 2; width: 80px; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-color); border: 2px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-secondary); transition: all 0.3s; }
+.step-item.active .step-circle { border-color: var(--primary-color); background: var(--primary-color); color: #fff; }
+.step-item.done .step-circle { border-color: var(--primary-color); color: var(--primary-color); }
+.step-title { font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+.step-item.active .step-title { color: var(--primary-color); font-weight: bold; }
+
+.product-card {
+  background: var(--bg-component);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
+}
+.product-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border-light);
+  transition: transform 0.5s ease;
+}
+.product-card:hover .product-img {
+  transform: scale(1.03);
+}
+.product-card:hover .card-hover-overlay {
+  bottom: 0 !important;
+}
+.product-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-component);
+  position: relative;
+  z-index: 2;
+}
+.product-title {
+  font-size: 15px;
+  color: var(--text-main);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+  height: 45px;
+}
+.product-price {
+  color: var(--accent-color);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+}
+
+/* --- 竞价卡片特化 --- */
+.bid-card {
+  background: var(--bg-component);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.bid-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+.bid-tag {
+  position: absolute;
+  top: 16px;
+  right: -32px;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 4px 32px;
+  transform: rotate(45deg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.bid-card-title {
+  font-size: 1.25rem;
+  font-family: var(--font-serif);
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+/* --- 个人中心布局 --- */
+.uc-sidebar {
+  width: 240px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  padding: 20px 0;
+  min-height: 600px;
+}
+.uc-user-info {
+  text-align: center;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid #f2f3f5;
+  margin-bottom: 16px;
+}
+.uc-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--primary-color); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: bold; margin: 0 auto 12px;
+}
+.uc-menu-item {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.uc-menu-item:hover, .uc-menu-item.active {
+  background: #f0f5ff;
+  color: var(--primary-color);
+  border-left-color: var(--primary-color);
+  font-weight: bold;
+}
+.uc-content {
+  flex: 1;
+}
+.uc-view {
+  display: none;
+}
+.uc-view.active {
+  display: block;
+}
+
+/* SVG 图标辅助类 */
+.icon-svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}

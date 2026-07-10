@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商家中心 - 货主PC端 v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-indigo-700', 'text-white'));
+            
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) targetTab.classList.remove('hidden');
+            
+            const navItem = document.getElementById('nav-' + tabId);
+            if (navItem) navItem.classList.add('bg-indigo-700', 'text-white');
+        }
+
+        function toggleProductView(view) {
+            document.getElementById('product-list-view').classList.toggle('hidden', view !== 'list');
+            document.getElementById('product-form-view').classList.toggle('hidden', view !== 'form');
+        }
+
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle('hidden');
+        }
+
+        function showMessage(msg) {
+            const msgBox = document.getElementById('message-box');
+            msgBox.innerText = msg;
+            msgBox.classList.remove('translate-y-[-100%]', 'opacity-0');
+            setTimeout(() => { msgBox.classList.add('translate-y-[-100%]', 'opacity-0'); }, 3000);
+        }
+
+        // 新增：从仓储货品库快捷发布，带入基础数据
+        function quickPublish(name, stock, address) {
+            document.getElementById('pub-name').value = name;
+            document.getElementById('pub-stock').value = stock;
+            document.getElementById('pub-address').value = address || '';
+            
+            switchTab('products');
+            toggleProductView('form');
+            showMessage('已带入底层仓储数据，请完善挂牌价格等信息');
+        }
+    </script>
+</head>
+<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-800 font-sans">
+
+    <div id="message-box" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-2xl transition-all duration-300 translate-y-[-100%] opacity-0 z-50 font-bold">
+        操作成功
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col h-full z-20 flex-shrink-0">
+        <div class="h-16 flex items-center justify-center bg-slate-950 font-black text-lg tracking-wider text-white border-b border-slate-800">
+            <i class="fas fa-store text-indigo-500 mr-2"></i> 商家控制台
+        </div>
+        <nav class="flex-1 py-4 space-y-1 mt-2">
+            <a href="#" id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-item block px-6 py-3 hover:bg-slate-800 text-white bg-indigo-700 transition-colors font-medium">
+                <i class="fas fa-chart-line w-6"></i> 经营大盘
+            </a>
+            <!-- 新增了底层仓储的单独入口 -->
+            <a href="#" id="nav-inventory" onclick="switchTab('inventory')" class="nav-item block px-6 py-3 hover:bg-slate-800 transition-colors font-medium">
+                <i class="fas fa-warehouse w-6"></i> 仓储货品库
+            </a>
+            <a href="#" id="nav-products" onclick="switchTab('products')" class="nav-item block px-6 py-3 hover:bg-slate-800 transition-colors font-medium">
+                <i class="fas fa-tags w-6"></i> 已挂牌现货
+            </a>
+            <a href="#" id="nav-procurement" onclick="switchTab('procurement')" class="nav-item block px-6 py-3 hover:bg-slate-800 transition-colors font-medium relative">
+                <i class="fas fa-gavel w-6"></i> 大厅抢单
+                <span class="absolute top-3 right-4 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+                <span class="absolute top-3 right-4 w-2 h-2 bg-red-500 rounded-full"></span>
+            </a>
+            <a href="#" id="nav-orders" onclick="switchTab('orders')" class="nav-item block px-6 py-3 hover:bg-slate-800 transition-colors font-medium">
+                <i class="fas fa-clipboard-list w-6"></i> 发货履约
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-8 z-10 sticky top-0">
+            <h2 class="text-lg font-black text-slate-700">江苏鼎盛钢铁贸易公司</h2>
+            <div class="text-slate-500 text-sm font-medium"><i class="fas fa-headset mr-1"></i> 客服支持 | 退出</div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            
+            <!-- Dashboard -->
+            <div id="dashboard" class="tab-content space-y-6">
+                <!-- Data Cards -->
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <p class="text-sm font-bold text-slate-400 mb-2">本月支付账单 (元)</p>
+                        <h3 class="text-3xl font-black text-slate-800">86,500<span class="text-lg text-slate-400">.00</span></h3>
+                        <div class="mt-2 text-xs font-bold text-green-500"><i class="fas fa-arrow-up"></i> 环比上月 +5.2%</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <p class="text-sm font-bold text-slate-400 mb-2">大厅中标转化率</p>
+                        <h3 class="text-3xl font-black text-indigo-600">32.5<span class="text-lg text-indigo-400">%</span></h3>
+                        <div class="mt-2 text-xs font-bold text-slate-400">累计出价 40 次</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <p class="text-sm font-bold text-slate-400 mb-2 flex items-center justify-between">平台履约保证金 <i class="fas fa-shield-alt text-slate-300"></i></p>
+                        <h3 class="text-3xl font-black text-slate-800">100,000</h3>
+                        <div class="mt-2 text-xs font-bold text-green-500"><i class="fas fa-check-circle"></i> 已足额缴纳</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <p class="text-sm font-bold text-slate-400 mb-2">待发货单</p>
+                        <h3 class="text-3xl font-black text-orange-500">3 <span class="text-lg text-orange-300">笔</span></h3>
+                        <div class="mt-2 text-xs font-bold text-slate-400">请及时录入快递单号</div>
+                    </div>
+                </div>
+                
+                <!-- Fake Charts -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h4 class="font-black text-slate-700 mb-6">商铺近期经营走势 (客单价/访客)</h4>
+                    <div class="h-64 flex items-end gap-2 border-b border-l border-slate-200 p-2 relative">
+                         <!-- Bars -->
+                         <div class="flex-1 bg-indigo-100 rounded-t h-[20%] relative group"><div class="absolute -top-6 w-full text-center text-xs opacity-0 group-hover:opacity-100 font-bold">20%</div></div>
+                         <div class="flex-1 bg-indigo-200 rounded-t h-[35%] relative group"><div class="absolute -top-6 w-full text-center text-xs opacity-0 group-hover:opacity-100 font-bold">35%</div></div>
+                         <div class="flex-1 bg-indigo-300 rounded-t h-[50%] relative group"><div class="absolute -top-6 w-full text-center text-xs opacity-0 group-hover:opacity-100 font-bold">50%</div></div>
+                         <div class="flex-1 bg-indigo-400 rounded-t h-[80%] relative group"><div class="absolute -top-6 w-full text-center text-xs opacity-0 group-hover:opacity-100 font-bold">80%</div></div>
+                         <div class="flex-1 bg-indigo-500 rounded-t h-[65%] relative group"><div class="absolute -top-6 w-full text-center text-xs opacity-0 group-hover:opacity-100 font-bold">65%</div></div>
+                         <div class="flex-1 bg-indigo-600 rounded-t h-[95%] relative group"><div class="absolute -top-6 w-full text-center text-xs text-indigo-600 font-black">Peak</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory (新增：底层仓储货品管理) -->
+            <div id="inventory" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-black text-xl text-slate-800">底层物理仓储与货品</h3>
+                            <p class="text-sm text-slate-500 mt-1">管理您在园区仓库或自营仓库的真实底层库存，同步后可挂牌售卖。</p>
+                        </div>
+                        <div class="space-x-3">
+                            <button class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-lg font-bold shadow-sm hover:bg-slate-200 transition-colors flex items-center" onclick="showMessage('正在调用WMS接口...拉取成功，新增/更新了物理库存！')">
+                                <i class="fas fa-sync-alt mr-2 text-indigo-500"></i> 一键同步WMS库存
+                            </button>
+                            <button class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-slate-900 transition-colors flex items-center text-sm">
+                                <i class="fas fa-plus mr-2"></i> 新增自营货品
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">底层货品名称</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">系统SKU/条码</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">仓位/入库地</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">物理可用库存</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">状态</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 font-bold text-slate-800 text-sm">永钢 HRB400E 抗震螺纹钢 16mm</td>
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-400">SKU-YG-16MM-001</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600">江苏无锡硕放A区</td>
+                                    <td class="px-6 py-4 font-black text-slate-800">1,250 吨</td>
+                                    <td class="px-6 py-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold">未挂牌</span></td>
+                                    <td class="px-6 py-4 text-sm font-medium">
+                                        <!-- 一键发布触发器，带入基础数据 -->
+                                        <button class="text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 px-3 py-1.5 rounded transition-colors" onclick="quickPublish('永钢 HRB400E 抗震螺纹钢 16mm', 1250, '江苏无锡硕放A区')">
+                                            快捷挂牌上架
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 font-bold text-slate-800 text-sm">马钢 热镀锌卷 1.0mm*1250</td>
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-400">SKU-MG-DX-001</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600">上海宝山港区仓</td>
+                                    <td class="px-6 py-4 font-black text-slate-800">88.5 吨</td>
+                                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">部分挂牌中</span></td>
+                                    <td class="px-6 py-4 text-sm font-medium">
+                                        <button class="text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 px-3 py-1.5 rounded transition-colors" onclick="quickPublish('马钢 热镀锌卷 1.0mm*1250', 88.5, '上海宝山港区仓')">
+                                            补货挂牌
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products (现货发布与管理) -->
+            <div id="products" class="tab-content hidden space-y-6">
+                
+                <!-- 列表视图 -->
+                <div id="product-list-view" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-black text-xl text-slate-800">已挂牌现货管理</h3>
+                            <p class="text-sm text-slate-500 mt-1">买家在大厅可见的现货目录。如需新增，请从左侧【仓储货品库】直接发布。</p>
+                        </div>
+                        <button onclick="toggleProductView('form')" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition-colors flex items-center text-sm">
+                            <i class="fas fa-plus mr-2"></i> 无库存空挂
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">现货商品信息</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">分类/材质</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">挂牌单价(含税)</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">平台展示库存量</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">状态</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 flex items-center gap-3">
+                                        <img src="https://placehold.co/100x100/e2e8f0/64748b?text=Steel" class="w-12 h-12 rounded object-cover">
+                                        <div class="font-bold text-slate-800 text-sm max-w-[200px] truncate">沙钢 HRB400E 抗震螺纹钢 12mm</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600">钢材 / 螺纹钢</td>
+                                    <td class="px-6 py-4 font-black text-red-600">¥ 3,850/吨</td>
+                                    <td class="px-6 py-4 font-bold text-slate-700">500 吨</td>
+                                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">在售中</span></td>
+                                    <td class="px-6 py-4 text-sm font-medium space-x-2">
+                                        <button class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-2 py-1 rounded">改价</button>
+                                        <button class="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded" onclick="showMessage('商品已成功下架')">下架</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 flex items-center gap-3">
+                                        <img src="https://placehold.co/100x100/e2e8f0/64748b?text=Pipe" class="w-12 h-12 rounded object-cover opacity-60">
+                                        <div class="font-bold text-slate-500 text-sm max-w-[200px] truncate">无缝钢管 108*4.5 马钢</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-500">管材 / 无缝管</td>
+                                    <td class="px-6 py-4 font-black text-slate-400">¥ 4,800/吨</td>
+                                    <td class="px-6 py-4 font-bold text-red-500">0 吨</td>
+                                    <td class="px-6 py-4"><span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-xs font-bold">已售罄/下架</span></td>
+                                    <td class="px-6 py-4 text-sm font-medium space-x-2">
+                                        <button class="text-slate-600 hover:text-indigo-600 bg-slate-100 px-2 py-1 rounded">从底库上架</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 表单视图 -->
+                <div id="product-form-view" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 max-w-4xl hidden">
+                    <div class="flex items-center mb-6">
+                        <button onclick="toggleProductView('list')" class="text-slate-400 hover:text-indigo-600 mr-4 text-xl"><i class="fas fa-arrow-left"></i></button>
+                        <div>
+                            <h3 class="font-black text-2xl text-slate-800">将底层货品挂牌上架</h3>
+                            <p class="text-slate-500 text-sm mt-1">带入底层库存数据，设定展示价格与交割地即可快速发往现货大厅。</p>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="col-span-2">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">商品全称标贴</label>
+                                <input id="pub-name" type="text" class="w-full border-2 border-slate-200 rounded-lg p-3 focus:border-indigo-500 outline-none font-bold" placeholder="如：沙钢 HRB400E 抗震螺纹钢 12mm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">归属分类</label>
+                                <select class="w-full border-2 border-slate-200 rounded-lg p-3 bg-white focus:border-indigo-500 outline-none">
+                                    <option>黑色金属 / 钢材 / 螺纹钢</option>
+                                    <option>黑色金属 / 钢材 / 冷轧卷</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">展示在售量 (不能超出物理底层)</label>
+                                <div class="flex"><input id="pub-stock" type="number" class="w-full border-2 border-r-0 border-slate-200 rounded-l-lg p-3 focus:border-indigo-500 outline-none font-bold text-indigo-700"><span class="bg-slate-50 border-2 border-l-0 border-slate-200 rounded-r-lg px-4 py-3 text-slate-500 font-bold">吨</span></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">挂牌单价 (含税)</label>
+                                <div class="flex"><span class="bg-slate-50 border-2 border-r-0 border-slate-200 rounded-l-lg px-4 py-3 text-slate-500 font-bold">¥</span><input type="number" class="w-full border-2 border-slate-200 rounded-r-lg p-3 focus:border-indigo-500 outline-none font-black text-red-600"></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">发货库区地址</label>
+                                <input id="pub-address" type="text" class="w-full border-2 border-slate-200 rounded-lg p-3 focus:border-indigo-500 outline-none" placeholder="如：江苏无锡硕放仓">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">上传商品实拍图 (可选)</label>
+                                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-indigo-400 transition-colors cursor-pointer">
+                                    <i class="fas fa-cloud-upload-alt text-4xl mb-3"></i>
+                                    <p class="font-bold">无图则显示默认材质图标，点击或拖拽上传实拍</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-6 border-t border-slate-100 flex gap-4">
+                            <button class="bg-slate-100 text-slate-600 px-8 py-3 rounded-lg font-bold hover:bg-slate-200 transition-colors" onclick="toggleProductView('list')">取消返回</button>
+                            <button class="flex-1 bg-indigo-600 text-white px-8 py-3 rounded-lg font-black shadow-md hover:bg-indigo-700 transition-colors" onclick="showMessage('上架成功！底层库存已锁定对应数量'); toggleProductView('list');">确认发布至大厅</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Procurement Hall -->
+            <div id="procurement" class="tab-content hidden space-y-6">
+                <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="font-black text-2xl text-indigo-900 mb-1">大厅招采寻源</h3>
+                        <p class="text-sm text-indigo-700">全园买家发标，抢先出价，获取大单商机。</p>
+                    </div>
+                    <i class="fas fa-gavel text-5xl text-indigo-200"></i>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- 采购单卡片 -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg hover:border-indigo-400 transition-all">
+                        <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
+                            <div>
+                                <span class="bg-red-100 text-red-700 font-bold px-2 py-1 text-xs rounded mr-2 border border-red-200">特急发货</span>
+                                <h4 class="text-xl font-black text-slate-800 inline-block">螺纹钢 HRB400E 12mm</h4>
+                            </div>
+                            <span class="text-slate-400 text-sm font-medium"><i class="far fa-clock mr-1"></i> 今日 18:00 截标</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-6 text-sm text-slate-600 mb-6">
+                            <div><p class="text-slate-400 text-xs mb-1">需求总量</p><p class="font-black text-slate-800 text-lg">500 吨</p></div>
+                            <div><p class="text-slate-400 text-xs mb-1">交货地</p><p class="font-bold text-slate-800">浙江杭州</p></div>
+                            <div><p class="text-slate-400 text-xs mb-1">买家要求</p><p class="font-medium text-slate-800 line-clamp-1">要求理计，沙钢/永钢</p></div>
+                            <div><p class="text-slate-400 text-xs mb-1">当前竞争</p><p class="font-bold text-orange-600">3 家同行已出价</p></div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="toggleModal('quote-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-lg font-black shadow hover:bg-indigo-600 transition-colors">立即盲报底价</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders & Shipping -->
+            <div id="orders" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-black text-xl text-slate-800 mb-6">待发货单履约</h3>
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">订单货品信息</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">买家(收件人)</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">货款(三方已代收)</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">当前状态</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-5">
+                                    <p class="font-black text-slate-800">冷轧不锈钢卷 304</p>
+                                    <p class="text-slate-400 text-xs mt-1 font-mono">ORD-20260702-X1</p>
+                                </td>
+                                <td class="px-6 py-5 text-sm font-medium text-slate-700">王建国 <br><span class="text-xs text-slate-400">138****0000</span></td>
+                                <td class="px-6 py-5 font-black text-red-600 text-lg">¥ 12,500.00</td>
+                                <td class="px-6 py-5"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded">买家已付款，待发货</span></td>
+                                <td class="px-6 py-5">
+                                    <button onclick="toggleModal('ship-modal')" class="bg-white text-indigo-600 border-2 border-indigo-600 font-bold px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">录入三方单号</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: 报价 -->
+    <div id="quote-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-[500px] overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-black text-lg text-slate-800">提交盲盒报价</h3>
+                <button onclick="toggleModal('quote-modal')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div class="bg-orange-50 border border-orange-100 p-3 rounded-lg text-xs text-orange-800 font-medium">
+                    <i class="fas fa-lock mr-1"></i> 盲盒报价模式：买家定标前，同行间无法互看价格。
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">您的供应单价 (元/吨)</label>
+                    <div class="flex"><span class="bg-slate-50 border-2 border-r-0 border-slate-200 rounded-l-lg px-4 py-3 text-slate-500 font-bold">¥</span><input type="number" class="w-full border-2 border-slate-200 rounded-r-lg p-3 focus:border-indigo-500 outline-none font-bold text-lg" placeholder="请输入含税极具竞争力的单价"></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">优势与留言 (选填)</label>
+                    <textarea class="w-full border-2 border-slate-200 rounded-lg p-3 focus:border-indigo-500 outline-none h-24" placeholder="例如：我司自有车队，最快下午可送达工地。"></textarea>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                    <button onclick="toggleModal('quote-modal')" class="px-6 py-2.5 rounded-lg text-slate-600 font-bold hover:bg-slate-100">取消</button>
+                    <button onclick="toggleModal('quote-modal'); showMessage('报价提交成功！请留意定标通知');" class="px-8 py-2.5 bg-slate-900 text-white font-black rounded-lg shadow-md hover:bg-indigo-600 transition-colors">确认加密出价</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: 发货 -->
+    <div id="ship-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-[400px] overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-black text-lg text-slate-800">录入三方物流凭证</h3>
+                <button onclick="toggleModal('ship-modal')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">承运物流公司</label>
+                    <select class="w-full border-2 border-slate-200 rounded-lg p-3 bg-white focus:border-indigo-500 outline-none font-medium">
+                        <option>顺丰快运</option>
+                        <option>中通快运</option>
+                        <option>安能物流</option>
+                        <option>自营车队/其他</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">物流单号</label>
+                    <input type="text" class="w-full border-2 border-slate-200 rounded-lg p-3 focus:border-indigo-500 outline-none font-mono" placeholder="请扫描或输入面单号">
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                    <button onclick="toggleModal('ship-modal')" class="px-5 py-2.5 rounded-lg text-slate-600 font-bold hover:bg-slate-100">取消</button>
+                    <button onclick="toggleModal('ship-modal'); showMessage('发货单号已回传，买家可追踪物流');" class="px-6 py-2.5 bg-indigo-600 text-white font-black rounded-lg shadow-md hover:bg-indigo-700 transition-colors">确认发出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

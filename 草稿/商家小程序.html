@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>商家版 - 移动端 v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { display: none; }
+    </style>
+    <script>
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.app-page').forEach(page => page.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-600');
+                btn.classList.add('text-slate-400');
+            });
+            el.classList.remove('text-slate-400');
+            el.classList.add('text-indigo-600');
+        }
+
+        function quoteSubmit() {
+            alert("极速报价成功！已加密提交至买家盲盒。");
+        }
+    </script>
+</head>
+<body class="bg-slate-200 flex justify-center items-center h-screen overflow-hidden font-sans">
+
+    <!-- Mobile Device Mockup Container -->
+    <div class="w-full max-w-[400px] h-full bg-slate-50 relative flex flex-col shadow-2xl sm:rounded-[2.5rem] sm:h-[800px] sm:border-[12px] border-slate-900 overflow-hidden">
+        
+        <!-- Header -->
+        <header class="bg-slate-900 text-white pt-12 pb-4 px-5 text-center text-xl font-black z-10 shadow-md flex justify-between items-center">
+            <span><i class="fas fa-store text-indigo-400 mr-2"></i>鼎盛钢铁</span>
+            <i class="fas fa-bell text-slate-400 text-lg"></i>
+        </header>
+
+        <!-- Pages -->
+        <div class="flex-1 overflow-y-auto pb-20 relative scroll-smooth">
+            
+            <!-- Home / Dashboard -->
+            <div id="page-home" class="app-page block p-4 space-y-4">
+                <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 rounded-2xl shadow-lg text-white relative overflow-hidden">
+                    <i class="fas fa-wallet absolute -right-6 -bottom-6 text-8xl text-white/10"></i>
+                    <p class="text-white/80 text-sm font-bold tracking-widest mb-1 relative z-10">本月完结入账 (元)</p>
+                    <h2 class="text-4xl font-black mt-1 relative z-10">86,500.<span class="text-xl font-normal">00</span></h2>
+                    <div class="mt-4 bg-white/20 inline-block px-3 py-1 rounded text-xs font-bold backdrop-blur-sm relative z-10">
+                        待发货单: 3 笔
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold mb-1">今日大厅访客</p>
+                        <p class="text-2xl font-black text-slate-800">124</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-xs text-slate-400 font-bold mb-1">中标转化率</p>
+                        <p class="text-2xl font-black text-slate-800">32.5%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Management (New) -->
+            <div id="page-products" class="app-page hidden p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black text-slate-800 text-lg">在售现货</h3>
+                    <button class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100"><i class="fas fa-plus mr-1"></i>快捷上架</button>
+                </div>
+                
+                <div class="space-y-3">
+                    <!-- Product Item -->
+                    <div class="bg-white rounded-xl p-3 flex gap-3 shadow-sm border border-slate-100">
+                        <img src="https://placehold.co/200x200/e2e8f0/64748b?text=Steel" class="w-20 h-20 rounded-lg object-cover">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <h4 class="font-bold text-slate-800 text-sm leading-tight">沙钢 HRB400E 抗震螺纹钢 12mm</h4>
+                            <div class="flex justify-between items-end mt-2">
+                                <div>
+                                    <p class="text-red-600 font-black"><span class="text-xs">¥</span>3,850<span class="text-[10px] font-normal text-slate-400">/吨</span></p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">库: 500t</p>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <button class="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded font-bold">改价/改库</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Item -->
+                    <div class="bg-white rounded-xl p-3 flex gap-3 shadow-sm border border-slate-100">
+                        <img src="https://placehold.co/200x200/e2e8f0/64748b?text=Pipe" class="w-20 h-20 rounded-lg object-cover opacity-60">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="bg-slate-200 text-slate-500 text-[10px] px-1 rounded mr-1">已下架</span>
+                                <h4 class="font-bold text-slate-500 text-sm leading-tight inline">无缝钢管 108*4.5</h4>
+                            </div>
+                            <div class="flex justify-between items-end mt-2">
+                                <div>
+                                    <p class="text-slate-400 font-black"><span class="text-xs">¥</span>4,800</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 text-red-500">库: 0t (售罄)</p>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <button class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded font-bold border border-indigo-100">补货上架</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quote Hall (Procurement) -->
+            <div id="page-quote" class="app-page hidden p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black text-slate-800 text-xl">招采大厅</h3>
+                    <span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping mr-1"></span> 实时单源</span>
+                </div>
+                
+                <!-- Quote Item -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
+                        <span class="font-black text-slate-800 text-base">HRB400E 12mm 螺纹钢</span>
+                        <span class="text-[10px] font-bold bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded">特急 (今日结)</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-500 mb-4 font-medium">
+                        <span><i class="fas fa-weight-hanging mr-1"></i>需求: 500吨</span>
+                        <span><i class="fas fa-map-marker-alt mr-1"></i>交货: 杭州</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl mb-4">
+                        <div class="flex items-center mb-3">
+                            <span class="text-sm font-bold text-slate-600 w-12">底价:</span>
+                            <input type="number" class="flex-1 bg-white border border-slate-200 rounded p-1.5 text-sm font-bold text-indigo-600 outline-none" placeholder="元/吨 (含税)">
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-sm font-bold text-slate-600 w-12 pt-1">留言:</span>
+                            <textarea class="flex-1 bg-white border border-slate-200 rounded p-1.5 text-xs outline-none h-12" placeholder="优势说明..."></textarea>
+                        </div>
+                    </div>
+                    <button onclick="quoteSubmit()" class="w-full bg-slate-900 text-white py-3 rounded-xl text-sm font-black shadow-lg active:scale-95 transition-transform">一键盲出底价</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Tab Bar -->
+        <div class="absolute bottom-0 w-full bg-white/90 backdrop-blur border-t border-slate-200 flex justify-around py-2 pb-8 sm:pb-4 z-20">
+            <button onclick="switchTab('page-home', this)" class="tab-btn flex flex-col items-center text-indigo-600 w-1/4">
+                <i class="fas fa-chart-pie text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">看板</span>
+            </button>
+            <button onclick="switchTab('page-products', this)" class="tab-btn flex flex-col items-center text-slate-400 w-1/4">
+                <i class="fas fa-box-open text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">现货</span>
+            </button>
+            <button onclick="switchTab('page-quote', this)" class="tab-btn flex flex-col items-center text-slate-400 w-1/4 relative">
+                <i class="fas fa-gavel text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">抢单</span>
+                <span class="absolute top-0 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            </button>
+            <button class="tab-btn flex flex-col items-center text-slate-400 w-1/4">
+                <i class="fas fa-clipboard-list text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">发货</span>
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

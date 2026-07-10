@@ -1,0 +1,550 @@
+/**
+ * 商城 H5 移动端业务逻辑
+ */
+
+const H5App = {
+  init() {
+    // 初始化底部 TabBar 切换
+    const tabs = document.querySelectorAll('.h5-tab-item');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        H5App.switchH5View(targetId);
+      });
+    });
+
+    this.renderQuickCategories();
+    this.renderHomeProducts();
+    this.renderDemands();
+    this.renderBids();
+    this.renderCart();
+  },
+
+  switchH5View(targetId) {
+    const tabs = document.querySelectorAll('.h5-tab-item');
+    const views = document.querySelectorAll('.h5-view');
+    
+    // Clear active state from bottom tabs
+    tabs.forEach(t => t.classList.remove('active'));
+    // If the target has a corresponding bottom tab, set it active
+    const targetTab = document.querySelector(`.h5-tab-item[data-target="${targetId}"]`);
+    if(targetTab) targetTab.classList.add('active');
+    
+    views.forEach(v => {
+      v.classList.remove('active');
+      if(v.id === targetId) {
+        v.classList.add('active');
+        
+        // Header Management
+        const mainHeader = document.getElementById('main-h5-header');
+        if (targetId === 'view-shop' || targetId.startsWith('view-uc-')) {
+          if (mainHeader) mainHeader.style.display = 'none';
+        } else {
+          if (mainHeader) mainHeader.style.display = 'flex';
+          
+          const headerTitle = document.getElementById('h5-header-title');
+          const backBtn = document.getElementById('h5-header-back-btn');
+          
+          // Set Title
+          if (headerTitle) {
+            if (targetId === 'view-home') headerTitle.innerText = '享宇森云商城';
+            if (targetId === 'view-demand') headerTitle.innerText = '找货源 (寻源大厅)';
+            if (targetId === 'view-bid') headerTitle.innerText = '大宗竞价大厅';
+            if (targetId === 'view-cart') headerTitle.innerText = '购物车';
+            if (targetId === 'view-my') headerTitle.innerText = '我的中心';
+          }
+          
+          if (backBtn) {
+            if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-cart' || targetId === 'view-my') {
+              backBtn.style.display = 'none';
+            } else {
+              backBtn.style.display = 'block';
+            }
+          }
+        }
+      }
+    });
+  },
+
+  setCategoryFilter(categoryName) {
+    const banner = document.getElementById('h5-home-category-banner');
+    const text = document.getElementById('h5-home-category-text');
+    const gridTitle = document.getElementById('h5-home-grid-title');
+    
+    if (categoryName) {
+      if(banner) banner.style.display = 'flex';
+      if(text) text.innerText = '当前分类: ' + categoryName;
+      if(gridTitle) gridTitle.innerText = categoryName + ' 现货';
+    } else {
+      if(banner) banner.style.display = 'none';
+      if(gridTitle) gridTitle.innerText = '推荐现货';
+    }
+    this.renderHomeProducts(categoryName);
+  },
+
+  renderQuickCategories() {
+    const container = document.getElementById('h5-quick-categories');
+    if (!container) return;
+    let html = '';
+    
+    // 我们从 MockData.productCategories 取顶层分类
+    const categories = MockData.productCategories || [];
+    const topLevels = categories.slice(0, 10); // 取前10个作为快捷标签
+    
+    // 生成横向滑动的胶囊按钮
+    container.style.display = 'flex';
+    container.style.overflowX = 'auto';
+    container.style.whiteSpace = 'nowrap';
+    container.style.padding = '8px 16px';
+    container.style.gap = '8px';
+    container.style.background = 'transparent';
+    
+    html += `<button class="btn btn-outline" style="border-radius: 16px; padding: 4px 12px; font-size: 13px;" onclick="H5App.setCategoryFilter('')">全部</button>`;
+    
+    topLevels.forEach(cat => {
+      html += `
+        <button class="btn btn-outline" style="border-radius: 16px; padding: 4px 12px; font-size: 13px;" onclick="H5App.setCategoryFilter('${cat.name}')">
+          ${cat.name}
+        </button>
+      `;
+    });
+    
+    container.innerHTML = html;
+  },
+
+  renderHomeBids() {
+    const container = document.getElementById('h5-home-bids-container');
+    if (!container) return;
+    
+    let html = '';
+    const bids = (MockData.biddingAnnouncements || []).slice(0, 3);
+    
+    bids.forEach(b => {
+      html += `
+        <div class="card" style="min-width: 260px; margin-right: 12px; padding: 12px; display: inline-block; white-space: normal;" onclick="H5App.switchH5View('view-bid')">
+          <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${b.title}</div>
+          <div style="color: var(--danger-color); font-weight: bold;">当前价: ${b.currentMaxOffer || b.startPrice}</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">由 ${b.shopName} 发布</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  },
+
+  renderHomeProducts(keyword = '', shopId = null) {
+    const grid = document.getElementById('h5-product-grid');
+    let html = '';
+    let filtered = MockData.products.filter(p => p.status === 1);
+    
+    if (keyword) {
+      filtered = filtered.filter(p => p.name.includes(keyword) || p.shopName.includes(keyword) || (p.category && p.category.includes(keyword)));
+    }
+    if (shopId) {
+      filtered = filtered.filter(p => p.shopId === shopId);
+    }
+    
+    filtered.forEach(p => {
+      html += `
+        <div class="h5-product-card card" onclick="H5App.showCartSheet('${p.id}')">
+          <div class="img-wrapper">
+            <img src="${p.image}" alt="${p.name}">
+          </div>
+          <div class="info flex-col justify-between" style="flex: 1; padding: 12px; display: flex;">
+            <div>
+              <h3 class="title font-serif" style="font-size: 15px; margin-bottom: 4px;">${p.name}</h3>
+              <div class="price" style="font-size: 18px; color: var(--danger-color); font-weight: bold;">${p.priceStr.split(' ')[0]}</div>
+              <div class="shop-info mt-2" onclick="event.stopPropagation(); window.H5App && H5App.goToShop('${p.shopId}', '${p.shopName}')">
+                <span class="shop-name truncate text-secondary text-sm">${p.shopName}</span>
+              </div>
+            </div>
+            
+            <div class="action-bar mt-4 flex items-center justify-between" onclick="event.stopPropagation()">
+              <button class="btn btn-outline text-xs px-2 py-1 flex items-center gap-1" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 12px;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
+                💬 询价
+              </button>
+              
+              <div class="flex items-center gap-2">
+                <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center;">
+                  <button class="stepper-btn minus" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
+                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" onclick="event.stopPropagation()">
+                  <button class="stepper-btn plus" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+                </div>
+                <button class="btn btn-primary btn-sm" style="border-radius: 12px; padding: 4px 12px;" onclick="H5App.quickAddToCart('${p.id}')">加入采购</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    if(grid) grid.innerHTML = html;
+  },
+
+  showCartSheet(productId) {
+    const p = MockData.products.find(p => p.id == productId);
+    if (!p) return;
+    
+    document.getElementById('h5-pd-title').innerText = p.name;
+    document.getElementById('h5-pd-img').src = p.image;
+    document.getElementById('h5-pd-price').innerText = p.priceStr;
+    document.getElementById('h5-pd-shop').innerText = `商户: ${p.shopName} (No.${p.shopId})`;
+    document.getElementById('h5-pd-qty').value = 1;
+    document.getElementById('h5-pd-qty').dataset.pid = p.id;
+    
+    UI.showModal('sheet-h5-product-detail');
+  },
+
+  quickAddToCart(productId) {
+    const qtyInput = document.getElementById(`qty-in-${productId}`);
+    let qty = 1;
+    if (qtyInput) {
+      qty = parseInt(qtyInput.value) || 1;
+    }
+    const product = MockData.products.find(p => p.id == productId);
+    if (product) {
+      if (!MockData.cart) MockData.cart = [];
+      const exist = MockData.cart.find(c => c.productId == productId && c.status === 1);
+      if (exist) {
+        exist.quantity += qty;
+      } else {
+        MockData.cart.push({ ...product, productId: product.id, quantity: qty, selected: true, status: 1 });
+      }
+      UI.toast(`已成功加入${qty}件到购物车`, 'success');
+      if(window.MainApp) MainApp.updateCartCount();
+      this.updateCartBadge();
+    }
+  },
+
+  confirmAddToCart() {
+    const qtyInput = document.getElementById('h5-pd-qty');
+    const productId = qtyInput.dataset.pid;
+    const qty = parseInt(qtyInput.value) || 1;
+    
+    const product = MockData.products.find(p => p.id == productId);
+    if (product) {
+      if (!MockData.cart) MockData.cart = [];
+      const exist = MockData.cart.find(c => c.productId == productId && c.status === 1);
+      if (exist) {
+        exist.quantity += qty;
+      } else {
+        MockData.cart.push({
+          id: Date.now(),
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: qty,
+          shopId: product.shopId,
+          shopName: product.shopName,
+          checked: true,
+          image: product.image,
+          status: 1
+        });
+      }
+      
+      this.renderCart();
+      UI.toast(`已加入购物车，数量: ${qty}`, 'success');
+    }
+  },
+
+  renderDemands(keyword = '') {
+    const list = document.getElementById('h5-demand-list');
+    let html = '';
+    let filtered = MockData.demands.filter(d => d.status === 1);
+    if (keyword) {
+      filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
+    }
+    
+    filtered.forEach(d => {
+      html += `
+        <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+          <div style="font-weight: bold; margin-bottom: 8px;">${d.title}</div>
+          <div style="color: var(--danger-color); font-weight: bold; margin-bottom: 8px;">${d.expectedPrice}</div>
+          <div class="flex justify-between text-secondary items-center" style="font-size: 12px; border-bottom: 1px solid #f2f3f5; padding-bottom: 12px; margin-bottom: 12px;">
+            <span>${d.buyerName}</span>
+            <span>${d.publishTime} 发布</span>
+          </div>
+          <button class="btn btn-primary" style="width:100%; height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('弹出IM聊天框与买家沟通', 'info'))">立即报价</button>
+        </div>
+      `;
+    });
+    if(list) list.innerHTML = html;
+  },
+
+  doDemandSearch() {
+    const kw = document.getElementById('h5-demand-search-keyword').value.trim();
+    this.renderDemands(kw);
+  },
+
+  renderBids(keyword = '') {
+    const list = document.getElementById('h5-bid-list');
+    let html = '';
+    let filtered = MockData.biddingAnnouncements;
+    if (keyword) {
+      filtered = filtered.filter(b => b.title.includes(keyword));
+    }
+    
+    filtered.forEach(b => {
+      let tag = b.status === 1 ? '<span class="tag tag-success" style="font-size: 10px; padding: 2px 4px;">竞价中</span>' : '<span class="tag tag-secondary" style="font-size: 10px; padding: 2px 4px;">已结束</span>';
+      html += `
+        <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px; display: flex; gap: 12px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('弹出H5竞价详情页...', 'info'))">
+          <img src="${b.image}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
+          <div style="flex:1;">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start;">
+              <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 120px;">${b.title}</span>
+              ${tag}
+            </div>
+            <div class="text-xs text-secondary flex items-center gap-1 mb-2"><span>${b.shopName}</span><span class="bg-gray-100 px-1 rounded">No.${b.shopId}</span></div>
+            <div style="font-size: 12px; color: #666; margin-bottom: 4px;">底价: ${b.startPrice}</div>
+            <div style="font-size: 12px; color: #666;">当前价: <span style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${b.currentMaxOffer || b.startPrice}</span></div>
+          </div>
+        </div>
+      `;
+    });
+    if(list) list.innerHTML = html;
+  },
+
+  doBidSearch() {
+    const kw = document.getElementById('h5-bid-search-keyword').value.trim();
+    this.renderBids(kw);
+  },
+
+  // === 搜索与商铺 ===
+  doSearch() {
+    const type = document.getElementById('h5-search-type').value;
+    const kw = document.getElementById('h5-search-keyword').value.trim();
+    if (!kw) {
+      UI.toast('请输入搜索关键词', 'warning');
+      return;
+    }
+    if (type === 'merchant') {
+      const p = MockData.products.find(p => p.shopName.includes(kw));
+      if (p) {
+        this.goToShop(p.shopId, p.shopName);
+      } else {
+        UI.toast('未找到相关商户', 'error');
+      }
+    } else {
+      this.renderHomeProducts(kw);
+    }
+  },
+
+  goToShop(shopId, shopName = '未知店铺') {
+    const shop = MockData.shopDetails && MockData.shopDetails[shopId];
+    document.getElementById('h5-shop-name').innerText = shop ? shop.name : shopName;
+    document.getElementById('h5-shop-id').innerText = 'No.' + shopId;
+    
+    if (shop) {
+      const banner = document.getElementById('h5-shop-banner');
+      if (banner) banner.style.backgroundImage = `url(${shop.banner})`;
+      
+      const avatar = document.getElementById('h5-shop-avatar');
+      if (avatar) avatar.innerText = shop.avatar;
+      
+      const followBtn = document.getElementById('h5-shop-follow-btn');
+      if (followBtn) {
+        followBtn.innerText = shop.isFollowed ? '已关注' : '关注';
+        followBtn.className = shop.isFollowed ? 'btn btn-sm' : 'btn btn-primary btn-sm';
+      }
+    }
+    
+    this.switchH5View('view-shop');
+    this.renderShopProducts(shopId);
+    window.scrollTo(0, 0);
+  },
+  
+  toggleFollowShop() {
+    const shopIdText = document.getElementById('h5-shop-id').innerText;
+    const shopId = parseInt(shopIdText.replace('No.', ''));
+    const shop = MockData.shopDetails && MockData.shopDetails[shopId];
+    if (shop) {
+      shop.isFollowed = !shop.isFollowed;
+      const followBtn = document.getElementById('h5-shop-follow-btn');
+      if (followBtn) {
+        followBtn.innerText = shop.isFollowed ? '已关注' : '关注';
+        followBtn.className = shop.isFollowed ? 'btn btn-sm' : 'btn btn-primary btn-sm';
+      }
+      UI.toast(shop.isFollowed ? '已关注该店铺' : '已取消关注', 'success');
+    }
+  },
+
+  doShopSearch() {
+    const kw = document.getElementById('h5-shop-search-keyword').value.trim();
+    const shopIdText = document.getElementById('h5-shop-id').innerText;
+    const shopId = parseInt(shopIdText.replace('No.', ''));
+    this.renderShopProducts(shopId, kw);
+  },
+
+  renderShopProducts(shopId, keyword = '') {
+    const grid = document.getElementById('h5-shop-products');
+    let html = '';
+    let filtered = MockData.products.filter(p => p.status === 1 && p.shopId === shopId);
+    if (keyword) {
+      filtered = filtered.filter(p => p.name.includes(keyword));
+    }
+    filtered.forEach(p => {
+      html += `
+        <div style="background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 12px; display: flex; flex-direction: column;" onclick="H5App.showCartSheet('${p.id}')">
+          <img src="${p.image}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div style="padding: 10px;">
+            <div style="font-weight: bold; font-size: 13px; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.name}</div>
+            <div style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${p.priceStr}</div>
+            <div class="text-xs text-gray-400 mt-1">(店内) ${p.shopName}</div>
+            <div class="mt-2 flex items-center justify-between" onclick="event.stopPropagation()">
+              <div class="flex items-center border border-light rounded overflow-hidden" style="transform: scale(0.85); transform-origin: left center;">
+                <button class="bg-gray-100 px-2 py-1 text-secondary" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
+                <input type="number" id="qty-in-${p.id}" value="1" min="1" class="w-8 text-center outline-none border-none text-xs" onclick="event.stopPropagation()">
+                <button class="bg-gray-100 px-2 py-1 text-secondary" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+              </div>
+              <button class="btn btn-primary" style="padding: 2px 8px; font-size: 12px; border-radius: 12px;" onclick="H5App.quickAddToCart('${p.id}')">加入</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    if (grid) grid.innerHTML = html || '<div class="text-center py-8 text-secondary text-sm">店内未找到相关商品</div>';
+  },
+
+  // === 购物车渲染 ===
+  renderCart() {
+    const container = document.getElementById('h5-cart-list');
+    const footer = document.getElementById('h5-cart-footer');
+    if (!container || !MockData.cart) return;
+
+    if (MockData.cart.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-12">
+          <div class="text-secondary mb-4">购物车空空如也</div>
+          <button class="btn btn-primary" onclick="document.querySelector('.h5-tab-item[data-target=\\'view-home\\']').click()">去逛逛</button>
+        </div>
+      `;
+      if (footer) footer.style.display = 'none';
+      return;
+    }
+
+    let html = '';
+    let totalAmount = 0;
+    let selectedCount = 0;
+    let invalidCount = 0;
+
+    MockData.cart.forEach(item => {
+      if (item.status === 0) {
+        invalidCount++;
+        html += `
+          <div style="background: #fafafa; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; color: #999;">
+            <span class="tag tag-secondary text-xs">失效</span>
+            <div style="flex:1;">
+              <div style="font-size: 13px; margin-bottom: 4px;">${item.name}</div>
+              <div class="text-xs">店内: ${item.shopName}</div>
+            </div>
+            <button class="btn btn-text btn-sm text-danger" onclick="H5App.removeCartItem(${item.id})">删除</button>
+          </div>
+        `;
+      } else {
+        if (item.checked) {
+          totalAmount += item.price * item.quantity;
+          selectedCount += item.quantity;
+        }
+        
+        html += `
+          <div style="background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="H5App.toggleCartItem(${item.id}, this.checked)">
+            <div style="flex:1;">
+              <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.name}</div>
+              <div class="text-xs text-secondary mb-2" onclick="H5App.goToShop(${item.shopId}, '${item.shopName}')">店铺: ${item.shopName} ></div>
+              <div class="flex justify-between items-center">
+                <span style="color: var(--danger-color); font-weight: bold;">¥${item.price}</span>
+                <div class="flex gap-2 items-center">
+                  <button class="btn btn-sm" style="padding: 0 8px;" onclick="H5App.updateCartQty(${item.id}, -1)">-</button>
+                  <input type="number" class="form-control" style="width:40px; height: 24px; text-align:center; padding:0; font-size:12px;" value="${item.quantity}" onchange="H5App.setCartQty(${item.id}, this.value)">
+                  <button class="btn btn-sm" style="padding: 0 8px;" onclick="H5App.updateCartQty(${item.id}, 1)">+</button>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-text text-danger px-1" onclick="H5App.removeCartItem(${item.id})">删</button>
+          </div>
+        `;
+      }
+    });
+    container.innerHTML = html;
+
+    if (footer) {
+      footer.style.display = 'flex';
+      const allActive = MockData.cart.filter(c => c.status === 1);
+      const allChecked = allActive.length > 0 && allActive.every(c => c.checked);
+      
+      footer.innerHTML = `
+        <div class="flex items-center gap-2 flex-1">
+          <label class="flex items-center gap-1 text-sm"><input type="checkbox" ${allChecked ? 'checked' : ''} onchange="H5App.toggleAllCart(this.checked)"> 全选</label>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-sm">合计: <span class="text-danger font-bold text-lg">¥${totalAmount}</span></div>
+            ${invalidCount > 0 ? `<div class="text-xs text-secondary">${invalidCount}件失效</div>` : ''}
+          </div>
+          <button class="btn btn-primary" style="height: 40px; padding: 0 24px; border-radius: 20px;" ${selectedCount === 0 ? 'disabled' : ''} onclick="UI.toast('去结算功能开发中', 'info')">结算(${selectedCount})</button>
+        </div>
+      `;
+    }
+
+    // Update bottom tab badge
+    const badge = document.querySelector('.h5-tab-item[data-target="view-cart"] .h5-tab-badge');
+    if (badge) {
+      const totalQty = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
+      if (totalQty > 0) {
+        badge.innerText = totalQty;
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  },
+
+  toggleCartItem(id, checked) {
+    const item = MockData.cart.find(c => c.id === id);
+    if (item) item.checked = checked;
+    this.renderCart();
+  },
+
+  toggleAllCart(checked) {
+    MockData.cart.forEach(c => {
+      if (c.status === 1) c.checked = checked;
+    });
+    this.renderCart();
+  },
+
+  updateCartQty(id, delta) {
+    const item = MockData.cart.find(c => c.id === id);
+    if (item) {
+      const newQty = item.quantity + delta;
+      if (newQty > 0) {
+        item.quantity = newQty;
+        this.renderCart();
+      }
+    }
+  },
+
+  setCartQty(id, value) {
+    const item = MockData.cart.find(c => c.id === id);
+    if (item) {
+      const newQty = parseInt(value, 10);
+      if (!isNaN(newQty) && newQty > 0) {
+        item.quantity = newQty;
+      }
+      this.renderCart();
+    }
+  },
+
+  removeCartItem(id) {
+    if (confirm('确认移除？')) {
+      MockData.cart = MockData.cart.filter(c => c.id !== id);
+      this.renderCart();
+      UI.toast('已移除', 'success');
+    }
+  }
+};
+
+window.H5App = H5App;
+
+document.addEventListener('DOMContentLoaded', () => {
+  H5App.init();
+});
