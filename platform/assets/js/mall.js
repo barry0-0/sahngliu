@@ -444,7 +444,10 @@ const MallApp = {
       let isMine = d.buyerName === this.currentBuyerName;
       let btn = isMine ? 
         `<span class="text-secondary text-sm">我发布的</span>` : 
-        `<button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('弹出IM聊天框与买家沟通', 'info'))">立即报价</button>`;
+        `<div class="flex gap-2" style="margin-top: 12px;">
+           <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src=''; })">💬 沟通</button>
+           <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('进入报价页面', 'info'))">立即报价</button>
+         </div>`;
       
       html += `
         <div class="card product-card">

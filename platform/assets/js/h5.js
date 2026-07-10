@@ -165,10 +165,10 @@ const H5App = {
               </button>
               
               <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
-                <div class="quantity-stepper" style="transform: scale(0.85); transform-origin: right center; margin-right: 0;">
-                  <button class="stepper-btn minus" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
-                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" onclick="event.stopPropagation()">
-                  <button class="stepper-btn plus" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+                <div class="quantity-stepper" style="transform: scale(1.0); transform-origin: right center; margin-right: 8px;">
+                  <button class="stepper-btn minus" style="font-size: 16px; width: 28px; height: 28px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
+                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 14px; width: 40px; height: 28px;" onclick="event.stopPropagation()">
+                  <button class="stepper-btn plus" style="font-size: 16px; width: 28px; height: 28px;" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
                 </div>
                 <button class="btn btn-primary flex items-center justify-center" style="width: 28px; height: 28px; padding: 0; border-radius: 50%; flex-shrink: 0; font-size: 14px;" onclick="H5App.quickAddToCart('${p.id}')">
                   🛒
@@ -265,7 +265,10 @@ const H5App = {
             <span>${d.buyerName}</span>
             <span>${d.publishTime} 发布</span>
           </div>
-          <button class="btn btn-primary" style="width:100%; height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('弹出IM聊天框与买家沟通', 'info'))">立即报价</button>
+          <div class="flex gap-2 mt-2">
+            <button class="btn btn-outline flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src=''; })">💬 沟通</button>
+            <button class="btn btn-primary flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('进入报价页面', 'info'))">立即报价</button>
+          </div>
         </div>
       `;
     });
