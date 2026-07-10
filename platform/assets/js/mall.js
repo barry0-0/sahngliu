@@ -445,8 +445,8 @@ const MallApp = {
       let btn = isMine ? 
         `<span class="text-secondary text-sm">我发布的</span>` : 
         `<div class="flex gap-2" style="margin-top: 12px;">
-           <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src=''; })">💬 沟通</button>
-           <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => UI.toast('进入报价页面', 'info'))">立即报价</button>
+           <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+           <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.title}', '${d.expectedPrice}'))">立即报价</button>
          </div>`;
       
       html += `
@@ -567,6 +567,71 @@ const MallApp = {
       `;
       UI.showModal('modal-bidding-detail');
     }
+  },
+
+  openQuoteModal(name, expectedPrice) {
+    const titleEl = document.getElementById('quote-prod-name');
+    const expectedEl = document.getElementById('quote-prod-expected');
+    if (titleEl) titleEl.innerText = name;
+    if (expectedEl) expectedEl.innerText = '期望价格: ' + expectedPrice;
+
+    // Reset inputs
+    document.getElementById('quote-price').value = '';
+    document.getElementById('quote-qty').value = '';
+    document.getElementById('quote-notes').value = '';
+
+    UI.openModal('modal-quote');
+  },
+
+  sendQuickMessage(type) {
+    const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
+
+    let contentHtml = '';
+    let toastMsg = '';
+
+    if (type === 'inquiry') {
+      contentHtml = '您好，我想咨询该商品的最新批发价格及供货周期，请回复。';
+      toastMsg = '询价卡片发送成功';
+    } else if (type === 'quote') {
+      const price = prompt('请输入您的报价单价（如：4150元/吨）：');
+      if (!price) return;
+      const qty = prompt('请输入可供货数量（如：50吨）：');
+      if (!qty) return;
+      contentHtml = `
+        <div style="padding: 4px 0; font-size: 14px;">
+          <strong style="color: #26a25b; display: block; margin-bottom: 6px;">💰 【货源报价单】</strong>
+          <div>报价单价：<span style="font-weight: bold; color: #26a25b;">${price}</span></div>
+          <div>可供数量：<span>${qty}</span></div>
+        </div>
+      `;
+      toastMsg = '报价卡片发送成功';
+    } else if (type === 'bargain') {
+      const price = prompt('请输入您的意向砍价单价（如：3900元/吨）：');
+      if (!price) return;
+      contentHtml = `
+        <div style="padding: 4px 0; font-size: 14px;">
+          <strong style="color: #d55300; display: block; margin-bottom: 6px;">🤝 【意向砍价卡】</strong>
+          <div>砍价目标：<span style="font-weight: bold; color: #d55300;">${price}</span></div>
+          <div style="font-size: 12px; margin-top: 4px; opacity: 0.9;">期待与您促成交易，是否接受？</div>
+        </div>
+      `;
+      toastMsg = '砍价卡片发送成功';
+    }
+
+    // Append user message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'flex gap-3 justify-end';
+    msgDiv.innerHTML = `
+      <div class="p-3 rounded shadow-sm text-sm" style="max-width: 75%; border-radius: 16px 0 16px 16px; background: ${type === 'quote' ? '#edfbf3' : type === 'bargain' ? '#fff8f0' : 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%)'}; color: ${type === 'quote' ? '#26a25b' : type === 'bargain' ? '#d55300' : '#ffffff'}; border: 1px solid ${type === 'quote' ? '#d1f4df' : type === 'bargain' ? '#ffe3c2' : 'transparent'}; line-height: 1.5;">
+        ${contentHtml}
+      </div>
+      <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs flex-shrink-0">我</div>
+    `;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    UI.toast(toastMsg + '，已同步至消息中心', 'success');
   },
 
   // === 个人中心渲染 ===

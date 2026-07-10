@@ -27,9 +27,13 @@
   /* 边框与背景 */
   --border-color: #e5e6eb;
   --border-light: #f2f3f5;
+  --border-strong: #c9cdd4;
   --bg-body: #f7f8fa;
   --bg-component: #ffffff;
   --bg-hover: #f2f3f5;
+  --surface-color: #ffffff;
+  --surface-alt: #f2f3f5;
+  --accent-color: #d54941;
   
   /* 玻璃拟物化变量 */
   --glass-bg: rgba(255, 255, 255, 0.75);

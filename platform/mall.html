@@ -474,8 +474,8 @@
   </footer>
 
   <!-- 竞价详情弹窗 (包含6步流程) -->
-  <div class="modal-overlay" id="modal-bidding-detail">
-    <div class="modal" style="width: 800px;">
+  <div class="modal-overlay" id="modal-bidding-detail" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1050;">
+    <div class="modal" style="width: 800px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4); box-shadow: var(--shadow-lg); border-radius: var(--radius-lg); animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
       <div class="modal-header">
         <div class="modal-title">竞价项目详情</div>
         <button class="modal-close" data-close-modal="modal-bidding-detail">&times;</button>
@@ -525,46 +525,59 @@
 
 <!-- 聊天沟通弹窗 (PC) - 右侧滑出 -->
 <style>@keyframes slideLeft { from { transform: translateX(100%); } to { transform: translateX(0); } }</style>
-<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:flex-end; background: rgba(0,0,0,0.6); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
-  <div class="modal-content flex flex-col" style="width: 400px; height: 100vh; background: var(--surface-color); animation: slideLeft 0.3s ease-out; overflow: hidden; box-shadow: -4px 0 24px rgba(0,0,0,0.1);">
+<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:flex-end; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
+  <div class="modal-content flex flex-col" style="width: 420px; height: 100vh; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.4); animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: -10px 0 40px rgba(0,0,0,0.15);">
     
     <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-light" style="background: var(--surface-alt);">
+    <div class="flex justify-between items-center p-4 border-b border-light" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded bg-primary text-white flex items-center justify-center font-bold">服</div>
+        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">服</div>
         <div>
-          <div class="font-bold text-main" id="chat-shop-name">商家客服</div>
-          <div class="text-xs text-secondary">在线</div>
+          <div class="font-bold text-main" id="chat-shop-name" style="font-size: 15px;">商家客服</div>
+          <div class="text-xs text-success flex items-center gap-1">● 在线</div>
         </div>
       </div>
-      <button class="btn btn-text text-secondary" onclick="UI.closeModal('modal-chat')">✕</button>
+      <button class="btn btn-text text-secondary hover:text-main" style="font-size: 18px;" onclick="UI.closeModal('modal-chat')">✕</button>
     </div>
 
     <!-- 涉及商品区域 -->
-    <div class="p-3 flex items-center gap-3 border-b border-light" style="background: var(--surface-color);">
-      <img id="chat-prod-img" src="" style="width: 48px; height: 48px; object-fit: cover; border-radius: 2px;">
+    <div class="p-3 flex items-center gap-3 border-b border-light" style="background: rgba(255,255,255,0.7); margin: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+      <img id="chat-prod-img" src="" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); background: #f0f2f5;">
       <div class="flex-1 overflow-hidden">
         <div class="text-sm font-bold truncate text-main" id="chat-prod-title">--</div>
-        <div class="text-xs text-danger" id="chat-prod-price">--</div>
+        <div class="text-xs text-danger font-bold mt-1" id="chat-prod-price">--</div>
       </div>
-      <button class="btn btn-outline text-xs px-2 py-1" onclick="alert('已发送商品卡片')">发送给客服</button>
+      <button class="btn btn-outline text-xs px-3 py-1.5" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color);" onclick="alert('已发送商品卡片')">发送卡片</button>
     </div>
 
     <!-- 聊天记录区 -->
-    <div class="flex-1 p-4 overflow-y-auto" style="background: #F7F6F2; display: flex; flex-direction: column; gap: 16px;">
-      <div class="text-center text-xs text-secondary my-2">今天 10:24</div>
+    <div class="flex-1 p-4 overflow-y-auto" id="chat-messages" style="background: linear-gradient(to bottom, #f3f4f6, #f9fafb); display: flex; flex-direction: column; gap: 16px;">
+      <div class="text-center text-xs text-secondary my-1">今天 10:24</div>
       <div class="flex gap-3">
-        <div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center text-xs">服</div>
-        <div class="bg-white p-3 rounded shadow-sm text-sm" style="max-width: 70%; border-radius: 0 8px 8px 8px;">
-          您好！请问有什么可以帮您的？该商品目前库存充足。
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs flex-shrink-0" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">服</div>
+        <div class="bg-white p-3 rounded shadow-sm text-sm" style="max-width: 75%; border-radius: 0 16px 16px 16px; border: 1px solid rgba(0,0,0,0.03); color: var(--text-main); line-height: 1.5;">
+          您好！已为您开启该项目的安全沟通通道，请选择下方的快捷卡片与商家进行洽谈。
         </div>
       </div>
     </div>
 
-    <!-- 输入区 -->
-    <div class="p-4 border-t border-light flex gap-2 bg-white">
-      <input type="text" id="chat-input" class="form-control flex-1" placeholder="输入您想沟通的内容...">
-      <button class="btn btn-primary px-6" onclick="let input=document.getElementById('chat-input'); if(!input.value) return; UI.toast('发送成功，已同步至消息中心(聊天室)', 'success'); input.value='';">发送</button>
+    <!-- 快捷沟通卡片区 (替代输入框) -->
+    <div class="p-4 border-t border-light flex flex-col gap-3" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-bottom: 2px;">⚠️ 已启用敏感词监管，仅允许通过安全卡片快捷沟通</div>
+      <div class="grid grid-cols-3 gap-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #f0f7ff; border: 1px solid #cce5ff; color: #0052d9; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('inquiry')">
+          <span style="font-size: 20px; margin-bottom: 6px;">💬</span>
+          <span style="font-size: 13px; font-weight: bold;">询价卡片</span>
+        </button>
+        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #edfbf3; border: 1px solid #d1f4df; color: #26a25b; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('quote')">
+          <span style="font-size: 20px; margin-bottom: 6px;">💰</span>
+          <span style="font-size: 13px; font-weight: bold;">报价卡片</span>
+        </button>
+        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #fff8f0; border: 1px solid #ffe3c2; color: #d55300; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('bargain')">
+          <span style="font-size: 20px; margin-bottom: 6px;">🤝</span>
+          <span style="font-size: 13px; font-weight: bold;">砍价卡片</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -592,7 +605,49 @@
     </div>
     <div class="p-4 border-t border-light flex justify-end gap-3">
       <button class="btn btn-outline" onclick="UI.closeModal('modal-publish-demand')">取消</button>
-      <button class="btn btn-primary px-6" onclick="UI.toast('求购意向发布成功！', 'success'); UI.closeModal('modal-publish-demand');">确认发布</button>
+      <button class="btn btn-primary px-6" onclick="event.stopPropagation(); UI.toast('求购意向发布成功！', 'success'); UI.closeModal('modal-publish-demand');">确认发布</button>
+    </div>
+  </div>
+</div>
+
+<!-- 立即报价弹窗 (PC) -->
+<div class="modal-overlay" id="modal-quote" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1200;" onclick="if(event.target===this) UI.closeModal('modal-quote')">
+  <div class="modal-content flex flex-col" style="width: 540px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4); box-shadow: var(--shadow-lg); border-radius: var(--radius-lg); overflow: hidden; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div class="flex justify-between items-center p-4 border-b border-light" style="background: rgba(255, 255, 255, 0.8);">
+      <h3 class="font-bold text-lg text-main flex items-center gap-2">✍️ 提交货源报价</h3>
+      <button class="btn btn-text text-secondary hover:text-main" style="font-size: 18px;" onclick="UI.closeModal('modal-quote')">✕</button>
+    </div>
+    <div class="p-5 flex flex-col gap-4">
+      <div class="p-4 bg-gray-50 rounded-xl" style="border: 1px solid var(--border-light); background: #f9fafb;">
+        <div class="text-xs text-secondary font-bold uppercase tracking-wider">采购意向项目</div>
+        <div class="text-sm font-bold text-main mt-1" id="quote-prod-name">--</div>
+        <div class="text-xs text-danger font-bold mt-1" id="quote-prod-expected">期望价: --</div>
+      </div>
+      
+      <!-- 提示语 -->
+      <div class="p-3 text-xs flex gap-2 items-start" style="background: rgba(0, 82, 217, 0.05); color: var(--primary-color); border: 1px solid rgba(0, 82, 217, 0.1); border-radius: 8px;">
+        <span style="font-size: 14px;">💡</span>
+        <span style="line-height: 1.4;">报价提交后，采购方将直接在后台收到通知，并可通过平台沟通机制（消息中心聊天室）与您线下商议合同细节。</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label class="block text-sm text-regular mb-1 font-bold">我的报价单价 <span class="text-danger">*</span></label>
+          <input type="text" id="quote-price" class="form-control w-full" style="height: 40px; border-radius: 8px;" placeholder="例如：4150元/吨">
+        </div>
+        <div>
+          <label class="block text-sm text-regular mb-1 font-bold">可供货数量 <span class="text-danger">*</span></label>
+          <input type="text" id="quote-qty" class="form-control w-full" style="height: 40px; border-radius: 8px;" placeholder="例如：50吨">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-regular mb-1 font-bold">报价备注说明</label>
+        <textarea id="quote-notes" class="form-control w-full" rows="3" style="border-radius: 8px; padding: 10px;" placeholder="请在此描述付款方式、运输负责方、发票开立类型或交货期限等详细说明..."></textarea>
+      </div>
+    </div>
+    <div class="p-4 border-t border-light flex justify-end gap-3" style="background: #f9fafb;">
+      <button class="btn btn-outline" style="border-radius: 18px;" onclick="UI.closeModal('modal-quote')">取消</button>
+      <button class="btn btn-primary px-6" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); border-radius: 18px; border: none; height: 36px; display: flex; align-items: center;" onclick="event.stopPropagation(); UI.toast('报价提交成功！等待采购商联系。', 'success'); UI.closeModal('modal-quote');">确认提交报价</button>
     </div>
   </div>
 </div>

@@ -3,7 +3,7 @@
  * 包含：Toast提示、Modal弹窗、Tab切换
  */
 
-const UI = {
+window.UI = {
   /**
    * Toast 提示框
    * @param {string} message 提示信息
@@ -52,13 +52,21 @@ const UI = {
     const modal = document.getElementById(id);
     if (modal) {
       modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.classList.add('active');
+      }, 10);
     }
   },
 
   closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
-      modal.style.display = 'none';
+      modal.classList.remove('active');
+      setTimeout(() => {
+        if (!modal.classList.contains('active')) {
+          modal.style.display = 'none';
+        }
+      }, 250);
     }
   },
 
@@ -101,12 +109,7 @@ const UI = {
    * @param {string} modalId 模态框对应的 ID
    */
   showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add('active');
-    } else {
-      console.error('Modal not found: ' + modalId);
-    }
+    this.openModal(modalId);
   },
 
   /**
@@ -183,6 +186,7 @@ const UI = {
     return html;
   }
 };
+var UI = window.UI;
 
 // 全局业务公共方法
 window.MainApp = {
