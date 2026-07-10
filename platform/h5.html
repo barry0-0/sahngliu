@@ -406,7 +406,7 @@
 
     <!-- 底部按钮 -->
     <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="UI.toast('求购意向发布成功！', 'success'); UI.closeModal('sheet-h5-publish-demand');">确认发布</button>
+      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="event.stopPropagation(); UI.toast('求购意向发布成功！', 'success'); setTimeout(() => UI.closeModal('sheet-h5-publish-demand'), 300);">确认发布</button>
     </div>
   </div>
 </div>
