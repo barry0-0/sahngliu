@@ -93,6 +93,8 @@ ul, ol {
 
 /* Utilities */
 .flex { display: flex; }
+.flex-1 { flex: 1; }
+.w-full { width: 100%; }
 .flex-col { display: flex; flex-direction: column; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }

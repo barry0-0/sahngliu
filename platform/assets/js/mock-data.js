@@ -156,7 +156,8 @@ window.MockData = {
   biddingAnnouncements: [
     { id: 'BID20260801', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopName: '远大钢铁官方直营店', title: '报废钢材处理竞标一批 约500吨', startPrice: '¥800,000.00', bidEndTime: '2026-07-16 12:00', status: 1, currentMaxOffer: '¥850,000.00', winner: '-' },
     { id: 'BID20260802', resId: 'RES002', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80', shopName: '海螺水泥华东总代', title: '库存临期袋装水泥清仓 10000包', startPrice: '¥120,000.00', bidEndTime: '2026-07-20 18:00', status: 0, currentMaxOffer: '-', winner: '-' },
-    { id: 'BID20260705', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopName: '华东木材集散中心', title: '南美白橡木 20个柜原木 竞标', startPrice: '¥2,000,000.00', bidEndTime: '2026-07-06 12:00', status: 3, currentMaxOffer: '¥2,450,000.00', winner: '万通建材采购部' }
+    { id: 'BID20260705', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopName: '华东木材集散中心', title: '南美白橡木 20个柜原木 竞标', startPrice: '¥2,000,000.00', bidEndTime: '2026-07-06 12:00', status: 3, currentMaxOffer: '¥2,450,000.00', winner: '万通建材采购部' },
+    { id: 'BID20260706', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopName: '万达木业集团', title: '特级辐射松板材 200立方米 竞标', startPrice: '¥360,000.00', bidEndTime: '2026-07-22 10:00', status: 1, currentMaxOffer: '¥380,000.00', winner: '-' }
   ],
 
   biddingOffers: [

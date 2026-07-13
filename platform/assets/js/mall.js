@@ -396,15 +396,14 @@ const MallApp = {
     const dGrid = document.getElementById('list-home-demands');
     if (dGrid) {
       let dHtml = '';
-      MockData.demands.slice(0, 2).forEach(d => { // 只显示2个，与竞价对齐
+      MockData.demands.slice(0, 4).forEach(d => { // 与竞价条数相同，均展示4条
         dHtml += `
-          <div class="product-card cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-demand\\']').click()">
-            <div class="product-info">
-              <div class="product-title" title="${d.title}">${d.title}</div>
-              <div class="product-price" style="color: var(--danger-color);">${d.expectedPrice}</div>
-              <div class="product-shop text-sm text-secondary mt-2 flex justify-between items-center">
-                <span>${d.buyerName}</span>
-                <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">求购</span>
+          <div class="product-card cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-demand\\']').click()" style="margin: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #f1f5f9;">
+            <div class="product-info" style="padding: 12px 16px;">
+              <div class="product-title" title="${d.title}" style="font-size: 14px; font-weight: bold; color: #1e293b;">${d.title}</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                <span class="product-price" style="color: var(--danger-color); font-weight: 800; font-size: 14px;">${d.expectedPrice}</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 500;">${d.buyerName}</span>
               </div>
             </div>
           </div>
@@ -416,18 +415,20 @@ const MallApp = {
     // 渲染首页的 热门竞价
     const bidList = document.getElementById('list-home-bids');
     if (bidList) {
-      const bids = MockData.biddingAnnouncements.slice(0, 4);
+      const bids = MockData.biddingAnnouncements.slice(0, 4); // 均展示4条
       let bHtml = '';
       bids.forEach(b => {
-        let tag = b.status === 1 ? '<span class="tag tag-success text-xs">竞价中</span>' : '<span class="tag tag-secondary text-xs">已结束</span>';
+        let tag = b.status === 1 ? '<span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">竞价中</span>' : '<span class="tag tag-secondary text-[10px]" style="border-radius: 6px; padding: 2px 6px;">已结束</span>';
         bHtml += `
-          <div class="product-card cursor-pointer" onclick="MallApp.showBiddingDetail('${b.id}')">
-            <div class="product-info">
-              <div class="product-title" title="${b.title}">${b.title}</div>
-              <div class="product-price" style="color: var(--danger-color);">${b.currentMaxOffer || b.startPrice}</div>
-              <div class="product-shop text-sm text-secondary mt-2 flex justify-between items-center">
-                <span>${b.shopName}</span>
-                <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">竞价</span>
+          <div class="product-card cursor-pointer" onclick="MallApp.showBiddingDetail('${b.id}')" style="margin: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #f1f5f9;">
+            <div class="product-info" style="padding: 12px 16px;">
+              <div class="product-title" title="${b.title}" style="font-size: 14px; font-weight: bold; color: #1e293b;">${b.title}</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                <span class="product-price" style="color: var(--danger-color); font-weight: 800; font-size: 14px;">${b.currentMaxOffer || b.startPrice}</span>
+                <div class="flex items-center gap-2">
+                  <span style="font-size: 11px; color: #64748b; font-weight: 500;">${b.shopName}</span>
+                  ${tag}
+                </div>
               </div>
             </div>
           </div>

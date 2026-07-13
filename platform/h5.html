@@ -472,43 +472,46 @@
 </div>
 
 <!-- H5 立即报价弹窗 (Bottom Sheet) -->
-<div class="modal-overlay" id="sheet-h5-quote" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-quote')">
-  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; height: 78vh; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px 24px 0 0; animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);">
+<div class="modal-overlay" id="sheet-h5-quote" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-quote')">
+  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; height: 75vh; background: #ffffff; border-radius: 24px 24px 0 0; animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);">
     <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-light" style="background: rgba(255, 255, 255, 0.85);">
-      <h3 class="font-bold text-lg text-main">✍️ 提交货源报价</h3>
-      <button class="btn btn-text text-secondary p-1" style="font-size: 16px;" onclick="UI.closeModal('sheet-h5-quote')">✕</button>
+    <div class="flex justify-between items-center p-4 border-b border-slate-100" style="background: #ffffff;">
+      <div class="flex flex-col">
+        <h3 class="font-black text-base text-slate-800 m-0" style="margin: 0; line-height: 1.2;">提交货源报价</h3>
+        <div style="width: 32px; height: 3px; background: var(--primary-color); border-radius: 2px; margin-top: 4px;"></div>
+      </div>
+      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="font-size: 18px; padding: 0; min-width: 24px; background: none; border: none; cursor: pointer;" onclick="UI.closeModal('sheet-h5-quote')">✕</button>
     </div>
     <!-- 表单区域 -->
     <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4">
-      <div class="p-3 bg-gray-50" style="border: 1px solid var(--border-light); border-radius: 16px; background: #f9fafb;">
-        <div class="text-[10px] text-secondary font-bold uppercase tracking-wider">采购需求项目</div>
-        <div class="text-sm font-bold text-main mt-1" id="h5-quote-prod-name">--</div>
+      <div class="p-3.5 bg-slate-50 border border-slate-100" style="border-radius: 16px;">
+        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">采购需求项目</div>
+        <div class="text-sm font-bold text-slate-700 mt-1.5" id="h5-quote-prod-name">--</div>
         <div class="text-xs text-danger font-bold mt-1" id="h5-quote-prod-expected">期望价: --</div>
       </div>
       
       <!-- 提示语 -->
-      <div class="p-3 text-xs flex gap-2 items-start" style="background: rgba(0, 82, 217, 0.05); color: var(--primary-color); border: 1px solid rgba(0, 82, 217, 0.1); border-radius: 12px;">
+      <div class="p-3 text-xs flex gap-2 items-start" style="background: rgba(0, 82, 217, 0.03); color: var(--primary-color); border: 1px solid rgba(0, 82, 217, 0.08); border-radius: 12px;">
         <span style="font-size: 14px; line-height: 1;">💡</span>
-        <span style="line-height: 1.4;">报价提交后，采购方可直接通过【消息中心】与您发起线上沟通。</span>
+        <span style="line-height: 1.4; color: #475569;">报价提交后，采购方可直接通过【消息中心】与您发起线上沟通。</span>
       </div>
 
       <div>
-        <label class="block text-sm text-regular mb-1 font-bold">我的报价单价 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-quote-price" class="form-control w-full" placeholder="例如：4150元/吨" style="height: 40px; font-size: 14px; border-radius: 10px;">
+        <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价单价 <span class="text-danger">*</span></label>
+        <input type="text" id="h5-quote-price" class="form-control w-full" placeholder="例如：4150元/吨" style="height: 40px; font-size: 13px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-weight: bold;">
       </div>
       <div>
-        <label class="block text-sm text-regular mb-1 font-bold">可供货数量 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-quote-qty" class="form-control w-full" placeholder="例如：50吨" style="height: 40px; font-size: 14px; border-radius: 10px;">
+        <label class="block text-xs text-slate-600 mb-1.5 font-bold">可供货数量 <span class="text-danger">*</span></label>
+        <input type="text" id="h5-quote-qty" class="form-control w-full" placeholder="例如：50吨" style="height: 40px; font-size: 13px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-weight: bold;">
       </div>
       <div>
-        <label class="block text-sm text-regular mb-1 font-bold">报价备注说明</label>
-        <textarea id="h5-quote-notes" class="form-control w-full" rows="3" placeholder="例如：规格标准、交期长短、物流承担方等..." style="font-size: 14px; padding: 10px; border-radius: 10px;"></textarea>
+        <label class="block text-xs text-slate-600 mb-1.5 font-bold">报价备注说明</label>
+        <textarea id="h5-quote-notes" class="form-control w-full" rows="3" placeholder="例如：规格标准、交期长短、物流承担方等..." style="font-size: 13px; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0;"></textarea>
       </div>
     </div>
     <!-- 底部按钮 -->
-    <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-3" style="border-radius: 24px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);" onclick="event.stopPropagation(); UI.toast('报价提交成功！等待采购商联系。', 'success'); setTimeout(() => UI.closeModal('sheet-h5-quote'), 300);">确认提交报价</button>
+    <div class="p-4 border-t border-slate-100 flex gap-2 bg-white pb-safe">
+      <button class="btn btn-primary w-full py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); border: none;" onclick="event.stopPropagation(); UI.toast('报价提交成功！等待采购商联系。', 'success'); setTimeout(() => UI.closeModal('sheet-h5-quote'), 300);">确认提交报价</button>
     </div>
   </div>
 </div>
