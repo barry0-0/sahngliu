@@ -6,6 +6,15 @@
   <title>享宇森云 - 运营端后台</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <style>
+    :root {
+      --primary-color: #7c3aed;
+      --primary-hover: #6d28d9;
+      --primary-active: #5b21b6;
+      --primary-bg: #f5f3ff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
     .stat-card { background: var(--bg-component); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); transition: all 0.3s ease; }
     .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary-color); }
     .stat-title { color: var(--text-secondary); font-size: 14px; margin-bottom: 12px; }
@@ -59,7 +68,7 @@
         </div>
       </div>
         <div class="menu-item has-submenu">
-          <div class="menu-title" onclick="toggleSubmenu(this)">配置中心 ▼</div>
+        <div class="menu-title" onclick="toggleSubmenu(this)">配置中心 <span class="arrow">▼</span></div>
           <div class="sub-menu">
             <div class="sub-menu-item" data-page="tab-config-commission">抽佣配置</div>
             <div class="sub-menu-item" data-page="tab-config-decoration">商城装修</div>
@@ -160,11 +169,11 @@
                   <span class="text-secondary whitespace-nowrap">企业认证状态：</span>
                   <select class="form-control" style="width: 120px;"><option>全部</option><option>已认证</option><option>待审核</option><option>未认证</option></select>
                 </div>
-                <button class="btn btn-primary" style="background: #9a66e4; border-color: #9a66e4;">查询</button>
+                <button class="btn btn-primary">查询</button>
               </div>
               <div class="flex gap-2">
-                <button class="btn btn-primary" style="background: #9a66e4; border-color: #9a66e4;">导出为Excel</button>
-                <button class="btn btn-primary" style="background: #9a66e4; border-color: #9a66e4;">导出记录</button>
+                <button class="btn btn-primary">导出为Excel</button>
+                <button class="btn btn-primary">导出记录</button>
               </div>
             </div>
             

@@ -8,13 +8,13 @@ const MallApp = {
   init() {
     this.initNavTabs();
     this.initUCTabs();
-    
+
     this.renderCategories();
     this.renderProducts();
     this.renderDemands();
     this.renderBids();
     this.renderHomeExtras();
-    
+
     // User Center Renders
     this.renderUCOrders();
     this.renderUCInvoices();
@@ -29,10 +29,10 @@ const MallApp = {
     const menu = document.getElementById('home-category-menu');
     if (menu && MockData.productCategories && MockData.decorationConfig) {
       let html = '<div style="padding: 14px 20px 8px; font-weight: bold; color: var(--text-main); font-size: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 8px;">📦 全部品类</div>';
-      
+
       const displayIds = MockData.decorationConfig.displayCategories.slice(0, 5);
       const displayCats = MockData.productCategories.filter(c => displayIds.includes(c.id));
-      
+
       displayCats.forEach(c => {
         html += `<div class="home-cat-item" onclick="MallApp.goToSpotMarket('${c.id}')">
                    <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 
@@ -68,27 +68,27 @@ const MallApp = {
     const shop = MockData.shopDetails && MockData.shopDetails[shopId];
     document.getElementById('shop-name-display').innerText = shop ? shop.name : shopName;
     document.getElementById('shop-id-display').innerText = 'No.' + shopId;
-    
+
     if (shop) {
       const banner = document.getElementById('shop-banner-display');
       if (banner) banner.style.backgroundImage = `url(${shop.banner})`;
-      
+
       const avatar = document.getElementById('shop-avatar-display');
       if (avatar) avatar.innerText = shop.avatar;
-      
+
       const biz = document.getElementById('shop-biz-display');
       if (biz) biz.innerText = shop.mainBusiness;
-      
+
       const reg = document.getElementById('shop-reg-display');
       if (reg) reg.innerText = '入驻时间：' + shop.regTime;
-      
+
       const followBtn = document.getElementById('shop-follow-btn');
       if (followBtn) {
         followBtn.innerText = shop.isFollowed ? '已关注' : '关注店铺';
         followBtn.className = shop.isFollowed ? 'btn' : 'btn btn-primary';
       }
     }
-    
+
     document.querySelector('.mall-nav-item[data-target=\'mall-shop\']').click();
     this.renderProducts('', shopId);
   },
@@ -118,10 +118,10 @@ const MallApp = {
     items.forEach(item => {
       item.addEventListener('click', () => {
         items.forEach(i => i.classList.remove('active'));
-        if(item.dataset.target.indexOf('ucenter') === -1 && item.dataset.target.indexOf('cart') === -1) {
-           item.classList.add('active'); // 隐藏导航不加 active
+        if (item.dataset.target.indexOf('ucenter') === -1 && item.dataset.target.indexOf('cart') === -1) {
+          item.classList.add('active'); // 隐藏导航不加 active
         }
-        
+
         views.forEach(v => {
           v.classList.remove('active');
           if (v.id === item.dataset.target) v.classList.add('active');
@@ -138,7 +138,7 @@ const MallApp = {
       item.addEventListener('click', () => {
         items.forEach(i => i.classList.remove('active'));
         item.classList.add('active');
-        
+
         views.forEach(v => {
           v.classList.remove('active');
           if (v.id === item.dataset.target) {
@@ -153,14 +153,14 @@ const MallApp = {
   renderProducts(keyword = '', shopId = null) {
     let html = '';
     let filtered = MockData.products.filter(p => p.status === 1);
-    
+
     if (keyword) {
       filtered = filtered.filter(p => p.name.includes(keyword) || p.shopName.includes(keyword));
     }
     if (shopId) {
       filtered = filtered.filter(p => p.shopId === shopId);
     }
-    
+
     filtered.forEach(p => {
       html += `
         <div class="product-card cursor-pointer" onclick="MallApp.showProductDetail('${p.id}')">
@@ -189,7 +189,7 @@ const MallApp = {
         </div>
       `;
     });
-    
+
     const gridShop = document.getElementById('grid-shop-products');
     if (gridShop && shopId) gridShop.innerHTML = html;
 
@@ -275,7 +275,7 @@ const MallApp = {
       UI.toast('请输入搜索关键词', 'warning');
       return;
     }
-    
+
     if (type === 'merchant') {
       // 模拟搜到第一个商家
       const p = MockData.products.find(p => p.shopName.includes(kw));
@@ -306,12 +306,12 @@ const MallApp = {
       UI.toast('请输入店内搜索词', 'warning');
       return;
     }
-    
+
     // 渲染店内商品过滤
     const grid = document.getElementById('grid-shop-products');
     let html = '';
     let filtered = MockData.products.filter(p => p.status === 1 && p.shopId === shopId && p.name.includes(kw));
-    
+
     filtered.forEach(p => {
       html += `
         <div class="product-card cursor-pointer" onclick="MallApp.showProductDetail('${p.id}')">
@@ -347,7 +347,7 @@ const MallApp = {
     if (!productId) return;
     quantity = parseInt(quantity);
     if (isNaN(quantity) || quantity < 1) quantity = 1;
-    
+
     let existing = MockData.cart.find(c => c.productId === productId);
     if (existing) {
       existing.quantity += quantity;
@@ -367,15 +367,15 @@ const MallApp = {
         });
       }
     }
-    
+
     this.renderCart();
-    
+
     // 更新右上角购物车角标
     const badge = document.querySelector('.mall-header .tag-danger');
     if (badge) {
       badge.innerText = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
     }
-    
+
     UI.toast(`已加入购物车，数量: ${quantity}`, 'success');
   },
 
@@ -395,17 +395,21 @@ const MallApp = {
     // 渲染大宗求购
     const dGrid = document.getElementById('list-home-demands');
     if (dGrid) {
-      let dHtml = '<table class="table" style="width:100%"><thead><tr><th>需求描述</th><th>采购方</th><th>期望报价</th></tr></thead><tbody>';
-      MockData.demands.slice(0, 4).forEach(d => {
+      let dHtml = '';
+      MockData.demands.slice(0, 2).forEach(d => { // 只显示2个，与竞价对齐
         dHtml += `
-          <tr class="cursor-pointer hover:bg-gray-50" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-demand\\']').click()">
-            <td class="font-bold">${d.title}</td>
-            <td class="text-sm text-secondary">${d.buyerName}</td>
-            <td class="text-danger font-bold text-right">${d.expectedPrice}</td>
-          </tr>
+          <div class="product-card cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-demand\\']').click()">
+            <div class="product-info">
+              <div class="product-title" title="${d.title}">${d.title}</div>
+              <div class="product-price" style="color: var(--danger-color);">${d.expectedPrice}</div>
+              <div class="product-shop text-sm text-secondary mt-2 flex justify-between items-center">
+                <span>${d.buyerName}</span>
+                <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">求购</span>
+              </div>
+            </div>
+          </div>
         `;
       });
-      dHtml += '</tbody></table>';
       dGrid.innerHTML = dHtml;
     }
 
@@ -413,18 +417,22 @@ const MallApp = {
     const bidList = document.getElementById('list-home-bids');
     if (bidList) {
       const bids = MockData.biddingAnnouncements.slice(0, 4);
-      let bHtml = '<table class="table" style="width:100%"><thead><tr><th>竞价项目</th><th>状态</th><th>底价/当前价</th></tr></thead><tbody>';
+      let bHtml = '';
       bids.forEach(b => {
         let tag = b.status === 1 ? '<span class="tag tag-success text-xs">竞价中</span>' : '<span class="tag tag-secondary text-xs">已结束</span>';
         bHtml += `
-          <tr class="cursor-pointer hover:bg-gray-50" onclick="MallApp.showBiddingDetail('${b.id}')">
-            <td class="font-bold">${b.title} <div class="text-sm text-secondary font-normal mt-1 flex items-center gap-2"><span>${b.shopName}</span><span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">No.${b.shopId}</span></div></td>
-            <td>${tag}</td>
-            <td class="text-danger font-bold text-right">${b.currentMaxOffer || b.startPrice}</td>
-          </tr>
+          <div class="product-card cursor-pointer" onclick="MallApp.showBiddingDetail('${b.id}')">
+            <div class="product-info">
+              <div class="product-title" title="${b.title}">${b.title}</div>
+              <div class="product-price" style="color: var(--danger-color);">${b.currentMaxOffer || b.startPrice}</div>
+              <div class="product-shop text-sm text-secondary mt-2 flex justify-between items-center">
+                <span>${b.shopName}</span>
+                <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded">竞价</span>
+              </div>
+            </div>
+          </div>
         `;
       });
-      bHtml += '</tbody></table>';
       bidList.innerHTML = bHtml;
     }
   },
@@ -432,7 +440,7 @@ const MallApp = {
   renderDemands(keyword = '') {
     const grid = document.getElementById('grid-mall-demands');
     if (!grid) return;
-    
+
     // 获取其他筛选条件 (如果有)
     const dateStart = document.getElementById('demand-search-date-start')?.value || '';
     const dateEnd = document.getElementById('demand-search-date-end')?.value || '';
@@ -444,26 +452,26 @@ const MallApp = {
     if (keyword) {
       filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
     }
-    
+
     if (dateStart || dateEnd || delivStart || delivEnd) {
       // 此处省略复杂的日期过滤逻辑，仅做基础控制
       // console.log("Filtering by dates:", {dateStart, dateEnd, delivStart, delivEnd});
     }
-    
+
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="col-span-3 text-center py-12 text-secondary">暂无符合条件的求购意向</div>';
       return;
     }
-    
+
     filtered.forEach(d => {
       let isMine = d.buyerName === this.currentBuyerName;
-      let btn = isMine ? 
-        `<span class="text-secondary text-sm">我发布的</span>` : 
+      let btn = isMine ?
+        `<span class="text-secondary text-sm">我发布的</span>` :
         `<div class="flex gap-2" style="margin-top: 12px;">
            <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
            <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.title}', '${d.expectedPrice}'))">立即报价</button>
          </div>`;
-      
+
       html += `
         <div class="card product-card">
           <div class="card-body">
@@ -532,7 +540,7 @@ const MallApp = {
         </div>
       `;
     });
-    if(grid) grid.innerHTML = html;
+    if (grid) grid.innerHTML = html;
   },
 
   editNickname() {
@@ -557,7 +565,7 @@ const MallApp = {
   showBiddingDetail(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
-    
+
     // UI steps: 看货报名 -> 现场看货 -> 竞价报名 -> 参加竞价 -> 竞价成功 -> 线下付款
     // Generate current step based on status
     let currentStep = 1;
@@ -676,19 +684,19 @@ const MallApp = {
     MockData.orders.filter(o => o.buyerName === this.currentBuyerName).forEach(o => {
       let statusTag = '';
       let actBtn = '';
-      if(o.status === 0) {
+      if (o.status === 0) {
         statusTag = `<span class="tag tag-warning">待签约</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.signContract('${o.id}')">签署合同(盖章)</button>`;
-      } else if(o.status === 1) {
+      } else if (o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = `<span class="text-secondary text-sm">催发货</span>`;
-      } else if(o.status === 2) {
+      } else if (o.status === 2) {
         statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">待签收</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('已确认收货，订单完成', 'success')">确认收货</button>`;
-      } else if(o.status === 3) {
+      } else if (o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
         actBtn = `<span class="text-secondary text-sm">已完成</span>`;
-      } else if(o.status === -1) {
+      } else if (o.status === -1) {
         statusTag = `<span class="tag tag-danger">已关闭</span>`;
         actBtn = `<span class="text-secondary text-sm">退款取消</span>`;
       }
@@ -706,11 +714,11 @@ const MallApp = {
         </tr>
       `;
     });
-    if(tbody) tbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
   },
 
   signContract(orderId) {
-    if(confirm('系统将模拟调用 CA 电子签章接口签署合同，是否继续？')) {
+    if (confirm('系统将模拟调用 CA 电子签章接口签署合同，是否继续？')) {
       UI.toast(`订单 ${orderId} 合同签署成功，等待商家发货`, 'success');
     }
   },
@@ -729,15 +737,15 @@ const MallApp = {
         </tr>
       `;
     });
-    if(tbody) tbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
   },
 
   renderUCDemandsPub() {
     const tbody = document.querySelector('#table-uc-demands-pub tbody');
     let html = '';
     MockData.demands.filter(d => d.buyerName === this.currentBuyerName).forEach(d => {
-      let actBtn = d.status === 1 
-        ? `<button class="btn btn-text btn-sm text-primary">编辑</button> <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已关闭该求购单', 'info')">关闭</button>` 
+      let actBtn = d.status === 1
+        ? `<button class="btn btn-text btn-sm text-primary">编辑</button> <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已关闭该求购单', 'info')">关闭</button>`
         : `<span class="text-secondary text-sm">不可操作</span>`;
       html += `
         <tr>
@@ -750,7 +758,7 @@ const MallApp = {
         </tr>
       `;
     });
-    if(tbody) tbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
   },
 
   renderUCMessages() {
@@ -765,7 +773,7 @@ const MallApp = {
         </tr>
       `;
     });
-    if(tbody) tbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
   },
 
   // === 7. 购物车 ===
@@ -813,7 +821,7 @@ const MallApp = {
           totalAmount += item.price * item.quantity;
           selectedCount += item.quantity;
         }
-        
+
         html += `
           <tr>
             <td>

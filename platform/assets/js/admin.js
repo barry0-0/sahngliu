@@ -648,11 +648,6 @@ window.toggleSubmenu = function(el) {
   if (subMenu) {
     const isHidden = subMenu.style.display === 'none';
     
-    // 关闭其他所有同级子菜单
-    document.querySelectorAll('.menu-item .sub-menu').forEach(menu => {
-      menu.style.display = 'none';
-    });
-    
     if (isHidden) {
       subMenu.style.display = 'block';
     } else {

@@ -6,40 +6,82 @@
   <title>享宇森云 - 商家移动工作台</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/h5.css">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-active: #3730a3;
+      --primary-bg: #e0e7ff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+  </style>
 </head>
 <body>
 
 <div class="mobile-app-container">
 
   <!-- 顶部 Header -->
-  <header class="h5-header">
-    <div class="h5-header-back" onclick="window.location.href='h5.html'">&lt; 返回商城</div>
-    <div id="mh5-header-title">商家工作台</div>
+  <header class="h5-header relative" style="background: #0f172a; color: #fff; height: 56px; border-bottom: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100;">
+    <div class="absolute left-4 cursor-pointer text-slate-300 hover:text-white flex items-center gap-1 text-sm font-medium" style="height: 100%; top: 0;" onclick="window.location.href='h5.html'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      返回商城
+    </div>
+    <div id="mh5-header-title" class="font-bold text-base tracking-wide"><i class="fas fa-store text-indigo-400 mr-1.5"></i>商家工作台</div>
   </header>
 
   <main class="h5-content">
     
     <!-- === 1. 店铺管理 === -->
     <div id="view-shop" class="h5-view active">
-      <div style="background: #fff; padding: 20px; text-align: center; border-bottom: 10px solid #f7f8fa;">
-        <img id="mh5-avatar" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80" style="width: 80px; height: 80px; border-radius: 8px; margin-bottom: 12px; object-fit: cover;">
-        <div style="font-weight: bold; font-size: 18px;" id="mh5-shop-name">远大钢铁官方直营店</div>
-        <div style="color: var(--success-color); font-size: 12px; margin-top: 4px;">企业已认证</div>
-        <div style="color: var(--secondary-color); font-size: 12px; margin-top: 8px; background: #f5f5f5; display: inline-block; padding: 2px 8px; border-radius: 4px;">商户号: <span id="mh5-shop-id"></span></div>
+      <!-- 看板 Dashboard Card (from draft) -->
+      <div style="padding: 16px; background: #fff;">
+        <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); padding: 20px; border-radius: 16px; color: #fff; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);">
+          <i class="fas fa-wallet" style="position: absolute; right: -16px; bottom: -16px; font-size: 80px; opacity: 0.1;"></i>
+          <p style="font-size: 12px; font-weight: bold; opacity: 0.85; letter-spacing: 1px; margin-bottom: 4px;">本月完结入账 (元)</p>
+          <h2 style="font-size: 32px; font-weight: 900; margin: 0;">86,500.<span style="font-size: 18px; font-weight: normal;">00</span></h2>
+          <div style="margin-top: 16px; background: rgba(255,255,255,0.2); display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; backdrop-filter: blur(5px);">
+            待发货单: 3 笔
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+          <div style="background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #f1f5f9;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px;">今日大厅访客</p>
+            <p style="font-size: 20px; font-weight: 900; color: #1e293b; margin: 0;">124</p>
+          </div>
+          <div style="background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #f1f5f9;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px;">中标转化率</p>
+            <p style="font-size: 20px; font-weight: 900; color: #1e293b; margin: 0;">32.5%</p>
+          </div>
+        </div>
       </div>
-      <div class="h5-menu-list" style="margin-top: 16px;">
-        <div class="h5-menu-row">
-          <div>修改店铺名称</div><div class="text-secondary">></div>
-        </div>
-        <div class="h5-menu-row">
-          <div>更换店铺 Logo 头像</div><div class="text-secondary">></div>
-        </div>
-        <div class="h5-menu-row">
-          <div>更换首页横幅 Banner</div><div class="text-secondary">></div>
+
+      <!-- 店铺基本设置 -->
+      <div style="background: #fff; padding: 16px; margin-top: 8px; border-top: 8px solid #f1f5f9; display: flex; align-items: center; gap: 16px;">
+        <img id="mh5-avatar" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-color);">
+        <div>
+          <div style="font-weight: bold; font-size: 16px; color:#1e293b;" id="mh5-shop-name">远大钢铁官方直营店</div>
+          <div style="color: var(--success-color); font-size: 11px; font-weight:bold; margin-top: 2px;"><i class="fas fa-check-circle"></i> 企业已认证</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">商户号: <span id="mh5-shop-id"></span></div>
         </div>
       </div>
-      <div style="padding: 20px;">
-        <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px;">保存店铺装潢</button>
+      
+      <div class="h5-menu-list" style="margin-top: 8px; padding: 0 16px; background: #fff;">
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color:#334155; font-weight:500;">
+          <div>修改店铺名称</div><div style="color: #94a3b8;">></div>
+        </div>
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color:#334155; font-weight:500;">
+          <div>更换店铺 Logo 头像</div><div style="color: #94a3b8;">></div>
+        </div>
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: none; font-size: 13px; color:#334155; font-weight:500;">
+          <div>更换首页横幅 Banner</div><div style="color: #94a3b8;">></div>
+        </div>
+      </div>
+      
+      <div style="padding: 20px; background:#fff;">
+        <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px; font-weight:bold; font-size:14px; box-shadow: var(--shadow-md);">保存店铺装潢</button>
       </div>
     </div>
 

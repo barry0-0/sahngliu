@@ -121,7 +121,7 @@ body {
 .home-banner {
   flex: 1;
   border-radius: var(--radius-md, 12px);
-  background: linear-gradient(135deg, #0d2240 0%, #0052d9 55%, #1b8a5a 100%);
+  background: linear-gradient(135deg, #1f2937 0%, var(--primary-color) 60%, #111827 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,7 +142,7 @@ body {
   left: -30%;
   width: 160%;
   height: 160%;
-  background: radial-gradient(circle, rgba(43,164,113,0.2) 0%, rgba(0,82,217,0.15) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 60%, transparent 70%);
   pointer-events: none;
 }
 .home-banner::after {

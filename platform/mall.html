@@ -558,61 +558,86 @@
   </div>
 </div>
 
-<!-- 聊天沟通弹窗 (PC) - 右侧滑出 -->
-<style>@keyframes slideLeft { from { transform: translateX(100%); } to { transform: translateX(0); } }</style>
-<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:flex-end; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
-  <div class="modal-content flex flex-col" style="width: 420px; height: 100vh; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.4); animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: -10px 0 40px rgba(0,0,0,0.15);">
+<!-- 聊天沟通弹窗 (PC) - 居中 macOS 拟物玻璃拟态窗 -->
+<style>
+  @keyframes macSheetOpen {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .mac-traffic-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .mac-close-dot { background: #ff5f56; }
+  .mac-close-dot:hover { background: #e04f47; }
+  .mac-mini-dot { background: #ffbd2e; cursor: default; }
+  .mac-max-dot { background: #27c93f; cursor: default; }
+</style>
+<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:center; align-items: center; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
+  <div class="modal-content flex flex-col" style="width: 520px; height: 500px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.4); animation: macSheetOpen 0.38s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.18);">
     
-    <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-light" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">服</div>
-        <div>
-          <div class="font-bold text-main" id="chat-shop-name" style="font-size: 15px;">商家客服</div>
-          <div class="text-xs text-success flex items-center gap-1">● 在线</div>
+    <!-- Header Bar -->
+    <div class="flex justify-between items-center px-5 border-b border-slate-200/50" style="height: 52px; flex-shrink: 0; background: rgba(255,255,255,0.5);">
+      <div class="flex flex-col">
+        <span class="font-bold text-slate-800 text-sm" id="chat-shop-name">与商家安全沟通</span>
+        <span class="text-[9px] text-slate-400 font-bold tracking-wider">专属加密沟通通道</span>
+      </div>
+      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="padding: 0; min-width: auto; font-size: 20px; cursor: pointer; background:none; border:none;" onclick="UI.closeModal('modal-chat')">✕</button>
+    </div>
+ 
+    <!-- IM Message Window -->
+    <div class="flex-1 flex flex-col overflow-y-auto p-5" style="gap: 16px; background: rgba(244,244,249,0.5);">
+      
+      <!-- Sticky Product Card Attachment -->
+      <div class="p-3 bg-white/70 border border-slate-200/60 rounded-2xl flex items-center gap-4 shadow-sm backdrop-blur-md">
+        <img id="chat-prod-img" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div class="flex-1 overflow-hidden">
+          <div class="text-xs font-bold text-slate-800 truncate" id="chat-prod-title">--</div>
+          <div class="text-xs text-danger font-black mt-1" id="chat-prod-price">--</div>
+        </div>
+        <button class="btn btn-outline text-xs px-3.5 py-1.5" style="border-radius: 20px; border-color: var(--primary-color); color: var(--primary-color); font-weight: bold; background: white;" onclick="alert('已发送商品卡片')">发送卡片</button>
+      </div>
+
+      <!-- Conversations Box -->
+      <div class="flex-1 flex flex-col" id="chat-messages" style="gap: 14px;">
+        <div class="flex gap-3">
+          <div class="w-8 h-8 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs flex-shrink-0 font-bold shadow-sm">店</div>
+          <div class="bg-white p-3 text-slate-700 shadow-sm border border-slate-100" style="max-width: 75%; border-radius: 4px 18px 18px 18px; line-height: 1.5; font-size:13px;">
+            您好！已为您开启该项目的安全沟通通道，请选择下方的快捷卡片与商家进行洽谈。
+          </div>
         </div>
       </div>
-      <button class="btn btn-text text-secondary hover:text-main" style="font-size: 18px;" onclick="UI.closeModal('modal-chat')">✕</button>
     </div>
-
-    <!-- 涉及商品区域 -->
-    <div class="p-3 flex items-center gap-3 border-b border-light" style="background: rgba(255,255,255,0.7); margin: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-      <img id="chat-prod-img" src="" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); background: #f0f2f5;">
-      <div class="flex-1 overflow-hidden">
-        <div class="text-sm font-bold truncate text-main" id="chat-prod-title">--</div>
-        <div class="text-xs text-danger font-bold mt-1" id="chat-prod-price">--</div>
-      </div>
-      <button class="btn btn-outline text-xs px-3 py-1.5" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color);" onclick="alert('已发送商品卡片')">发送卡片</button>
-    </div>
-
-    <!-- 聊天记录区 -->
-    <div class="flex-1 p-4 overflow-y-auto" id="chat-messages" style="background: linear-gradient(to bottom, #f3f4f6, #f9fafb); display: flex; flex-direction: column; gap: 16px;">
-      <div class="text-center text-xs text-secondary my-1">今天 10:24</div>
-      <div class="flex gap-3">
-        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs flex-shrink-0" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">服</div>
-        <div class="bg-white p-3 rounded shadow-sm text-sm" style="max-width: 75%; border-radius: 0 16px 16px 16px; border: 1px solid rgba(0,0,0,0.03); color: var(--text-main); line-height: 1.5;">
-          您好！已为您开启该项目的安全沟通通道，请选择下方的快捷卡片与商家进行洽谈。
-        </div>
-      </div>
-    </div>
-
-    <!-- 快捷沟通卡片区 (替代输入框) -->
-    <div class="p-4 border-t border-light flex flex-col gap-3" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-bottom: 2px;">⚠️ 已启用敏感词监管，仅允许通过安全卡片快捷沟通</div>
+ 
+    <!-- Suggestion Tray -->
+    <div class="p-5 bg-white/95 border-t border-slate-200/50 flex flex-col gap-4" style="flex-shrink: 0;">
+      
+      <!-- suggestion grid -->
       <div class="grid grid-cols-3 gap-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #f0f7ff; border: 1px solid #cce5ff; color: #0052d9; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('inquiry')">
-          <span style="font-size: 20px; margin-bottom: 6px;">💬</span>
-          <span style="font-size: 13px; font-weight: bold;">询价卡片</span>
+        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; cursor: pointer;" onclick="MallApp.sendQuickMessage('inquiry')">
+          <span style="font-size: 20px; margin-bottom: 4px;">💬</span>
+          <span style="font-size: 11px; font-weight: bold;">询价卡片</span>
         </button>
-        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #edfbf3; border: 1px solid #d1f4df; color: #26a25b; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('quote')">
-          <span style="font-size: 20px; margin-bottom: 6px;">💰</span>
-          <span style="font-size: 13px; font-weight: bold;">报价卡片</span>
+        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #f0fdf4; border-color: #bbf7d0; color: #15803d; cursor: pointer;" onclick="MallApp.sendQuickMessage('quote')">
+          <span style="font-size: 20px; margin-bottom: 4px;">💰</span>
+          <span style="font-size: 11px; font-weight: bold;">报价卡片</span>
         </button>
-        <button class="flex flex-col items-center justify-center p-3 rounded-xl text-center" style="background: #fff8f0; border: 1px solid #ffe3c2; color: #d55300; cursor: pointer; transition: all 0.2s;" onclick="MallApp.sendQuickMessage('bargain')">
-          <span style="font-size: 20px; margin-bottom: 6px;">🤝</span>
-          <span style="font-size: 13px; font-weight: bold;">砍价卡片</span>
+        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #fff7ed; border-color: #fed7aa; color: #c2410c; cursor: pointer;" onclick="MallApp.sendQuickMessage('bargain')">
+          <span style="font-size: 20px; margin-bottom: 4px;">🤝</span>
+          <span style="font-size: 11px; font-weight: bold;">砍价卡片</span>
         </button>
       </div>
+ 
+      <div style="font-size: 10px; color: #94a3b8; text-align: center; font-weight:bold;"><i class="fas fa-shield-alt text-slate-400 mr-0.5"></i> 已开启端到端端安信沙盒防护</div>
     </div>
   </div>
 </div>
