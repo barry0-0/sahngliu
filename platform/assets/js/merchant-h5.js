@@ -22,10 +22,10 @@ const MH5App = {
             v.classList.add('active');
             
             const headerTitle = document.getElementById('mh5-header-title');
-            if (targetId === 'view-shop') headerTitle.innerText = '店铺装潢管理';
-            if (targetId === 'view-products') headerTitle.innerText = '商品中心';
-            if (targetId === 'view-orders') headerTitle.innerText = '订单履约中心';
-            if (targetId === 'view-bidding') headerTitle.innerText = '竞价业务';
+            if (targetId === 'view-shop') headerTitle.innerText = '店铺';
+            if (targetId === 'view-products') headerTitle.innerText = '商品';
+            if (targetId === 'view-orders') headerTitle.innerText = '订单';
+            if (targetId === 'view-bidding') headerTitle.innerText = '竞价';
           }
         });
       });
@@ -134,15 +134,17 @@ const MH5App = {
   switchBidTab(targetId) {
     const tabs = document.querySelectorAll('.tab-mh5-bid');
     tabs.forEach(t => {
-      t.style.borderBottom = 'none';
-      t.classList.remove('font-bold', 'text-primary');
-      t.classList.add('text-secondary');
+      t.style.background = 'transparent';
+      t.style.color = '#64748b';
+      t.style.boxShadow = 'none';
+      t.classList.remove('active');
     });
     const el = document.querySelector(`.tab-mh5-bid[data-target='${targetId}']`);
     if(el) {
-      el.style.borderBottom = '2px solid var(--primary-color)';
-      el.classList.add('font-bold', 'text-primary');
-      el.classList.remove('text-secondary');
+      el.style.background = '#fff';
+      el.style.color = 'var(--primary-color)';
+      el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+      el.classList.add('active');
     }
     
     document.getElementById('mh5-bid-res').style.display = 'none';

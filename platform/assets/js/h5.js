@@ -59,7 +59,7 @@ const H5App = {
             if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-cart' || targetId === 'view-my') {
               backBtn.style.display = 'none';
             } else {
-              backBtn.style.display = 'block';
+              backBtn.style.display = 'flex';
             }
           }
         }
