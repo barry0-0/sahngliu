@@ -114,13 +114,122 @@ window.UI = {
 
   /**
    * 关闭模态框
-   * @param {string} modalId 模态框对应的 ID
    */
   closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.classList.remove('active');
+      setTimeout(() => {
+        if (!modal.classList.contains('active')) {
+          modal.style.display = 'none';
+        }
+      }, 250);
     }
+  },
+
+  /**
+   * 查看订单轨迹和详情
+   */
+  showOrderDetail(orderId) {
+    const o = MockData.orders.find(item => item.id === orderId);
+    if (!o) {
+      alert('订单不存在！');
+      return;
+    }
+
+    let modal = document.getElementById('modal-order-detail');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.id = 'modal-order-detail';
+      modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; z-index:9999; transition: opacity 0.2s ease; opacity: 0;';
+      modal.innerHTML = `
+        <div class="modal-card-container" style="background:#fff; border-radius:12px; overflow:hidden; width:600px; max-width:95%; box-shadow:0 10px 25px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:85vh; animation: zoomIn 0.25s ease;">
+          <div style="background:#1e293b; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:14px;">📄 享宇森云 - 大宗交易订单详情</span>
+            <button onclick="UI.closeModal('modal-order-detail')" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+          </div>
+          <div style="padding:20px; overflow-y:auto; font-size:13px; color:#334155; line-height:1.6;">
+            <!-- Main Grid Info -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px 20px; margin-bottom:16px; border-bottom:1px solid #f1f5f9; padding-bottom:16px;">
+              <div><span style="color:#64748b;">订单编号：</span><strong id="det-order-id" style="font-family:monospace; color:#0f172a;">-</strong></div>
+              <div><span style="color:#64748b;">交易类型：</span><span id="det-order-type" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">-</span></div>
+              <div><span style="color:#64748b;">采购买家：</span><span id="det-buyer-name" style="font-weight:bold;">-</span></div>
+              <div><span style="color:#64748b;">供应商家：</span><span id="det-shop-name" style="font-weight:bold;">-</span></div>
+            </div>
+
+            <!-- Goods Detail -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:8px; font-weight:bold;">
+                <span style="color:#475569;">商品清单</span>
+                <span id="det-order-amount" style="color:var(--danger-color); font-size:15px;">-</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="font-size:22px; width:40px; height:40px; border-radius:6px; background:#e2e8f0; display:flex; align-items:center; justify-content:center;">🏗️</div>
+                <div>
+                  <div id="det-product-name" style="font-weight:bold; color:#0f172a;">-</div>
+                  <div style="color:#64748b; font-size:11px;">交货周期：遵守电子合同规范约定 (线下履约结算)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div style="font-weight:bold; margin-bottom:10px; color:#0f172a;">订单状态流转与履约轨迹</div>
+            <div id="det-timeline" style="display:flex; flex-direction:column; gap:12px; padding-left:8px; margin-top:8px;">
+              <!-- Timeline rows -->
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // Populate data
+    document.getElementById('det-order-id').innerText = o.id;
+    document.getElementById('det-order-type').innerText = o.type;
+    document.getElementById('det-buyer-name').innerText = o.buyerName;
+    document.getElementById('det-shop-name').innerText = o.shopName;
+    document.getElementById('det-order-amount').innerText = o.amount;
+    document.getElementById('det-product-name').innerText = o.productName;
+
+    // Timeline construction
+    const timelineContainer = document.getElementById('det-timeline');
+    let timelineHTML = '';
+    const dateStr = o.time.split(' ')[0];
+
+    const steps = [
+      { label: '订单草拟与创建', desc: `下单时间: ${o.time}`, done: true },
+      { label: '买家电子签章(采购盖章)', desc: o.status === 0 || o.status === 4 ? '等待买家在个人中心立即签约' : `已盖章签约: ${dateStr} 10:15`, done: o.status !== 0 && o.status !== 4 },
+      { label: '卖家电子签章(供应盖章)', desc: o.status === 0 || o.status === 5 || o.status === 4 ? '等待卖家盖章' : `双边签约锁定: ${dateStr} 11:20`, done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
+      { label: '线下公对公汇款查验', desc: o.status === 4 ? '等买家线下汇款并上传凭证' : (o.status === 0 || o.status === 5 ? '等待合同签署完毕' : `财务对账确认: ${dateStr} 14:00`), done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
+      { label: '卖家装车发货并录单', desc: o.status === 1 ? '备货中，等待发货' : (o.status === 2 || o.status === 3 ? `已发货: ${dateStr} 15:45 (三方快递/物流单)` : '未发货'), done: o.status === 2 || o.status === 3 },
+      { label: '买家签收与月度对账结算', desc: o.status === 3 ? `已收货结清: ${dateStr} 18:30 (待运营核销佣金开票)` : '等待线下交货与最终确认收货', done: o.status === 3 }
+    ];
+
+    if (o.status === -1) {
+      steps.push({ label: '订单强行关闭 (退款结算)', desc: `关闭原因: ${o.closeReason || '双方沟通一致线下退款撤销'}`, done: true, error: true });
+    }
+
+    steps.forEach((step, idx) => {
+      let iconColor = step.done ? '#10b981' : '#cbd5e1';
+      if (step.error) iconColor = '#ef4444';
+      let borderStyle = idx === steps.length - 1 ? '' : `border-left: 2px solid ${step.done ? '#10b981' : '#cbd5e1'};`;
+      timelineHTML += `
+        <div style="position:relative; padding-bottom:10px; ${borderStyle} padding-left:16px;">
+          <div style="position:absolute; left:-5px; top:2px; width:10px; height:10px; border-radius:50%; background:${iconColor}; border:2px solid #fff;"></div>
+          <div style="font-weight:bold; font-size:12px; color: ${step.done ? '#0f172a' : '#94a3b8'};">${step.label}</div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">${step.desc}</div>
+        </div>
+      `;
+    });
+
+    timelineContainer.innerHTML = timelineHTML;
+    
+    // Trigger modal open
+    this.openModal('modal-order-detail');
+    setTimeout(() => {
+      modal.style.opacity = '1';
+    }, 50);
   },
 
   /**

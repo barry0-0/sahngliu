@@ -494,12 +494,17 @@ const AdminApp = {
 
       html += `
         <tr>
-          <td>${o.id}</td>
+          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
           <td>${o.buyerName}</td>
           <td>${o.shopName}</td>
           <td class="font-bold text-danger">${o.amount}</td>
           <td>${statusTag}</td>
-          <td>${closeBtn}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${closeBtn}
+              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+            </div>
+          </td>
         </tr>
       `;
     });

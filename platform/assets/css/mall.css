@@ -315,39 +315,48 @@ body {
 
 /* --- 个人中心布局 --- */
 .uc-sidebar {
-  width: 240px;
+  width: 250px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  padding: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+  padding: 24px 8px;
   min-height: 600px;
 }
 .uc-user-info {
   text-align: center;
-  padding: 0 20px 20px;
-  border-bottom: 1px solid #f2f3f5;
-  margin-bottom: 16px;
+  padding: 8px 12px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 20px;
 }
 .uc-avatar {
   width: 64px; height: 64px; border-radius: 50%;
-  background: var(--primary-color); color: #fff;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
+  color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; font-weight: bold; margin: 0 auto 12px;
+  font-size: 24px; font-weight: 800; margin: 0 auto 12px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  border: 2px solid #fff;
 }
 .uc-menu-item {
-  padding: 14px 24px;
+  padding: 10px 16px;
+  margin: 4px 0;
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #555;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  font-size: 13px;
 }
-.uc-menu-item:hover, .uc-menu-item.active {
-  background: #f0f5ff;
+.uc-menu-item:hover {
+  background: #f8fafc;
   color: var(--primary-color);
-  border-left-color: var(--primary-color);
+}
+.uc-menu-item.active {
+  background: #e0e7ff;
+  color: var(--primary-color);
   font-weight: bold;
 }
 .uc-content {

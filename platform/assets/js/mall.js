@@ -724,7 +724,7 @@ const MallApp = {
       }
       html += `
         <tr>
-          <td>${o.id}</td>
+          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
           <td>${o.productName}</td>
           <td>
             <div>${o.shopName}</div>
@@ -732,7 +732,12 @@ const MallApp = {
           </td>
           <td class="font-bold text-danger">${o.amount}</td>
           <td>${statusTag}</td>
-          <td>${actBtn}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${actBtn}
+              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+            </div>
+          </td>
         </tr>
       `;
     });

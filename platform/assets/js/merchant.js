@@ -98,8 +98,23 @@ const MerchantApp = {
   renderAllProducts() {
     const tbody = document.querySelector('#table-all-products tbody');
     let html = '';
-    const myProducts = MockData.products.filter(p => p.shopId === this.currentShopId);
+    let myProducts = MockData.products.filter(p => p.shopId === this.currentShopId);
     
+    // Apply filters
+    const kwEl = document.getElementById('filter-all-prod-kw');
+    const catEl = document.getElementById('filter-all-prod-cat');
+    const statusEl = document.getElementById('filter-all-prod-status');
+    if (kwEl && kwEl.value.trim() !== '') {
+      const kw = kwEl.value.trim().toLowerCase();
+      myProducts = myProducts.filter(p => p.name.toLowerCase().includes(kw));
+    }
+    if (catEl && catEl.value !== '') {
+      myProducts = myProducts.filter(p => p.category === catEl.value);
+    }
+    if (statusEl && statusEl.value !== '') {
+      myProducts = myProducts.filter(p => String(p.status) === statusEl.value);
+    }
+
     myProducts.forEach(p => {
       let statusTag = p.status === 1 ? `<span class="tag tag-success">已上架</span>` : `<span class="tag tag-warning">未上架/待审核</span>`;
       html += `
@@ -118,7 +133,7 @@ const MerchantApp = {
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
+      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的商品</td></tr>';
       this._appendPagination(tbody, myProducts.length);
     }
   },
@@ -127,8 +142,19 @@ const MerchantApp = {
   renderListedProducts() {
     const tbody = document.querySelector('#table-listed-products tbody');
     let html = '';
-    const myListed = MockData.products.filter(p => p.shopId === this.currentShopId && p.status === 1);
+    let myListed = MockData.products.filter(p => p.shopId === this.currentShopId && p.status === 1);
     
+    // Apply filters
+    const kwEl = document.getElementById('filter-listed-prod-kw');
+    const catEl = document.getElementById('filter-listed-prod-cat');
+    if (kwEl && kwEl.value.trim() !== '') {
+      const kw = kwEl.value.trim().toLowerCase();
+      myListed = myListed.filter(p => p.name.toLowerCase().includes(kw));
+    }
+    if (catEl && catEl.value !== '') {
+      myListed = myListed.filter(p => p.category === catEl.value);
+    }
+
     myListed.forEach(p => {
       html += `
         <tr>
@@ -145,7 +171,7 @@ const MerchantApp = {
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
+      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的上架商品</td></tr>';
       this._appendPagination(tbody, myListed.length);
     }
   },
@@ -154,8 +180,42 @@ const MerchantApp = {
   renderOrders() {
     const tbody = document.querySelector('#table-orders tbody');
     let html = '';
-    const myOrders = MockData.orders.filter(o => o.shopId === this.currentShopId);
+    let myOrders = MockData.orders.filter(o => o.shopId === this.currentShopId);
     
+    // Apply filters
+    const kwEl = document.getElementById('filter-order-kw');
+    const statusEl = document.getElementById('filter-order-status');
+    const typeEl = document.getElementById('filter-order-type');
+    const startEl = document.getElementById('filter-order-start');
+    const endEl = document.getElementById('filter-order-end');
+
+    if (kwEl && kwEl.value.trim() !== '') {
+      const kw = kwEl.value.trim().toLowerCase();
+      myOrders = myOrders.filter(o => o.buyerName.toLowerCase().includes(kw) || o.productName.toLowerCase().includes(kw) || o.id.toLowerCase().includes(kw));
+    }
+    if (statusEl && statusEl.value !== '') {
+      myOrders = myOrders.filter(o => String(o.status) === statusEl.value);
+    }
+    if (typeEl && typeEl.value !== '') {
+      myOrders = myOrders.filter(o => o.type === typeEl.value);
+    }
+    // Handle date filtering (assuming format YYYY-MM-DD or standard parseable ISO)
+    if (startEl && startEl.value !== '') {
+      const startTime = new Date(startEl.value).getTime();
+      myOrders = myOrders.filter(o => {
+        const orderTime = new Date(o.date || '2026-07-07 09:00:00').getTime();
+        return orderTime >= startTime;
+      });
+    }
+    if (endEl && endEl.value !== '') {
+      // Add a full day (86400000ms) to include the end date fully
+      const endTime = new Date(endEl.value).getTime() + 86400000;
+      myOrders = myOrders.filter(o => {
+        const orderTime = new Date(o.date || '2026-07-07 09:00:00').getTime();
+        return orderTime <= endTime;
+      });
+    }
+
     myOrders.forEach(o => {
       let statusTag = '';
       let actBtn = '';
@@ -163,6 +223,12 @@ const MerchantApp = {
       if(o.status === 0) {
         statusTag = `<span class="tag tag-warning">待买家签约</span>`;
         actBtn = `<button class="btn btn-text btn-sm" disabled>等待签约</button>`;
+      } else if(o.status === 5) {
+        statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('模拟卖家端签约完成。', 'success')">立即签约</button>`;
+      } else if(o.status === 4) {
+        statusTag = `<span class="tag tag-secondary">待付款</span>`;
+        actBtn = `<span class="text-sm text-secondary">等买家付款</span>`;
       } else if(o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipModal('${o.id}')">去发货</button>`;
@@ -179,18 +245,23 @@ const MerchantApp = {
 
       html += `
         <tr>
-          <td>${o.id}</td>
+          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
           <td>${o.productName}</td>
           <td>${o.buyerName}</td>
           <td class="font-bold text-danger">${o.amount}</td>
           <td>${o.type}</td>
           <td>${statusTag}</td>
-          <td>${actBtn}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${actBtn}
+              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+            </div>
+          </td>
         </tr>
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
+      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的订单数据</td></tr>';
       this._appendPagination(tbody, myOrders.length);
     }
   },
@@ -209,7 +280,19 @@ const MerchantApp = {
     const tbody = document.querySelector('#table-merchant-res tbody');
     if (tbody) {
       let html = '';
-      const myRes = MockData.biddingResources.filter(r => r.shopId === 'S001' || r.shopName === '远大钢铁官方直营店');
+      let myRes = MockData.biddingResources.filter(r => r.shopId === 'S001' || r.shopName === '远大钢铁官方直营店');
+      
+      // Apply filters
+      const kwEl = document.getElementById('filter-res-kw');
+      const statusEl = document.getElementById('filter-res-status');
+      if (kwEl && kwEl.value.trim() !== '') {
+        const kw = kwEl.value.trim().toLowerCase();
+        myRes = myRes.filter(r => r.name.toLowerCase().includes(kw) || r.id.toLowerCase().includes(kw));
+      }
+      if (statusEl && statusEl.value !== '') {
+        myRes = myRes.filter(r => r.status === statusEl.value);
+      }
+
       myRes.forEach(r => {
         let tag = r.status === '已通过' ? `<span class="tag tag-success">已通过</span>` : `<span class="tag tag-warning">待审核</span>`;
         let acts = r.status === '已通过' 
@@ -226,7 +309,7 @@ const MerchantApp = {
           </tr>
         `;
       });
-      tbody.innerHTML = html;
+      tbody.innerHTML = html || '<tr><td colspan="6" class="text-center p-4 text-secondary">没有找到符合条件的竞价资源</td></tr>';
       this._appendPagination(tbody, myRes.length);
     }
   },
@@ -235,7 +318,19 @@ const MerchantApp = {
     const tbody = document.querySelector('#table-merchant-ann tbody');
     if (tbody) {
       let html = '';
-      const myAnn = MockData.biddingAnnouncements.filter(a => a.shopId === 'S001' || a.shopName === '远大钢铁官方直营店');
+      let myAnn = MockData.biddingAnnouncements.filter(a => a.shopId === 'S001' || a.shopName === '远大钢铁官方直营店');
+      
+      // Apply filters
+      const kwEl = document.getElementById('filter-ann-kw');
+      const statusEl = document.getElementById('filter-ann-status');
+      if (kwEl && kwEl.value.trim() !== '') {
+        const kw = kwEl.value.trim().toLowerCase();
+        myAnn = myAnn.filter(a => a.title.toLowerCase().includes(kw) || a.id.toLowerCase().includes(kw));
+      }
+      if (statusEl && statusEl.value !== '') {
+        myAnn = myAnn.filter(a => String(a.status) === statusEl.value);
+      }
+
       myAnn.forEach(a => {
         let tag = a.status === 1 ? `<span class="tag tag-success">竞价中</span>` : (a.status === 0 ? `<span class="tag tag-warning">未开始</span>` : `<span class="tag tag-secondary">已结束</span>`);
         let acts = a.status === 0 
@@ -253,7 +348,7 @@ const MerchantApp = {
           </tr>
         `;
       });
-      tbody.innerHTML = html;
+      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
       this._appendPagination(tbody, myAnn.length);
     }
   },
@@ -333,7 +428,7 @@ const MerchantApp = {
 
         html += `
           <tr>
-            <td class="p-2 font-bold">${o.id}</td>
+            <td class="p-2 font-bold"><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="color:var(--primary-color);">${o.id}</a></td>
             <td class="p-2">${o.productName}</td>
             <td class="p-2 text-secondary">${o.buyerName}</td>
             <td class="p-2 text-danger font-bold">${o.amount}</td>

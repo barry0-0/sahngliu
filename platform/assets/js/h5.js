@@ -830,7 +830,7 @@ const H5App = {
           btn = `<button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.toast('支付成功！', 'success'); o.status = 0; H5App.renderUserOrders();">立即付款</button>`;
         } else if (o.status === 0) {
           statusTag = `<span class="tag tag-warning">待买家签约</span>`;
-          btn = `<button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="H5App.openUserContractModal('${o.id}')">立即签约</button>`;
+          btn = `<button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); H5App.openUserContractModal('${o.id}')">立即签约</button>`;
         } else if (o.status === 5) {
           statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待卖家签约</span>`;
         } else if (o.status === 1) {
@@ -844,15 +844,15 @@ const H5App = {
         }
 
         html += `
-          <div style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee;">
-            <div class="flex justify-between items-center mb-3 pb-3" style="border-bottom: 1px solid #f2f3f5; display:flex; justify-content:space-between;">
-              <div class="text-xs text-slate-500">单号: ${o.id}</div>
+          <div onclick="UI.showOrderDetail('${o.id}')" style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <div class="flex justify-between items-center mb-3 pb-3" style="border-bottom: 1px solid #f8fafc; display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-family: monospace; font-size: 12px; color: #64748b;">${o.id}</div>
               ${statusTag}
             </div>
-            <div class="font-bold text-sm mb-1">${o.productName}</div>
-            <div class="text-xs text-slate-400 mb-2">店铺: ${o.shopName}</div>
+            <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">${o.productName}</div>
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">店铺: ${o.shopName}</div>
             <div class="flex justify-between items-center mt-3" style="display:flex; justify-content:space-between; align-items:center;">
-              <div class="text-danger font-bold text-base">${o.amount}</div>
+              <div class="text-danger font-bold text-base" style="font-size: 16px; font-family: monospace;">${o.amount}</div>
               ${btn}
             </div>
           </div>
