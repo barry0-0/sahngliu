@@ -14,9 +14,11 @@ const MerchantApp = {
     this.renderOrders();
     this.renderBiddingRes();
     this.renderBiddingAnn();
+    this.renderMerchantDashboard();
 
-    // 默认激活第一个菜单
-    document.querySelector('.menu-item[data-page="page-shop"]').click();
+    // 默认激活第一个子菜单（数据中心）
+    const defaultTab = document.querySelector('.sub-menu-item[data-page="page-merchant-dashboard"]');
+    if (defaultTab) defaultTab.click();
   },
 
   _appendPagination(tbody, totalItems) {
@@ -310,6 +312,59 @@ const MerchantApp = {
       UI.closeModal('modal-bid-award');
       UI.toast('定标成功！已自动生成待签约订单。', 'success');
       // In a real app, this would refresh the data from the server.
+    }
+  },
+
+  renderMerchantDashboard() {
+    // 1. Render transaction orders table (up to 4 records)
+    const tbody = document.getElementById('merchant-db-order-tbody');
+    if (tbody) {
+      const myOrders = MockData.orders.filter(o => o.shopId === this.currentShopId).slice(0, 4);
+      let html = '';
+      myOrders.forEach(o => {
+        let statusTag = '';
+        if (o.status === 0) statusTag = `<span class="tag tag-warning">待买家签约</span>`;
+        else if (o.status === 5) statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
+        else if (o.status === 4) statusTag = `<span class="tag tag-secondary">待付款</span>`;
+        else if (o.status === 1) statusTag = `<span class="tag tag-primary">待发货</span>`;
+        else if (o.status === 2) statusTag = `<span class="tag tag-info">已发货</span>`;
+        else if (o.status === 3) statusTag = `<span class="tag tag-success">已完结</span>`;
+        else statusTag = `<span class="tag tag-danger">已关闭</span>`;
+
+        html += `
+          <tr>
+            <td class="p-2 font-bold">${o.id}</td>
+            <td class="p-2">${o.productName}</td>
+            <td class="p-2 text-secondary">${o.buyerName}</td>
+            <td class="p-2 text-danger font-bold">${o.amount}</td>
+            <td class="p-2">${statusTag}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html || '<tr><td colspan="5" class="text-center p-4 text-secondary">暂无大宗交易数据</td></tr>';
+    }
+
+    // 2. Render bidding activity (up to 3 items)
+    const bidList = document.getElementById('merchant-db-bid-list');
+    if (bidList) {
+      const myBids = MockData.biddingAnnouncements.filter(a => a.shopId === 'S001').slice(0, 3);
+      let html = '';
+      myBids.forEach(b => {
+        let statusLabel = b.status === 1 ? `<span class="text-xs text-success">竞价中</span>` : `<span class="text-xs text-secondary">已结束</span>`;
+        html += `
+          <div style="padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #f1f5f9;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+              <span class="font-bold text-sm" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">${b.title}</span>
+              ${statusLabel}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size: 11px; color:#64748b;">
+              <span>起拍价: <strong style="color:var(--danger-color);">${b.startPrice}</strong></span>
+              <span>时间: ${b.bidEndTime.split(' ')[0]}</span>
+            </div>
+          </div>
+        `;
+      });
+      bidList.innerHTML = html || '<div class="text-center p-4 text-secondary text-sm">暂无竞价活动</div>';
     }
   }
 };
