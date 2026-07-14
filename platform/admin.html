@@ -41,9 +41,10 @@
         <div class="menu-title">客户管理</div>
       </div>
       <div class="menu-item has-submenu">
-        <div class="menu-title" onclick="toggleSubmenu(this)">商品中心 <span class="arrow">▼</span></div>
+        <div class="menu-title" onclick="toggleSubmenu(this)">商家管理 <span class="arrow">▼</span></div>
         <div class="sub-menu" style="display:none;">
-          <div class="sub-menu-item" data-page="tab-prod-base">数据字典</div>
+          <div class="sub-menu-item" data-page="tab-merchant-shop">商家店铺管理</div>
+          <div class="sub-menu-item" data-page="tab-prod-base">分类数据字典</div>
           <div class="sub-menu-item" data-page="tab-prod-merchant">商品审核</div>
         </div>
       </div>
@@ -197,9 +198,49 @@
           </div>
         </div>
       </div>
+      <!-- ================== 商家店铺管理 ================== -->
+      <div id="tab-merchant-shop" class="page-view" style="display: none;">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+          <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+            <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">🏢 商家店铺管理</h3>
+            <span class="text-secondary text-sm" id="shop-management-count">共 0 个商家店铺</span>
+          </div>
+          <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+            <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light" style="align-items: center; justify-content: space-between;">
+              <div class="flex gap-2">
+                <input type="text" id="admin-search-shop-keyword" class="form-control" placeholder="输入店铺名/公司名搜索..." style="width:260px;">
+                <button class="btn btn-primary" onclick="AdminApp.renderMerchantShops()">搜索</button>
+              </div>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="table" style="width:100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--border-light); text-align: left;">
+                    <th style="padding:12px;">店铺名称</th>
+                    <th style="padding:12px;">公司名称</th>
+                    <th style="padding:12px; text-align: center;">状态</th>
+                    <th style="padding:12px; text-align: center;">货品数量</th>
+                    <th style="padding:12px;">信用代码</th>
+                    <th style="padding:12px;">注册时间</th>
+                    <th style="padding:12px; text-align: center;">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-shop-tbody">
+                  <!-- JS 渲染 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ================== 3. 商品中心 ================== -->
       <div id="tab-prod-base" class="page-view" style="display: none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+          <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+            <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📚 分类数据字典</h3>
+          </div>
+          <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
              <!-- 新增表单筛选区 -->
              <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light">
                 <div class="form-group mb-0 flex-1">
@@ -220,6 +261,7 @@
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
+        </div>
       </div>
       <div id="tab-prod-merchant" class="page-view" style="display: none;">
            <div class="card-body table-wrapper" style="background:#fff;">
@@ -569,6 +611,27 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary" onclick="window.saveNewAgreement()">发布并生效</button>
+    </div>
+  </div>
+</div>
+
+<!-- 强行关停店铺弹窗 -->
+<div class="modal-overlay" id="modal-suspend-shop" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-suspend-shop')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 16px; overflow:hidden;">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+      <div class="modal-title font-bold" id="suspend-modal-title" style="font-size:16px;">强行关停店铺</div>
+      <button class="modal-close" style="background:none; border:none; font-size:20px; cursor:pointer;" onclick="UI.closeModal('modal-suspend-shop')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <input type="hidden" id="suspend-shop-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-2 block" style="font-size:14px; color:#475569;">关停理由 <span class="text-danger">*</span></label>
+        <textarea class="form-control" id="suspend-reason-input" rows="4" style="width:100%; border-radius: 8px; padding:10px; border: 1px solid #e2e8f0;" placeholder="请输入违规关停的具体原因（例如：售卖假货、违规竞价、交易欺诈等，该信息将展示给商家后台）..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-suspend-shop')">取消</button>
+      <button class="btn btn-danger" style="border-radius:8px;" onclick="window.confirmSuspendShop()">确认关停</button>
     </div>
   </div>
 </div>

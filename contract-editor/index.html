@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合同配置模板引擎 - e签宝风格</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">合同模板配置引擎</div>
+        <div class="actions">
+            <!-- Used in list view -->
+            <button id="btn-back" class="btn-secondary hidden" style="margin-top:0; border:none; background:transparent; color:#fff; font-size:16px;">&larr; 返回列表</button>
+            
+            <!-- Used in editor view -->
+            <label class="btn-upload hidden" id="upload-wrapper">
+                上传自定义 PDF
+                <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;">
+            </label>
+            <button id="btn-save" class="btn-primary hidden">保存模板配置</button>
+        </div>
+    </header>
+
+    <!-- LIST VIEW -->
+    <main id="list-view" class="view-container">
+        <div class="tabs">
+            <div class="tab active" data-target="base-contracts">基础合同</div>
+            <div class="tab" data-target="saved-templates">我的模板</div>
+        </div>
+
+        <div class="tab-content active" id="base-contracts">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>合同名称</th>
+                        <th>描述</th>
+                        <th style="width: 150px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="base-list">
+                    <tr>
+                        <td>现货买卖合同</td>
+                        <td>标准版 (spot_purchase_contract.pdf)</td>
+                        <td><button class="btn-primary btn-sm" onclick="app.configureBase('spot_purchase_contract.pdf', '现货买卖合同')">配置模板</button></td>
+                    </tr>
+                    <tr>
+                        <td>空白模板</td>
+                        <td>需手动上传 PDF 底稿</td>
+                        <td><button class="btn-secondary btn-sm" style="margin-top:0;" onclick="app.configureEmpty()">手动配置</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="saved-templates">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>模板 ID</th>
+                        <th>基础合同名称</th>
+                        <th>组件数</th>
+                        <th>创建时间</th>
+                        <th style="width: 150px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="template-list">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+            <div id="no-templates" class="empty-state" style="display:none; text-align:center; margin-top:40px;">
+                暂无保存的模板。
+            </div>
+        </div>
+    </main>
+
+    <!-- EDITOR VIEW -->
+    <main id="editor-view" class="app-container hidden">
+        <!-- Left Sidebar: Component Palette -->
+        <aside class="sidebar left-sidebar">
+            <h3 class="sidebar-title">基础组件</h3>
+            <div class="component-list">
+                <div class="component-item draggable" draggable="true" data-type="text">
+                    <span class="icon">📝</span> 单行文本
+                </div>
+                <div class="component-item draggable" draggable="true" data-type="signature">
+                    <span class="icon">✒️</span> 签署区
+                </div>
+                <div class="component-item draggable" draggable="true" data-type="date">
+                    <span class="icon">📅</span> 签署日期
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: PDF Canvas Area -->
+        <section class="canvas-area">
+            <div id="pdf-container" class="pdf-container">
+                <!-- PDF Canvas will be rendered here -->
+                <canvas id="pdf-canvas"></canvas>
+                <!-- Dropped items will be appended as absolute divs here -->
+                <div id="overlay-container" class="overlay-container"></div>
+            </div>
+            <div class="empty-state" id="empty-state">
+                加载中...
+            </div>
+        </section>
+
+        <!-- Right Sidebar: Properties -->
+        <aside class="sidebar right-sidebar">
+            <h3 class="sidebar-title">组件属性</h3>
+            <div id="property-panel" class="property-panel hidden">
+                <div class="form-group">
+                    <label for="prop-name">组件名称</label>
+                    <input type="text" id="prop-name" class="form-control">
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="prop-required">
+                    <label for="prop-required">是否必填 (Required)</label>
+                </div>
+                <button id="btn-delete" class="btn-danger">删除组件</button>
+            </div>
+            <div id="no-selection" class="no-selection">
+                请在中间区域选中一个组件以编辑其属性。
+            </div>
+        </aside>
+    </main>
+
+    <!-- Alert Toast -->
+    <div id="toast-message" class="toast hidden">操作成功</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

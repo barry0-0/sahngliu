@@ -9,6 +9,7 @@ const AdminApp = {
     // 初始化数据
     this.renderDataCenter();
     this.renderCustomers();
+    this.renderMerchantShops();
     this.renderBaseProducts();
     this.renderMerchantProducts();
     this.renderDemands();
@@ -126,6 +127,105 @@ const AdminApp = {
       echarts.getInstanceByDom(document.getElementById('chart-orders-line'))?.resize();
       echarts.getInstanceByDom(document.getElementById('chart-top-merchants'))?.resize();
     });
+  },
+
+  // === 1.8 商家店铺管理 ===
+  renderMerchantShops() {
+    const tbody = document.getElementById('admin-shop-tbody');
+    if (!tbody) return;
+
+    const kw = document.getElementById('admin-search-shop-keyword')?.value.trim() || '';
+    let filtered = MockData.shops || [];
+    if (kw) {
+      filtered = filtered.filter(s => s.shopName.includes(kw) || s.companyName.includes(kw));
+    }
+
+    document.getElementById('shop-management-count').innerText = `共 ${filtered.length} 个商家店铺`;
+
+    let html = '';
+    filtered.forEach(s => {
+      // Calculate product count dynamically from MockData.products
+      const prodCount = MockData.products.filter(p => p.shopId == s.id).length;
+      
+      // Setup status tag
+      let statusTag = '';
+      if (s.status === '正常' || s.status === '正常营业') {
+        statusTag = '<span class="tag tag-success">正常营业</span>';
+      } else if (s.status === '已关停' || s.status === '已禁用') {
+        statusTag = '<span class="tag tag-danger">已关停</span>';
+      } else {
+        statusTag = `<span class="tag tag-warning">${s.status || '待审核'}</span>`;
+      }
+
+      // Add suspend action button
+      let actionBtn = '';
+      if (s.status === '正常' || s.status === '正常营业') {
+        actionBtn = `<button class="btn btn-text btn-sm text-danger" onclick="window.openSuspendShopModal('${s.id}')">强行关停</button>`;
+      } else if (s.status === '已关停' || s.status === '已禁用') {
+        actionBtn = `<button class="btn btn-text btn-sm text-success" onclick="window.toggleShopStatus('${s.id}', '正常')">重新开启</button>`;
+      } else {
+        actionBtn = `<button class="btn btn-text btn-sm text-primary" onclick="window.toggleShopStatus('${s.id}', '正常')">同意开店</button>`;
+      }
+
+      // If suspended, show hover reason or list reason
+      const reasonTip = s.suspendReason ? `<div class="text-[10px] text-danger mt-1">理由: ${s.suspendReason}</div>` : '';
+
+      html += `
+        <tr style="border-bottom: 1px solid var(--border-light);">
+          <td style="padding:12px; font-weight:bold; color:var(--text-main);">${s.shopName}</td>
+          <td style="padding:12px;">${s.companyName || '--'}</td>
+          <td style="padding:12px; text-align:center;">
+            ${statusTag}
+            ${reasonTip}
+          </td>
+          <td style="padding:12px; text-align:center; font-weight:bold; color:var(--primary-color);">${prodCount}</td>
+          <td style="padding:12px; font-family:monospace; font-size:12px;">${s.creditCode || '--'}</td>
+          <td style="padding:12px; font-size:12px;">${s.regTime || '--'}</td>
+          <td style="padding:12px; text-align:center;">
+            ${actionBtn}
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html || '<tr><td colspan="7" class="text-center py-8 text-secondary">暂无商家店铺记录</td></tr>';
+
+    // Mount global modal handlers if not already mounted
+    if (!window.openSuspendShopModal) {
+      window.openSuspendShopModal = (shopId) => {
+        document.getElementById('suspend-shop-id').value = shopId;
+        document.getElementById('suspend-reason-input').value = '';
+        UI.showModal('modal-suspend-shop');
+      };
+
+      window.confirmSuspendShop = () => {
+        const id = document.getElementById('suspend-shop-id').value;
+        const reason = document.getElementById('suspend-reason-input').value.trim();
+        if (!reason) {
+          UI.toast('请输入关停理由', 'warning');
+          return;
+        }
+
+        const shop = MockData.shops.find(s => s.id == id);
+        if (shop) {
+          shop.status = '已关停';
+          shop.suspendReason = reason;
+          UI.toast(`已强行关停店铺: ${shop.shopName}`, 'error');
+          UI.closeModal('modal-suspend-shop');
+          AdminApp.renderMerchantShops();
+        }
+      };
+
+      window.toggleShopStatus = (shopId, newStatus) => {
+        const shop = MockData.shops.find(s => s.id == shopId);
+        if (shop) {
+          shop.status = newStatus;
+          delete shop.suspendReason;
+          UI.toast(`店铺状态已更新为: ${newStatus}`, 'success');
+          AdminApp.renderMerchantShops();
+        }
+      };
+    }
   },
 
   // === 2. 客户管理 ===

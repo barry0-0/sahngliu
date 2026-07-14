@@ -38,7 +38,7 @@ const H5App = {
         
         // Header Management
         const mainHeader = document.getElementById('main-h5-header');
-        if (targetId === 'view-shop' || targetId.startsWith('view-uc-')) {
+        if (targetId === 'view-shop' || targetId === 'view-shops' || targetId.startsWith('view-uc-')) {
           if (mainHeader) mainHeader.style.display = 'none';
         } else {
           if (mainHeader) mainHeader.style.display = 'flex';
@@ -160,18 +160,18 @@ const H5App = {
             </div>
             
             <div class="action-bar mt-4 flex items-center justify-between" onclick="event.stopPropagation()">
-              <button class="btn btn-outline flex items-center justify-center" style="width: 28px; height: 28px; padding: 0; color:var(--primary-color); border-color:var(--primary-color); border-radius: 50%; flex-shrink: 0;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
-                💬
+              <button class="btn btn-outline flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; color: var(--primary-color); border-color: rgba(0, 82, 217, 0.2); background: rgba(0, 82, 217, 0.05); border-radius: 50%; flex-shrink: 0; cursor: pointer;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
+                <svg class="icon-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               </button>
               
               <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
-                <div class="quantity-stepper" style="transform: scale(1.0); transform-origin: right center; margin-right: 8px;">
-                  <button class="stepper-btn minus" style="font-size: 16px; width: 28px; height: 28px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
-                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 14px; width: 40px; height: 28px;" onclick="event.stopPropagation()">
-                  <button class="stepper-btn plus" style="font-size: 16px; width: 28px; height: 28px;" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+                <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center; margin-right: 4px;">
+                  <button class="stepper-btn minus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
+                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 12px; width: 32px; height: 24px;" onclick="event.stopPropagation()">
+                  <button class="stepper-btn plus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
                 </div>
-                <button class="btn btn-primary flex items-center justify-center" style="width: 28px; height: 28px; padding: 0; border-radius: 50%; flex-shrink: 0; font-size: 14px;" onclick="H5App.quickAddToCart('${p.id}')">
-                  🛒
+                <button class="btn btn-primary flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; border-radius: 50%; flex-shrink: 0; background: var(--primary-color); border: none; cursor: pointer; color: #fff;" onclick="H5App.quickAddToCart('${p.id}')">
+                  <svg class="icon-svg" style="width: 14px; height: 14px; color: #fff;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                 </button>
               </div>
             </div>
@@ -358,10 +358,22 @@ const H5App = {
     }
   },
 
+  currentBidFilter: 'all',
+
   renderBids(keyword = '') {
     const list = document.getElementById('h5-bid-list');
     let html = '';
-    let filtered = MockData.biddingAnnouncements;
+    let filtered = MockData.biddingAnnouncements || [];
+    
+    // 状态筛选
+    const statusFilter = this.currentBidFilter || 'all';
+    if (statusFilter === 'active') {
+      filtered = filtered.filter(b => b.status === 1);
+    } else if (statusFilter === 'ended') {
+      filtered = filtered.filter(b => b.status !== 1);
+    }
+
+    // 关键词筛选
     if (keyword) {
       filtered = filtered.filter(b => b.title.includes(keyword));
     }
@@ -383,10 +395,25 @@ const H5App = {
         </div>
       `;
     });
-    if(list) list.innerHTML = html;
+    if(list) list.innerHTML = html || '<div class="text-center py-12 text-secondary text-sm">暂无符合条件的竞价项目</div>';
   },
 
   doBidSearch() {
+    const kw = document.getElementById('h5-bid-search-keyword').value.trim();
+    this.renderBids(kw);
+  },
+
+  setBidStatusFilter(status, el) {
+    this.currentBidFilter = status;
+    const parent = document.getElementById('h5-bid-status-filters');
+    if (parent) {
+      parent.querySelectorAll('span').forEach(span => {
+        span.className = 'tag tag-secondary cursor-pointer';
+      });
+    }
+    if (el) {
+      el.className = 'tag tag-primary cursor-pointer';
+    }
     const kw = document.getElementById('h5-bid-search-keyword').value.trim();
     this.renderBids(kw);
   },
@@ -503,9 +530,28 @@ const H5App = {
       return;
     }
     if (type === 'merchant') {
-      const p = MockData.products.find(p => p.shopName.includes(kw));
-      if (p) {
-        this.goToShop(p.shopId, p.shopName);
+      const filteredShops = MockData.shops.filter(s => s.shopName.includes(kw) || s.companyName.includes(kw));
+      if (filteredShops.length > 0) {
+        this.switchH5View('view-shops');
+        document.getElementById('h5-shops-count').innerText = `共找到 ${filteredShops.length} 个相关店铺`;
+        let html = '';
+        filteredShops.forEach(s => {
+          const avatarChar = s.avatar ? '' : s.shopName.charAt(0);
+          const avatarHtml = s.avatar ? `<img src="${s.avatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : `<div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">${avatarChar}</div>`;
+          html += `
+            <div class="card flex gap-3 items-center" onclick="H5App.goToShop('${s.id}', '${s.shopName}')" style="padding: 12px; border-radius: 16px; border: 1px solid #f1f5f9; background: #fff; cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                ${avatarHtml}
+                <div>
+                  <div class="font-bold text-sm text-slate-800">${s.shopName}</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">${s.companyName}</div>
+                </div>
+              </div>
+              <svg class="icon-svg text-slate-300" style="width:16px; height:16px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          `;
+        });
+        document.getElementById('h5-grid-search-shops').innerHTML = html;
       } else {
         UI.toast('未找到相关商户', 'error');
       }
@@ -576,12 +622,19 @@ const H5App = {
             <div style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${p.priceStr}</div>
             <div class="text-xs text-gray-400 mt-1">(店内) ${p.shopName}</div>
             <div class="mt-2 flex items-center justify-between" onclick="event.stopPropagation()">
-              <div class="flex items-center border border-light rounded overflow-hidden" style="transform: scale(0.85); transform-origin: left center;">
-                <button class="bg-gray-100 px-2 py-1 text-secondary" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
-                <input type="number" id="qty-in-${p.id}" value="1" min="1" class="w-8 text-center outline-none border-none text-xs" onclick="event.stopPropagation()">
-                <button class="bg-gray-100 px-2 py-1 text-secondary" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+              <button class="btn btn-outline flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; color: var(--primary-color); border-color: rgba(0, 82, 217, 0.2); background: rgba(0, 82, 217, 0.05); border-radius: 50%; flex-shrink: 0; cursor: pointer;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
+                <svg class="icon-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </button>
+              <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
+                <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center; margin-right: 4px;">
+                  <button class="stepper-btn minus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
+                  <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 12px; width: 32px; height: 24px;" onclick="event.stopPropagation()">
+                  <button class="stepper-btn plus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
+                </div>
+                <button class="btn btn-primary flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; border-radius: 50%; flex-shrink: 0; background: var(--primary-color); border: none; cursor: pointer; color: #fff;" onclick="H5App.quickAddToCart('${p.id}')">
+                  <svg class="icon-svg" style="width: 14px; height: 14px; color: #fff;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
               </div>
-              <button class="btn btn-primary" style="padding: 2px 8px; font-size: 12px; border-radius: 12px;" onclick="H5App.quickAddToCart('${p.id}')">加入</button>
             </div>
           </div>
         </div>

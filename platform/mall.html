@@ -285,7 +285,7 @@
               <div class="text-secondary text-sm" id="shop-biz-display">主营业务：钢材、木材、建筑材料</div>
               <div class="text-secondary text-sm mt-1" id="shop-reg-display">入驻时间：2026-01-01</div>
             </div>
-            <div class="mt-6">
+            <div class="mt-6" style="display:none;">
               <button class="btn btn-primary" id="shop-follow-btn" onclick="MallApp.toggleFollowShop()">关注店铺</button>
             </div>
           </div>
@@ -314,6 +314,19 @@
           <!-- JS 渲染 -->
         </div>
 
+      </div>
+    </div>
+
+    <!-- ================== 5.6 搜索商户店铺列表 ================== -->
+    <div id="mall-shops" class="mall-view">
+      <div class="mall-container">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold flex items-center gap-2">🔍 搜索商户店铺</h2>
+          <span class="text-secondary text-sm" id="shops-count-display">共找到 0 个相关店铺</span>
+        </div>
+        <div class="mall-grid" id="grid-search-shops" style="grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          <!-- JS 渲染 -->
+        </div>
       </div>
     </div>
 

@@ -277,10 +277,31 @@ const MallApp = {
     }
 
     if (type === 'merchant') {
-      // 模拟搜到第一个商家
-      const p = MockData.products.find(p => p.shopName.includes(kw));
-      if (p) {
-        this.goToShop(p.shopId, p.shopName);
+      const filteredShops = MockData.shops.filter(s => s.shopName.includes(kw) || s.companyName.includes(kw));
+      if (filteredShops.length > 0) {
+        document.querySelectorAll('.mall-view').forEach(v => v.classList.remove('active'));
+        document.getElementById('mall-shops').classList.add('active');
+        document.getElementById('shops-count-display').innerText = `共找到 ${filteredShops.length} 个相关店铺`;
+        
+        let html = '';
+        filteredShops.forEach(s => {
+          const avatarChar = s.avatar ? '' : s.shopName.charAt(0);
+          const avatarHtml = s.avatar ? `<img src="${s.avatar}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;">` : `<div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border: 2px solid #fff;">${avatarChar}</div>`;
+          html += `
+            <div class="card cursor-pointer hover:shadow-md transition-shadow" onclick="MallApp.goToShop('${s.id}', '${s.shopName}')" style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff;">
+              <div style="height: 80px; background: #f8fafc; background-image: url(${s.banner || 'https://images.unsplash.com/photo-1541888081-30d890632a7e?w=1200&h=300&fit=crop'}); background-size: cover; background-position: center;"></div>
+              <div class="card-body flex gap-4 items-center" style="padding: 16px; position: relative; margin-top: -24px;">
+                ${avatarHtml}
+                <div class="flex-1" style="margin-top: 18px;">
+                  <h4 class="font-bold text-base text-slate-800 m-0" style="margin: 0; font-size: 15px;">${s.shopName}</h4>
+                  <div class="text-[10px] text-slate-400 mt-1">${s.companyName}</div>
+                  <div class="text-xs text-slate-500 mt-1"><span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">正常营业</span></div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        document.getElementById('grid-search-shops').innerHTML = html;
       } else {
         UI.toast('未找到相关商户', 'error');
       }

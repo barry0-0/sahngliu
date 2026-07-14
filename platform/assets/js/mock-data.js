@@ -27,6 +27,33 @@ window.MockData = {
       mainBusiness: '主营业务：钢材、木材、建筑材料',
       regTime: '2026-01-01',
       isFollowed: false
+    },
+    'S001': {
+      id: 'S001',
+      name: '远大钢铁官方直营店',
+      avatar: '钢',
+      banner: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=300&fit=crop',
+      mainBusiness: '主营业务：特种钢材、建筑钢材、板材、废钢回收',
+      regTime: '2026-02-15',
+      isFollowed: false
+    },
+    'S002': {
+      id: 'S002',
+      name: '华东木材集散中心',
+      avatar: '木',
+      banner: 'https://images.unsplash.com/photo-1416879573087-210fe7e5b155?w=1200&h=300&fit=crop',
+      mainBusiness: '主营业务：进口原木、防腐木、建筑模板、建筑木方',
+      regTime: '2026-03-01',
+      isFollowed: false
+    },
+    'S004': {
+      id: 'S004',
+      name: '海螺水泥华东总代',
+      avatar: '泥',
+      banner: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&h=300&fit=crop',
+      mainBusiness: '主营业务：海螺牌硅酸盐水泥、袋装水泥、散装水泥',
+      regTime: '2026-01-20',
+      isFollowed: false
     }
   },
   // --- 1. BI 数据报表 (Admin) ---
@@ -87,6 +114,8 @@ window.MockData = {
 
   // --- 3. 商家店铺库 (merchant_shop) ---
   shops: [
+    { id: '10001', userId: '10001', shopName: '万通建材', companyName: '万通建材有限公司', creditCode: '91330100MA2B3C4D5E', status: '正常', avatar: '', banner: 'https://images.unsplash.com/photo-1541888081-30d890632a7e?w=1200&h=300&fit=crop' },
+    { id: '10002', userId: '10002', shopName: '星辉建筑五金专营', companyName: '星辉建筑五金材料有限公司', creditCode: '91330100MA2B3C4FGH', status: '正常', avatar: '', banner: '' },
     { id: 'S001', userId: '10003', shopName: '远大钢铁官方直营店', companyName: '远大钢铁集团有限公司', creditCode: '91330100MA2B3C4D5E', status: '正常', avatar: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80' },
     { id: 'S002', userId: '10005', shopName: '华东木材集散中心', companyName: '华东木业发展有限公司', creditCode: '91330200MA11223344', status: '正常', avatar: 'https://images.unsplash.com/photo-1598214156687-f823f6eb78c8?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1416879573087-210fe7e5b155?auto=format&fit=crop&w=1200&q=80' },
     { id: 'S003', userId: '10004', shopName: '某某贸易商行', companyName: '某某贸易商行', creditCode: '91330300123456789X', status: '待审核', avatar: '', banner: '' },
