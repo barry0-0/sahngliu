@@ -19,6 +19,9 @@ const H5App = {
     this.renderDemands();
     this.renderBids();
     this.renderCart();
+    
+    // 首次打开同步视图并确保首页隐藏返回键
+    this.switchH5View('view-home');
   },
 
   switchH5View(targetId) {
@@ -38,6 +41,9 @@ const H5App = {
         
         // Header Management
         const mainHeader = document.getElementById('main-h5-header');
+        if (targetId === 'view-uc-orders') {
+          H5App.renderUserOrders();
+        }
         if (targetId === 'view-shop' || targetId === 'view-shops' || targetId.startsWith('view-uc-')) {
           if (mainHeader) mainHeader.style.display = 'none';
         } else {
@@ -779,6 +785,141 @@ const H5App = {
       this.renderCart();
       UI.toast('已移除', 'success');
     }
+  },
+
+  currentUserOrderFilter: 'all',
+
+  setOrderStatusFilter(status, el) {
+    this.currentUserOrderFilter = status;
+    const filters = document.querySelectorAll('.h5-order-filter');
+    filters.forEach(f => {
+      f.className = 'tag tag-secondary cursor-pointer h5-order-filter';
+    });
+    if (el) {
+      el.className = 'tag tag-primary cursor-pointer h5-order-filter';
+    }
+    this.renderUserOrders();
+  },
+
+  renderUserOrders() {
+    const list = document.getElementById('h5-user-order-list');
+    if (!list) return;
+    
+    let myOrders = MockData.orders;
+    
+    // Filter status
+    const status = this.currentUserOrderFilter || 'all';
+    if (status !== 'all') {
+      if (status === 'sign') {
+        myOrders = myOrders.filter(o => o.status === 0 || o.status === 5);
+      } else {
+        myOrders = myOrders.filter(o => o.status === parseInt(status));
+      }
+    }
+    
+    let html = '';
+    if (myOrders.length === 0) {
+      html = '<div class="text-center py-12 text-secondary text-sm">暂无匹配的订单数据</div>';
+    } else {
+      myOrders.forEach(o => {
+        let statusTag = '';
+        let btn = '';
+        
+        if (o.status === 4) {
+          statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959;">待付款</span>`;
+          btn = `<button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.toast('支付成功！', 'success'); o.status = 0; H5App.renderUserOrders();">立即付款</button>`;
+        } else if (o.status === 0) {
+          statusTag = `<span class="tag tag-warning">待买家签约</span>`;
+          btn = `<button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="H5App.openUserContractModal('${o.id}')">立即签约</button>`;
+        } else if (o.status === 5) {
+          statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待卖家签约</span>`;
+        } else if (o.status === 1) {
+          statusTag = `<span class="tag tag-primary">待发货</span>`;
+        } else if (o.status === 2) {
+          statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货</span>`;
+        } else if (o.status === 3) {
+          statusTag = `<span class="tag tag-success">已完结</span>`;
+        } else {
+          statusTag = `<span class="tag tag-danger">已关闭</span>`;
+        }
+
+        html += `
+          <div style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee;">
+            <div class="flex justify-between items-center mb-3 pb-3" style="border-bottom: 1px solid #f2f3f5; display:flex; justify-content:space-between;">
+              <div class="text-xs text-slate-500">单号: ${o.id}</div>
+              ${statusTag}
+            </div>
+            <div class="font-bold text-sm mb-1">${o.productName}</div>
+            <div class="text-xs text-slate-400 mb-2">店铺: ${o.shopName}</div>
+            <div class="flex justify-between items-center mt-3" style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="text-danger font-bold text-base">${o.amount}</div>
+              ${btn}
+            </div>
+          </div>
+        `;
+      });
+    }
+    list.innerHTML = html;
+  },
+
+  openUserContractModal(orderId) {
+    const order = MockData.orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    const bodyEl = document.getElementById('h5-contract-body');
+    if (bodyEl) {
+      bodyEl.innerHTML = `
+        <div style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 12px;">工业品买卖电子合同</div>
+        <p><strong>合同编号：</strong>HT-${order.id}</p>
+        <p><strong>买方 (采购商)：</strong>${order.buyerName}</p>
+        <p><strong>卖方 (供应商家)：</strong>${order.shopName}</p>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid #ddd;">
+        <p>买方向卖方订购以下货物，经双方友好协商一致，特订立本合同以兹共同遵守：</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size:11px;">
+          <thead>
+            <tr style="background: #f5f5f5;">
+              <th style="border: 1px solid #ddd; padding: 6px;">货物名称</th>
+              <th style="border: 1px solid #ddd; padding: 6px;">规格型号</th>
+              <th style="border: 1px solid #ddd; padding: 6px;">总价金额</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #ddd; padding: 6px;">${order.productName}</td>
+              <td style="border: 1px solid #ddd; padding: 6px;">国标/正品级</td>
+              <td style="border: 1px solid #ddd; padding: 6px; color: red; font-weight: bold;">${order.amount}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p><strong>双方签章确认：</strong></p>
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+          <div>
+            <p>买方盖章：</p>
+            <div style="color: #999; border: 1px dashed #ccc; padding: 8px 12px; font-size:11px;">
+              (未签章)
+            </div>
+          </div>
+          <div>
+            <p>卖方盖章：</p>
+            <div style="color: #999; border: 1px dashed #ccc; padding: 8px 12px; font-size:11px;">
+              (未签章)
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    const signBtn = document.getElementById('h5-contract-sign-btn');
+    if (signBtn) {
+      signBtn.onclick = () => {
+        order.status = 5; // Change to pending seller signature / "待卖家签约"
+        UI.closeModal('sheet-h5-contract');
+        UI.toast('您已签名并盖章成功！已向商家发出签约提醒。', 'success');
+        this.renderUserOrders();
+      };
+    }
+    
+    UI.showModal('sheet-h5-contract');
   }
 };
 

@@ -42,11 +42,54 @@ const MerchantApp = {
       document.getElementById('shop-name-input').value = shop.shopName;
       document.getElementById('shop-avatar-preview').src = shop.avatar || 'https://via.placeholder.com/100';
       document.getElementById('shop-banner-preview').src = shop.banner || 'https://via.placeholder.com/800x200';
+
+      // 渲染店铺当前状态
+      const statusText = document.getElementById('pc-shop-status-text');
+      const statusBadge = document.getElementById('pc-shop-status-badge');
+      const warningBox = document.getElementById('pc-shop-warning-box');
+      const reasonText = document.getElementById('pc-suspend-reason-text');
+
+      if (shop.status === '已关停' || shop.status === '已禁用') {
+        if (statusText) statusText.innerText = '您的店铺已被平台下架限期整改，请检查资质及货源合规性！';
+        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">已下架</span>';
+        if (warningBox) warningBox.style.display = 'block';
+        if (reasonText) reasonText.innerText = shop.suspendReason || '违规操作，请检查资质及货源合规性';
+      } else {
+        if (statusText) statusText.innerText = '您的店铺处于正常对外营业状态，各渠道货源及现货市场展现正常。';
+        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-success" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">正常营业</span>';
+        if (warningBox) warningBox.style.display = 'none';
+      }
     }
   },
 
   saveShopInfo() {
-    UI.toast('店铺装潢保存成功，前台展示已更新', 'success');
+    const newName = document.getElementById('shop-name-input').value.trim();
+    if (!newName) {
+      UI.toast('商户名不能为空', 'warning');
+      return;
+    }
+    const shop = MockData.shops.find(s => s.id === this.currentShopId);
+    if (shop) {
+      shop.shopName = newName;
+      UI.toast('店铺装潢及资料保存成功，前台展示已更新', 'success');
+      this.renderShopInfo();
+    }
+  },
+
+  submitShopAppeal() {
+    const newName = document.getElementById('shop-name-input').value.trim();
+    if (!newName) {
+      UI.toast('商户名不能为空', 'warning');
+      return;
+    }
+    const shop = MockData.shops.find(s => s.id === this.currentShopId);
+    if (shop) {
+      shop.shopName = newName;
+      shop.status = '正常';
+      delete shop.suspendReason;
+      UI.toast('整改申诉已提交，店铺已重新上架！', 'success');
+      this.renderShopInfo();
+    }
   },
 
   // 2. 商品中心 - 所有商品列表

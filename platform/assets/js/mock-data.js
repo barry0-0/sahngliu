@@ -155,6 +155,8 @@ window.MockData = {
     { id: 'ORD202607080001', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'HRB400E 抗震螺纹钢 12mm', amount: '¥385,000.00', type: '现货交易', status: 0, time: '2026-07-08 09:12' },
     { id: 'ORD202607070088', buyerName: '万通建材采购部', shopName: '华东木材集散中心', shopId: 'S002', productName: '俄罗斯进口 樟子松原木 (竞标中标)', amount: '¥240,000.00', type: '竞价交易', status: 1, time: '2026-07-07 15:30' },
     { id: 'ORD202607050032', buyerName: '张三 (普通买家)', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '测试小批量钢管', amount: '¥8,500.00', type: '现货交易', status: 2, time: '2026-07-05 10:00' },
+    { id: 'ORD202607149999', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待付款测试钢筋批次', amount: '¥45,000.00', type: '现货交易', status: 4, time: '2026-07-14 15:00' },
+    { id: 'ORD202607148888', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待卖家签约测试槽钢', amount: '¥98,000.00', type: '现货交易', status: 5, time: '2026-07-14 15:20' },
     { id: 'ORD202606280011', buyerName: '星辉建筑公司', shopName: '华东木材集散中心', shopId: 'S002', productName: '定制加工木方批次', amount: '¥150,000.00', type: '求购转单', status: -1, time: '2026-06-28 14:20', closeReason: '买卖双方线下协商退款取消' },
     { id: 'ORD202607090001', buyerName: '万通建材采购部', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.O 42.5 散装硅酸盐水泥', amount: '¥155,000.00', type: '现货交易', status: 3, time: '2026-07-09 08:30' },
     { id: 'ORD202607090002', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'Q345B 低合金高强度槽钢', amount: '¥40,500.00', type: '现货交易', status: 1, time: '2026-07-09 11:20' },

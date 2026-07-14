@@ -23,102 +23,195 @@
 <div class="mobile-app-container">
 
   <!-- 顶部 Header -->
-  <header class="h5-header relative" style="background: #0f172a; color: #fff; height: 56px; border-bottom: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100;">
-    <div class="absolute left-4 cursor-pointer text-slate-300 hover:text-white flex items-center" style="height: 100%; top: 0;" onclick="window.location.href='h5.html'">
+  <header class="h5-header" id="mh5-header-container" style="background: #0f172a; color: #fff; height: 56px; border-bottom: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100; position: relative;">
+    <div class="absolute cursor-pointer text-slate-300 hover:text-white flex items-center" style="height: 100%; top: 0; position: absolute; left: 12px;" onclick="window.location.href='h5.html'">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
     </div>
-    <div id="mh5-header-title" class="font-bold text-base tracking-wide">店铺</div>
+    <div id="mh5-header-title" class="font-bold text-base tracking-wide" style="font-size: 16px;">商品</div>
+    <div class="h5-wechat-capsule" style="position: absolute; right: 12px; display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 4px 10px; height: 28px; box-sizing: border-box; color: #fff;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      <div style="width: 1px; height: 12px; background: rgba(255, 255, 255, 0.25);"></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
   </header>
 
   <main class="h5-content">
     
     <!-- === 1. 店铺管理 === -->
-    <div id="view-shop" class="h5-view active">
-      <!-- 看板 Dashboard Card (from draft) -->
-      <div style="padding: 16px; background: #fff;">
-        <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); padding: 20px; border-radius: 16px; color: #fff; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);">
-          <i class="fas fa-wallet" style="position: absolute; right: -16px; bottom: -16px; font-size: 80px; opacity: 0.1;"></i>
-          <p style="font-size: 12px; font-weight: bold; opacity: 0.85; letter-spacing: 1px; margin-bottom: 4px;">本月完结入账 (元)</p>
-          <h2 style="font-size: 32px; font-weight: 900; margin: 0;">86,500.<span style="font-size: 18px; font-weight: normal;">00</span></h2>
-          <div style="margin-top: 16px; background: rgba(255,255,255,0.2); display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; backdrop-filter: blur(5px);">
+    <div id="view-shop" class="h5-view" style="background: #f8fafc; min-height: 100%;">
+      <!-- 店铺基本设置 Card -->
+      <div style="background: #fff; padding: 16px; display: flex; align-items: center; gap: 16px; border-radius: 16px; box-shadow: 0 4px 12px rgba(15,23,42,0.03); border: 1px solid #f1f5f9; margin: 12px 16px 8px;">
+        <img id="mh5-avatar" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80" style="width: 56px; height: 56px; border-radius: 12px; object-fit: cover; border: 1px solid #e2e8f0;">
+        <div style="flex: 1;">
+          <div style="font-weight: bold; font-size: 15px; color: #0f172a;" id="mh5-shop-name">远大钢铁官方直营店</div>
+          <div style="color: var(--success-color); font-size: 11px; font-weight: bold; margin-top: 3px; display: flex; align-items: center; gap: 4px;">
+            <svg style="width:12px; height:12px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            企业已认证
+          </div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 3px;">商户号: <span id="mh5-shop-id" style="font-family: monospace;">S001</span></div>
+        </div>
+        <div id="mh5-shop-status-badge">
+          <!-- JS 渲染状态标签 -->
+        </div>
+      </div>
+
+      <!-- 违规下架警告与重新编辑再次提交区域 -->
+      <div id="mh5-shop-warning-box" style="display: none; padding: 16px; background: #fff1f0; border: 1px solid #ffa39e; border-radius: 16px; margin: 8px 16px;">
+        <div style="color: #cf1322; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+          <svg style="width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          店铺已被平台强行关停下架
+        </div>
+        <div style="font-size: 12px; color: #4f4f4f; line-height: 1.5; margin-bottom: 10px;">
+          <strong>下架理由：</strong><span id="mh5-suspend-reason-text">无</span>
+        </div>
+        <button class="btn btn-danger" style="width: 100%; height: 34px; font-size: 12px; border-radius: 17px; padding: 0 12px; font-weight: bold; border: none; cursor: pointer; background: #ff4d4f; color: #fff;" onclick="MH5App.openAppealModal()">重新编辑并提交审核</button>
+      </div>
+
+      <!-- 统计看板 Dashboard Card -->
+      <div style="padding: 16px; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(15,23,42,0.03); border: 1px solid #f1f5f9; margin: 8px 16px;">
+        <div style="font-weight: bold; font-size: 13px; color: #475569; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+          <svg style="width:14px; height:14px; fill:none; stroke:currentColor; stroke-width: 2.5;" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          店铺经营大盘
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 18px; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+          <p style="font-size: 11px; font-weight: bold; opacity: 0.8; letter-spacing: 0.5px; margin-bottom: 4px;">本月完结入账 (元)</p>
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0; font-family: monospace; color: #ffffff;">86,500.<span style="font-size: 16px; font-weight: normal; color: #ffffff;">00</span></h2>
+          <div style="margin-top: 14px; background: rgba(255,255,255,0.15); display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; backdrop-filter: blur(5px);">
             待发货单: 3 笔
           </div>
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-          <div style="background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #f1f5f9;">
-            <p style="font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px;">今日大厅访客</p>
-            <p style="font-size: 20px; font-weight: 900; color: #1e293b; margin: 0;">124</p>
+          <div style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #f1f5f9;">
+            <p style="font-size: 10px; color: #64748b; font-weight: bold; margin-bottom: 2px;">今日大厅访客</p>
+            <p style="font-size: 18px; font-weight: 900; color: #0f172a; margin: 0;">124</p>
           </div>
-          <div style="background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #f1f5f9;">
-            <p style="font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px;">中标转化率</p>
-            <p style="font-size: 20px; font-weight: 900; color: #1e293b; margin: 0;">32.5%</p>
+          <div style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #f1f5f9;">
+            <p style="font-size: 10px; color: #64748b; font-weight: bold; margin-bottom: 2px;">中标转化率</p>
+            <p style="font-size: 18px; font-weight: 900; color: #0f172a; margin: 0;">32.5%</p>
           </div>
-        </div>
-      </div>
-
-      <!-- 店铺基本设置 -->
-      <div style="background: #fff; padding: 16px; margin-top: 8px; border-top: 8px solid #f1f5f9; display: flex; align-items: center; gap: 16px;">
-        <img id="mh5-avatar" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-color);">
-        <div>
-          <div style="font-weight: bold; font-size: 16px; color:#1e293b;" id="mh5-shop-name">远大钢铁官方直营店</div>
-          <div style="color: var(--success-color); font-size: 11px; font-weight:bold; margin-top: 2px;"><i class="fas fa-check-circle"></i> 企业已认证</div>
-          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">商户号: <span id="mh5-shop-id"></span></div>
         </div>
       </div>
       
-      <div class="h5-menu-list" style="margin-top: 8px; padding: 0 16px; background: #fff;">
-        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color:#334155; font-weight:500;">
-          <div>修改店铺名称</div><div style="color: #94a3b8;">></div>
+      <!-- 功能菜单列表 -->
+      <div class="h5-menu-list" style="padding: 0 16px; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(15,23,42,0.03); border: 1px solid #f1f5f9; margin: 8px 16px 16px;">
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color:#334155; font-weight:500; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg style="width: 16px; height: 16px; color: #64748b;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+            修改店铺名称
+          </div>
+          <div style="color: #cbd5e1;">&gt;</div>
         </div>
-        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color:#334155; font-weight:500;">
-          <div>更换店铺 Logo 头像</div><div style="color: #94a3b8;">></div>
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color:#334155; font-weight:500; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg style="width: 16px; height: 16px; color: #64748b;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="10" r="3"></circle><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path></svg>
+            更换店铺 Logo 头像
+          </div>
+          <div style="color: #cbd5e1;">&gt;</div>
         </div>
-        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: none; font-size: 13px; color:#334155; font-weight:500;">
-          <div>更换首页横幅 Banner</div><div style="color: #94a3b8;">></div>
+        <div class="h5-menu-row" style="padding: 14px 0; border-bottom: none; font-size: 13px; color:#334155; font-weight:500; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg style="width: 16px; height: 16px; color: #64748b;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            更换首页横幅 Banner
+          </div>
+          <div style="color: #cbd5e1;">&gt;</div>
         </div>
       </div>
       
-      <div style="padding: 20px; background:#fff;">
-        <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px; font-weight:bold; font-size:14px; box-shadow: var(--shadow-md);">保存店铺装潢</button>
+      <div style="padding: 0 16px 24px;">
+        <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px; font-weight:bold; font-size:14px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15); border: none; background: var(--primary-color); color: #fff;">保存店铺装潢</button>
       </div>
     </div>
 
     <!-- === 2. 商品中心 === -->
-    <div id="view-products" class="h5-view">
-       <!-- 新增：商品上方筛选排版优化 -->
-       <div style="background:#fff; padding: 12px 12px 6px; display:flex; gap: 8px;">
-         <input type="text" id="mh5-product-search-kw" class="form-control" style="flex:1;" placeholder="搜索商品名称...">
-         <select id="mh5-product-search-cat" class="form-control" style="width: 100px;">
-           <option value="">全部分类</option>
-           <option value="钢材">钢材</option>
-           <option value="木材">木材</option>
-         </select>
-         <button class="btn btn-primary" onclick="MH5App.doProductSearch()">筛选</button>
+    <div id="view-products" class="h5-view active">
+       <!-- 顶部两个板块切换导航 -->
+       <div style="background: #fff; border-bottom: 1px solid #f1f5f9; display: flex; position: sticky; top: 0; z-index: 10;">
+         <div class="flex-1 text-center py-3 font-bold tab-mh5-prod-section active" data-target="mh5-prod-list-section" style="font-size: 14px; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid var(--primary-color); color: var(--primary-color);" onclick="MH5App.switchProductSection('mh5-prod-list-section')">商品列表</div>
+         <div class="flex-1 text-center py-3 tab-mh5-prod-section" data-target="mh5-prod-shelf-section" style="font-size: 14px; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; color: #64748b;" onclick="MH5App.switchProductSection('mh5-prod-shelf-section')">上架列表</div>
        </div>
-       <!-- 分类筛选 Tab 放在搜索框下方 -->
-       <div class="flex" style="background:#fff; border-bottom:1px solid #eee; margin-bottom: 8px;">
-         <div class="flex-1 text-center py-2.5 font-bold text-primary text-sm cursor-pointer" style="border-bottom: 2px solid var(--primary-color);">已上架列表</div>
-         <div class="flex-1 text-center py-2.5 text-secondary text-sm cursor-pointer">待审核/未上架</div>
+
+       <!-- 板块一：商品管理列表 -->
+       <div id="mh5-prod-list-section">
+         <div style="background:#fff; padding: 12px 12px 6px; display:flex; gap: 8px;">
+           <input type="text" id="mh5-product-search-kw" class="form-control" style="flex:1;" placeholder="搜索商品名称...">
+           <select id="mh5-product-search-cat" class="form-control" style="width: 100px;">
+             <option value="">全部分类</option>
+             <option value="钢材">钢材</option>
+             <option value="木材">木材</option>
+           </select>
+           <button class="btn btn-primary" onclick="MH5App.doProductSearch()">筛选</button>
+         </div>
+         <!-- 美化的商品状态过滤 Tag 筛选 (对齐订单样式) -->
+         <div id="mh5-product-status-filters" style="background:#fff; padding: 6px 12px 12px; border-bottom: 1px solid #f1f5f9; margin-bottom: 8px; display: flex; gap: 8px; overflow-x: auto;">
+           <span class="tag tag-primary cursor-pointer mh5-prod-filter" onclick="MH5App.switchProductTab('active', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">已上架商品</span>
+           <span class="tag tag-secondary cursor-pointer mh5-prod-filter" onclick="MH5App.switchProductTab('pending', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待审核/未上架</span>
+         </div>
+         <div id="mh5-product-list" style="padding: 0 12px 12px;"></div>
        </div>
-       <div id="mh5-product-list" style="padding: 0 12px 12px;"></div>
+
+       <!-- 板块二：商品发布上架公告的管理 -->
+       <div id="mh5-prod-shelf-section" style="display: none;">
+         <div style="background:#fff; padding: 12px; display:flex; flex-direction:column; gap: 8px; border-bottom: 1px solid #f1f5f9;">
+           <div style="display:flex; gap: 8px;">
+             <input type="text" id="mh5-shelf-ann-search-kw" class="form-control" style="flex:1;" placeholder="搜索公告标题...">
+             <button class="btn btn-primary btn-sm" onclick="MH5App.renderShelfAnnouncements()">筛选</button>
+           </div>
+           <div id="mh5-shelf-ann-status-filters" style="display:flex; gap: 6px;">
+             <span class="tag tag-primary cursor-pointer mh5-shelf-ann-filter" data-status="all" onclick="MH5App.setShelfAnnFilter('all', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">全部</span>
+             <span class="tag tag-secondary cursor-pointer mh5-shelf-ann-filter" data-status="active" onclick="MH5App.setShelfAnnFilter('active', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">公示中</span>
+             <span class="tag tag-secondary cursor-pointer mh5-shelf-ann-filter" data-status="ended" onclick="MH5App.setShelfAnnFilter('ended', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">已结束</span>
+           </div>
+         </div>
+         <div style="padding: 12px;">
+           <button class="btn btn-primary" style="width:100%; margin-bottom: 12px;" onclick="MH5App.openAddShelfAnnModal()">新增上架公示/公告</button>
+           <div id="mh5-shelf-ann-list">
+             <!-- JS 渲染上架公告列表 -->
+           </div>
+         </div>
+       </div>
     </div>
 
     <!-- === 3. 订单管理 === -->
     <div id="view-orders" class="h5-view">
+      <!-- 订单筛查过滤 -->
+      <div style="background:#fff; padding: 12px; display:flex; flex-direction:column; gap: 8px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 10;">
+        <div style="display:flex; gap: 8px;">
+          <input type="text" id="mh5-order-search-kw" class="form-control" style="flex:1;" placeholder="搜索商品名/买家名...">
+          <button class="btn btn-primary" style="padding: 0 16px; border-radius: 8px;" onclick="MH5App.renderOrders()">筛选</button>
+        </div>
+        <div id="mh5-order-status-filters" style="display: flex; gap: 8px; margin-top: 4px; overflow-x: auto; padding-bottom: 4px;">
+          <span class="tag tag-primary cursor-pointer mh5-order-filter" data-status="all" onclick="MH5App.setOrderStatusFilter('all', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">全部</span>
+          <span class="tag tag-secondary cursor-pointer mh5-order-filter" data-status="sign" onclick="MH5App.setOrderStatusFilter('sign', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待签约</span>
+          <span class="tag tag-secondary cursor-pointer mh5-order-filter" data-status="ship" onclick="MH5App.setOrderStatusFilter('ship', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待发货</span>
+          <span class="tag tag-secondary cursor-pointer mh5-order-filter" data-status="pay" onclick="MH5App.setOrderStatusFilter('pay', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待付款</span>
+          <span class="tag tag-secondary cursor-pointer mh5-order-filter" data-status="done" onclick="MH5App.setOrderStatusFilter('done', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">已完结</span>
+        </div>
+      </div>
       <div style="padding: 12px;" id="mh5-order-list"></div>
     </div>
 
     <!-- === 4. 竞价管理 === -->
     <div id="view-bidding" class="h5-view">
-       <div style="background: #fff; padding: 12px 16px; border-bottom: 1px solid #eee; position:sticky; top:0; z-index:5;">
-         <div style="display: flex; background: #f1f5f9; padding: 3px; border-radius: 9px;">
-           <div class="flex-1 text-center py-1.5 font-bold tab-mh5-bid active" data-target="mh5-bid-res" style="border-radius: 7px; font-size: 13px; cursor: pointer; transition: all 0.2s; background: #fff; color: var(--primary-color); box-shadow: 0 1px 3px rgba(0,0,0,0.1);" onclick="MH5App.switchBidTab('mh5-bid-res')">资源管理</div>
-           <div class="flex-1 text-center py-1.5 tab-mh5-bid" data-target="mh5-bid-ann" style="border-radius: 7px; font-size: 13px; cursor: pointer; transition: all 0.2s; background: transparent; color: #64748b;" onclick="MH5App.switchBidTab('mh5-bid-ann')">公告列表</div>
-         </div>
+       <div style="background: #fff; border-bottom: 1px solid #f1f5f9; position:sticky; top:0; z-index:5; display: flex;">
+         <div class="flex-1 text-center py-3 font-bold tab-mh5-bid active" data-target="mh5-bid-res" style="font-size: 14px; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid var(--primary-color); color: var(--primary-color);" onclick="MH5App.switchBidTab('mh5-bid-res')">资源管理</div>
+         <div class="flex-1 text-center py-3 tab-mh5-bid" data-target="mh5-bid-ann" style="font-size: 14px; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; color: #64748b;" onclick="MH5App.switchBidTab('mh5-bid-ann')">公告列表</div>
        </div>
        
        <div style="padding: 12px;" id="mh5-bid-res">
+         <!-- 资源搜索与筛选 -->
+         <div style="background:#fff; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 8px;">
+           <div style="display:flex; gap: 8px;">
+             <input type="text" id="mh5-bid-res-search-kw" class="form-control" style="flex:1;" placeholder="搜索资源名称...">
+             <button class="btn btn-primary btn-sm" onclick="MH5App.renderBidding()">筛选</button>
+           </div>
+           <div id="mh5-bid-res-status-filters" style="display:flex; gap: 6px;">
+             <span class="tag tag-primary cursor-pointer mh5-bid-res-filter" data-status="all" onclick="MH5App.setBidResFilter('all', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">全部</span>
+             <span class="tag tag-secondary cursor-pointer mh5-bid-res-filter" data-status="pending" onclick="MH5App.setBidResFilter('pending', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">待审核</span>
+             <span class="tag tag-secondary cursor-pointer mh5-bid-res-filter" data-status="approved" onclick="MH5App.setBidResFilter('approved', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">已通过</span>
+           </div>
+         </div>
          <button class="btn btn-primary" style="width:100%; margin-bottom: 12px;" onclick="UI.showModal('modal-mh5-add-res')">新增竞价资源</button>
          <div id="mh5-bidding-res-list">
            <!-- JS 渲染资源列表 -->
@@ -127,6 +220,19 @@
        </div>
        
        <div style="padding: 12px; display: none;" id="mh5-bid-ann">
+         <!-- 公告搜索与筛选 -->
+         <div style="background:#fff; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 8px;">
+           <div style="display:flex; gap: 8px;">
+             <input type="text" id="mh5-bid-ann-search-kw" class="form-control" style="flex:1;" placeholder="搜索公告标题...">
+             <button class="btn btn-primary btn-sm" onclick="MH5App.renderBidding()">筛选</button>
+           </div>
+           <div id="mh5-bid-ann-status-filters" style="display:flex; gap: 6px;">
+             <span class="tag tag-primary cursor-pointer mh5-bid-ann-filter" data-status="all" onclick="MH5App.setBidAnnFilter('all', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">全部</span>
+             <span class="tag tag-secondary cursor-pointer mh5-bid-ann-filter" data-status="0" onclick="MH5App.setBidAnnFilter('0', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">未开始</span>
+             <span class="tag tag-secondary cursor-pointer mh5-bid-ann-filter" data-status="1" onclick="MH5App.setBidAnnFilter('1', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">竞价中</span>
+             <span class="tag tag-secondary cursor-pointer mh5-bid-ann-filter" data-status="2" onclick="MH5App.setBidAnnFilter('2', this)" style="border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: bold;">已结束</span>
+           </div>
+         </div>
          <button class="btn btn-warning" style="width:100%; margin-bottom: 12px;" onclick="UI.showModal('modal-mh5-add-ann')">关联资源发布公告</button>
          <div id="mh5-bidding-ann-list">
            <!-- JS 渲染公告列表 -->
@@ -138,11 +244,7 @@
 
   <!-- 底部 TabBar -->
   <nav class="h5-tabbar">
-    <div class="h5-tab-item active" data-target="view-shop">
-      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-      店铺
-    </div>
-    <div class="h5-tab-item" data-target="view-products">
+    <div class="h5-tab-item active" data-target="view-products">
       <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
       商品
     </div>
@@ -153,6 +255,10 @@
     <div class="h5-tab-item" data-target="view-bidding">
       <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
       竞价
+    </div>
+    <div class="h5-tab-item" data-target="view-shop">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      店铺
     </div>
   </nav>
 
@@ -211,6 +317,66 @@
       <input type="datetime-local" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
     </div>
     <button class="btn btn-warning" style="width:100%; height:44px; border-radius:22px;" onclick="UI.closeModal('modal-mh5-add-ann'); UI.toast('竞价公告发布成功', 'success')">确认发布公告</button>
+  </div>
+</div>
+
+<!-- 移动端重新编辑店铺弹窗 -->
+<div class="modal-overlay" id="modal-mh5-edit-shop" style="display:none; align-items:center; justify-content:center; z-index: 2000; padding: 16px; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('modal-mh5-edit-shop')">
+  <div class="h5-bottom-sheet" style="height: 60vh; overflow-y: auto;">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;">编辑店铺资质重新申请</div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">店铺名称</label>
+      <input type="text" id="mh5-edit-shop-name" class="form-control" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;" placeholder="修改店铺名称">
+    </div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary">整改申诉说明</label>
+      <textarea id="mh5-edit-shop-desc" class="form-control" rows="3" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;" placeholder="请输入整改申诉的具体说明..."></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px; font-weight:bold;" onclick="MH5App.submitShopAppeal()">重新提交审核并上架</button>
+  </div>
+</div>
+
+<!-- 移动端新增上架公告弹窗 -->
+<div class="modal-overlay" id="modal-mh5-add-shelf-ann" style="display:none; align-items:center; justify-content:center; z-index: 2000; padding: 16px; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('modal-mh5-add-shelf-ann')">
+  <div class="h5-bottom-sheet" style="height: 70vh; overflow-y: auto; background:#fff; border-radius:20px 20px 0 0; padding:16px;">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+      <span>发布新品上架公示公告</span>
+      <button class="btn btn-text" style="border:none; background:none; font-size:18px;" onclick="UI.closeModal('modal-mh5-add-shelf-ann')">✕</button>
+    </div>
+    <div class="form-group mb-3">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">公告标题</label>
+      <input type="text" id="mh5-add-shelf-title" class="form-control" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;" placeholder="例如：2026年Q3新品螺纹钢上架公示">
+    </div>
+    <div class="form-group mb-3">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">选择上架商品</label>
+      <select id="mh5-add-shelf-prod" class="form-control" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;">
+        <!-- 动态填充 -->
+      </select>
+    </div>
+    <div class="form-group mb-3">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">计划上架时间</label>
+      <input type="date" id="mh5-add-shelf-date" class="form-control" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;">
+    </div>
+    <button class="btn btn-primary" style="width:100%; height:44px; border-radius:22px; font-weight:bold; margin-top:10px;" onclick="MH5App.submitShelfAnn()">发布上架公告</button>
+  </div>
+</div>
+
+<!-- H5 卖家电子合同签署弹窗 -->
+<div class="modal-overlay" id="sheet-mh5-contract" style="display:none; align-items:center; justify-content:center; z-index: 10000; padding: 16px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-mh5-contract')">
+  <div class="h5-bottom-sheet" style="height: 85vh; display: flex; flex-direction: column; background:#fff; border-radius: 20px 20px 0 0; overflow:hidden;">
+    <div class="flex justify-between items-center p-4 border-b border-slate-100" style="flex-shrink: 0; display:flex; justify-content:space-between;">
+      <h3 class="font-bold text-base" style="margin:0;">📝 电子合同签署 (卖家端)</h3>
+      <button class="btn btn-text" style="font-size: 18px; border:none; background:none;" onclick="UI.closeModal('sheet-mh5-contract')">✕</button>
+    </div>
+    
+    <div style="flex: 1; overflow-y: auto; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; font-family: sans-serif; font-size: 12px; line-height: 1.6; color: #333; margin: 12px;" id="mh5-contract-body">
+      <!-- 合同内容 -->
+    </div>
+    
+    <div style="padding: 16px; display: flex; gap: 12px; flex-shrink: 0; background:#fff; border-top: 1px solid #eee;">
+      <button class="btn btn-outline flex-1" style="height: 40px; border-radius: 20px;" onclick="UI.closeModal('sheet-mh5-contract')">取消</button>
+      <button class="btn btn-primary flex-1" style="height: 40px; border-radius: 20px; background: var(--primary-color); color:#fff; border:none;" id="mh5-contract-sign-btn">商家签名并签章</button>
+    </div>
   </div>
 </div>
 

@@ -12,11 +12,16 @@
 <div class="mobile-app-container">
 
   <!-- 顶部 Header -->
-  <header class="h5-header" id="main-h5-header">
-    <div id="h5-header-back-btn" class="h5-header-back" style="display:none; left: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="H5App.switchH5View('view-home')">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+  <header class="h5-header" id="main-h5-header" style="position: relative; display: flex; align-items: center; justify-content: center;">
+    <div id="h5-header-back-btn" class="h5-header-back" style="display:none; position: absolute; left: 12px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="H5App.switchH5View('view-home')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
     </div>
-    <div id="h5-header-title">享宇森云商城</div>
+    <div id="h5-header-title" style="font-weight: bold; font-size: 16px;">享宇森云商城</div>
+    <div class="h5-wechat-capsule" style="position: absolute; right: 12px; display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 4px 10px; height: 28px; box-sizing: border-box; color: #1f2937;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      <div style="width: 1px; height: 12px; background: rgba(0, 0, 0, 0.15);"></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
   </header>
 
   <main class="h5-content">
@@ -223,12 +228,30 @@
     <!-- ================== 个人中心子页面 ================== -->
     <!-- 订单列表 -->
     <div id="view-uc-orders" class="h5-view bg-gray-50 h-full">
-      <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        <div>我的订单</div>
-        <div style="width:24px;"></div>
+      <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 12px; position: relative;">
+        <div style="position: absolute; left: 12px; display: flex; align-items: center; cursor: pointer;" onclick="H5App.switchH5View('view-my')">
+          <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </div>
+        <div style="margin: 0 auto; font-weight: bold; font-size: 16px;">我的订单</div>
+        <div class="h5-wechat-capsule" style="position: absolute; right: 12px; display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 4px 10px; height: 28px; box-sizing: border-box; color: #1f2937;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+          <div style="width: 1px; height: 12px; background: rgba(0, 0, 0, 0.15);"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
       </header>
-      <div class="flex flex-col items-center justify-center text-secondary mt-12" style="height: 40vh;">暂无订单数据</div>
+      
+      <!-- 订单状态过滤 (待付款、待签约、待发货、已完结) -->
+      <div style="background:#fff; padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 8px; overflow-x: auto;">
+        <span class="tag tag-primary cursor-pointer h5-order-filter" data-status="all" onclick="H5App.setOrderStatusFilter('all', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">全部</span>
+        <span class="tag tag-secondary cursor-pointer h5-order-filter" data-status="4" onclick="H5App.setOrderStatusFilter('4', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待付款</span>
+        <span class="tag tag-secondary cursor-pointer h5-order-filter" data-status="0" onclick="H5App.setOrderStatusFilter('0', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待签约</span>
+        <span class="tag tag-secondary cursor-pointer h5-order-filter" data-status="1" onclick="H5App.setOrderStatusFilter('1', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">待发货</span>
+        <span class="tag tag-secondary cursor-pointer h5-order-filter" data-status="3" onclick="H5App.setOrderStatusFilter('3', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold; flex-shrink: 0;">已完结</span>
+      </div>
+
+      <div style="padding: 12px; overflow-y: auto; height: calc(100% - 110px);" id="h5-user-order-list">
+        <!-- 订单列表渲染 -->
+      </div>
     </div>
     
     <!-- 竞价记录 -->
@@ -548,6 +571,25 @@
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 </style>
+
+<!-- H5 电子合同签署弹窗 -->
+<div class="modal-overlay" id="sheet-h5-contract" style="display:none; align-items:center; justify-content:center; z-index: 10000; padding: 16px; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-contract')">
+  <div class="h5-bottom-sheet" style="height: 85vh; display: flex; flex-direction: column; background:#fff; border-radius: 20px 20px 0 0; overflow:hidden;">
+    <div class="flex justify-between items-center p-4 border-b border-slate-100" style="flex-shrink: 0; display:flex; justify-content:space-between;">
+      <h3 class="font-bold text-base" style="margin:0;">📝 电子合同签约</h3>
+      <button class="btn btn-text" style="font-size: 18px; border:none; background:none;" onclick="UI.closeModal('sheet-h5-contract')">✕</button>
+    </div>
+    
+    <div style="flex: 1; overflow-y: auto; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; font-family: sans-serif; font-size: 12px; line-height: 1.6; color: #333; margin: 12px;" id="h5-contract-body">
+      <!-- 合同内容 -->
+    </div>
+    
+    <div style="padding: 16px; display: flex; gap: 12px; flex-shrink: 0; background:#fff; border-top: 1px solid #eee;">
+      <button class="btn btn-outline flex-1" style="height: 40px; border-radius: 20px;" onclick="UI.closeModal('sheet-h5-contract')">取消</button>
+      <button class="btn btn-primary flex-1" style="height: 40px; border-radius: 20px; background: var(--primary-color); color:#fff; border:none;" id="h5-contract-sign-btn">确认签名并盖章</button>
+    </div>
+  </div>
+</div>
 
 <script src="./assets/js/mock-data.js"></script>
 <script src="./assets/js/components.js"></script>
