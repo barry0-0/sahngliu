@@ -300,47 +300,61 @@ const H5App = {
     UI.openModal('sheet-h5-quote');
   },
 
-  sendQuickMessage(type) {
+  toggleChatForm(type) {
+    const form = document.getElementById('h5-chat-interactive-form');
+    const inq = document.getElementById('h5-form-inquiry-fields');
+    const qte = document.getElementById('h5-form-quote-fields');
+    form.style.display = 'block';
+    if (type === 'inquiry') {
+      inq.style.display = 'block';
+      qte.style.display = 'none';
+    } else {
+      inq.style.display = 'none';
+      qte.style.display = 'block';
+    }
+  },
+
+  submitQuickMessage(type) {
     const chatBox = document.getElementById('h5-chat-messages');
     if (!chatBox) return;
+    document.getElementById('h5-chat-interactive-form').style.display = 'none';
 
     let contentHtml = '';
     let toastMsg = '';
 
     if (type === 'inquiry') {
-      contentHtml = '您好，我想咨询该商品的最新批发价格及供货周期，请回复。';
-      toastMsg = '询价卡片发送成功';
+      const qty = document.getElementById('h5-inq-qty').value || '100';
+      const unit = document.getElementById('h5-inq-unit').value || '吨';
+      contentHtml = `
+        <div style="padding: 4px 0; font-size: 12px; text-align:left;">
+          <strong style="color: #1d4ed8; display: block; margin-bottom: 2px;">💬 【采购意向询价】</strong>
+          <div>意向数量：<span style="font-weight: bold;">${qty} ${unit}</span></div>
+          <div style="font-size: 10px; color: #64748b; margin-top: 2px;">我想咨询购买此数量的批发优惠单价，请报价。</div>
+        </div>
+      `;
+      toastMsg = '询价卡片已发送';
     } else if (type === 'quote') {
-      const price = prompt('请输入您的报价单价（如：4150元/吨）：');
-      if (!price) return;
-      const qty = prompt('请输入可供货数量（如：50吨）：');
-      if (!qty) return;
+      const price = document.getElementById('h5-quote-price').value || '4150';
+      const qty = document.getElementById('h5-quote-qty').value || '50';
+      const unit = document.getElementById('h5-quote-unit').value || '吨';
+      const qType = document.getElementById('h5-quote-type').value || '现货直销报价';
       contentHtml = `
-        <div style="padding: 4px 0; font-size: 13px;">
-          <strong style="color: #26a25b; display: block; margin-bottom: 4px;">💰 【货源报价单】</strong>
-          <div>报价单价：<span style="font-weight: bold; color: #26a25b;">${price}</span></div>
-          <div>可供数量：<span>${qty}</span></div>
+        <div style="padding: 4px 0; font-size: 12px; text-align:left; color:#15803d;">
+          <strong style="color: #15803d; display: block; margin-bottom: 4px;">💰 【大宗成交报价单】</strong>
+          <div style="font-size: 9px; background: #e8f5e9; padding: 2px 4px; border-radius: 4px; display: inline-block;">类型: ${qType}</div>
+          <div style="margin-top:4px;">单价：<span style="font-weight: bold; color: #15803d;">¥${price} / ${unit}</span></div>
+          <div>数量：<span style="font-weight: bold;">${qty} ${unit}</span></div>
+          <button class="btn btn-primary btn-sm mt-2" onclick="H5App.acceptChatQuote('${price}', '${qty}')" style="background:#15803d; border:none; padding:6px; font-size:11px; border-radius:6px; color:#fff; cursor:pointer; width:100%; display:block; margin-top:6px;">接受报价并签约</button>
         </div>
       `;
-      toastMsg = '报价卡片发送成功';
-    } else if (type === 'bargain') {
-      const price = prompt('请输入您的意向砍价单价（如：3900元/吨）：');
-      if (!price) return;
-      contentHtml = `
-        <div style="padding: 4px 0; font-size: 13px;">
-          <strong style="color: #d55300; display: block; margin-bottom: 4px;">🤝 【意向砍价卡】</strong>
-          <div>砍价目标：<span style="font-weight: bold; color: #d55300;">${price}</span></div>
-          <div style="font-size: 11px; margin-top: 4px; opacity: 0.9;">期待与您促成交易，是否接受？</div>
-        </div>
-      `;
-      toastMsg = '砍价卡片发送成功';
+      toastMsg = '报价成交单已发送';
     }
 
     // Append user message
     const msgDiv = document.createElement('div');
     msgDiv.className = 'flex gap-2.5 justify-end';
     msgDiv.innerHTML = `
-      <div class="p-2.5 rounded shadow-sm text-sm" style="max-width: 75%; border-radius: 14px 0 14px 14px; background: ${type === 'quote' ? '#edfbf3' : type === 'bargain' ? '#fff8f0' : 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%)'}; color: ${type === 'quote' ? '#26a25b' : type === 'bargain' ? '#d55300' : '#ffffff'}; border: 1px solid ${type === 'quote' ? '#d1f4df' : type === 'bargain' ? '#ffe3c2' : 'transparent'};">
+      <div class="p-2.5 rounded shadow-sm text-xs" style="max-width: 80%; border-radius: 14px 0 14px 14px; background: ${type === 'quote' ? '#f0fdf4' : '#eff6ff'}; color: #334155; border: 1px solid ${type === 'quote' ? '#bbf7d0' : '#bfdbfe'}; line-height: 1.4;">
         ${contentHtml}
       </div>
       <div class="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] flex-shrink-0">我</div>
@@ -348,7 +362,51 @@ const H5App = {
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    UI.toast(toastMsg + '，已同步至消息中心', 'success');
+    UI.toast(toastMsg, 'success');
+
+    // Simulate merchant response
+    setTimeout(() => {
+      const respDiv = document.createElement('div');
+      respDiv.className = 'flex gap-2.5';
+      let respText = '';
+      if (type === 'inquiry') {
+        respText = `好的，针对您的采购意向，为您申请的优惠出厂价为：**¥3950/吨**。请您使用“发起报价”功能发送成交单。`;
+      } else {
+        respText = '收到报价！已确认库存。点击报价卡片中的按钮可立即生成正式的电子签约大宗订单。';
+      }
+      respDiv.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-[10px] flex-shrink-0 font-bold shadow-sm">店</div>
+        <div class="bg-white p-2.5 text-slate-700 shadow-sm" style="max-width: 80%; border-radius: 4px 14px 14px 14px; line-height: 1.4; font-size: 12px; text-align:left;">
+          ${respText}
+        </div>
+      `;
+      chatBox.appendChild(respDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1200);
+  },
+
+  acceptChatQuote(price, qty) {
+    const prodName = document.getElementById('h5-chat-prod-title').innerText || '大宗交易物资';
+    const amountVal = parseFloat(price) * parseFloat(qty);
+    const amountStr = '¥' + amountVal.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const orderId = 'O' + Math.floor(1000 + Math.random() * 9000);
+    
+    const newOrder = {
+      id: orderId,
+      shopId: 'S001',
+      shopName: document.getElementById('h5-chat-shop-name').innerText || '丰收粮油直营店',
+      buyerName: '远大筑建采购部',
+      productName: `${prodName} (成交: ${qty})`,
+      amount: amountStr,
+      status: 0,
+      type: '现货单',
+      time: new Date().toISOString().replace('T', ' ').substring(0, 19)
+    };
+    MockData.orders.unshift(newOrder);
+    UI.closeModal('sheet-h5-chat');
+    UI.toast(`已生成电子合同，请在个人中心签约！`, 'success');
+    this.renderOrders();
+    document.querySelector('.h5-tab-item[data-target="view-uc"]').click();
   },
 
   editNickname() {

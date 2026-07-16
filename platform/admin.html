@@ -45,7 +45,7 @@
         <div class="sub-menu" style="display:none;">
           <div class="sub-menu-item" data-page="tab-merchant-shop">商家店铺管理</div>
           <div class="sub-menu-item" data-page="tab-prod-base">分类数据字典</div>
-          <div class="sub-menu-item" data-page="tab-prod-merchant">商品审核</div>
+          <div class="sub-menu-item" data-page="tab-prod-merchant">上架商品管理</div>
         </div>
       </div>
       <div class="menu-item has-submenu">
@@ -282,7 +282,7 @@
                 <div class="flex items-end"><button class="btn btn-primary h-[38px]">执行筛查</button></div>
              </div>
              <table class="table" id="table-merchant-products">
-              <thead><tr><th>所属商家</th><th>商品名称</th><th>货品类别</th><th>单价</th><th>当前状态</th><th>管理操作</th></tr></thead>
+              <thead><tr><th>主图</th><th>所属商家</th><th>商品名称</th><th>货品类别</th><th>单价</th><th>当前状态</th><th>管理操作</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
@@ -632,6 +632,60 @@
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
       <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-suspend-shop')">取消</button>
       <button class="btn btn-danger" style="border-radius:8px;" onclick="window.confirmSuspendShop()">确认关停</button>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑上架商品弹窗 -->
+<div class="modal-overlay" id="modal-edit-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-edit-product')">
+  <div class="modal" style="width: 520px; background:#fff; border-radius: 16px; overflow:hidden;">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold" style="font-size:16px; margin:0;">编辑商品信息</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-edit-product')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="edit-prod-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-1 block">商品名称</label>
+        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px;">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-1 block">商品单价</label>
+        <input type="text" id="edit-prod-price" class="form-control" style="width:100%; padding:8px;">
+      </div>
+      <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div>
+          <label class="form-label font-bold mb-1 block">货品品类</label>
+          <select id="edit-prod-cat" class="form-control" style="width:100%; padding:8px;">
+            <option value="钢材">钢材</option>
+            <option value="木材">木材</option>
+            <option value="水泥">水泥</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label font-bold mb-1 block">库存量</label>
+          <input type="number" id="edit-prod-stock" class="form-control" style="width:100%; padding:8px;">
+        </div>
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-1 block">现货 / 预售</label>
+        <select id="edit-prod-shelf-type" class="form-control" style="width:100%; padding:8px;">
+          <option value="现货">现货</option>
+          <option value="预售">预售</option>
+        </select>
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-1 block">商品图片 (URL 或文件路径)</label>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <img id="edit-prod-img-preview" src="" style="width:60px; height:60px; border-radius:6px; border:1px solid #ddd; object-fit:cover;">
+          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px;" onchange="document.getElementById('edit-prod-img-preview').src = this.value;">
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="UI.toast('已模拟触发本地文件选择', 'info')">上传本地图片</button>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-edit-product')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveProductInfo()">保存修改</button>
     </div>
   </div>
 </div>

@@ -117,10 +117,14 @@ const MerchantApp = {
 
     myProducts.forEach(p => {
       let statusTag = p.status === 1 ? `<span class="tag tag-success">已上架</span>` : `<span class="tag tag-warning">未上架/待审核</span>`;
+      let typeTag = p.shelfType === '预售' 
+        ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px;">预售</span>`
+        : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px;">现货</span>`;
       html += `
         <tr>
           <td><img src="${p.image}" width="40" height="40" style="border-radius:4px; object-fit:cover;"></td>
           <td>${p.name}</td>
+          <td>${typeTag}</td>
           <td>${p.category}</td>
           <td class="font-bold text-danger">${p.priceStr}</td>
           <td>${p.stock}</td>
@@ -156,10 +160,14 @@ const MerchantApp = {
     }
 
     myListed.forEach(p => {
+      let typeTag = p.shelfType === '预售' 
+        ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px;">预售</span>`
+        : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px;">现货</span>`;
       html += `
         <tr>
           <td><img src="${p.image}" width="40" height="40" style="border-radius:4px; object-fit:cover;"></td>
           <td>${p.name}</td>
+          <td>${typeTag}</td>
           <td>${p.category}</td>
           <td class="font-bold text-danger">${p.priceStr}</td>
           <td>${p.sales}</td>

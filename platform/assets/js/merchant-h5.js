@@ -104,14 +104,20 @@ const MH5App = {
     this.currentProductSection = sectionId;
     const tabs = document.querySelectorAll('.tab-mh5-prod-section');
     tabs.forEach(t => {
-      t.style.borderBottom = '2px solid transparent';
+      t.style.borderBottom = 'none';
+      t.style.backgroundColor = 'transparent';
       t.style.color = '#64748b';
+      t.style.fontWeight = '500';
+      t.style.boxShadow = 'none';
       t.classList.remove('active');
     });
     const el = document.querySelector(`.tab-mh5-prod-section[data-target='${sectionId}']`);
     if(el) {
-      el.style.borderBottom = '2px solid var(--primary-color)';
+      el.style.backgroundColor = '#fff';
+      el.style.borderBottom = 'none';
       el.style.color = 'var(--primary-color)';
+      el.style.fontWeight = '600';
+      el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08), 0 1px 1px rgba(0,0,0,0.04)';
       el.classList.add('active');
     }
     
@@ -262,14 +268,20 @@ const MH5App = {
   switchBidTab(targetId) {
     const tabs = document.querySelectorAll('.tab-mh5-bid');
     tabs.forEach(t => {
-      t.style.borderBottom = '2px solid transparent';
+      t.style.borderBottom = 'none';
+      t.style.backgroundColor = 'transparent';
       t.style.color = '#64748b';
+      t.style.fontWeight = '500';
+      t.style.boxShadow = 'none';
       t.classList.remove('active');
     });
     const el = document.querySelector(`.tab-mh5-bid[data-target='${targetId}']`);
     if(el) {
-      el.style.borderBottom = '2px solid var(--primary-color)';
+      el.style.backgroundColor = '#fff';
+      el.style.borderBottom = 'none';
       el.style.color = 'var(--primary-color)';
+      el.style.fontWeight = '600';
+      el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08), 0 1px 1px rgba(0,0,0,0.04)';
       el.classList.add('active');
     }
     
@@ -285,10 +297,17 @@ const MH5App = {
     this.currentBidResFilter = status;
     const filters = document.querySelectorAll('.mh5-bid-res-filter');
     filters.forEach(f => {
-      f.className = 'tag tag-secondary cursor-pointer mh5-bid-res-filter';
+      f.className = 'tag cursor-pointer mh5-bid-res-filter';
+      f.style.background = '#f1f5f9';
+      f.style.color = '#64748b';
+      f.style.border = 'none';
+      f.style.boxShadow = 'none';
     });
     if (el) {
       el.className = 'tag tag-primary cursor-pointer mh5-bid-res-filter';
+      el.style.background = 'var(--primary-color)';
+      el.style.color = '#fff';
+      el.style.boxShadow = '0 2px 6px rgba(79, 70, 229, 0.2)';
     }
     this.renderBidding();
   },
@@ -297,10 +316,17 @@ const MH5App = {
     this.currentBidAnnFilter = status;
     const filters = document.querySelectorAll('.mh5-bid-ann-filter');
     filters.forEach(f => {
-      f.className = 'tag tag-secondary cursor-pointer mh5-bid-ann-filter';
+      f.className = 'tag cursor-pointer mh5-bid-ann-filter';
+      f.style.background = '#f1f5f9';
+      f.style.color = '#64748b';
+      f.style.border = 'none';
+      f.style.boxShadow = 'none';
     });
     if (el) {
       el.className = 'tag tag-primary cursor-pointer mh5-bid-ann-filter';
+      el.style.background = 'var(--primary-color)';
+      el.style.color = '#fff';
+      el.style.boxShadow = '0 2px 6px rgba(79, 70, 229, 0.2)';
     }
     this.renderBidding();
   },

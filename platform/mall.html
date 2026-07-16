@@ -537,44 +537,54 @@
   </div>
 
 <!-- 悬浮商品详情/购买弹窗 (PC) -->
-<div class="modal-overlay" id="modal-product-detail" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); position: fixed; inset: 0; z-index: 1000;" onclick="if(event.target===this) UI.closeModal('modal-product-detail')">
-  <div class="modal-content" style="width: 480px; padding: 28px; background: #ffffff; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.7); animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+<div class="modal-overlay" id="modal-product-detail" style="display:none; align-items:center; justify-content:center; background: rgba(15,23,42,0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); position: fixed; inset: 0; z-index: 1000;" onclick="if(event.target===this) UI.closeModal('modal-product-detail')">
+  <div class="modal-content" style="width: 500px; padding: 32px; background: #ffffff; border-radius: 28px; box-shadow: 0 25px 60px rgba(15,23,42,0.15); border: 1px solid rgba(255,255,255,0.8); animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
     
-    <!-- Header (No long divider) -->
-    <div class="flex justify-between items-center mb-5">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
       <div class="flex flex-col">
-        <h3 class="font-black text-xl text-slate-800" id="pd-title" style="margin:0;">商品详情</h3>
-        <div style="width: 36px; height: 3px; background: var(--primary-color); border-radius: 2px; margin-top: 6px;"></div>
+        <h3 class="font-black text-xl text-slate-800" id="pd-title" style="margin:0; font-family:'Inter', system-ui, sans-serif; letter-spacing:-0.5px;">商品详情</h3>
+        <div style="font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+        </div>
       </div>
-      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="padding: 0; min-width: auto; font-size: 20px; background: none; border: none; cursor: pointer;" onclick="UI.closeModal('modal-product-detail')">✕</button>
+      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="padding: 0; min-width: auto; font-size: 22px; background: none; border: none; cursor: pointer;" onclick="UI.closeModal('modal-product-detail')">✕</button>
     </div>
     
     <!-- Product Summary Card -->
-    <div class="flex gap-5 p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-6">
-      <img id="pd-img" src="" style="width: 110px; height: 110px; object-fit: cover; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; flex-shrink: 0;">
-      <div class="flex-1 flex flex-col justify-between py-1">
+    <div class="flex gap-5 p-5 bg-gradient-to-br from-slate-50 to-slate-100/50 border border-slate-200/50 rounded-2xl mb-6" style="display:flex; gap:20px; border-radius:18px;">
+      <img id="pd-img" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 1px solid #e2e8f0; background: #fff; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+      <div class="flex-1 flex flex-col justify-between py-1" style="display:flex; flex-direction:column; justify-content:space-between;">
         <div>
-          <div class="text-danger font-black text-2xl mb-1.5" id="pd-price" style="color: var(--danger-color);">¥0.00</div>
-          <div class="text-xs text-slate-500 font-bold mb-1 flex items-center gap-1.5" id="pd-shop"><i class="fas fa-store text-slate-400"></i> 商户: --</div>
-          <div class="text-xs text-slate-400 font-semibold flex items-center gap-1.5"><i class="fas fa-box text-slate-300"></i> 库存: <span class="text-green-600 font-bold">充足 (现货快速交付)</span></div>
+          <div class="text-danger font-black text-3xl mb-2" id="pd-price" style="color: var(--danger-color); font-family: monospace;">¥0.00</div>
+          <div class="text-xs text-slate-500 font-bold mb-1.5 flex items-center gap-1.5" id="pd-shop" style="color: #475569;"><i class="fas fa-store text-slate-400"></i> 商户: --</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="tag tag-success"></span>
+          <span class="tag tag-success"></span>
         </div>
       </div>
     </div>
+
+    <!-- Product Description -->
+    <div style="font-size: 12px; color: #64748b; line-height: 1.6; margin-bottom: 20px; background: #f8fafc; padding: 12px 16px; border-radius: 12px; border: 1px solid #f1f5f9;">
+      <strong>📝 商品说明：</strong>
+      本货品符合园区大宗物资采购标准，提供双向 CA 电子签章保障。支持公对公线下汇款、账期结算，合同生成后将进入园区安全沙盒核销监管。
+    </div>
     
     <!-- Quantity Picker -->
-    <div class="flex items-center justify-between mb-8 bg-slate-50/60 p-4 border border-slate-100/50 rounded-2xl">
-      <span class="font-bold text-slate-700 text-sm">购买数量:</span>
-      <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-        <button class="bg-slate-50 px-4 py-2 hover:bg-slate-100 text-slate-600 font-bold text-lg border-r border-slate-200 transition-colors" style="cursor: pointer; border: none;" onclick="document.getElementById('pd-qty').value = Math.max(1, parseInt(document.getElementById('pd-qty').value || 1) - 1)">-</button>
-        <input type="number" id="pd-qty" value="1" min="1" class="w-16 text-center py-1.5 outline-none border-none font-bold text-slate-800" style="width: 60px;">
-        <button class="bg-slate-50 px-4 py-2 hover:bg-slate-100 text-slate-600 font-bold text-lg border-l border-slate-200 transition-colors" style="cursor: pointer; border: none;" onclick="document.getElementById('pd-qty').value = parseInt(document.getElementById('pd-qty').value || 1) + 1">+</button>
+    <div class="flex items-center justify-between mb-6 bg-slate-50/60 p-4 border border-slate-100/50 rounded-2xl" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <span class="font-bold text-slate-700 text-sm">意向采购数量:</span>
+      <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm" style="display:flex; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <button class="bg-slate-50 px-4 py-2 hover:bg-slate-100 text-slate-600 font-bold text-lg transition-colors" style="cursor: pointer; border: none; outline:none; background:#f8fafc;" onclick="document.getElementById('pd-qty').value = Math.max(1, parseInt(document.getElementById('pd-qty').value || 1) - 1)">-</button>
+        <input type="number" id="pd-qty" value="1" min="1" class="w-16 text-center py-1.5 outline-none border-none font-bold text-slate-800" style="width: 60px; border:none; text-align:center; font-size:14px;">
+        <button class="bg-slate-50 px-4 py-2 hover:bg-slate-100 text-slate-600 font-bold text-lg transition-colors" style="cursor: pointer; border: none; outline:none; background:#f8fafc;" onclick="document.getElementById('pd-qty').value = parseInt(document.getElementById('pd-qty').value || 1) + 1">+</button>
       </div>
     </div>
     
     <!-- Action Buttons -->
-    <div class="flex gap-4">
-      <button class="btn btn-outline flex-1 py-3 text-sm font-bold transition-all hover:bg-slate-50" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color); height: 46px;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail');">加入购物车</button>
-      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 46px;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click();">立即购买</button>
+    <div class="flex gap-4" style="display:flex; gap:16px;">
+      <button class="btn btn-outline flex-1 py-3 text-sm font-bold transition-all hover:bg-slate-50" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail');">加入购物车</button>
+      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click();">立即购买</button>
     </div>
   </div>
 </div>
@@ -640,21 +650,80 @@
     </div>
  
     <!-- Suggestion Tray -->
-    <div class="p-5 bg-white/95 border-t border-slate-200/50 flex flex-col gap-4" style="flex-shrink: 0;">
+    <div class="p-4 bg-white/95 border-t border-slate-200/50 flex flex-col gap-3" style="flex-shrink: 0; position: relative;">
       
+      <!-- Interactive Forms -->
+      <div id="chat-interactive-form" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-bottom:4px; font-size:12px;">
+        <!-- Inquiry Form -->
+        <div id="form-inquiry-fields" style="display:none;">
+          <div style="font-weight:bold; margin-bottom:8px; color:#1e293b;">💬 发起采购意向询价</div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="flex:1;">
+              <span style="color:#64748b; font-size:10px; display:block; margin-bottom:4px;">意向采购数量</span>
+              <input type="number" id="inq-qty" class="form-control" style="width:100%; padding:6px; font-size:12px;" value="100">
+            </div>
+            <div style="width:80px;">
+              <span style="color:#64748b; font-size:10px; display:block; margin-bottom:4px;">计量单位</span>
+              <select id="inq-unit" class="form-control" style="width:100%; padding:6px; font-size:12px;">
+                <option value="吨">吨</option>
+                <option value="千克">千克</option>
+                <option value="件">件</option>
+                <option value="箱">箱</option>
+                <option value="米">米</option>
+              </select>
+            </div>
+            <div style="padding-top:16px;">
+              <button class="btn btn-primary btn-sm" onclick="MallApp.submitQuickMessage('inquiry')">发送询价</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote Form -->
+        <div id="form-quote-fields" style="display:none;">
+          <div style="font-weight:bold; margin-bottom:8px; color:#1e293b;">💰 发起双边成交报价</div>
+          <div style="display:grid; grid-template-columns: 1.2fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div>
+              <span style="color:#64748b; font-size:10px; display:block; margin-bottom:2px;">单价金额 (元)</span>
+              <input type="text" id="quote-price" class="form-control" style="width:100%; padding:6px; font-size:12px;" placeholder="如 4150">
+            </div>
+            <div>
+              <span style="color:#64748b; font-size:10px; display:block; margin-bottom:2px;">供货数量</span>
+              <input type="number" id="quote-qty" class="form-control" style="width:100%; padding:6px; font-size:12px;" value="50">
+            </div>
+            <div>
+              <span style="color:#64748b; font-size:10px; display:block; margin-bottom:2px;">计量单位</span>
+              <select id="quote-unit" class="form-control" style="width:100%; padding:6px; font-size:12px;">
+                <option value="吨">吨</option>
+                <option value="千克">千克</option>
+                <option value="件">件</option>
+                <option value="箱">箱</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:8px;">
+            <div>
+              <select id="quote-type" class="form-control" style="padding:4px; font-size:11px; width:130px;">
+                <option value="现货直销报价">现货直销报价</option>
+                <option value="求购响应报价">求购响应报价</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('chat-interactive-form').style.display='none'">取消</button>
+              <button class="btn btn-primary btn-sm" onclick="MallApp.submitQuickMessage('quote')">发送报价单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- suggestion grid -->
-      <div class="grid grid-cols-3 gap-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; cursor: pointer;" onclick="MallApp.sendQuickMessage('inquiry')">
-          <span style="font-size: 20px; margin-bottom: 4px;">💬</span>
-          <span style="font-size: 11px; font-weight: bold;">询价卡片</span>
+      <div class="grid grid-cols-2 gap-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <button class="flex items-center justify-center p-2.5 rounded-xl border transition-all hover:scale-[1.02]" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; cursor: pointer; gap: 8px;" onclick="MallApp.toggleChatForm('inquiry')">
+          <span style="font-size: 16px;">💬</span>
+          <span style="font-size: 12px; font-weight: bold;">发起询价</span>
         </button>
-        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #f0fdf4; border-color: #bbf7d0; color: #15803d; cursor: pointer;" onclick="MallApp.sendQuickMessage('quote')">
-          <span style="font-size: 20px; margin-bottom: 4px;">💰</span>
-          <span style="font-size: 11px; font-weight: bold;">报价卡片</span>
-        </button>
-        <button class="flex flex-col items-center justify-center p-3 rounded-2xl text-center border transition-all hover:scale-105" style="background: #fff7ed; border-color: #fed7aa; color: #c2410c; cursor: pointer;" onclick="MallApp.sendQuickMessage('bargain')">
-          <span style="font-size: 20px; margin-bottom: 4px;">🤝</span>
-          <span style="font-size: 11px; font-weight: bold;">砍价卡片</span>
+        <button class="flex items-center justify-center p-2.5 rounded-xl border transition-all hover:scale-[1.02]" style="background: #f0fdf4; border-color: #bbf7d0; color: #15803d; cursor: pointer; gap: 8px;" onclick="MallApp.toggleChatForm('quote')">
+          <span style="font-size: 16px;">💰</span>
+          <span style="font-size: 12px; font-weight: bold;">发起报价</span>
         </button>
       </div>
  

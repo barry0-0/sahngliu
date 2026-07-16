@@ -563,23 +563,29 @@ select.form-control {
 
 /* 顶部标签页切换 */
 .tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
+  display: inline-flex;
+  background-color: #f2f3f5;
+  padding: 5px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  gap: 4px;
 }
 .tab-item {
-  padding: 12px 20px;
+  padding: 8px 24px;
   cursor: pointer;
   color: var(--text-regular);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  font-weight: 500;
 }
 .tab-item:hover {
-  color: var(--primary-hover);
+  color: var(--text-main);
+  background-color: #e5e6e8;
 }
 .tab-item.active {
   color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
-  font-weight: 500;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 1px 1px rgba(0,0,0,0.04);
+  font-weight: 600;
 }

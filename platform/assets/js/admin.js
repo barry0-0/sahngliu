@@ -432,16 +432,35 @@ const AdminApp = {
     let html = '';
     MockData.products.forEach(p => {
       let statusTag = p.status === 1 ? `<span class="tag tag-success">已上架</span>` : `<span class="tag tag-warning">待审核/下架</span>`;
-      let actBtn = p.status === 1 ? `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已强制违规下架该商品', 'error')">违规下架</button>` : `<button class="btn btn-primary btn-sm">允许上架</button>`;
+      let shelfTypeTag = p.shelfType === '预售' 
+        ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px; margin-left:6px;">预售</span>`
+        : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px; margin-left:6px;">现货</span>`;
+      
+      let auditBtn = p.status === 1 
+        ? `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已强制违规下架该商品', 'error'); MockData.products.find(x => x.id === '${p.id}').status = 0; AdminApp.renderMerchantProducts();">违规下架</button>` 
+        : `<button class="btn btn-primary btn-sm" onclick="UI.toast('商品审核通过', 'success'); MockData.products.find(x => x.id === '${p.id}').status = 1; AdminApp.renderMerchantProducts();">允许上架</button>`;
+
+      let editBtn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.editProduct('${p.id}')">编辑</button>`;
 
       html += `
         <tr>
+          <td><img src="${p.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"></td>
           <td>${p.shopName}</td>
-          <td>${p.name}</td>
+          <td>
+            <div style="font-weight:bold; display:flex; align-items:center;">
+              ${p.name}
+              ${shelfTypeTag}
+            </div>
+          </td>
           <td>${p.category}</td>
-          <td class="text-danger">${p.priceStr}</td>
+          <td class="text-danger font-bold">${p.priceStr}</td>
           <td>${statusTag}</td>
-          <td>${actBtn}</td>
+          <td>
+            <div style="display:flex; gap:8px; align-items:center;">
+              ${editBtn}
+              ${auditBtn}
+            </div>
+          </td>
         </tr>
       `;
     });
@@ -449,6 +468,36 @@ const AdminApp = {
       tbody.innerHTML = html;
       this._appendPagination(tbody, MockData.products.length);
     }
+  },
+
+  editProduct(productId) {
+    const p = MockData.products.find(x => x.id === productId);
+    if (!p) return;
+    document.getElementById('edit-prod-id').value = p.id;
+    document.getElementById('edit-prod-name').value = p.name;
+    document.getElementById('edit-prod-price').value = p.priceStr;
+    document.getElementById('edit-prod-cat').value = p.category;
+    document.getElementById('edit-prod-stock').value = p.stock || 0;
+    document.getElementById('edit-prod-shelf-type').value = p.shelfType || '现货';
+    document.getElementById('edit-prod-img').value = p.image;
+    document.getElementById('edit-prod-img-preview').src = p.image;
+    UI.showModal('modal-edit-product');
+  },
+
+  saveProductInfo() {
+    const id = document.getElementById('edit-prod-id').value;
+    const p = MockData.products.find(x => x.id === id);
+    if (!p) return;
+    p.name = document.getElementById('edit-prod-name').value;
+    p.priceStr = document.getElementById('edit-prod-price').value;
+    p.category = document.getElementById('edit-prod-cat').value;
+    p.stock = parseInt(document.getElementById('edit-prod-stock').value) || 0;
+    p.shelfType = document.getElementById('edit-prod-shelf-type').value;
+    p.image = document.getElementById('edit-prod-img').value;
+
+    UI.closeModal('modal-edit-product');
+    UI.toast('商品信息更新成功', 'success');
+    this.renderMerchantProducts();
   },
 
   // === 4. 供需中心 ===
