@@ -207,7 +207,11 @@ window.UI = {
     ];
 
     if (o.status === -1) {
-      steps.push({ label: '订单强行关闭 (退款结算)', desc: `关闭原因: ${o.closeReason || '双方沟通一致线下退款撤销'}`, done: true, error: true });
+      let descStr = o.closeReason || '买卖双方沟通一致线下取消';
+      if (o.cancelUser) {
+        descStr = `取消操作人: ${o.cancelUser} (${o.cancelRole}) | 时间: ${o.cancelTime}`;
+      }
+      steps.push({ label: '订单强行关闭 / 交易取消', desc: descStr, done: true, error: true });
     }
 
     steps.forEach((step, idx) => {
@@ -307,6 +311,27 @@ window.MainApp = {
   checkAuth(type, successCallback) {
     // 解除认证卡控，直接放行
     if (successCallback) successCallback();
+  },
+
+  /**
+   * 取消订单通用方法（记录人与时间）
+   */
+  cancelOrder(orderId, role, userName, callback) {
+    if (!confirm('确定要取消该订单吗？此操作不可逆。')) return;
+    const o = MockData.orders.find(x => x.id === orderId);
+    if (!o) {
+      UI.toast('订单未找到', 'error');
+      return;
+    }
+    o.status = -1;
+    o.cancelRole = role;
+    o.cancelUser = userName;
+    o.cancelTime = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    
+    UI.toast('订单已成功取消，并已存证操作轨迹', 'success');
+    if (callback) {
+      callback();
+    }
   }
 };
 

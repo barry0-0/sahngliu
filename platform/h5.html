@@ -399,39 +399,38 @@
 </div>
 
 <!-- H5 聊天弹窗 -->
-<div class="modal-overlay" id="sheet-h5-chat" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-chat')">
-  <div class="modal-content flex flex-col" style="width: 100%; max-width: 414px; margin: 0 auto; left: 0; right: 0; height: 75vh; background: rgba(244, 244, 249, 0.9); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border-radius: 32px 32px 0 0; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 -15px 50px rgba(0,0,0,0.15); border-top: 1px solid rgba(255,255,255,0.4);">
+<div class="modal-overlay" id="sheet-h5-chat" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(15,23,42,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-chat')">
+  <div class="modal-content flex flex-col" style="width: 100%; max-width: 414px; margin: 0 auto; left: 0; right: 0; height: 75vh; background: #ffffff; border-radius: 16px 16px 0 0; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); border-top: 1px solid #e2e8f0;">
     
     <!-- iOS Action Sheet Indicator Handle -->
-    <div style="width: 36px; height: 5px; background: rgba(0,0,0,0.15); border-radius: 3px; margin: 10px auto 2px; flex-shrink: 0;"></div>
+    <div style="width: 32px; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px; margin: 8px auto 2px; flex-shrink: 0;"></div>
     
     <!-- iOS Header -->
-    <div class="flex justify-between items-center px-5 pb-3 border-b border-slate-200/50" style="flex-shrink: 0; min-height: 48px;">
+    <div class="flex justify-between items-center px-4 pb-3 border-b border-slate-100" style="flex-shrink: 0; min-height: 48px; background: #fafafa;">
       <div class="flex flex-col">
-        <span class="font-black text-slate-800 text-base" id="h5-chat-shop-name">商家客服</span>
+        <span class="font-black text-slate-800 text-sm" id="h5-chat-shop-name">商家客服</span>
         <span class="text-[9px] text-slate-400 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>已开启加密保护通道</span>
       </div>
-      <button class="text-slate-400 hover:text-slate-700 font-bold" style="background: none; border: none; font-size: 15px; padding: 4px; cursor: pointer;" onclick="UI.closeModal('sheet-h5-chat')">关闭</button>
+      <button class="text-slate-400 hover:text-slate-700 font-bold" style="background: none; border: none; font-size: 14px; padding: 4px; cursor: pointer;" onclick="UI.closeModal('sheet-h5-chat')">关闭</button>
     </div>
 
     <!-- IM Message Window -->
-    <div class="flex-1 flex flex-col overflow-y-auto p-4" style="gap: 12px;">
+    <div class="flex-1 flex flex-col overflow-y-auto p-4" style="gap: 12px; background: #f8fafc;">
       
       <!-- Sticky Product Card Attachment -->
-      <div class="p-3 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 shadow-sm">
-        <img id="h5-chat-prod-img" src="" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid #f1f5f9;">
+      <div class="p-3 bg-white border border-slate-200/80 rounded-lg flex items-center gap-3 shadow-sm">
+        <img id="h5-chat-prod-img" src="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #f1f5f9;">
         <div class="flex-1 overflow-hidden">
           <div class="text-xs font-bold truncate text-slate-800" id="h5-chat-prod-title">--</div>
-          <div class="text-xs text-danger font-black mt-1" id="h5-chat-prod-price">--</div>
+          <div class="text-xs text-danger font-black mt-1" id="h5-chat-prod-price" style="font-family:monospace;">--</div>
         </div>
-        <button class="btn btn-outline text-[10px] px-2.5 py-1" style="border-radius: 12px; border-color: var(--primary-color); color: var(--primary-color); font-weight: bold; background: white;" onclick="alert('已发送商品卡片')">发送链接</button>
       </div>
 
       <!-- Conversations Box -->
       <div class="flex flex-col" id="h5-chat-messages" style="gap: 12px;">
         <div class="flex gap-2.5">
-          <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-[10px] flex-shrink-0 font-bold shadow-sm">店</div>
-          <div class="bg-white p-3 text-slate-700 shadow-sm" style="max-width: 80%; border-radius: 4px 16px 16px 16px; border: 1px solid rgba(0,0,0,0.01); line-height: 1.4; font-size: 12px;">
+          <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] flex-shrink-0 font-bold">店</div>
+          <div class="bg-white p-3 text-slate-700 border border-slate-100" style="max-width: 80%; border-radius: 2px 12px 12px 12px; line-height: 1.4; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             您好！已为您开启该项目的安全沟通通道，请选择下方的快捷选项与商家进行洽谈。
           </div>
         </div>
@@ -612,6 +611,13 @@
 <style>
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 </style>
 
 <!-- H5 电子合同签署弹窗 -->

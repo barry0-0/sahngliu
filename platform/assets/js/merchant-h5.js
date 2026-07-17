@@ -231,11 +231,16 @@ const MH5App = {
       
       if(o.status === 0) {
         statusTag = `<span class="tag tag-warning">待买家签约</span>`;
+        btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消订单</button>`;
       } else if(o.status === 5) {
         statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待卖家签约</span>`;
-        btn = `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); MH5App.openContractModal('${o.id}')">立即签约</button>`;
+        btn = `<div style="display:flex; gap:8px;">
+                 <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); MH5App.openContractModal('${o.id}')">立即签约</button>
+                 <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消</button>
+               </div>`;
       } else if(o.status === 4) {
         statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959;">待付款</span>`;
+        btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消订单</button>`;
       } else if(o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         btn = `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); MH5App.openShipModal()">立即发货</button>`;

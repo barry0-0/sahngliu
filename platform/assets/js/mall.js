@@ -766,10 +766,19 @@ const MallApp = {
       let actBtn = '';
       if (o.status === 0) {
         statusTag = `<span class="tag tag-warning">待签约</span>`;
-        actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.signContract('${o.id}')">签署合同(盖章)</button>`;
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.signContract('${o.id}')">签署合同(盖章)</button>
+                  <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
+      } else if (o.status === 4) {
+        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591;">待付款</span>`;
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('已触发线下公对公汇款流程', 'info')">确认付款</button>
+                  <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
+      } else if (o.status === 5) {
+        statusTag = `<span class="tag tag-warning" style="background:#fff0f6; color:#c41d7f; border:1px solid #ffd6e7;">待卖家签约</span>`;
+        actBtn = `<span class="text-secondary text-sm">等待卖家盖章</span>
+                  <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
-        actBtn = `<span class="text-secondary text-sm">催发货</span>`;
+        actBtn = `<span class="text-secondary text-sm">等待卖家发货</span>`;
       } else if (o.status === 2) {
         statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">待签收</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('已确认收货，订单完成', 'success')">确认收货</button>`;
@@ -778,7 +787,7 @@ const MallApp = {
         actBtn = `<span class="text-secondary text-sm">已完成</span>`;
       } else if (o.status === -1) {
         statusTag = `<span class="tag tag-danger">已关闭</span>`;
-        actBtn = `<span class="text-secondary text-sm">退款取消</span>`;
+        actBtn = `<span class="text-secondary text-sm">已取消</span>`;
       }
       html += `
         <tr>

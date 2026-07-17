@@ -613,37 +613,36 @@
   .mac-mini-dot { background: #ffbd2e; cursor: default; }
   .mac-max-dot { background: #27c93f; cursor: default; }
 </style>
-<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:center; align-items: center; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
-  <div class="modal-content flex flex-col" style="width: 520px; height: 500px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.4); animation: macSheetOpen 0.38s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.18);">
+<div class="modal-overlay" id="modal-chat" style="display:none; justify-content:center; align-items: center; background: rgba(15,23,42,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1100;" onclick="if(event.target===this) UI.closeModal('modal-chat')">
+  <div class="modal-content flex flex-col" style="width: 520px; height: 500px; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
     
     <!-- Header Bar -->
-    <div class="flex justify-between items-center px-5 border-b border-slate-200/50" style="height: 52px; flex-shrink: 0; background: rgba(255,255,255,0.5);">
+    <div class="flex justify-between items-center px-5 border-b border-slate-100" style="height: 52px; flex-shrink: 0; background: #fafafa;">
       <div class="flex flex-col">
-        <span class="font-bold text-slate-800 text-sm" id="chat-shop-name">与商家安全沟通</span>
+        <span class="font-bold text-slate-800 text-sm" id="chat-shop-name" style="font-family:'Inter', sans-serif;">与商家安全沟通</span>
         <span class="text-[9px] text-slate-400 font-bold tracking-wider">专属加密沟通通道</span>
       </div>
-      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="padding: 0; min-width: auto; font-size: 20px; cursor: pointer; background:none; border:none;" onclick="UI.closeModal('modal-chat')">✕</button>
+      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="padding: 0; min-width: auto; font-size: 18px; cursor: pointer; background:none; border:none;" onclick="UI.closeModal('modal-chat')">✕</button>
     </div>
  
     <!-- IM Message Window -->
-    <div class="flex-1 flex flex-col overflow-y-auto p-5" style="gap: 16px; background: rgba(244,244,249,0.5);">
+    <div class="flex-1 flex flex-col overflow-y-auto p-4" style="gap: 16px; background: #f8fafc;">
       
       <!-- Sticky Product Card Attachment -->
-      <div class="p-3 bg-white/70 border border-slate-200/60 rounded-2xl flex items-center gap-4 shadow-sm backdrop-blur-md">
-        <img id="chat-prod-img" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <div class="p-3 bg-white border border-slate-200/80 rounded-lg flex items-center gap-4 shadow-sm">
+        <img id="chat-prod-img" src="" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0;">
         <div class="flex-1 overflow-hidden">
           <div class="text-xs font-bold text-slate-800 truncate" id="chat-prod-title">--</div>
-          <div class="text-xs text-danger font-black mt-1" id="chat-prod-price">--</div>
+          <div class="text-xs text-danger font-black mt-1" id="chat-prod-price" style="font-family:monospace;">--</div>
         </div>
-        <button class="btn btn-outline text-xs px-3.5 py-1.5" style="border-radius: 20px; border-color: var(--primary-color); color: var(--primary-color); font-weight: bold; background: white;" onclick="alert('已发送商品卡片')">发送卡片</button>
       </div>
 
       <!-- Conversations Box -->
       <div class="flex-1 flex flex-col" id="chat-messages" style="gap: 14px;">
         <div class="flex gap-3">
-          <div class="w-8 h-8 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs flex-shrink-0 font-bold shadow-sm">店</div>
-          <div class="bg-white p-3 text-slate-700 shadow-sm border border-slate-100" style="max-width: 75%; border-radius: 4px 18px 18px 18px; line-height: 1.5; font-size:13px;">
-            您好！已为您开启该项目的安全沟通通道，请选择下方的快捷卡片与商家进行洽谈。
+          <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs flex-shrink-0 font-bold">店</div>
+          <div class="bg-white p-3 text-slate-700 border border-slate-100" style="max-width: 75%; border-radius: 2px 12px 12px 12px; line-height: 1.5; font-size:13px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            您好！已为您开启该项目的安全沟通通道，请选择下方的快捷方式与商家进行洽谈。
           </div>
         </div>
       </div>

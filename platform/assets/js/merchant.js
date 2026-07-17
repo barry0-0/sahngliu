@@ -230,13 +230,22 @@ const MerchantApp = {
       
       if(o.status === 0) {
         statusTag = `<span class="tag tag-warning">待买家签约</span>`;
-        actBtn = `<button class="btn btn-text btn-sm" disabled>等待签约</button>`;
+        actBtn = `<div style="display:flex; gap:6px; align-items:center;">
+                    <span class="text-sm text-secondary">等买家签约</span>
+                    <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
+                  </div>`;
       } else if(o.status === 5) {
         statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
-        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('模拟卖家端签约完成。', 'success')">立即签约</button>`;
+        actBtn = `<div style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn btn-primary btn-sm" onclick="UI.toast('模拟卖家端签约完成。', 'success'); o.status = 4; MerchantApp.renderOrders();">立即签约</button>
+                    <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
+                  </div>`;
       } else if(o.status === 4) {
         statusTag = `<span class="tag tag-secondary">待付款</span>`;
-        actBtn = `<span class="text-sm text-secondary">等买家付款</span>`;
+        actBtn = `<div style="display:flex; gap:6px; align-items:center;">
+                    <span class="text-sm text-secondary">等买家付款</span>
+                    <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
+                  </div>`;
       } else if(o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipModal('${o.id}')">去发货</button>`;
