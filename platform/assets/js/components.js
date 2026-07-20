@@ -146,7 +146,7 @@ window.UI = {
       modal.innerHTML = `
         <div class="modal-card-container" style="background:#fff; border-radius:12px; overflow:hidden; width:600px; max-width:95%; box-shadow:0 10px 25px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:85vh; animation: zoomIn 0.25s ease;">
           <div style="background:#1e293b; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:bold; font-size:14px;">📄 享宇森云 - 大宗交易订单详情</span>
+            <span style="font-weight:bold; font-size:14px;">📄 咖喱粑粑 - 大宗交易订单详情</span>
             <button onclick="UI.closeModal('modal-order-detail')" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
           </div>
           <div style="padding:20px; overflow-y:auto; font-size:13px; color:#334155; line-height:1.6;">
@@ -354,6 +354,6 @@ window.addEventListener('error', function(e) {
     if (e.target.dataset.fallbackTriggered) return;
     e.target.dataset.fallbackTriggered = 'true';
     // 选用离线渲染、永不裂开的 SVG 货箱占位图
-    e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100' style='background:%23f2f3f5;'><rect width='100' height='100' fill='%23f5f7fa'/><path d='M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z' fill='none' stroke='%23a8abb2' stroke-width='2'/><path d='M50 20 L50 80 M20 35 L80 65 M80 35 L20 65' fill='none' stroke='%23c8c9cc' stroke-width='1.5'/><text x='50' y='53' font-size='10' font-family='sans-serif' fill='%23909399' text-anchor='middle'>享宇森云</text></svg>";
+    e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100' style='background:%23f2f3f5;'><rect width='100' height='100' fill='%23f5f7fa'/><path d='M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z' fill='none' stroke='%23a8abb2' stroke-width='2'/><path d='M50 20 L50 80 M20 35 L80 65 M80 35 L20 65' fill='none' stroke='%23c8c9cc' stroke-width='1.5'/><text x='50' y='53' font-size='10' font-family='sans-serif' fill='%23909399' text-anchor='middle'>咖喱粑粑</text></svg>";
   }
 }, true);

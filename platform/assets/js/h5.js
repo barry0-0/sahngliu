@@ -44,6 +44,18 @@ const H5App = {
         if (targetId === 'view-uc-orders') {
           H5App.renderUserOrders();
         }
+        if (targetId === 'view-uc-messages') {
+          H5App.renderUserMessages();
+        }
+        if (targetId === 'view-uc-demands') {
+          H5App.renderUserDemands();
+        }
+        if (targetId === 'view-uc-bids') {
+          H5App.renderUserBids();
+        }
+        if (targetId === 'view-uc-invoices') {
+          H5App.renderUserInvoices();
+        }
         if (targetId === 'view-shop' || targetId === 'view-shops' || targetId.startsWith('view-uc-')) {
           if (mainHeader) mainHeader.style.display = 'none';
         } else {
@@ -54,7 +66,7 @@ const H5App = {
           
           // Set Title
           if (headerTitle) {
-            if (targetId === 'view-home') headerTitle.innerText = '享宇森云商城';
+            if (targetId === 'view-home') headerTitle.innerText = '咖喱粑粑商城';
             if (targetId === 'view-demand') headerTitle.innerText = '找货源 (寻源大厅)';
             if (targetId === 'view-bid') headerTitle.innerText = '大宗竞价大厅';
             if (targetId === 'view-cart') headerTitle.innerText = '购物车';
@@ -62,10 +74,14 @@ const H5App = {
           }
           
           if (backBtn) {
-            if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-cart' || targetId === 'view-my') {
+            if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-my') {
               backBtn.style.display = 'none';
+            } else if (targetId === 'view-cart') {
+              backBtn.style.display = 'flex';
+              backBtn.setAttribute('onclick', "H5App.switchH5View('view-my')");
             } else {
               backBtn.style.display = 'flex';
+              backBtn.setAttribute('onclick', "H5App.switchH5View('view-home')");
             }
           }
         }
@@ -89,30 +105,121 @@ const H5App = {
     this.renderHomeProducts(categoryName);
   },
 
+  openChat(shopName, prodTitle, prodPrice, prodImg) {
+    UI.openModal('sheet-h5-chat');
+    const shopNameEl = document.getElementById('h5-chat-shop-name');
+    if (shopNameEl) shopNameEl.innerText = shopName;
+    document.getElementById('h5-chat-prod-title').innerText = prodTitle;
+    document.getElementById('h5-chat-prod-price').innerText = prodPrice;
+    document.getElementById('h5-chat-prod-img').src = prodImg;
+  },
+
+  renderUserMessages() {
+    const container = document.querySelector('#view-uc-messages');
+    if (!container) return;
+    
+    const headerHtml = `
+      <header class="h5-header flex items-center justify-center bg-white" style="padding: 0 16px; font-weight: bold; border-bottom: 1px solid #f1f5f9; flex-shrink:0;">
+        <div>消息中心</div>
+      </header>
+    `;
+    
+    const mockChats = [
+      {
+        shopName: '特钢新材料厂直营店',
+        prodTitle: 'HRB400E 螺纹钢 12mm',
+        prodPrice: '¥3950/吨',
+        prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
+        time: '10:35'
+      },
+      {
+        shopName: '中铁物流建材城',
+        prodTitle: 'Q345B 槽钢 10#',
+        prodPrice: '¥4150/吨',
+        prodImg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=150&q=80',
+        time: '昨天'
+      },
+      {
+        shopName: '宏源工程管业制造',
+        prodTitle: '大宗工程镀锌管 100mm',
+        prodPrice: '¥4280/吨',
+        prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
+        time: '星期三'
+      }
+    ];
+    
+    let listHtml = '<div class="flex-1 overflow-y-auto" style="padding-bottom:80px; background:#fff;">';
+    mockChats.forEach(chat => {
+      listHtml += `
+        <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
+          <div style="width: 40px; height: 40px; border-radius: 6px; background: #e0e7ff; color: #1677ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
+            店
+          </div>
+          <div class="flex-1 overflow-hidden">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
+              <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
+            </div>
+            <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+              📦 货品: ${chat.prodTitle}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    listHtml += '</div>';
+    
+    container.innerHTML = headerHtml + listHtml;
+  },
+
   renderQuickCategories() {
     const container = document.getElementById('h5-quick-categories');
     if (!container) return;
     let html = '';
     
-    // 我们从 MockData.productCategories 取顶层分类
     const categories = MockData.productCategories || [];
-    const topLevels = categories.slice(0, 10); // 取前10个作为快捷标签
+    const topLevels = categories.slice(0, 9); // Take first 9 to fit 2 rows of 5 alongside 'All'
     
-    // 生成横向滑动的胶囊按钮
-    container.style.display = 'flex';
-    container.style.overflowX = 'auto';
-    container.style.whiteSpace = 'nowrap';
-    container.style.padding = '8px 16px';
-    container.style.gap = '8px';
-    container.style.background = 'transparent';
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    container.style.padding = '14px 10px';
+    container.style.gap = '12px 2px';
+    container.style.margin = '10px 16px';
+    container.style.background = '#ffffff';
+    container.style.borderRadius = '12px';
+    container.style.boxShadow = '0 4px 10px rgba(0,0,0,0.02)';
     
-    html += `<button class="btn btn-outline" style="border-radius: 16px; padding: 4px 12px; font-size: 13px;" onclick="H5App.setCategoryFilter('')">全部</button>`;
+    const emojiMap = {
+      '螺纹钢': '🔩',
+      '板材': '🪵',
+      '管材': '🧪',
+      '型材': '🏗️',
+      '水泥': '🧱',
+      '电缆': '🔌',
+      '五金': '🛠️',
+      '线材': '🔗',
+      '角钢': '📐'
+    };
+    const colorBgMap = [
+      '#ffe4e6', '#fef3c7', '#dcfce7', '#dbeafe', '#f3e8ff',
+      '#e0f2fe', '#ffedd5', '#f1f5f9', '#ecfdf5'
+    ];
     
-    topLevels.forEach(cat => {
+    html += `
+      <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;" onclick="H5App.setCategoryFilter('')">
+        <div style="width:38px; height:38px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:5px;">📦</div>
+        <span style="font-size:10px; color:#4b5563; font-weight:500; text-align:center;">全部</span>
+      </div>
+    `;
+    
+    topLevels.forEach((cat, index) => {
+      const emoji = emojiMap[cat.name] || '🏷️';
+      const bg = colorBgMap[index % colorBgMap.length];
       html += `
-        <button class="btn btn-outline" style="border-radius: 16px; padding: 4px 12px; font-size: 13px;" onclick="H5App.setCategoryFilter('${cat.name}')">
-          ${cat.name}
-        </button>
+        <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;" onclick="H5App.setCategoryFilter('${cat.name}')">
+          <div style="width:38px; height:38px; border-radius:50%; background:${bg}; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:5px;">${emoji}</div>
+          <span style="font-size:10px; color:#4b5563; font-weight:500; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">${cat.name}</span>
+        </div>
       `;
     });
     
@@ -789,13 +896,13 @@ const H5App = {
       `;
     }
 
-    // Update bottom tab badge
-    const badge = document.querySelector('.h5-tab-item[data-target="view-cart"] .h5-tab-badge');
+    // Update profile cart badge
+    const badge = document.getElementById('h5-cart-badge');
     if (badge) {
       const totalQty = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
       if (totalQty > 0) {
         badge.innerText = totalQty;
-        badge.style.display = 'block';
+        badge.style.display = 'inline-block';
       } else {
         badge.style.display = 'none';
       }
@@ -985,8 +1092,92 @@ const H5App = {
     }
     
     UI.showModal('sheet-h5-contract');
+  },
+
+  renderUserDemands() {
+    const list = document.getElementById('h5-uc-demands-list');
+    if (!list) return;
+    list.innerHTML = `
+      <div style="font-weight:bold; font-size:12px; color:#64748b; margin-bottom:8px;">📢 我发表的求购单</div>
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">REQ001 急求 50吨 Q345B 槽钢</strong>
+          <span class="tag tag-success" style="font-size:10px;">寻源中</span>
+        </div>
+        <div class="text-xs text-secondary mb-2">预算: ¥4,200/吨 | 2026-07-07 09:00</div>
+        <div class="text-xs text-primary font-bold">已收到 3 份报价单</div>
+      </div>
+      <div class="card p-3 mb-4 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">REQ004 采购 500吨 P.O 42.5 水泥</strong>
+          <span class="tag tag-success" style="font-size:10px;">寻源中</span>
+        </div>
+        <div class="text-xs text-secondary mb-2">预算: ¥300/吨 | 2026-07-09 08:00</div>
+        <div class="text-xs text-primary font-bold">已收到 5 份报价单</div>
+      </div>
+
+      <div style="font-weight:bold; font-size:12px; color:#64748b; margin-bottom:8px;">🙋 我参与的求购单 (我的报价)</div>
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">REQ002 寻优质防腐木供应商</strong>
+          <span class="tag tag-warning" style="font-size:10px; background:#fff7e6; color:#d46b08;">评估中</span>
+        </div>
+        <div class="text-xs text-secondary mb-2">我的报价: <span class="text-danger font-bold">¥320/立方</span> | 需求方: 星辉建筑公司</div>
+        <button class="btn btn-text btn-sm text-danger p-0" style="font-size:11px; border:none; background:none;" onclick="UI.toast('已撤回您的报价意向', 'info'); H5App.renderUserDemands()">撤回我的报价</button>
+      </div>
+    `;
+  },
+
+  renderUserBids() {
+    const list = document.getElementById('h5-uc-bids-list');
+    if (!list) return;
+    list.innerHTML = `
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">BID20260705 南美白橡木竞标</strong>
+          <span class="tag tag-success" style="font-size:10px;">竞标成功</span>
+        </div>
+        <div class="text-xs text-secondary mb-1">起拍价: ¥2,000,000.00</div>
+        <div class="text-xs font-bold" style="color:#22c55e;">我的最高出价: ¥2,450,000.00 (已中标)</div>
+        <div class="text-[10px] text-slate-400 mt-2">出价时间: 2026-07-06 10:30</div>
+      </div>
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">BID20260801 报废钢材处理竞拍一批</strong>
+          <span class="tag tag-primary" style="font-size:10px;">竞价中</span>
+        </div>
+        <div class="text-xs text-secondary mb-1">起拍价: ¥800,000.00</div>
+        <div class="text-xs font-bold text-primary">我的当前出价: ¥850,000.00</div>
+        <div class="text-[10px] text-slate-400 mt-2">结束时间: 2026-07-22 10:00</div>
+      </div>
+    `;
+  },
+
+  renderUserInvoices() {
+    const list = document.getElementById('h5-uc-invoices-list');
+    if (!list) return;
+    list.innerHTML = `
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">增值税专用发票 (INV20260701)</strong>
+          <span class="tag tag-success" style="font-size:10px;">已邮寄</span>
+        </div>
+        <div class="text-xs text-secondary mb-1">关联订单: OD202607130002</div>
+        <div class="text-xs text-danger font-bold">发票金额: ¥18,500.00</div>
+        <div class="text-[10px] text-slate-400 mt-2">申请时间: 2026-07-13 14:30</div>
+      </div>
+      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
+        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
+          <strong class="text-slate-800 text-sm">增值税普通发票 (INV20260702)</strong>
+          <span class="tag tag-warning" style="font-size:10px; background:#fff7e6; color:#d46b08;">开具中</span>
+        </div>
+        <div class="text-xs text-secondary mb-1">关联订单: OD202607130005</div>
+        <div class="text-xs text-danger font-bold">发票金额: ¥865,000.00</div>
+        <div class="text-[10px] text-slate-400 mt-2">申请时间: 2026-07-16 11:20</div>
+      </div>
+    `;
   }
-};
+}
 
 window.H5App = H5App;
 

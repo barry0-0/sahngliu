@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>享宇森云 - H5 小程序端</title>
+  <title>咖喱粑粑 - H5 小程序端</title>
   <link rel="stylesheet" href="./assets/css/global.css">
   <link rel="stylesheet" href="./assets/css/h5.css">
 </head>
@@ -16,7 +16,7 @@
     <div id="h5-header-back-btn" class="h5-header-back" style="display:none; position: absolute; left: 12px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="H5App.switchH5View('view-home')">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
     </div>
-    <div id="h5-header-title" style="font-weight: bold; font-size: 16px;">享宇森云商城</div>
+    <div id="h5-header-title" style="font-weight: bold; font-size: 16px;">咖喱粑粑商城</div>
     <div class="h5-wechat-capsule" style="position: absolute; right: 12px; display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 4px 10px; height: 28px; box-sizing: border-box; color: #1f2937;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
       <div style="width: 1px; height: 12px; background: rgba(0, 0, 0, 0.15);"></div>
@@ -28,17 +28,37 @@
     
     <!-- === 1. 首页 === -->
     <div id="view-home" class="h5-view active">
-      <div class="h5-search-bar" style="display: flex; gap: 8px;">
-        <select id="h5-search-type" style="border: none; background: #f2f3f5; border-radius: 16px; padding: 0 10px; font-size: 13px;">
-          <option value="product">商品</option>
-          <option value="merchant">商户</option>
-        </select>
-        <div style="flex: 1; position: relative;">
-          <input type="text" id="h5-search-keyword" placeholder="搜索关键词..." style="width: 100%; height: 32px; border: none; background: #fff; border-radius: 16px; padding-left: 12px; font-size: 13px;">
+      <!-- Blue Premium Header -->
+      <div style="background: #1677ff; padding: 14px 16px 20px; border-radius: 0 0 16px 16px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: white;">
+          <div style="font-size: 18px; font-weight: 800; font-family: sans-serif; display: flex; align-items: center; gap: 4px;">
+            <span>咖喱粑粑商城</span>
+          </div>
+          <div style="font-size: 11px; opacity: 0.9; display: flex; gap: 10px;">
+            <span>🚜 货品批发</span>
+            <span>📍 产地货源</span>
+          </div>
         </div>
-        <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 0 12px;" onclick="window.H5App && window.H5App.doSearch()">搜索</button>
+        <!-- Search capsule -->
+        <div class="h5-search-bar" style="display: flex; gap: 4px; background: #fff; border-radius: 20px; padding: 4px 8px; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 0;">
+          <select id="h5-search-type" style="border: none; background: transparent; padding: 0 6px; font-size: 13px; font-weight: bold; color: #374151; outline: none;">
+            <option value="product">商品</option>
+            <option value="merchant">商户</option>
+          </select>
+          <div style="width: 1px; height: 14px; background: #e5e7eb; margin: 0 4px;"></div>
+          <div style="flex: 1; position: relative; display: flex; align-items: center;">
+            <span style="margin-right: 6px; color:#9ca3af;">🔍</span>
+            <input type="text" id="h5-search-keyword" placeholder="搜索产地货源、一手价格..." style="width: 100%; height: 28px; border: none; background: transparent; font-size: 12px; outline: none; padding: 0;">
+          </div>
+          <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 4px 14px; font-size: 12px; background: #1677ff; border: none; color: #fff;" onclick="window.H5App && window.H5App.doSearch()">搜索</button>
+        </div>
       </div>
-      <div class="h5-banner">夏季现货特惠大促</div>
+
+      <!-- Banner -->
+      <div class="h5-banner" style="margin: 12px 16px; border-radius: 8px; overflow: hidden; height: 90px; background: linear-gradient(135deg, #3b82f6, #1677ff); color: white; display: flex; flex-direction: column; justify-content: center; padding: 0 16px; box-shadow: 0 4px 12px rgba(22,119,255,0.12); margin-top: 12px;">
+        <span style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">夏季现货特惠大促</span>
+        <span style="font-size: 11px; opacity: 0.9; margin-top: 4px;">源头直发 · 大宗保障 · 安全交付</span>
+      </div>
       
       <!-- 快捷分类筛选项 (Quick Categories) -->
       <div id="h5-quick-categories" class="hide-scrollbar" style="display: flex; overflow-x: auto; white-space: nowrap; padding: 8px 16px; gap: 8px; margin: 8px 0; -webkit-overflow-scrolling: touch;">
@@ -142,6 +162,19 @@
       </div>
 
       <div class="h5-menu-list">
+        <div class="h5-menu-row" onclick="H5App.switchH5View('view-cart')">
+          <div class="flex items-center gap-2">
+            <svg class="icon-svg text-primary" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24">
+              <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            我的购物车
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="h5-tab-badge" id="h5-cart-badge" style="background: #ff4d4f; color: white; font-size: 10px; border-radius: 10px; padding: 1px 6px; min-width: 14px; text-align: center; display: none;">0</span>
+            <div class="text-secondary">></div>
+          </div>
+        </div>
         <div class="h5-menu-row" onclick="H5App.switchH5View('view-uc-bids')">
           <div class="flex items-center gap-2"><svg class="icon-svg text-primary" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 我的竞价记录 <span class="text-sm text-secondary">(参与的/发表的)</span></div>
           <div class="text-secondary">></div>
@@ -150,10 +183,7 @@
           <div class="flex items-center gap-2"><svg class="icon-svg text-warning" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 我的求购记录 <span class="text-sm text-secondary">(参与的/发表的)</span></div>
           <div class="text-secondary">></div>
         </div>
-        <div class="h5-menu-row" onclick="H5App.switchH5View('view-uc-messages')">
-          <div class="flex items-center gap-2"><svg class="icon-svg text-success" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> 消息中心</div>
-          <div class="text-secondary">></div>
-        </div>
+
         <div class="h5-menu-row" onclick="H5App.switchH5View('view-uc-invoices')">
           <div class="flex items-center gap-2"><svg class="icon-svg text-danger" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 发票中心</div>
           <div class="text-secondary">></div>
@@ -257,29 +287,27 @@
     <!-- 竞价记录 -->
     <div id="view-uc-bids" class="h5-view bg-gray-50 h-full">
       <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg class="icon-svg" style="width:24px;height:24px; cursor:pointer;" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
         <div>我的竞价记录</div>
         <div style="width:24px;"></div>
       </header>
-      <div class="flex flex-col items-center justify-center text-secondary mt-12" style="height: 40vh;">暂无竞价记录</div>
+      <div id="h5-uc-bids-list" style="padding: 12px; overflow-y: auto; height: calc(100% - 60px); box-sizing: border-box;"></div>
     </div>
 
     <!-- 求购记录 -->
     <div id="view-uc-demands" class="h5-view bg-gray-50 h-full">
       <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg class="icon-svg" style="width:24px;height:24px; cursor:pointer;" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
         <div>我的求购记录</div>
         <div style="width:24px;"></div>
       </header>
-      <div class="flex flex-col items-center justify-center text-secondary mt-12" style="height: 40vh;">暂无求购记录</div>
+      <div id="h5-uc-demands-list" style="padding: 12px; overflow-y: auto; height: calc(100% - 60px); box-sizing: border-box;"></div>
     </div>
 
     <!-- 消息中心 -->
     <div id="view-uc-messages" class="h5-view bg-gray-50 h-full">
-      <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      <header class="h5-header flex items-center justify-center bg-white" style="padding: 0 16px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">
         <div>消息中心</div>
-        <div style="width:24px;"></div>
       </header>
       <div class="flex flex-col items-center justify-center text-secondary mt-12" style="height: 40vh;">暂无新消息</div>
     </div>
@@ -287,11 +315,11 @@
     <!-- 发票中心 -->
     <div id="view-uc-invoices" class="h5-view bg-gray-50 h-full">
       <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg class="icon-svg" style="width:24px;height:24px; cursor:pointer;" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
         <div>发票中心</div>
         <div style="width:24px;"></div>
       </header>
-      <div class="flex flex-col items-center justify-center text-secondary mt-12" style="height: 40vh;">暂无发票记录</div>
+      <div id="h5-uc-invoices-list" style="padding: 12px; overflow-y: auto; height: calc(100% - 60px); box-sizing: border-box;"></div>
     </div>
     
     <!-- 实名认证 -->
@@ -324,26 +352,23 @@
 
   <nav class="h5-tabbar flex justify-around items-center bg-white border-t border-gray-200 fixed bottom-0 pb-safe" style="width: 100%; height: 60px; z-index: 900; max-width: 480px; left: 0; right: 0; margin: 0 auto; box-sizing: border-box;">
     <div class="h5-tab-item active flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-home">
-      <svg class="icon-svg" style="width:24px; height:24px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <svg class="icon-svg" style="width:22px; height:22px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       <span class="text-[10px]" style="font-size: 10px;">首页</span>
     </div>
-    <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-demand">
-      <svg class="icon-svg" style="width:24px; height:24px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <span class="text-[10px]" style="font-size: 10px;">找货源</span>
-    </div>
-    <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-cart">
-      <div style="position: relative; display: inline-block;">
-        <svg class="icon-svg" style="width:24px; height:24px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        <span class="h5-tab-badge" style="position: absolute; top: -6px; right: -10px; background: #ff4d4f; color: white; font-size: 10px; border-radius: 10px; padding: 1px 4px; min-width: 14px; text-align: center; display:none;">0</span>
-      </div>
-      <span class="text-[10px]" style="font-size: 10px;">购物车</span>
-    </div>
     <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-bid">
-      <svg class="icon-svg" style="width:24px; height:24px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-7-4-7 4 1-7-5-5 7-1z"></path></svg>
+      <svg class="icon-svg" style="width:22px; height:22px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-7-4-7 4 1-7-5-5 7-1z"></path></svg>
       <span class="text-[10px]" style="font-size: 10px;">竞价</span>
     </div>
+    <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-demand">
+      <svg class="icon-svg" style="width:22px; height:22px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span class="text-[10px]" style="font-size: 10px;">找货源</span>
+    </div>
+    <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-uc-messages">
+      <svg class="icon-svg" style="width:22px; height:22px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span class="text-[10px]" style="font-size: 10px;">消息</span>
+    </div>
     <div class="h5-tab-item flex flex-col items-center text-secondary w-full py-1 cursor-pointer" data-target="view-my">
-      <svg class="icon-svg" style="width:24px; height:24px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <svg class="icon-svg" style="width:22px; height:22px; margin-bottom:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       <span class="text-[10px]" style="font-size: 10px;">我的</span>
     </div>
   </nav>
@@ -393,7 +418,7 @@
     <!-- Action Buttons -->
     <div class="flex gap-3" style="display:flex; gap:12px;">
       <button class="btn btn-outline flex-1 py-2.5 text-xs font-bold" style="border-radius: 12px; border-color: var(--primary-color); color: var(--primary-color); height:40px; flex:1;" onclick="H5App.confirmAddToCart(); UI.closeModal('sheet-h5-product-detail');">加入购物车</button>
-      <button class="btn btn-primary flex-1 py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); height:40px; flex:1;" onclick="H5App.confirmAddToCart(); UI.closeModal('sheet-h5-product-detail'); document.querySelector('.h5-tab-item[data-target=\'view-cart\']').click();">立即采购</button>
+      <button class="btn btn-primary flex-1 py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); height:40px; flex:1;" onclick="H5App.confirmAddToCart(); UI.closeModal('sheet-h5-product-detail'); H5App.switchH5View('view-cart');">立即采购</button>
     </div>
   </div>
 </div>
@@ -642,6 +667,8 @@
 <script src="./assets/js/mock-data.js"></script>
 <script src="./assets/js/components.js"></script>
 <script src="./assets/js/h5.js"></script>
+<script src="./assets/js/prd-data-h5.js"></script>
+<script src="./assets/js/prd-pin-tool.js"></script>
 
 </body>
 </html>

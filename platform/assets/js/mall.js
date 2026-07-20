@@ -19,6 +19,7 @@ const MallApp = {
     this.renderUCOrders();
     this.renderUCInvoices();
     this.renderUCDemandsPub();
+    this.renderUCDemandsJoin();
     this.renderUCMessages();
 
     this.renderCart();
@@ -136,6 +137,7 @@ const MallApp = {
     const views = document.querySelectorAll('.uc-view');
     items.forEach(item => {
       item.addEventListener('click', () => {
+        if (!item.dataset.target) return;
         items.forEach(i => i.classList.remove('active'));
         item.classList.add('active');
 
@@ -853,6 +855,31 @@ const MallApp = {
       `;
     });
     if (tbody) tbody.innerHTML = html;
+  },
+
+  renderUCDemandsJoin() {
+    const tbody = document.querySelector('#table-uc-demands-join tbody');
+    if (!tbody) return;
+    tbody.innerHTML = `
+      <tr>
+        <td>REQ002</td>
+        <td>寻优质防腐木供应商，年框采购量约5000立方</td>
+        <td>星辉建筑公司</td>
+        <td class="font-bold text-danger">¥320/立方</td>
+        <td><span class="tag tag-warning">评估中</span></td>
+        <td>
+          <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已撤回您的参与报价意向', 'info'); MallApp.renderUCDemandsJoin()">撤回报价</button>
+        </td>
+      </tr>
+      <tr>
+        <td>REQ004</td>
+        <td>采购 P.O 42.5 散装水泥 500吨 需送达杭州工地</td>
+        <td>万通建材采购部</td>
+        <td class="font-bold text-danger">¥290/吨</td>
+        <td><span class="tag tag-success">已中标</span></td>
+        <td><span class="text-secondary text-sm">已生成订单</span></td>
+      </tr>
+    `;
   },
 
   renderUCMessages() {
