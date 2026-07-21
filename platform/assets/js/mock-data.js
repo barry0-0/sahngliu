@@ -157,7 +157,7 @@ window.MockData = {
     { id: 'ORD202607050032', buyerName: '张三 (普通买家)', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '测试小批量钢管', amount: '¥8,500.00', type: '现货交易', status: 2, time: '2026-07-05 10:00' },
     { id: 'ORD202607149999', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待付款测试钢筋批次', amount: '¥45,000.00', type: '现货交易', status: 4, time: '2026-07-14 15:00' },
     { id: 'ORD202607148888', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待卖家签约测试槽钢', amount: '¥98,000.00', type: '现货交易', status: 5, time: '2026-07-14 15:20' },
-    { id: 'ORD202606280011', buyerName: '星辉建筑公司', shopName: '华东木材集散中心', shopId: 'S002', productName: '定制加工木方批次', amount: '¥150,000.00', type: '求购转单', status: -1, time: '2026-06-28 14:20', closeReason: '买卖双方线下协商退款取消' },
+    { id: 'ORD202606280011', buyerName: '星辉建筑公司', shopName: '华东木材集散中心', shopId: 'S002', productName: '定制加工木方批次', amount: '¥150,000.00', type: '现货交易', status: -1, time: '2026-06-28 14:20', closeReason: '买卖双方线下协商退款取消' },
     { id: 'ORD202607090001', buyerName: '万通建材采购部', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.O 42.5 散装硅酸盐水泥', amount: '¥155,000.00', type: '现货交易', status: 3, time: '2026-07-09 08:30' },
     { id: 'ORD202607090002', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'Q345B 低合金高强度槽钢', amount: '¥40,500.00', type: '现货交易', status: 1, time: '2026-07-09 11:20' },
     { id: 'ORD202607090003', buyerName: '星辉建筑公司', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.C 32.5 袋装水泥', amount: '¥18,000.00', type: '现货交易', status: 2, time: '2026-07-09 14:00' },
@@ -168,7 +168,7 @@ window.MockData = {
   demands: [
     { id: 'REQ001', buyerName: '万通建材采购部', title: '急求 50吨 Q345B 槽钢，交期7天内', category: '钢材', expectedPrice: '¥4,200/吨', publishTime: '2026-07-07 09:00', status: 1, quotesCount: 3 },
     { id: 'REQ002', buyerName: '星辉建筑公司', title: '寻优质防腐木供应商，年框采购量约5000立方', category: '木材', expectedPrice: '面议', publishTime: '2026-07-08 10:15', status: 1, quotesCount: 1 },
-    { id: 'REQ003', buyerName: '张三 (普通买家)', title: '买几包水泥', category: '水泥', expectedPrice: '¥20/包', publishTime: '2026-07-08 14:00', status: 0, quotesCount: 0 },
+    { id: 'REQ003', buyerName: 'H5买家用户', title: '急购中联/海螺 PO42.5 水泥 100吨，需送达工地', category: '水泥', expectedPrice: '¥320/吨', publishTime: '2026-07-08 14:00', status: 1, quotesCount: 0 },
     { id: 'REQ004', buyerName: '万通建材采购部', title: '采购 P.O 42.5 散装水泥 500吨 需送达杭州工地', category: '水泥', expectedPrice: '¥300/吨', publishTime: '2026-07-09 08:00', status: 1, quotesCount: 5 },
     { id: 'REQ005', buyerName: '万通建材采购部', title: '【已结束】上个月的废钢管处理', category: '钢材', expectedPrice: '面议', publishTime: '2026-06-15 08:00', status: 2, quotesCount: 12 }
   ],
@@ -185,16 +185,25 @@ window.MockData = {
   ],
   
   biddingAnnouncements: [
-    { id: 'BID20260801', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopName: '远大钢铁官方直营店', title: '报废钢材处理竞标一批 约500吨', startPrice: '¥800,000.00', bidEndTime: '2026-07-16 12:00', status: 1, currentMaxOffer: '¥850,000.00', winner: '-' },
-    { id: 'BID20260802', resId: 'RES002', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80', shopName: '海螺水泥华东总代', title: '库存临期袋装水泥清仓 10000包', startPrice: '¥120,000.00', bidEndTime: '2026-07-20 18:00', status: 0, currentMaxOffer: '-', winner: '-' },
-    { id: 'BID20260705', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopName: '华东木材集散中心', title: '南美白橡木 20个柜原木 竞标', startPrice: '¥2,000,000.00', bidEndTime: '2026-07-06 12:00', status: 3, currentMaxOffer: '¥2,450,000.00', winner: '万通建材采购部' },
-    { id: 'BID20260706', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopName: '万达木业集团', title: '特级辐射松板材 200立方米 竞标', startPrice: '¥360,000.00', bidEndTime: '2026-07-22 10:00', status: 1, currentMaxOffer: '¥380,000.00', winner: '-' }
+    { id: 'BID20260801', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopId: 'S001', shopName: '远大钢铁官方直营店', title: '【看货报名阶段】报废钢材处理竞标一批 约500吨', startPrice: '¥800,000.00', bidEndTime: '2026-08-01 12:00', status: 0, currentMaxOffer: '-', winner: '-', auditStatus: '已通过' },
+    { id: 'BID20260802', resId: 'RES002', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80', shopId: 'S004', shopName: '海螺水泥华东总代', title: '【现场看货阶段】库存临期袋装水泥清仓 10000包', startPrice: '¥120,000.00', bidEndTime: '2026-08-05 18:00', status: 1, currentMaxOffer: '-', winner: '-', auditStatus: '已通过' },
+    { id: 'BID20260706', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopId: 'S002', shopName: '华东木材集散中心', title: '【竞价出价阶段】南美白橡木 20个柜原木 竞标', startPrice: '¥2,000,000.00', bidEndTime: '2026-07-28 12:00', status: 2, currentMaxOffer: '¥2,100,000.00', winner: '-', auditStatus: '已通过' },
+    { id: 'BID20260705', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopId: 'S001', shopName: '远大钢铁官方直营店', title: '【等待公布阶段】报废机电设备资产处理一批', startPrice: '¥600,000.00', bidEndTime: '2026-07-20 12:00', status: 3, currentMaxOffer: '¥640,000.00', winner: '-', auditStatus: '已通过' },
+    { id: 'BID20260709', resId: 'RES003', image: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=400&q=80', shopId: 'S002', shopName: '华东木材集散中心', title: '【竞价已结束】高抗震螺纹钢 100吨 临期处理', startPrice: '¥300,000.00', bidEndTime: '2026-07-15 12:00', status: 4, currentMaxOffer: '¥350,000.00', winner: '万通建材采购部', auditStatus: '已通过' },
+    { id: 'BID_PENDING_01', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopId: 'S001', shopName: '远大钢铁官方直营店', title: '【待审核测试】商户新发布废钢处置竞标', startPrice: '¥450,000.00', bidEndTime: '2026-08-10 12:00', status: 0, currentMaxOffer: '-', winner: '-', auditStatus: '待审核' },
+    { id: 'BID_REJECTED_01', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopId: 'S001', shopName: '远大钢铁官方直营店', title: '【已拒绝测试】起拍底价设置过低废铁竞标', startPrice: '¥10,000.00', bidEndTime: '2026-08-08 12:00', status: 0, currentMaxOffer: '-', winner: '-', auditStatus: '已拒绝' },
+    { id: 'BID_WITHDRAWN_01', resId: 'RES001', image: 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80', shopId: 'S001', shopName: '远大钢铁官方直营店', title: '【已撤回测试】型号规格录入有误紧急撤回项目', startPrice: '¥500,000.00', bidEndTime: '2026-08-09 12:00', status: 0, currentMaxOffer: '-', winner: '-', auditStatus: '已撤回' }
   ],
 
   biddingOffers: [
-    { id: 'OFR001', bidId: 'BID20260705', buyerName: '万通建材采购部', offerPrice: '¥2,450,000.00', time: '2026-07-06 10:30', status: 1 },
-    { id: 'OFR002', bidId: 'BID20260705', buyerName: '星辉建筑公司', offerPrice: '¥2,300,000.00', time: '2026-07-06 09:15', status: 0 },
-    { id: 'OFR003', bidId: 'BID20260801', buyerName: '张三 (普通买家)', offerPrice: '¥850,000.00', time: '2026-07-10 14:00', status: 0 },
+    { id: 'OFR001', bidId: 'BID20260706', buyerName: '万通建材采购部', offerPrice: '¥2,100,000.00', time: '2026-07-20 10:30', status: 0 },
+    { id: 'OFR002', bidId: 'BID20260706', buyerName: '星辉建筑公司', offerPrice: '¥2,050,000.00', time: '2026-07-20 09:15', status: 0 },
+    { id: 'OFR003', bidId: 'BID20260705', buyerName: '筑美建设集团', offerPrice: '¥630,000.00', time: '2026-07-20 10:00', status: 0 },
+    { id: 'OFR004', bidId: 'BID20260705', buyerName: '星辉建筑公司', offerPrice: '¥620,000.00', time: '2026-07-20 09:30', status: 0 },
+    { id: 'OFR005', bidId: 'BID20260705', buyerName: '万通建材采购部', offerPrice: '¥640,000.00', time: '2026-07-20 10:45', status: 0 },
+    { id: 'OFR006', bidId: 'BID20260709', buyerName: '万通建材采购部', offerPrice: '¥350,000.00', time: '2026-07-15 10:30', status: 1 },
+    { id: 'OFR007', bidId: 'BID20260706', buyerName: 'H5买家用户', offerPrice: '¥2,080,000.00', time: '2026-07-20 10:15', status: 0 },
+    { id: 'OFR008', bidId: 'BID20260705', buyerName: 'H5买家用户', offerPrice: '¥625,000.00', time: '2026-07-20 09:45', status: 0 }
   ],
 
   // --- 10. 商品类别字典 ---
@@ -275,6 +284,14 @@ window.MockData = {
     ]
   },
   
+  demandQuotes: [
+    { id: 'QT001', demandId: 'REQ001', shopId: 'S001', shopName: '远大钢铁官方直营店', price: '¥4,150.00/吨', time: '2026-07-07 10:00', status: 0 },
+    { id: 'QT002', demandId: 'REQ001', shopId: 'S003', shopName: '华盛钢铁贸易商', price: '¥4,180.00/吨', time: '2026-07-07 10:30', status: 0 },
+    { id: 'QT003', demandId: 'REQ004', shopId: 'S004', shopName: '海螺水泥华东总代', price: '¥298.00/吨', time: '2026-07-09 09:00', status: 0 },
+    { id: 'QT004', demandId: 'REQ002', shopId: 'S001', shopName: '万通建材 (报价主体)', price: '¥320.00/立方', time: '2026-07-08 11:00', status: 0, quoterName: '万通建材采购部' },
+    { id: 'QT005', demandId: 'REQ002', shopId: 'S001', shopName: 'H5买家 (报价主体)', price: '¥340.00/立方', time: '2026-07-08 12:00', status: 0, quoterName: 'H5买家用户' }
+  ],
+
   agreementList: [
     { id: 'AGR001', name: '商家入驻协议', version: 'V1.0', time: '2025-01-01 00:00', status: 0 }, // 0失效, 1生效
     { id: 'AGR002', name: '隐私政策', version: 'V1.0', time: '2025-01-01 00:00', status: 0 },

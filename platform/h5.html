@@ -97,6 +97,14 @@
           <input type="text" id="h5-demand-search-keyword" class="form-control" placeholder="搜索标题或买家" style="flex: 1; border-radius: 20px; padding-left: 16px;">
           <button class="btn btn-primary" style="border-radius: 20px; padding: 0 16px;" onclick="H5App.doDemandSearch()">搜索</button>
         </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 12px; margin-top: -8px;">
+          <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="h5-demand-filter-my" onchange="document.getElementById('h5-demand-filter-joined').checked = false; H5App.renderDemands()" style="width: 15px; height: 15px;"> 只看我发布
+          </label>
+          <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="h5-demand-filter-joined" onchange="document.getElementById('h5-demand-filter-my').checked = false; H5App.renderDemands()" style="width: 15px; height: 15px;"> 只看我参与
+          </label>
+        </div>
         <div id="h5-demand-list"></div>
       </div>
     </div>
@@ -179,10 +187,7 @@
           <div class="flex items-center gap-2"><svg class="icon-svg text-primary" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 我的竞价记录 <span class="text-sm text-secondary">(参与的/发表的)</span></div>
           <div class="text-secondary">></div>
         </div>
-        <div class="h5-menu-row" onclick="H5App.switchH5View('view-uc-demands')">
-          <div class="flex items-center gap-2"><svg class="icon-svg text-warning" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 我的求购记录 <span class="text-sm text-secondary">(参与的/发表的)</span></div>
-          <div class="text-secondary">></div>
-        </div>
+
 
         <div class="h5-menu-row" onclick="H5App.switchH5View('view-uc-invoices')">
           <div class="flex items-center gap-2"><svg class="icon-svg text-danger" style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 发票中心</div>
@@ -294,15 +299,7 @@
       <div id="h5-uc-bids-list" style="padding: 12px; overflow-y: auto; height: calc(100% - 60px); box-sizing: border-box;"></div>
     </div>
 
-    <!-- 求购记录 -->
-    <div id="view-uc-demands" class="h5-view bg-gray-50 h-full">
-      <header class="h5-header flex items-center justify-between bg-white" style="padding: 0 16px;">
-        <svg class="icon-svg" style="width:24px;height:24px; cursor:pointer;" viewBox="0 0 24 24" onclick="H5App.switchH5View('view-my')"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        <div>我的求购记录</div>
-        <div style="width:24px;"></div>
-      </header>
-      <div id="h5-uc-demands-list" style="padding: 12px; overflow-y: auto; height: calc(100% - 60px); box-sizing: border-box;"></div>
-    </div>
+
 
     <!-- 消息中心 -->
     <div id="view-uc-messages" class="h5-view bg-gray-50 h-full">
@@ -561,7 +558,7 @@
 
     <!-- 底部按钮 -->
     <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="event.stopPropagation(); UI.toast('求购意向发布成功！', 'success'); setTimeout(() => UI.closeModal('sheet-h5-publish-demand'), 300);">确认发布</button>
+      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="event.stopPropagation(); H5App.submitPublishDemand();">确认发布</button>
     </div>
   </div>
 </div>
@@ -628,7 +625,7 @@
     </div>
     <!-- 底部按钮 -->
     <div class="p-4 border-t border-slate-100 flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); border: none;" onclick="event.stopPropagation(); UI.toast('报价提交成功！等待采购商联系。', 'success'); setTimeout(() => UI.closeModal('sheet-h5-quote'), 300);">确认提交报价</button>
+      <button class="btn btn-primary w-full py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); border: none;" onclick="event.stopPropagation(); H5App.submitQuote();">确认提交报价</button>
     </div>
   </div>
 </div>

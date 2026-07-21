@@ -18,8 +18,7 @@ const MallApp = {
     // User Center Renders
     this.renderUCOrders();
     this.renderUCInvoices();
-    this.renderUCDemandsPub();
-    this.renderUCDemandsJoin();
+    this.renderUCBids();
     this.renderUCMessages();
 
     this.renderCart();
@@ -145,6 +144,9 @@ const MallApp = {
           v.classList.remove('active');
           if (v.id === item.dataset.target) {
             v.classList.add('active');
+            if (v.id === 'uc-bids') MallApp.renderUCBids();
+            if (v.id === 'uc-orders') MallApp.renderUCOrders();
+            if (v.id === 'uc-messages') MallApp.renderUCMessages();
           }
         });
       });
@@ -438,7 +440,7 @@ const MallApp = {
     // 渲染首页的 热门竞价
     const bidList = document.getElementById('list-home-bids');
     if (bidList) {
-      const bids = MockData.biddingAnnouncements.slice(0, 4); // 均展示4条
+      const bids = MockData.biddingAnnouncements.filter(b => b.auditStatus === '已通过' || !b.auditStatus).slice(0, 4); // 均展示4条
       let bHtml = '';
       bids.forEach(b => {
         let tag = b.status === 1 ? '<span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">竞价中</span>' : '<span class="tag tag-secondary text-[10px]" style="border-radius: 6px; padding: 2px 6px;">已结束</span>';
@@ -465,21 +467,23 @@ const MallApp = {
     const grid = document.getElementById('grid-mall-demands');
     if (!grid) return;
 
-    // 获取其他筛选条件 (如果有)
-    const dateStart = document.getElementById('demand-search-date-start')?.value || '';
-    const dateEnd = document.getElementById('demand-search-date-end')?.value || '';
-    const delivStart = document.getElementById('demand-search-delivery-start')?.value || '';
-    const delivEnd = document.getElementById('demand-search-delivery-end')?.value || '';
+    const showOnlyMy = document.getElementById('demand-filter-my')?.checked || false;
+    const showOnlyJoined = document.getElementById('demand-filter-joined')?.checked || false;
 
     let html = '';
-    let filtered = MockData.demands.filter(d => d.status === 1);
-    if (keyword) {
-      filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
+    let filtered = MockData.demands;
+
+    if (showOnlyMy) {
+      filtered = filtered.filter(d => d.buyerName === this.currentBuyerName);
+    } else if (showOnlyJoined) {
+      const myQuotes = MockData.demandQuotes.filter(q => q.quoterName === this.currentBuyerName);
+      filtered = filtered.filter(d => myQuotes.some(q => q.demandId === d.id));
+    } else {
+      filtered = filtered.filter(d => d.status === 1);
     }
 
-    if (dateStart || dateEnd || delivStart || delivEnd) {
-      // 此处省略复杂的日期过滤逻辑，仅做基础控制
-      // console.log("Filtering by dates:", {dateStart, dateEnd, delivStart, delivEnd});
+    if (keyword) {
+      filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
     }
 
     if (filtered.length === 0) {
@@ -489,23 +493,66 @@ const MallApp = {
 
     filtered.forEach(d => {
       let isMine = d.buyerName === this.currentBuyerName;
-      let btn = isMine ?
-        `<span class="text-secondary text-sm">我发布的</span>` :
-        `<div class="flex gap-2" style="margin-top: 12px;">
-           <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-           <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.title}', '${d.expectedPrice}'))">立即报价</button>
-         </div>`;
+      const myQuote = MockData.demandQuotes.find(q => q.demandId === d.id && q.quoterName === this.currentBuyerName);
+      let isJoined = !!myQuote;
+      let btn = '';
+      let statusTag = '';
+      let quotePriceHtml = '';
+
+      if (showOnlyJoined && isJoined) {
+        if (myQuote.status === 1) {
+          statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已采纳</span>`;
+          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
+                   <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                 </div>`;
+        } else {
+          statusTag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border:1px solid #91d5ff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已报价</span>`;
+          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
+                   <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                   <button class="btn btn-primary btn-sm flex-1" onclick="MallApp.editMyQuote('${myQuote.id}')">修改报价</button>
+                 </div>`;
+        }
+        quotePriceHtml = `<div><span class="inline-block w-20" style="color:var(--primary-color); font-weight:bold;">我的报价:</span> <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
+      } else if (isMine) {
+        if (d.status === 0) {
+          statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">待审核</span>`;
+        } else if (d.status === 1) {
+          statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">展示中</span>`;
+        } else if (d.status === 2) {
+          statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已完结</span>`;
+        } else if (d.status === -1) {
+          statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#cf1322; border:1px solid #ffa39e; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已撤销</span>`;
+        }
+
+        const quotesCount = MockData.demandQuotes.filter(q => q.demandId === d.id).length;
+
+        if (d.status === 0 || d.status === 1) {
+          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
+                   <button class="btn btn-outline btn-sm flex-1" onclick="MallApp.cancelDemand('${d.id}')">撤销</button>
+                   <button class="btn btn-primary btn-sm flex-1" onclick="UI.showDemandQuotesModal('${d.id}', false, () => MallApp.renderDemands())">查看报价 (${quotesCount})</button>
+                 </div>`;
+        } else {
+          btn = `<div class="text-secondary text-sm" style="margin-top:12px;">意向已关闭</div>`;
+        }
+      } else {
+        btn = `<div class="flex gap-2" style="margin-top: 12px;">
+                 <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                 <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.id}', '${d.title.replace(/'/g, "\\'")}', '${d.expectedPrice}'))">立即报价</button>
+               </div>`;
+      }
 
       html += `
         <div class="card product-card">
           <div class="card-body">
-            <div class="flex justify-between items-start mb-2">
-              <h3 class="font-bold text-lg truncate flex-1" title="${d.title}">${d.title}</h3>
+            <div class="flex justify-between items-start mb-2" style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 class="font-bold text-lg truncate flex-1" style="margin:0;" title="${d.title}">${d.title}</h3>
+              ${statusTag}
             </div>
             <div class="text-sm text-secondary mb-4 flex flex-col gap-1">
               <div><span class="inline-block w-20">采购方:</span> <span class="text-dark">${d.buyerName}</span></div>
               <div><span class="inline-block w-20">发布时间:</span> <span class="text-dark">${d.publishTime}</span></div>
               <div><span class="inline-block w-20">期望报价:</span> <span class="text-danger font-bold">${d.expectedPrice}</span></div>
+              ${quotePriceHtml}
               <div><span class="inline-block w-20">交期要求:</span> <span class="text-dark">见详情</span></div>
             </div>
             <div class="border-t border-light pt-3">
@@ -523,10 +570,48 @@ const MallApp = {
     this.renderDemands(kw);
   },
 
+  cancelDemand(demandId) {
+    const d = MockData.demands.find(x => x.id === demandId);
+    if (d) {
+      d.status = -1; // 已撤销
+      UI.toast('已撤销该求购信息！', 'success');
+      this.renderDemands();
+    }
+  },
+
+  submitPublishDemand() {
+    const title = document.getElementById('pd-title').value.trim();
+    const price = document.getElementById('pd-price').value.trim() || '面议';
+    const desc = document.getElementById('pd-desc').value.trim();
+    if (!title) {
+      UI.toast('请输入求购标题！', 'error');
+      return;
+    }
+    const newDemand = {
+      id: 'REQ' + (MockData.demands.length + 1).toString().padStart(3, '0'),
+      buyerName: this.currentBuyerName,
+      title: title,
+      category: '钢材', // default
+      expectedPrice: price,
+      publishTime: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0, // 待审核
+      quotesCount: 0,
+      desc: desc
+    };
+    MockData.demands.unshift(newDemand);
+    UI.toast('求购意向发布成功，待审核！', 'success');
+    UI.closeModal('modal-publish-demand');
+    // Clear fields
+    document.getElementById('pd-title').value = '';
+    document.getElementById('pd-price').value = '';
+    document.getElementById('pd-desc').value = '';
+    this.renderDemands();
+  },
+
   renderBids(keyword = '') {
     const grid = document.getElementById('grid-mall-bids');
     let html = '';
-    let filtered = MockData.biddingAnnouncements;
+    let filtered = MockData.biddingAnnouncements.filter(b => b.auditStatus === '已通过' || !b.auditStatus);
     if (keyword) {
       filtered = filtered.filter(b => b.title.includes(keyword));
     }
@@ -535,7 +620,19 @@ const MallApp = {
       filtered = filtered.filter(b => b.status === parseInt(statusVal));
     }
     filtered.forEach(b => {
-      let tag = b.status === 1 ? '<span class="tag tag-success">竞价中</span>' : '<span class="tag tag-secondary">已结束</span>';
+      let tag = '';
+      if (b.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+      else if (b.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+      else if (b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+      else if (b.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+      else if (b.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
+
+      let btnText = '参与竞价';
+      if (b.status === 0) btnText = '看货报名';
+      else if (b.status === 1) btnText = '现场看货';
+      else if (b.status === 3) btnText = '等待公布';
+      else if (b.status === 4) btnText = '查看结果';
+
       html += `
         <div class="card shadow-sm border-0 cursor-pointer hover:shadow-md transition" style="overflow:hidden;" onclick="MallApp.showBiddingDetail('${b.id}')">
           <div style="position: relative; overflow: hidden; height: 160px;">
@@ -559,7 +656,7 @@ const MallApp = {
                 <div class="text-lg font-bold text-danger">${b.currentMaxOffer || b.startPrice}</div>
               </div>
             </div>
-            <button class="btn btn-primary w-full" style="height: 36px; border-radius: 18px; font-size: 13px;" onclick="event.stopPropagation(); MallApp.showBiddingDetail('${b.id}')">参与竞价</button>
+            <button class="btn btn-primary w-full" style="height: 36px; border-radius: 18px; font-size: 13px;" onclick="event.stopPropagation(); MallApp.showBiddingDetail('${b.id}')">${btnText}</button>
           </div>
         </div>
       `;
@@ -586,49 +683,124 @@ const MallApp = {
     this.renderBids(kw);
   },
 
+  _bidPhotoFile: null,
+
   showBiddingDetail(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
 
-    // UI steps: 看货报名 -> 现场看货 -> 竞价报名 -> 参加竞价 -> 竞价成功 -> 线下付款
-    // Generate current step based on status
-    let currentStep = 1;
-    if (b.status === 1) currentStep = 4; // 参加竞价
-    if (b.status === 3) currentStep = 6; // 已结束，线下付款完成/进行中
+    // UI steps: 看货报名(0) -> 现场看货(1) -> 参加竞价(2) -> 等待公布(3) -> 中标付款(4)
+    let currentStep = b.status + 1; // status maps to index 0-4
 
-    const steps = ['看货报名', '现场看货', '竞价报名', '参加竞价', '竞价成功', '线下付款'];
+    const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
     let stepsHtml = '<div class="steps-container">';
     steps.forEach((name, index) => {
       let stateClass = '';
-      if (index + 1 < currentStep) stateClass = 'done';
-      if (index + 1 === currentStep) stateClass = 'active';
+      if (index < b.status) stateClass = 'done';
+      else if (index === b.status) stateClass = 'active';
       stepsHtml += `
         <div class="step-item ${stateClass}">
-          <div class="step-circle">${stateClass === 'done' ? '✓' : (index + 1)}</div>
+          <div class="step-circle">${index < b.status ? '✓' : (index + 1)}</div>
           <div class="step-title">${name}</div>
         </div>
       `;
     });
     stepsHtml += '</div>';
 
+    // Build interactive action card
+    let actionCardHTML = '';
+    if (b.status === 0) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; box-sizing:border-box;">
+          <h4 style="margin:0 0 8px 0; color:#0f172a; font-weight:bold;">📋 看货报名：</h4>
+          <p style="margin:4px 0; font-size:12px; color:#64748b;">参与该大宗标的物拍卖前，您必须先在线报名，以获得线下看货及竞标资格。</p>
+          <button class="btn btn-primary" style="margin-top:12px; height:36px; border-radius:18px;" onclick="MallApp.signUpForBiddingInspection('${b.id}')">立即报名看货</button>
+        </div>
+      `;
+    } else if (b.status === 1) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; box-sizing:border-box;">
+          <h4 style="margin:0 0 8px 0; color:#0f172a; font-weight:bold;">📸 现场看货核验：</h4>
+          <p style="margin:4px 0; font-size:12px; color:#64748b;">为防范虚假交易，您必须亲临货物现场上传实勘自拍或场地照片证明以进行验真。</p>
+          <div style="margin-top:12px; position:relative; border:2px dashed #cbd5e1; border-radius:8px; padding:16px; text-align:center; cursor:pointer; background:#fff; transition:all 0.2s;" onmouseover="this.style.borderColor='#1677ff';this.style.background='#f0f7ff'" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#fff'" onclick="document.getElementById('bid-photo-picker').click()">
+            <div style="font-size:20px; margin-bottom:4px;">📁</div>
+            <div id="bid-photo-text" style="font-size:12px; color:#475569; font-weight:bold;">点击选择或拖拽上传现场照片 (PNG/JPG)</div>
+            <input type="file" id="bid-photo-picker" accept="image/*" style="display:none;" onchange="MallApp.handleBidPhotoSelected(this)">
+          </div>
+          <div id="bid-photo-card" style="display:none; align-items:center; justify-content:space-between; margin-top:10px; padding:8px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; font-size:12px; color:#15803d; box-sizing:border-box;">
+            <span id="bid-photo-name" style="font-weight:bold;"></span>
+            <span style="cursor:pointer; color:#ef4444; font-weight:bold;" onclick="event.stopPropagation(); MallApp.clearBidPhoto()">删除</span>
+          </div>
+          <button id="bid-photo-submit-btn" class="btn btn-primary" style="margin-top:12px; background:#cbd5e1; cursor:not-allowed; border:none; height:36px; border-radius:18px;" disabled onclick="MallApp.submitBidPhoto('${b.id}')">确认看货并进入下一步</button>
+        </div>
+      `;
+    } else if (b.status === 2) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; box-sizing:border-box;">
+          <h4 style="margin:0 0 8px 0; color:#0f172a; font-weight:bold;">⚖️ 录入竞出价：</h4>
+          <p style="margin:4px 0; font-size:12px; color:#64748b;">您已具备竞买资格，请输入您的正式竞拍价。</p>
+          <div style="margin-top:12px; display:flex; gap:10px;">
+            <input type="number" id="bid-price-input" placeholder="输入报价金额 (元)" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:14px; padding: 0 16px;" min="${parseFloat(b.startPrice.replace(/[^\d\.]/g, ''))}">
+            <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 24px;" onclick="MallApp.submitBidPrice('${b.id}')">提交报价</button>
+          </div>
+          <p style="margin:6px 0 0 0; font-size:11px; color:#94a3b8;">* 起拍价为 ${b.startPrice}，您的出价不能低于当前最高出价</p>
+        </div>
+      `;
+    } else if (b.status === 3) {
+      const myOffersForBid = MockData.biddingOffers.filter(o => o.bidId === b.id && o.buyerName === (this.currentBuyerName || '万通建材采购部'));
+      let myLastOfferHtml = '';
+      if (myOffersForBid.length > 0) {
+        myLastOfferHtml = `<p style="margin:4px 0; font-size:12px; color:#15803d;"><strong>您的已登记出价：</strong>${myOffersForBid[0].offerPrice}</p>`;
+      }
+      actionCardHTML = `
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px; box-sizing:border-box; color:#15803d;">
+          <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">🎉 等待商户定标公布中</h4>
+          ${myLastOfferHtml}
+          <p style="margin:4px 0 10px 0; font-size:11px; color:#64748b;">在商户最终选定中标人前，您依然可以追加报价：</p>
+          <div style="display:flex; gap:10px;">
+            <input type="number" id="bid-price-input" placeholder="输入追加报价 (元)" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:14px; padding: 0 16px;" min="${parseFloat(b.startPrice.replace(/[^\d\.]/g, ''))}">
+            <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 24px;" onclick="MallApp.submitBidPrice('${b.id}')">追加报价</button>
+          </div>
+          <p style="margin:6px 0 0 0; font-size:11px; color:#94a3b8;">* 追加出价必须高于当前最高价 ${b.currentMaxOffer}</p>
+        </div>
+      `;
+    } else if (b.status === 4) {
+      if (b.winner === (this.currentBuyerName || '万通建材采购部')) {
+        actionCardHTML = `
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px; color:#15803d; box-sizing:border-box;">
+            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">🏆 恭喜您中标该项目！</h4>
+            <p style="margin:0 0 12px 0; font-size:12px;">商户已选定您为最终买受人，成交金额：<strong style="color:#ef4444; font-size:14px;">${b.currentMaxOffer}</strong>。请立即前往“个人中心 - 我的订单”进行电子合同签署及打款付款履约流程。</p>
+            <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 20px;" onclick="UI.closeModal('modal-bidding-detail'); document.querySelector('.uc-menu-item[data-target=\\'uc-orders\\']').click();">去订单中心处理</button>
+          </div>
+        `;
+      } else {
+        actionCardHTML = `
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; color:#64748b; box-sizing:border-box;">
+            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">竞价已结束</h4>
+            <p style="margin:0; font-size:12px;">本次项目已结标。中标人：<strong>${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong></p>
+          </div>
+        `;
+      }
+    }
+
     const modalBody = document.getElementById('bidding-detail-body');
     if (modalBody) {
       modalBody.innerHTML = `
         <div class="flex gap-4 mb-4">
-          <img src="${b.image}" style="width: 300px; height: 200px; object-fit: cover; border-radius: 8px;">
-          <div>
+          <img src="${b.image}" style="width: 260px; height: 180px; object-fit: cover; border-radius: 8px; flex-shrink:0;">
+          <div style="flex:1;">
             <h2 class="text-xl font-bold mb-2">${b.title}</h2>
-            <p class="text-secondary mb-2">处置方: ${b.shopName} <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded ml-1">No.${b.shopId}</span></p>
-            <p class="text-secondary mb-2">起拍底价: <span class="text-danger font-bold text-xl">${b.startPrice}</span></p>
-            <p class="text-secondary mb-2">当前最高出价: <span class="text-danger font-bold text-xl">${b.currentMaxOffer}</span></p>
-            <p class="text-secondary mb-4">截止时间: ${b.bidEndTime}</p>
-            <button class="btn btn-primary" ${b.status !== 1 ? 'disabled' : ''} onclick="UI.toast('参与竞价操作，正在录入出价信息...', 'info')">
-              ${b.status === 1 ? '立即出价' : '不在竞价期'}
-            </button>
+            <p class="text-secondary mb-2" style="font-size:12px;">处置商家: <strong>${b.shopName}</strong> <span class="text-xs text-gray-400 bg-gray-100 px-1 rounded ml-1">No.${b.shopId}</span></p>
+            <p class="text-secondary mb-2" style="font-size:12px;">起拍底价: <span class="text-danger font-bold text-lg">${b.startPrice}</span></p>
+            <p class="text-secondary mb-2" style="font-size:12px;">当前最高出价: <span class="text-danger font-bold text-lg">${b.currentMaxOffer}</span></p>
+            <p class="text-secondary mb-4" style="font-size:12px;">截止时间: ${b.bidEndTime}</p>
           </div>
         </div>
-        <div class="mt-8 border-t pt-6">
-          <h3 class="font-bold mb-2">当前竞价流转节点</h3>
+        
+        ${actionCardHTML}
+
+        <div class="mt-6 border-t pt-4">
+          <h3 class="font-bold mb-3" style="font-size:14px; color:#0f172a;">当前竞价流转节点</h3>
           ${stepsHtml}
         </div>
       `;
@@ -636,7 +808,92 @@ const MallApp = {
     }
   },
 
-  openQuoteModal(name, expectedPrice) {
+  signUpForBiddingInspection(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    b.status = 1;
+    UI.toast('报名成功！已为您开启现场看货核验通道。', 'success');
+    this.showBiddingDetail(id);
+    this.renderBids();
+  },
+
+  handleBidPhotoSelected(input) {
+    const file = input.files[0];
+    if (!file) return;
+    this._bidPhotoFile = file;
+    document.getElementById('bid-photo-name').innerText = `📸 ${file.name}`;
+    document.getElementById('bid-photo-card').style.display = 'flex';
+    
+    const submitBtn = document.getElementById('bid-photo-submit-btn');
+    if (submitBtn) {
+      submitBtn.style.background = '#1677ff';
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.disabled = false;
+    }
+    UI.toast('现场照片选择成功，请点击提交！', 'success');
+  },
+
+  clearBidPhoto() {
+    this._bidPhotoFile = null;
+    document.getElementById('bid-photo-picker').value = '';
+    document.getElementById('bid-photo-card').style.display = 'none';
+    
+    const submitBtn = document.getElementById('bid-photo-submit-btn');
+    if (submitBtn) {
+      submitBtn.style.background = '#cbd5e1';
+      submitBtn.style.cursor = 'not-allowed';
+      submitBtn.disabled = true;
+    }
+  },
+
+  submitBidPhoto(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    b.status = 2;
+    UI.toast('现场实勘自拍验真通过！竞价出价通道已开启。', 'success');
+    this.showBiddingDetail(id);
+    this.renderBids();
+  },
+
+  submitBidPrice(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    
+    const inputEl = document.getElementById('bid-price-input');
+    if (!inputEl) return;
+    
+    const offerPriceVal = parseFloat(inputEl.value);
+    const startPriceVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, ''));
+    const maxOfferVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
+    const minRequired = Math.max(startPriceVal, maxOfferVal);
+
+    if (isNaN(offerPriceVal) || offerPriceVal <= minRequired) {
+      UI.toast(`出价必须高于当前最高价 (当前最小出价要求: ¥${minRequired.toLocaleString()})`, 'error');
+      return;
+    }
+
+    const offerPriceStr = '¥' + offerPriceVal.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+    
+    MockData.biddingOffers.unshift({
+      id: 'OFR' + Math.floor(1000 + Math.random() * 9000),
+      bidId: id,
+      buyerName: this.currentBuyerName || '万通建材采购部',
+      offerPrice: offerPriceStr,
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0
+    });
+
+    b.currentMaxOffer = offerPriceStr;
+    b.status = 3;
+
+    UI.toast(`出价成功！金额 ${offerPriceStr} 已登记，请等待公布结果。`, 'success');
+    this.showBiddingDetail(id);
+    this.renderBids();
+    this.renderUCBids();
+  },
+
+  openQuoteModal(demandId, name, expectedPrice) {
+    this.currentQuoteDemandId = demandId;
     const titleEl = document.getElementById('quote-prod-name');
     const expectedEl = document.getElementById('quote-prod-expected');
     if (titleEl) titleEl.innerText = name;
@@ -648,6 +905,53 @@ const MallApp = {
     document.getElementById('quote-notes').value = '';
 
     UI.openModal('modal-quote');
+  },
+
+  submitQuote() {
+    const priceVal = document.getElementById('quote-price').value.trim();
+    const qtyVal = document.getElementById('quote-qty').value.trim();
+    const notesVal = document.getElementById('quote-notes').value.trim();
+
+    if (!priceVal || !qtyVal) {
+      UI.toast('请填写报价单价与可供货数量！', 'error');
+      return;
+    }
+
+    const priceFormatted = priceVal.startsWith('¥') ? priceVal : '¥' + priceVal;
+
+    // Add to MockData.demandQuotes
+    const newQuote = {
+      id: 'QT' + (MockData.demandQuotes.length + 1).toString().padStart(3, '0'),
+      demandId: this.currentQuoteDemandId,
+      shopId: 'S001',
+      shopName: '万通建材 (报价主体)',
+      price: priceFormatted + '/' + (priceVal.includes('吨') ? '吨' : priceVal.includes('立方') ? '立方' : '单位'),
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0,
+      quoterName: this.currentBuyerName || '万通建材采购部'
+    };
+
+    MockData.demandQuotes.push(newQuote);
+    UI.toast('报价提交成功！等待采购商联系。', 'success');
+    UI.closeModal('modal-quote');
+    this.renderDemands();
+  },
+
+  editMyQuote(quoteId) {
+    const q = MockData.demandQuotes.find(x => x.id === quoteId);
+    if (!q) return;
+
+    const newPrice = prompt('请输入新的报价（例如 ¥4,100.00/吨）：', q.price);
+    if (newPrice === null) return; // user cancelled
+    const trimmed = newPrice.trim();
+    if (!trimmed) {
+      UI.toast('报价不能为空！', 'error');
+      return;
+    }
+
+    q.price = trimmed;
+    UI.toast('报价修改成功！', 'success');
+    this.renderDemands();
   },
 
   toggleChatForm(type) {
@@ -772,24 +1076,25 @@ const MallApp = {
                   <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 4) {
         statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591;">待付款</span>`;
-        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('已触发线下公对公汇款流程', 'info')">确认付款</button>
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.renderUCOrders())">确认付款</button>
                   <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 5) {
         statusTag = `<span class="tag tag-warning" style="background:#fff0f6; color:#c41d7f; border:1px solid #ffd6e7;">待卖家签约</span>`;
-        actBtn = `<span class="text-secondary text-sm">等待卖家盖章</span>
-                  <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
+        actBtn = `<button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 1) {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
-        actBtn = `<span class="text-secondary text-sm">等待卖家发货</span>`;
+        actBtn = '';
       } else if (o.status === 2) {
         statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">待签收</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.toast('已确认收货，订单完成', 'success')">确认收货</button>`;
       } else if (o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
-        actBtn = `<span class="text-secondary text-sm">已完成</span>`;
+        actBtn = !o.invoiceApplied 
+          ? `<button class="btn btn-primary btn-sm" onclick="MallApp.applyInvoice('${o.id}')">申请发票</button>`
+          : '';
       } else if (o.status === -1) {
         statusTag = `<span class="tag tag-danger">已关闭</span>`;
-        actBtn = `<span class="text-secondary text-sm">已取消</span>`;
+        actBtn = '';
       }
       html += `
         <tr>
@@ -814,9 +1119,13 @@ const MallApp = {
   },
 
   signContract(orderId) {
-    if (confirm('系统将模拟调用 CA 电子签章接口签署合同，是否继续？')) {
-      UI.toast(`订单 ${orderId} 合同签署成功，等待商家发货`, 'success');
-    }
+    UI.showContractSigningModal(orderId, false, () => this.renderUCOrders());
+  },
+
+  applyInvoice(orderId) {
+    UI.showInvoiceModal(orderId, () => {
+      this.renderUCOrders();
+    });
   },
 
   renderUCInvoices() {
@@ -836,50 +1145,157 @@ const MallApp = {
     if (tbody) tbody.innerHTML = html;
   },
 
-  renderUCDemandsPub() {
-    const tbody = document.querySelector('#table-uc-demands-pub tbody');
+  _msgTab: 'spot',
+
+  switchMsgTab(tab) {
+    this._msgTab = tab;
+    const btnSpot = document.getElementById('btn-msg-tab-spot');
+    const btnDemand = document.getElementById('btn-msg-tab-demand');
+    if (tab === 'spot') {
+      btnSpot?.classList.remove('btn-outline');
+      btnSpot?.classList.add('btn-primary');
+      btnDemand?.classList.remove('btn-primary');
+      btnDemand?.classList.add('btn-outline');
+    } else {
+      btnDemand?.classList.remove('btn-outline');
+      btnDemand?.classList.add('btn-primary');
+      btnSpot?.classList.remove('btn-primary');
+      btnSpot?.classList.add('btn-outline');
+    }
+    this.renderUCMessages();
+  },
+
+  renderUCMessages() {
+    const list = document.getElementById('uc-messages-list');
+    if (!list) return;
+
     let html = '';
-    MockData.demands.filter(d => d.buyerName === this.currentBuyerName).forEach(d => {
-      let actBtn = d.status === 1
-        ? `<button class="btn btn-text btn-sm text-primary">编辑</button> <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已关闭该求购单', 'info')">关闭</button>`
-        : `<span class="text-secondary text-sm">不可操作</span>`;
+    if (this._msgTab === 'spot') {
+      const mockChats = [
+        {
+          shopName: '特钢新材料厂直营店',
+          prodTitle: 'HRB400E 螺纹钢 12mm',
+          prodPrice: '¥3,950.00/吨',
+          time: '10:35'
+        },
+        {
+          shopName: '中铁物流建材城',
+          prodTitle: 'Q345B 槽钢 10#',
+          prodPrice: '¥4,150.00/吨',
+          time: '昨天'
+        },
+        {
+          shopName: '宏源工程管业制造',
+          prodTitle: '大宗工程镀锌管 100mm',
+          prodPrice: '¥4,280.00/吨',
+          time: '前天'
+        }
+      ];
+
+      mockChats.forEach(chat => {
+        html += `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; width:100%; box-sizing:border-box;">
+            <div style="flex:1;">
+              <div style="font-weight:bold; color:#1e293b; font-size:14px; display:flex; justify-content:space-between; width:100%;">
+                <span>${chat.shopName}</span>
+                <span style="font-weight:normal; font-size:11px; color:#94a3b8;">${chat.time}</span>
+              </div>
+              <div style="font-size:12px; color:#64748b; margin-top:6px; background:#fff; padding:6px 10px; border-radius:4px; border:1px solid #f1f5f9; display:inline-block;">
+                📦 现货沟通: ${chat.prodTitle} | <span class="text-danger font-bold">${chat.prodPrice}</span>
+              </div>
+            </div>
+            <div style="margin-left:16px;">
+              <button class="btn btn-primary btn-sm" onclick="UI.chatWithQuoteSeller('${chat.shopName}', 'S001', '${chat.prodTitle.replace(/'/g, "\\'")}', '${chat.prodPrice}')">💬 进入沟通</button>
+            </div>
+          </div>
+        `;
+      });
+    } else {
+      const mockChats = [
+        {
+          shopName: '远大钢铁官方直营店',
+          prodTitle: '急求 50吨 Q345B 槽钢，交期7天内',
+          prodPrice: '¥4,150.00/吨',
+          time: '12:00'
+        },
+        {
+          shopName: '海螺水泥华东总代',
+          prodTitle: '采购 P.O 42.5 散装水泥 500吨 需送达杭州工地',
+          prodPrice: '¥298.00/吨',
+          time: '昨天'
+        }
+      ];
+
+      mockChats.forEach(chat => {
+        html += `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; width:100%; box-sizing:border-box;">
+            <div style="flex:1;">
+              <div style="font-weight:bold; color:#1e293b; font-size:14px; display:flex; justify-content:space-between; width:100%;">
+                <span>${chat.shopName}</span>
+                <span style="font-weight:normal; font-size:11px; color:#94a3b8;">${chat.time}</span>
+              </div>
+              <div style="font-size:12px; color:#64748b; margin-top:6px; background:#fff; padding:6px 10px; border-radius:4px; border:1px solid #f1f5f9; display:inline-block;">
+                📢 求购沟通: ${chat.prodTitle} | 商家报价: <span class="text-danger font-bold">${chat.prodPrice}</span>
+              </div>
+            </div>
+            <div style="margin-left:16px;">
+              <button class="btn btn-primary btn-sm" onclick="UI.chatWithQuoteSeller('${chat.shopName}', 'S001', '${chat.prodTitle.replace(/'/g, "\\'")}', '${chat.prodPrice}')">💬 进入沟通</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    list.innerHTML = html;
+  },
+
+  renderUCBids() {
+    const tbody = document.querySelector('#table-uc-bids tbody');
+    if (!tbody) return;
+
+    // Filter announcements where current buyer bidded (i.e. has offers in biddingOffers)
+    const myOffers = MockData.biddingOffers.filter(o => o.buyerName === (this.currentBuyerName || '万通建材采购部'));
+    const uniqueBidIds = [...new Set(myOffers.map(o => o.bidId))];
+
+    if (uniqueBidIds.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-8">您尚未参与任何竞拍项目，快去竞价大厅参与吧</td></tr>`;
+      return;
+    }
+
+    let html = '';
+    uniqueBidIds.forEach(bidId => {
+      const b = MockData.biddingAnnouncements.find(x => x.id === bidId);
+      if (!b) return;
+
+      // Find my highest offer for this bid
+      const myOffersForBid = myOffers.filter(o => o.bidId === bidId);
+      const myMaxOfferVal = Math.max(...myOffersForBid.map(o => parseFloat(o.offerPrice.replace(/[^\d\.]/g, '')) || 0));
+      const myMaxOfferStr = '¥' + myMaxOfferVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+
+      let tag = '';
+      if (b.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+      else if (b.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+      else if (b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+      else if (b.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+      else if (b.status === 4) tag = b.winner === (this.currentBuyerName || '万通建材采购部')
+        ? `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f; font-weight:bold;">🏆 中标</span>`
+        : `<span class="tag tag-secondary">未中标</span>`;
+
+      let actBtn = `<button class="btn btn-text btn-sm text-primary" onclick="MallApp.showBiddingDetail('${b.id}')">查看详情</button>`;
+
       html += `
         <tr>
-          <td>${d.id}</td>
-          <td>${d.title}</td>
-          <td>${d.publishTime}</td>
-          <td><span class="text-primary font-bold">${d.quotesCount}</span> 份报价</td>
-          <td>${d.status === 1 ? '<span class="tag tag-success">寻源中</span>' : '<span class="tag tag-secondary">已关闭</span>'}</td>
+          <td>${b.id}</td>
+          <td class="font-bold">${b.title}</td>
+          <td class="text-secondary">${b.startPrice}</td>
+          <td class="text-danger font-bold">${b.currentMaxOffer}</td>
+          <td style="color:#ef4444; font-family:monospace; font-weight:bold;">${myMaxOfferStr}</td>
+          <td>${tag}</td>
           <td>${actBtn}</td>
         </tr>
       `;
     });
-    if (tbody) tbody.innerHTML = html;
-  },
 
-  renderUCDemandsJoin() {
-    const tbody = document.querySelector('#table-uc-demands-join tbody');
-    if (!tbody) return;
-    tbody.innerHTML = `
-      <tr>
-        <td>REQ002</td>
-        <td>寻优质防腐木供应商，年框采购量约5000立方</td>
-        <td>星辉建筑公司</td>
-        <td class="font-bold text-danger">¥320/立方</td>
-        <td><span class="tag tag-warning">评估中</span></td>
-        <td>
-          <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已撤回您的参与报价意向', 'info'); MallApp.renderUCDemandsJoin()">撤回报价</button>
-        </td>
-      </tr>
-      <tr>
-        <td>REQ004</td>
-        <td>采购 P.O 42.5 散装水泥 500吨 需送达杭州工地</td>
-        <td>万通建材采购部</td>
-        <td class="font-bold text-danger">¥290/吨</td>
-        <td><span class="tag tag-success">已中标</span></td>
-        <td><span class="text-secondary text-sm">已生成订单</span></td>
-      </tr>
-    `;
+    tbody.innerHTML = html;
   },
 
   renderUCMessages() {
@@ -899,77 +1315,123 @@ const MallApp = {
 
   // === 7. 购物车 ===
   renderCart() {
-    const tbody = document.querySelector('#mall-cart tbody');
-    if (!tbody || !MockData.cart) return;
+    const container = document.getElementById('cart-grouped-container');
+    if (!container || !MockData.cart) return;
 
     if (MockData.cart.length === 0) {
-      tbody.innerHTML = `
-        <tr><td colspan="5" class="text-center py-12">
+      container.innerHTML = `
+        <div class="text-center py-12">
           <div class="text-secondary mb-4">购物车空空如也，快去挑点好货吧！</div>
           <button class="btn btn-primary" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-spot\\']').click()">去逛逛</button>
-        </td></tr>
+        </div>
       `;
-      // hide summary footer if exists
       const footer = document.getElementById('cart-summary-footer');
       if (footer) footer.style.display = 'none';
       return;
     }
+
+    // Group items by shopId
+    const grouped = {};
+    MockData.cart.forEach(item => {
+      const shopId = item.shopId || 'unknown';
+      if (!grouped[shopId]) {
+        grouped[shopId] = {
+          shopName: item.shopName || '其他店铺',
+          items: []
+        };
+      }
+      grouped[shopId].items.push(item);
+    });
 
     let html = '';
     let totalAmount = 0;
     let selectedCount = 0;
     let invalidCount = 0;
 
-    MockData.cart.forEach(item => {
-      if (item.status === 0) {
-        invalidCount++;
-        html += `
-          <tr style="background: #fafafa; color: #999;">
-            <td>
-              <div class="flex items-center gap-2">
-                <span class="tag tag-secondary">失效</span>
-                <span>${item.name} <span class="text-xs ml-2">(店内: ${item.shopName})</span></span>
-              </div>
-            </td>
-            <td>¥${item.price}</td>
-            <td>${item.quantity}</td>
-            <td>-</td>
-            <td><button class="btn btn-text btn-sm text-danger" onclick="MallApp.removeCartItem('${item.id}')">删除</button></td>
-          </tr>
-        `;
-      } else {
-        if (item.checked) {
-          totalAmount += item.price * item.quantity;
-          selectedCount += item.quantity;
-        }
+    Object.keys(grouped).forEach(shopId => {
+      const group = grouped[shopId];
+      const shopName = group.shopName;
+      const shopItems = group.items;
 
-        html += `
-          <tr>
-            <td>
-              <div class="flex items-center gap-2">
-                <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="MallApp.toggleCartItem('${item.id}', this.checked)">
-                <span class="font-bold">${item.name}</span>
-                <span class="text-xs text-secondary">(店内: <span class="hover:text-primary cursor-pointer" onclick="MallApp.goToShop('${item.shopId}', '${item.shopName}')">${item.shopName}</span>)</span>
-              </div>
-            </td>
-            <td><span class="text-danger font-bold">¥${item.price}</span></td>
-            <td>
-              <div class="flex gap-2">
-                <button class="btn btn-sm" onclick="MallApp.updateCartQty('${item.id}', -1)">-</button>
-                <input type="number" class="form-control" style="width:60px; text-align:center; padding:0" value="${item.quantity}" onchange="MallApp.setCartQty('${item.id}', this.value)">
-                <button class="btn btn-sm" onclick="MallApp.updateCartQty('${item.id}', 1)">+</button>
-              </div>
-            </td>
-            <td><span class="text-danger font-bold">¥${item.price * item.quantity}</span></td>
-            <td><button class="btn btn-text btn-sm text-danger" onclick="MallApp.removeCartItem('${item.id}')">删除</button></td>
-          </tr>
-        `;
-      }
+      const activeShopItems = shopItems.filter(i => i.status === 1);
+      const allShopChecked = activeShopItems.length > 0 && activeShopItems.every(i => i.checked);
+
+      let shopRowsHtml = '';
+      shopItems.forEach(item => {
+        if (item.status === 0) {
+          invalidCount++;
+          shopRowsHtml += `
+            <tr style="background: #fafafa; color: #999;">
+              <td style="padding:12px 16px;">
+                <div class="flex items-center gap-2">
+                  <span class="tag tag-secondary" style="font-size:10px; padding:2px 6px;">失效</span>
+                  <span>${item.name}</span>
+                </div>
+              </td>
+              <td style="padding:12px 16px;">¥${item.price}</td>
+              <td style="padding:12px 16px;">${item.quantity}</td>
+              <td style="padding:12px 16px;">-</td>
+              <td style="padding:12px 16px;"><button class="btn btn-text btn-sm text-danger" onclick="MallApp.removeCartItem('${item.id}')">删除</button></td>
+            </tr>
+          `;
+        } else {
+          if (item.checked) {
+            totalAmount += item.price * item.quantity;
+            selectedCount += item.quantity;
+          }
+
+          shopRowsHtml += `
+            <tr>
+              <td style="padding:12px 16px;">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="MallApp.toggleCartItem('${item.id}', this.checked)" style="width:16px; height:16px; cursor:pointer;">
+                  <span class="font-bold text-slate-800">${item.name}</span>
+                </div>
+              </td>
+              <td style="padding:12px 16px;"><span class="text-danger font-bold">¥${item.price}</span></td>
+              <td style="padding:12px 16px;">
+                <div class="flex gap-2 items-center">
+                  <button class="btn btn-outline" style="width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:4px;" onclick="MallApp.updateCartQty('${item.id}', -1)">-</button>
+                  <input type="number" class="form-control" style="width:50px; text-align:center; padding:2px; height:28px;" value="${item.quantity}" onchange="MallApp.setCartQty('${item.id}', this.value)">
+                  <button class="btn btn-outline" style="width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:4px;" onclick="MallApp.updateCartQty('${item.id}', 1)">+</button>
+                </div>
+              </td>
+              <td style="padding:12px 16px;"><span class="text-danger font-bold">¥${(item.price * item.quantity).toLocaleString()}</span></td>
+              <td style="padding:12px 16px;"><button class="btn btn-text btn-sm text-danger" onclick="MallApp.removeCartItem('${item.id}')">删除</button></td>
+            </tr>
+          `;
+        }
+      });
+
+      html += `
+        <div class="cart-shop-section mb-6" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+          <div style="background: #f8fafc; padding: 12px 16px; font-weight: bold; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; color: #1e293b;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" ${allShopChecked ? 'checked' : ''} onchange="MallApp.toggleShopCart('${shopId}', this.checked)" style="width:16px; height:16px; cursor:pointer;">
+              <span style="font-size:14px; font-weight:800;">🏪 ${shopName}</span>
+            </div>
+            <button class="btn btn-text btn-sm" onclick="MallApp.goToShop('${shopId}', '${shopName}')">进店逛逛 &gt;</button>
+          </div>
+          <table class="table" style="margin: 0; width: 100%; border-collapse: collapse;">
+            <thead style="background:#fafafa; border-bottom:1px solid #f0f0f0;">
+              <tr>
+                <th style="padding:10px 16px; text-align:left; font-size:12px; color:#64748b;">商品信息</th>
+                <th style="padding:10px 16px; text-align:left; font-size:12px; color:#64748b;">单价</th>
+                <th style="padding:10px 16px; text-align:left; font-size:12px; color:#64748b;">数量</th>
+                <th style="padding:10px 16px; text-align:left; font-size:12px; color:#64748b;">小计</th>
+                <th style="padding:10px 16px; text-align:left; font-size:12px; color:#64748b;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${shopRowsHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
     });
 
-    tbody.innerHTML = html;
+    container.innerHTML = html;
 
-    // Render summary footer
     let footer = document.getElementById('cart-summary-footer');
     if (!footer) {
       footer = document.createElement('div');
@@ -977,31 +1439,40 @@ const MallApp = {
       footer.className = 'mt-4 p-4 flex justify-between items-center shadow-sm';
       footer.style.background = '#fff';
       footer.style.borderRadius = '8px';
+      footer.style.border = '1px solid #e2e8f0';
       document.querySelector('#mall-cart .table-wrapper').appendChild(footer);
     }
     footer.style.display = 'flex';
     footer.innerHTML = `
       <div class="flex items-center gap-4">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="cart-check-all" onchange="MallApp.toggleAllCart(this.checked)"> 全选
+        <label class="flex items-center gap-2 cursor-pointer" style="font-size:13px; font-weight:bold; color:#475569;">
+          <input type="checkbox" id="cart-check-all" onchange="MallApp.toggleAllCart(this.checked)" style="width:16px; height:16px; cursor:pointer;"> 全选
         </label>
         ${invalidCount > 0 ? `<span class="text-sm text-secondary">(${invalidCount}件失效商品已过滤)</span>` : ''}
       </div>
       <div class="flex items-center gap-4">
-        <div>已选 <span class="text-primary font-bold px-1">${selectedCount}</span> 件商品，总计: <span class="text-danger text-2xl font-bold">¥${totalAmount}</span></div>
-        <button class="btn btn-primary" style="height: 40px; padding: 0 32px;" ${selectedCount === 0 ? 'disabled' : ''} onclick="UI.toast('去结算功能开发中', 'info')">去结算</button>
+        <div style="font-size:13px; color:#475569;">已选 <span class="text-primary font-bold px-1" style="font-size:16px;">${selectedCount}</span> 件商品，总计: <span class="text-danger text-2xl font-bold" style="font-family:monospace; font-size:22px; font-weight:900;">¥${totalAmount.toLocaleString()}</span></div>
+        <button class="btn btn-primary" style="height: 40px; padding: 0 32px; border-radius:20px; font-weight:bold;" ${selectedCount === 0 ? 'disabled' : ''} onclick="MallApp.checkoutCart()">生成订单</button>
       </div>
     `;
 
-    // Check if all active items are checked to sync the "check all" checkbox
     const allActive = MockData.cart.filter(c => c.status === 1);
     const allChecked = allActive.length > 0 && allActive.every(c => c.checked);
     const chkAll = document.getElementById('cart-check-all');
     if (chkAll) chkAll.checked = allChecked;
   },
 
+  toggleShopCart(shopId, checked) {
+    MockData.cart.forEach(item => {
+      if (item.shopId === shopId && item.status === 1) {
+        item.checked = checked;
+      }
+    });
+    this.renderCart();
+  },
+
   toggleCartItem(id, checked) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) item.checked = checked;
     this.renderCart();
   },
@@ -1014,7 +1485,7 @@ const MallApp = {
   },
 
   updateCartQty(id, delta) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) {
       const newQty = item.quantity + delta;
       if (newQty > 0) {
@@ -1025,7 +1496,7 @@ const MallApp = {
   },
 
   setCartQty(id, value) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) {
       const newQty = parseInt(value, 10);
       if (!isNaN(newQty) && newQty > 0) {
@@ -1037,10 +1508,70 @@ const MallApp = {
 
   removeCartItem(id) {
     if (confirm('确认将该商品从购物车中移除吗？')) {
-      MockData.cart = MockData.cart.filter(c => c.id !== id);
+      MockData.cart = MockData.cart.filter(c => c.id != id);
       this.renderCart();
       UI.toast('已移除', 'success');
     }
+  },
+
+  checkoutCart() {
+    const selectedItems = MockData.cart.filter(item => item.status === 1 && item.checked);
+    if (selectedItems.length === 0) {
+      UI.toast('请先勾选需要结算的商品', 'warning');
+      return;
+    }
+
+    // 校验是否是同一个商家
+    const shopIds = [...new Set(selectedItems.map(item => item.shopId))];
+    if (shopIds.length > 1) {
+      alert('⚠️ 大宗商品交易不支持跨商户合并结算！\n\n请只勾选同一家店铺的商品后再进行结算。');
+      return;
+    }
+
+    const firstItem = selectedItems[0];
+    const totalAmount = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const orderId = 'ORD' + Date.now().toString().substring(5);
+
+    // 构建商品名称串 (支持同商家多个货品显示)
+    const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
+
+    const newOrder = {
+      id: orderId,
+      shopId: firstItem.shopId,
+      shopName: firstItem.shopName,
+      buyerName: this.currentBuyerName || '万通建材采购部',
+      productName: productNamesStr,
+      amount: amountStr,
+      status: 0, // 待买家签约
+      type: '现货交易',
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      products: selectedItems.map(item => ({
+        name: item.productName || item.name,
+        price: item.price,
+        quantity: item.quantity,
+        amount: item.price * item.quantity
+      }))
+    };
+
+    // 将新订单加入 MockData.orders 最前
+    MockData.orders.unshift(newOrder);
+
+    // 清理购物车中被选中的商品
+    MockData.cart = MockData.cart.filter(item => !item.checked);
+
+    // 更新角标及重新渲染购物车
+    this.renderCart();
+    const badge = document.querySelector('.mall-header .tag-danger');
+    if (badge) {
+      badge.innerText = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    UI.toast(`订单 ${orderId} 提交成功！已自动合并同商家商品。`, 'success');
+    
+    // 跳转到订单管理页面
+    this.renderUCOrders();
+    document.querySelector('.uc-menu-item[data-target="uc-orders"]').click();
   }
 };
 

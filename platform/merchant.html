@@ -370,10 +370,9 @@
               <option value="3">已完结</option>
             </select>
             <select id="filter-order-type" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部订单来源</option>
+              <option value="">全部交易类型</option>
               <option value="现货交易">现货交易</option>
               <option value="竞价交易">竞价交易</option>
-              <option value="求购转单">求购转单</option>
             </select>
             <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#555;">
               <span>下单日期:</span>
@@ -437,10 +436,10 @@
             </select>
             <button class="btn btn-primary" onclick="MerchantApp.renderBiddingAnn()">查询</button>
             <button class="btn btn-outline" onclick="document.getElementById('filter-ann-kw').value=''; document.getElementById('filter-ann-status').value=''; MerchantApp.renderBiddingAnn();">重置</button>
-            <button class="btn btn-primary" style="margin-left:auto;" onclick="UI.showModal('modal-add-ann')">关联资源发布公告</button>
+            <button class="btn btn-primary" style="margin-left:auto;" onclick="MerchantApp.openAddAnnModal()">关联资源发布公告</button>
           </div>
           <table class="table" id="table-merchant-ann">
-            <thead><tr><th>公告编号</th><th>公告标题</th><th>关联资源</th><th>起拍底价</th><th>竞价倒计时</th><th>当前状态</th><th>操作</th></tr></thead>
+            <thead><tr><th>公告编号</th><th>公告标题</th><th>关联资源</th><th>起拍底价</th><th>竞价倒计时</th><th>当前状态</th><th>审核状态</th><th>操作</th></tr></thead>
             <tbody><!-- JS渲染 --></tbody>
           </table>
         </div>
@@ -483,28 +482,36 @@
 <div class="modal-overlay" id="modal-add-ann">
   <div class="modal" style="width: 500px;">
     <div class="modal-header">
-      <div class="modal-title">关联资源发布竞价公告</div>
+      <div class="modal-title" id="add-ann-modal-title">关联资源发布竞价公告</div>
       <button class="modal-close" data-close-modal="modal-add-ann">&times;</button>
     </div>
     <div class="modal-body">
       <div class="form-group mb-4">
-        <label class="form-label font-bold">选择已审核通过的资源</label>
-        <select class="form-control" style="width:100%">
-          <option>RES001 - 报废钢材处理竞标一批</option>
-          <option>RES003 - 南美白橡木 20个柜原木</option>
+        <label class="form-label font-bold" style="display:block; margin-bottom:6px;">选择已审核通过的资源 *</label>
+        <select id="add-ann-resource-select" class="form-control" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;" onchange="MerchantApp.onAnnResourceChanged(this)">
+          <!-- JS 动态渲染 -->
         </select>
       </div>
       <div class="form-group mb-4">
-        <label class="form-label font-bold">起拍底价 (元)</label>
-        <input type="number" class="form-control" placeholder="设置最低起拍价" style="width:100%">
+        <label class="form-label font-bold" style="display:block; margin-bottom:6px;">竞价公告标题 *</label>
+        <input type="text" id="add-ann-title" class="form-control" placeholder="请输入公告标题" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
       </div>
       <div class="form-group mb-4">
-        <label class="form-label font-bold">竞拍截止时间</label>
-        <input type="datetime-local" class="form-control" style="width:100%">
+        <label class="form-label font-bold" style="display:block; margin-bottom:6px;">起拍底价 (元) *</label>
+        <input type="number" id="add-ann-start-price" class="form-control" placeholder="设置最低起拍价" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold" style="display:block; margin-bottom:6px;">看货报名截止时间 *</label>
+        <input type="datetime-local" id="add-ann-view-end" class="form-control" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label font-bold" style="display:block; margin-bottom:6px;">竞拍截止时间 *</label>
+        <input type="datetime-local" id="add-ann-bid-end" class="form-control" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" onclick="UI.closeModal('modal-add-ann'); UI.toast('公告发布成功，已开始倒计时', 'success')">发布公告</button>
+    <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-outline" style="border-radius:6px;" onclick="UI.closeModal('modal-add-ann')">取消</button>
+      <button class="btn btn-primary" style="border-radius:6px;" onclick="MerchantApp.submitBiddingAnnouncement()">发布公告</button>
     </div>
   </div>
 </div>

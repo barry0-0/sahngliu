@@ -534,12 +534,21 @@ const AdminApp = {
     const tbody = document.querySelector('#table-orders tbody');
     let html = '';
     MockData.orders.forEach(o => {
-      let statusText = ['待签约', '待发货', '待签收', '已完成'][o.status] || '已关闭';
-      let statusTag = o.status === -1 ? `<span class="tag tag-danger">已关闭</span>` : `<span class="tag tag-primary">${statusText}</span>`;
+      let statusText = '';
+      let statusColor = '';
+      if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
+      else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
+      else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
+      else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
+      else if (o.status === 2) { statusText = '待签收'; statusColor = '#0958d9'; }
+      else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
+      else if (o.status === -1) { statusText = '已关闭'; statusColor = '#ff4d4f'; }
+      
+      let statusTag = `<span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">${statusText}</span>`;
       
       let closeBtn = o.status !== -1 
         ? `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.closeOrder('${o.id}')">关闭(并退款)</button>` 
-        : `<span class="text-secondary text-sm">退款原因: ${o.closeReason}</span>`;
+        : '';
 
       html += `
         <tr>
@@ -564,7 +573,12 @@ const AdminApp = {
   },
 
   closeOrder(orderId) {
+    const o = MockData.orders.find(item => item.id === orderId);
+    if (!o) return;
     if (confirm("系统不直接涉及线上资金池，是否确认关闭此订单并线下联系双方进行退款处理？")) {
+      o.status = -1;
+      o.closeReason = '运营端人工强制关闭';
+      this.renderOrders();
       UI.toast(`订单 ${orderId} 已强行关闭，并标记为需要线下退款。`, 'success');
     }
   },
@@ -618,9 +632,41 @@ const AdminApp = {
     if (annBody) {
       let annHtml = '';
       MockData.biddingAnnouncements.forEach(a => {
-        let tag = a.status === 1 ? `<span class="tag tag-success">竞价中</span>` : (a.status === 0 ? `<span class="tag tag-warning">未开始</span>` : `<span class="tag tag-secondary">已结束</span>`);
-        let btn = `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('正在打开公告大纲查看页面', 'info')">查看大纲</button>`;
-        if (a.status === 0 || a.status === 1) btn += `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已下架该竞价项目', 'info')">强行下架</button>`;
+        let tag = '';
+        if (a.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+        else if (a.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+        else if (a.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+        else if (a.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+        else if (a.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
+
+        let auditTag = '';
+        const aStatus = a.auditStatus || '已通过';
+        if (aStatus === '待审核') {
+          auditTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
+        } else if (aStatus === '已通过') {
+          auditTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已通过</span>`;
+        } else if (aStatus === '已拒绝') {
+          auditTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border-color:#ffccc7;">已拒绝</span>`;
+        } else if (aStatus === '已撤回') {
+          auditTag = `<span class="tag tag-secondary">已撤回</span>`;
+        }
+
+        let btn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.showBiddingDetail('${a.id}')">查看详情</button>`;
+        
+        if (aStatus === '待审核') {
+          btn += `<button class="btn btn-text btn-sm text-success" onclick="AdminApp.approveBiddingAnn('${a.id}')">通过</button>`;
+          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.rejectBiddingAnn('${a.id}')">拒绝</button>`;
+        }
+        
+        if (aStatus === '待审核' || aStatus === '已拒绝') {
+          btn += `<button class="btn btn-text btn-sm text-warning" onclick="AdminApp.openEditBiddingAnnModal('${a.id}')">编辑</button>`;
+          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.deleteBiddingAnn('${a.id}')">删除</button>`;
+        }
+        
+        if (aStatus === '已通过' && a.status !== 4) {
+          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.forceOfflineBiddingAnn('${a.id}')">下架</button>`;
+        }
+
         annHtml += `
           <tr>
             <td>${a.id}</td>
@@ -628,6 +674,7 @@ const AdminApp = {
             <td>${a.title}</td>
             <td>${a.resId}</td>
             <td>${tag}</td>
+            <td>${auditTag}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
@@ -635,6 +682,104 @@ const AdminApp = {
       annBody.innerHTML = annHtml;
       this._appendPagination(annBody, MockData.biddingAnnouncements.length);
     }
+  },
+
+  showBiddingDetail(id) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!a) return;
+
+    const offers = MockData.biddingOffers.filter(o => o.bidId === id);
+    // Sort offers desc by price
+    const sortedOffers = [...offers].sort((x, y) => {
+      const px = parseFloat(x.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+      const py = parseFloat(y.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+      return py - px;
+    });
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
+
+    let offersHtml = '';
+    if (sortedOffers.length === 0) {
+      offersHtml = `<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:20px 0;">暂无出价记录</td></tr>`;
+    } else {
+      sortedOffers.forEach((o, index) => {
+        let isWinnerTag = a.winner === o.buyerName ? '<span class="tag tag-success" style="font-size:10px; margin-left:4px;">中标签订</span>' : '';
+        offersHtml += `
+          <tr style="${index === 0 ? 'background:#fff9f0;' : ''}">
+            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; font-weight:${index === 0 ? 'bold' : 'normal'};">
+              ${o.buyerName} ${isWinnerTag}
+            </td>
+            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#ef4444; font-family:monospace; font-weight:bold;">
+              ${o.offerPrice}
+            </td>
+            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#64748b; font-size:11px;">
+              ${o.time}
+            </td>
+            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9;">
+              <span class="tag ${index === 0 ? 'tag-primary' : 'tag-secondary'}" style="font-size:10px;">
+                ${index === 0 ? '最高报价' : '参与报价'}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    modal.innerHTML = `
+      <div class="modal-content" style="width:620px; background:#ffffff; border-radius:16px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:85vh; overflow:hidden; animation: popIn 0.3s ease-out; box-sizing:border-box;">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #f1f5f9; flex-shrink:0;">
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#1e293b;">📋 竞价单流转详情 (运营监督)</h3>
+            <div style="width:32px; height:3px; background:#1677ff; border-radius:2px; margin-top:4px;"></div>
+          </div>
+          <button style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+
+        <div style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:16px; font-size:13px; line-height:1.5; color:#334155; box-sizing:border-box;">
+          
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; display:flex; gap:16px; box-sizing:border-box;">
+            <img src="${a.image}" style="width:120px; height:90px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+            <div style="flex:1;">
+              <div style="font-weight:bold; font-size:14px; color:#0f172a; margin-bottom:6px;">${a.title}</div>
+              <div style="font-size:11px; color:#64748b;">
+                <div><strong>项目编号：</strong>${a.id}</div>
+                <div><strong>处置商家：</strong>${a.shopName}</div>
+                <div><strong>起拍底价：</strong>${a.startPrice} | <strong>成交价：</strong>${a.currentMaxOffer}</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="margin:0 0 10px 0; font-weight:bold; color:#0f172a; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
+              <span>👥 所有参与的竞价人及价格 (${offers.length} 人次)</span>
+            </h4>
+            <div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+              <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+                <thead>
+                  <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价人</th>
+                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价价格</th>
+                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价时间</th>
+                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${offersHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:14px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; background:#f8fafc; flex-shrink:0;">
+          <button style="background:#1677ff; color:#fff; border:none; padding:8px 20px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">关闭窗口</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   },
 
   // === 9. 配置中心 (抽佣规则) ===
@@ -727,6 +872,102 @@ const AdminApp = {
     if (MockData.decorationConfig) {
       renderBanners(MockData.decorationConfig.pcBanners, '#table-banner-pc tbody');
       renderBanners(MockData.decorationConfig.h5Banners, '#table-banner-h5 tbody');
+    }
+  },
+
+  editingAnnId: null,
+
+  approveBiddingAnn(id) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (a) {
+      a.auditStatus = '已通过';
+      UI.toast(`公告 ${id} 审核通过已发布！`, 'success');
+      this.renderBidding();
+    }
+  },
+
+  rejectBiddingAnn(id) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (a) {
+      a.auditStatus = '已拒绝';
+      UI.toast(`公告 ${id} 审核已被拒绝`, 'warning');
+      this.renderBidding();
+    }
+  },
+
+  openEditBiddingAnnModal(id) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!a) return;
+
+    this.editingAnnId = id;
+    document.getElementById('admin-edit-ann-modal-title').innerText = `编辑竞价公告 (${id})`;
+    document.getElementById('admin-edit-ann-title').value = a.title || '';
+    document.getElementById('admin-edit-ann-start-price').value = parseFloat((a.startPrice || '').replace(/[^\d\.]/g, '')) || 0;
+    
+    // Dates formatting
+    const formatDateForInput = (str) => {
+      if (!str) return '';
+      // '2026-08-01 12:00' -> '2026-08-01T12:00'
+      return str.replace(' ', 'T');
+    };
+    
+    document.getElementById('admin-edit-ann-view-end').value = formatDateForInput(a.viewEndTime || '');
+    document.getElementById('admin-edit-ann-bid-end').value = formatDateForInput(a.bidEndTime || '');
+
+    UI.showModal('modal-admin-edit-ann');
+  },
+
+  saveBiddingAnnInfo() {
+    if (!this.editingAnnId) return;
+    const a = MockData.biddingAnnouncements.find(x => x.id === this.editingAnnId);
+    if (!a) return;
+
+    const title = document.getElementById('admin-edit-ann-title').value.trim();
+    const priceVal = parseFloat(document.getElementById('admin-edit-ann-start-price').value);
+    const viewEnd = document.getElementById('admin-edit-ann-view-end').value;
+    const bidEnd = document.getElementById('admin-edit-ann-bid-end').value;
+
+    if (!title || isNaN(priceVal) || priceVal <= 0 || !viewEnd || !bidEnd) {
+      UI.toast('请填写完整且合法的竞价公告信息！', 'error');
+      return;
+    }
+
+    if (new Date(viewEnd) >= new Date(bidEnd)) {
+      UI.toast('竞拍截止时间必须晚于看货报名截止时间！', 'error');
+      return;
+    }
+
+    a.title = title;
+    a.startPrice = '¥' + priceVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+    a.viewEndTime = viewEnd.replace('T', ' ');
+    a.bidEndTime = bidEnd.replace('T', ' ');
+    
+    // Save edit also keeps/re-submits the announcement to '待审核' status
+    a.auditStatus = '待审核';
+
+    UI.closeModal('modal-admin-edit-ann');
+    UI.toast('保存成功，已重置为待审核状态', 'success');
+    this.editingAnnId = null;
+    this.renderBidding();
+  },
+
+  deleteBiddingAnn(id) {
+    if (confirm(`确认要删除竞价公告 ${id} 吗？`)) {
+      const idx = MockData.biddingAnnouncements.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        MockData.biddingAnnouncements.splice(idx, 1);
+        UI.toast('公告已成功删除', 'success');
+        this.renderBidding();
+      }
+    }
+  },
+
+  forceOfflineBiddingAnn(id) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (a) {
+      a.auditStatus = '已撤回';
+      UI.toast(`公告 ${id} 已强行下架并变更为已撤回状态`, 'info');
+      this.renderBidding();
     }
   },
 

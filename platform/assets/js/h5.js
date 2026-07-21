@@ -114,62 +114,119 @@ const H5App = {
     document.getElementById('h5-chat-prod-img').src = prodImg;
   },
 
+  _msgTab: 'spot',
+
+  switchMsgTab(tab) {
+    this._msgTab = tab;
+    this.renderUserMessages();
+  },
+
   renderUserMessages() {
     const container = document.querySelector('#view-uc-messages');
     if (!container) return;
     
-    const headerHtml = `
-      <header class="h5-header flex items-center justify-center bg-white" style="padding: 0 16px; font-weight: bold; border-bottom: 1px solid #f1f5f9; flex-shrink:0;">
+    const tabsHtml = `
+      <header class="h5-header flex items-center justify-center bg-white" style="padding: 0 16px; font-weight: bold; border-bottom: 1px solid #f1f5f9; flex-shrink:0; height:60px;">
         <div>消息中心</div>
       </header>
+      <div class="flex border-b border-slate-100 bg-white" style="flex-shrink:0;">
+        <div class="flex-1 text-center py-3 font-bold text-sm ${this._msgTab === 'spot' ? 'text-primary' : 'text-slate-500'}" 
+             style="${this._msgTab === 'spot' ? 'border-bottom: 2px solid var(--primary-color);' : ''}" 
+             onclick="H5App.switchMsgTab('spot')">
+          现货沟通
+        </div>
+        <div class="flex-1 text-center py-3 font-bold text-sm ${this._msgTab === 'demand' ? 'text-primary' : 'text-slate-500'}" 
+             style="${this._msgTab === 'demand' ? 'border-bottom: 2px solid var(--primary-color);' : ''}" 
+             onclick="H5App.switchMsgTab('demand')">
+          求购沟通
+        </div>
+      </div>
     `;
     
-    const mockChats = [
-      {
-        shopName: '特钢新材料厂直营店',
-        prodTitle: 'HRB400E 螺纹钢 12mm',
-        prodPrice: '¥3950/吨',
-        prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
-        time: '10:35'
-      },
-      {
-        shopName: '中铁物流建材城',
-        prodTitle: 'Q345B 槽钢 10#',
-        prodPrice: '¥4150/吨',
-        prodImg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=150&q=80',
-        time: '昨天'
-      },
-      {
-        shopName: '宏源工程管业制造',
-        prodTitle: '大宗工程镀锌管 100mm',
-        prodPrice: '¥4280/吨',
-        prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
-        time: '星期三'
-      }
-    ];
-    
     let listHtml = '<div class="flex-1 overflow-y-auto" style="padding-bottom:80px; background:#fff;">';
-    mockChats.forEach(chat => {
-      listHtml += `
-        <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
-          <div style="width: 40px; height: 40px; border-radius: 6px; background: #e0e7ff; color: #1677ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
-            店
-          </div>
-          <div class="flex-1 overflow-hidden">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
-              <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
+    if (this._msgTab === 'spot') {
+      const mockChats = [
+        {
+          shopName: '特钢新材料厂直营店',
+          prodTitle: 'HRB400E 螺纹钢 12mm',
+          prodPrice: '¥3950/吨',
+          prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
+          time: '10:35'
+        },
+        {
+          shopName: '中铁物流建材城',
+          prodTitle: 'Q345B 槽钢 10#',
+          prodPrice: '¥4150/吨',
+          prodImg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=150&q=80',
+          time: '昨天'
+        },
+        {
+          shopName: '宏源工程管业制造',
+          prodTitle: '大宗工程镀锌管 100mm',
+          prodPrice: '¥4280/吨',
+          prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
+          time: '星期三'
+        }
+      ];
+
+      mockChats.forEach(chat => {
+        listHtml += `
+          <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
+            <div style="width: 40px; height: 40px; border-radius: 6px; background: #e0e7ff; color: #1677ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
+              店
             </div>
-            <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-              📦 货品: ${chat.prodTitle}
+            <div class="flex-1 overflow-hidden">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
+                <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
+              </div>
+              <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+                📦 现货沟通: ${chat.prodTitle} | ${chat.prodPrice}
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    });
+        `;
+      });
+    } else {
+      const mockChats = [
+        {
+          shopName: '远大钢铁官方直营店',
+          prodTitle: '急求 50吨 Q345B 槽钢，交期7天内',
+          prodPrice: '¥4,150.00/吨',
+          prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
+          time: '12:00'
+        },
+        {
+          shopName: '海螺水泥华东总代',
+          prodTitle: '采购 P.O 42.5 散装水泥 500吨 需送达杭州工地',
+          prodPrice: '¥298.00/吨',
+          prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
+          time: '昨天'
+        }
+      ];
+
+      mockChats.forEach(chat => {
+        listHtml += `
+          <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
+            <div style="width: 40px; height: 40px; border-radius: 6px; background: #ffe8d6; color: #fa8c16; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
+              求
+            </div>
+            <div class="flex-1 overflow-hidden">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
+                <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
+              </div>
+              <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+                📢 求购沟通: ${chat.prodTitle} | ${chat.prodPrice}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
     listHtml += '</div>';
     
-    container.innerHTML = headerHtml + listHtml;
+    container.innerHTML = tabsHtml + listHtml;
   },
 
   renderQuickCategories() {
@@ -231,7 +288,7 @@ const H5App = {
     if (!container) return;
     
     let html = '';
-    const bids = (MockData.biddingAnnouncements || []).slice(0, 3);
+    const bids = (MockData.biddingAnnouncements || []).filter(b => b.auditStatus === '已通过' || !b.auditStatus).slice(0, 3);
     
     bids.forEach(b => {
       html += `
@@ -363,29 +420,99 @@ const H5App = {
 
   renderDemands(keyword = '') {
     const list = document.getElementById('h5-demand-list');
+    if (!list) return;
+
+    const showOnlyMy = document.getElementById('h5-demand-filter-my')?.checked || false;
+    const showOnlyJoined = document.getElementById('h5-demand-filter-joined')?.checked || false;
+
     let html = '';
-    let filtered = MockData.demands.filter(d => d.status === 1);
+    let filtered = MockData.demands;
+
+    if (showOnlyMy) {
+      filtered = filtered.filter(d => d.buyerName === 'H5买家用户');
+    } else if (showOnlyJoined) {
+      const myQuotes = MockData.demandQuotes.filter(q => q.quoterName === 'H5买家用户');
+      filtered = filtered.filter(d => myQuotes.some(q => q.demandId === d.id));
+    } else {
+      filtered = filtered.filter(d => d.status === 1);
+    }
+
     if (keyword) {
       filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
     }
-    
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="text-center py-12 text-secondary text-sm">暂无符合条件的求购意向</div>`;
+      return;
+    }
+
     filtered.forEach(d => {
+      let isMine = d.buyerName === 'H5买家用户';
+      const myQuote = MockData.demandQuotes.find(q => q.demandId === d.id && q.quoterName === 'H5买家用户');
+      let isJoined = !!myQuote;
+      let btn = '';
+      let statusTag = '';
+      let quotePriceHtml = '';
+
+      if (showOnlyJoined && isJoined) {
+        if (myQuote.status === 1) {
+          statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已采纳</span>`;
+          btn = `<div class="flex gap-2 mt-2">
+                   <button class="btn btn-outline flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                 </div>`;
+        } else {
+          statusTag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border:1px solid #91d5ff; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已报价</span>`;
+          btn = `<div class="flex gap-2 mt-2">
+                   <button class="btn btn-outline flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                   <button class="btn btn-primary flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="H5App.editMyQuote('${myQuote.id}')">修改报价</button>
+                 </div>`;
+        }
+        quotePriceHtml = `<div style="font-size:12px; color:#475569; margin-top:4px;">我的报价: <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
+      } else if (isMine) {
+        if (d.status === 0) {
+          statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">待审核</span>`;
+        } else if (d.status === 1) {
+          statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">展示中</span>`;
+        } else if (d.status === 2) {
+          statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已完结</span>`;
+        } else if (d.status === -1) {
+          statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#cf1322; border:1px solid #ffa39e; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已撤销</span>`;
+        }
+
+        const quotesCount = MockData.demandQuotes.filter(q => q.demandId === d.id).length;
+
+        if (d.status === 0 || d.status === 1) {
+          btn = `<div class="flex gap-2 mt-2">
+                   <button class="btn btn-outline flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="H5App.cancelDemand('${d.id}')">撤销</button>
+                   <button class="btn btn-primary flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="UI.showDemandQuotesModal('${d.id}', true, () => H5App.renderDemands())">报价列表 (${quotesCount})</button>
+                 </div>`;
+        } else {
+          btn = `<div class="text-secondary text-center text-xs mt-2">意向已关闭</div>`;
+        }
+      } else {
+        btn = `<div class="flex gap-2 mt-2">
+                 <button class="btn btn-outline flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                 <button class="btn btn-primary flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => H5App.openQuoteModal('${d.id}', '${d.title.replace(/'/g, "\\'")}', '${d.expectedPrice}'))">立即报价</button>
+               </div>`;
+      }
+
       html += `
         <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
-          <div style="font-weight: bold; margin-bottom: 8px;">${d.title}</div>
-          <div style="color: var(--danger-color); font-weight: bold; margin-bottom: 8px;">${d.expectedPrice}</div>
-          <div class="flex justify-between text-secondary items-center" style="font-size: 12px; border-bottom: 1px solid #f2f3f5; padding-bottom: 12px; margin-bottom: 12px;">
-            <span>${d.buyerName}</span>
+          <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight: bold; font-size: 15px; color:#1e293b;">${d.title}</div>
+            ${statusTag}
+          </div>
+          <div style="color: var(--danger-color); font-weight: bold; margin-bottom: 4px;">期望价: ${d.expectedPrice}</div>
+          ${quotePriceHtml}
+          <div class="flex justify-between text-secondary items-center" style="font-size: 12px; border-bottom: 1px solid #f2f3f5; padding-bottom: 12px; margin-bottom: 12px; margin-top:8px;">
+            <span>买家: ${d.buyerName}</span>
             <span>${d.publishTime} 发布</span>
           </div>
-          <div class="flex gap-2 mt-2">
-            <button class="btn btn-outline flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-            <button class="btn btn-primary flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => H5App.openQuoteModal('${d.title}', '${d.expectedPrice}'))">立即报价</button>
-          </div>
+          ${btn}
         </div>
       `;
     });
-    if(list) list.innerHTML = html;
+    if (list) list.innerHTML = html;
   },
 
   doDemandSearch() {
@@ -393,7 +520,46 @@ const H5App = {
     this.renderDemands(kw);
   },
 
-  openQuoteModal(name, expectedPrice) {
+  cancelDemand(demandId) {
+    const d = MockData.demands.find(x => x.id === demandId);
+    if (d) {
+      d.status = -1; // 已撤销
+      UI.toast('已撤销该求购信息！', 'success');
+      this.renderDemands();
+    }
+  },
+
+  submitPublishDemand() {
+    const title = document.getElementById('h5-pd-title').value.trim();
+    const price = document.getElementById('h5-pd-price').value.trim() || '面议';
+    const desc = document.getElementById('h5-pd-desc').value.trim();
+    if (!title) {
+      UI.toast('请输入求购标题！', 'error');
+      return;
+    }
+    const newDemand = {
+      id: 'REQ' + (MockData.demands.length + 1).toString().padStart(3, '0'),
+      buyerName: 'H5买家用户',
+      title: title,
+      category: '钢材', // default
+      expectedPrice: price,
+      publishTime: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0, // 待审核
+      quotesCount: 0,
+      desc: desc
+    };
+    MockData.demands.unshift(newDemand);
+    UI.toast('求购意向发布成功，待审核！', 'success');
+    UI.closeModal('sheet-h5-publish-demand');
+    // Clear fields
+    document.getElementById('h5-pd-title').value = '';
+    document.getElementById('h5-pd-price').value = '';
+    document.getElementById('h5-pd-desc').value = '';
+    this.renderDemands();
+  },
+
+  openQuoteModal(demandId, name, expectedPrice) {
+    this.currentQuoteDemandId = demandId;
     const titleEl = document.getElementById('h5-quote-prod-name');
     const expectedEl = document.getElementById('h5-quote-prod-expected');
     if (titleEl) titleEl.innerText = name;
@@ -405,6 +571,53 @@ const H5App = {
     document.getElementById('h5-quote-notes').value = '';
 
     UI.openModal('sheet-h5-quote');
+  },
+
+  submitQuote() {
+    const priceVal = document.getElementById('h5-quote-price').value.trim();
+    const qtyVal = document.getElementById('h5-quote-qty').value.trim();
+    const notesVal = document.getElementById('h5-quote-notes').value.trim();
+
+    if (!priceVal || !qtyVal) {
+      UI.toast('请填写报价单价与可供货数量！', 'error');
+      return;
+    }
+
+    const priceFormatted = priceVal.startsWith('¥') ? priceVal : '¥' + priceVal;
+
+    // Add to MockData.demandQuotes
+    const newQuote = {
+      id: 'QT' + (MockData.demandQuotes.length + 1).toString().padStart(3, '0'),
+      demandId: this.currentQuoteDemandId,
+      shopId: 'S001',
+      shopName: 'H5买家 (报价主体)',
+      price: priceFormatted + '/' + (priceVal.includes('吨') ? '吨' : priceVal.includes('立方') ? '立方' : '单位'),
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0,
+      quoterName: 'H5买家用户'
+    };
+
+    MockData.demandQuotes.push(newQuote);
+    UI.toast('报价提交成功！等待采购商联系。', 'success');
+    UI.closeModal('sheet-h5-quote');
+    this.renderDemands();
+  },
+
+  editMyQuote(quoteId) {
+    const q = MockData.demandQuotes.find(x => x.id === quoteId);
+    if (!q) return;
+
+    const newPrice = prompt('请输入新的报价（例如 ¥4,100.00/吨）：', q.price);
+    if (newPrice === null) return; // user cancelled
+    const trimmed = newPrice.trim();
+    if (!trimmed) {
+      UI.toast('报价不能为空！', 'error');
+      return;
+    }
+
+    q.price = trimmed;
+    UI.toast('报价修改成功！', 'success');
+    this.renderDemands();
   },
 
   toggleChatForm(type) {
@@ -534,14 +747,14 @@ const H5App = {
   renderBids(keyword = '') {
     const list = document.getElementById('h5-bid-list');
     let html = '';
-    let filtered = MockData.biddingAnnouncements || [];
+    let filtered = (MockData.biddingAnnouncements || []).filter(b => b.auditStatus === '已通过' || !b.auditStatus);
     
     // 状态筛选
     const statusFilter = this.currentBidFilter || 'all';
     if (statusFilter === 'active') {
-      filtered = filtered.filter(b => b.status === 1);
+      filtered = filtered.filter(b => b.status !== 4);
     } else if (statusFilter === 'ended') {
-      filtered = filtered.filter(b => b.status !== 1);
+      filtered = filtered.filter(b => b.status === 4);
     }
 
     // 关键词筛选
@@ -550,7 +763,13 @@ const H5App = {
     }
     
     filtered.forEach(b => {
-      let tag = b.status === 1 ? '<span class="tag tag-success" style="font-size: 10px; padding: 2px 4px;">竞价中</span>' : '<span class="tag tag-secondary" style="font-size: 10px; padding: 2px 4px;">已结束</span>';
+      let tag = '';
+      if (b.status === 0) tag = `<span class="tag tag-warning" style="font-size: 10px; padding: 2px 6px; background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+      else if (b.status === 1) tag = `<span class="tag tag-warning" style="font-size: 10px; padding: 2px 6px; background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+      else if (b.status === 2) tag = `<span class="tag tag-success" style="font-size: 10px; padding: 2px 6px; background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+      else if (b.status === 3) tag = `<span class="tag tag-success" style="font-size: 10px; padding: 2px 6px; background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+      else if (b.status === 4) tag = `<span class="tag tag-secondary" style="font-size: 10px; padding: 2px 6px;">已结束</span>`;
+
       html += `
         <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px; display: flex; gap: 12px; cursor: pointer;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => H5App.showBidDetail('${b.id}'))">
           <img src="${b.image}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
@@ -589,22 +808,19 @@ const H5App = {
     this.renderBids(kw);
   },
 
+  _bidPhotoFile: null,
+
   showBidDetail(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
 
-    // Generate steps
-    let currentStep = 1;
-    if (b.status === 1) currentStep = 4;
-    if (b.status === 3) currentStep = 6;
-
-    const steps = ['看货报名', '现场看货', '竞价报名', '参加竞价', '竞价成功', '线下付款'];
+    // Generate steps (5 steps: 看货报名, 现场看货, 参加竞价, 等待公布, 中标付款)
+    const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
     let stepsHtml = '<div style="position: relative; padding-left: 28px; margin-top: 16px;">';
-    // Vertical timeline dashed line
     stepsHtml += '<div style="position: absolute; left: 9px; top: 12px; bottom: 12px; width: 0; border-left: 2px dashed var(--border-color);"></div>';
     steps.forEach((name, index) => {
-      let isActive = index + 1 === currentStep;
-      let isDone = index + 1 < currentStep;
+      let isActive = index === b.status;
+      let isDone = index < b.status;
       
       let circleBg = '#ffffff';
       let circleBorder = 'var(--border-strong)';
@@ -637,40 +853,115 @@ const H5App = {
     });
     stepsHtml += '</div>';
 
-    const contentEl = document.getElementById('h5-bid-detail-content');
-    const footerEl = document.getElementById('h5-bid-detail-footer');
+    // Interactive UI based on status
+    let actionCardHTML = '';
+    if (b.status === 0) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; box-sizing:border-box;">
+          <div style="font-weight:bold; font-size:13px; color:#1e293b; margin-bottom:6px;">📋 看货报名</div>
+          <p style="margin:0 0 10px 0; font-size:11px; color:#64748b;">该项目须先在线报名以获取线下实勘看货和出价资格。</p>
+          <button class="btn btn-primary w-full" style="height:36px; border-radius:18px; border:none; background:var(--primary-color); color:#fff; font-size:12px;" onclick="H5App.signUpForBidInspection('${b.id}')">立即报名看货</button>
+        </div>
+      `;
+    } else if (b.status === 1) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; box-sizing:border-box;">
+          <div style="font-weight:bold; font-size:13px; color:#1e293b; margin-bottom:6px;">📸 现场看货核验</div>
+          <p style="margin:0 0 10px 0; font-size:11px; color:#64748b;">请到达存放现场，点击下方区域上传自拍照片：</p>
+          <div style="border:1.5px dashed #cbd5e1; border-radius:8px; padding:12px; text-align:center; background:#fff; margin-bottom:10px;" onclick="document.getElementById('h5-bid-photo-picker').click()">
+            <span style="font-size:18px;">📁</span>
+            <div id="h5-bid-photo-text" style="font-size:11px; color:#475569; font-weight:bold; margin-top:4px;">选择现场照片 (PNG/JPG)</div>
+            <input type="file" id="h5-bid-photo-picker" accept="image/*" style="display:none;" onchange="H5App.handleBidPhotoSelected(this)">
+          </div>
+          <div id="h5-bid-photo-card" style="display:none; align-items:center; justify-content:space-between; padding:6px 10px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; font-size:11px; color:#15803d; margin-bottom:10px;">
+            <span id="h5-bid-photo-name" style="font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;"></span>
+            <span style="cursor:pointer; color:#ef4444; font-weight:bold;" onclick="event.stopPropagation(); H5App.clearBidPhoto()">删除</span>
+          </div>
+          <button id="h5-bid-photo-submit-btn" class="btn btn-primary w-full" style="height:36px; border-radius:18px; border:none; background:#cbd5e1; color:#fff; font-size:12px; cursor:not-allowed;" disabled onclick="H5App.submitBidPhoto('${b.id}')">确认提交现场照片</button>
+        </div>
+      `;
+    } else if (b.status === 2) {
+      actionCardHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; box-sizing:border-box;">
+          <div style="font-weight:bold; font-size:13px; color:#1e293b; margin-bottom:6px;">⚖️ 竞价出价</div>
+          <p style="margin:0 0 10px 0; font-size:11px; color:#64748b;">出价须高于起拍底价和当前最高出价：</p>
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="h5-bid-price-input" placeholder="输入出价金额 (元)" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:13px; padding: 0 12px;" min="${parseFloat(b.startPrice.replace(/[^\d\.]/g, ''))}">
+            <button class="btn btn-primary" style="height:36px; border-radius:18px; border:none; background:var(--primary-color); color:#fff; font-size:12px; padding: 0 16px;" onclick="H5App.submitBidPrice('${b.id}')">提交出价</button>
+          </div>
+          <div style="font-size:10px; color:#94a3b8; margin-top:4px;">* 底价 ${b.startPrice}，加价幅度不限。</div>
+        </div>
+      `;
+    } else if (b.status === 3) {
+      const myOffersForBid = MockData.biddingOffers.filter(o => o.bidId === b.id && o.buyerName === 'H5买家用户');
+      let myLastOfferHtml = '';
+      if (myOffersForBid.length > 0) {
+        myLastOfferHtml = `<div style="font-weight:bold; color:#15803d; margin-bottom:4px;">您的已登记报价：${myOffersForBid[0].offerPrice}</div>`;
+      }
+      actionCardHTML = `
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px; color:#15803d; box-sizing:border-box; font-size:11px;">
+          ${myLastOfferHtml}
+          <div style="font-weight:bold; margin-bottom:4px;">⏳ 等待定标公布中</div>
+          <p style="margin:0 0 8px 0; color:#64748b;">在公布结果前，您依然可以追加更高报价：</p>
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="h5-bid-price-input" placeholder="追加报价金额 (元)" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:13px; padding: 0 12px;" min="${parseFloat(b.startPrice.replace(/[^\d\.]/g, ''))}">
+            <button class="btn btn-primary" style="height:36px; border-radius:18px; border:none; background:var(--primary-color); color:#fff; font-size:12px; padding: 0 16px;" onclick="H5App.submitBidPrice('${b.id}')">追加</button>
+          </div>
+        </div>
+      `;
+    } else if (b.status === 4) {
+      if (b.winner === 'H5买家用户') {
+        actionCardHTML = `
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px; color:#15803d; box-sizing:border-box; font-size:12px;">
+            <div style="font-weight:bold; margin-bottom:4px;">🏆 恭喜您中标该项目！</div>
+            <div style="margin-bottom:8px;">成交金额：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong>。请前往“我的 - 我的订单”进行电子合同签署及打款付款履约流程。</div>
+            <button class="btn btn-primary w-full" style="height:34px; border-radius:17px; font-size:11px; border:none; background:var(--primary-color); color:#fff;" onclick="UI.closeModal('sheet-h5-bid-detail'); H5App.showView('view-uc-orders');">去订单中心处理</button>
+          </div>
+        `;
+      } else {
+        actionCardHTML = `
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; color:#64748b; box-sizing:border-box; font-size:12px;">
+            <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">竞价已结束</div>
+            <div>中标人：<strong>${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong></div>
+          </div>
+        `;
+      }
+    }
 
+    const contentEl = document.getElementById('h5-bid-detail-content');
     if (contentEl) {
       contentEl.innerHTML = `
         <div class="flex flex-col gap-4">
           <div style="position: relative; overflow: hidden; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
-            <img src="${b.image}" style="width: 100%; height: 160px; object-fit: cover; display: block;">
-            <span class="tag ${b.status === 1 ? 'tag-primary' : 'tag-secondary'}" style="position: absolute; top: 12px; right: 12px; font-size: 10px; padding: 4px 8px; border-radius: 12px; backdrop-filter: blur(4px);">
-              ${b.status === 1 ? '竞价中' : '已结束'}
+            <img src="${b.image}" style="width: 100%; height: 140px; object-fit: cover; display: block;">
+            <span class="tag" style="position: absolute; top: 12px; right: 12px; font-size: 10px; padding: 4px 8px; border-radius: 12px; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px);">
+              ${b.status === 4 ? '已结束' : '竞拍中'}
             </span>
           </div>
           <div>
             <h2 class="text-base font-bold text-main mb-1" style="line-height: 1.4;">${b.title}</h2>
             <div class="text-xs text-secondary flex items-center gap-1.5 mb-3">
-              <span>🏢 处置方: ${b.shopName}</span>
+              <span>🏢 处置商户: ${b.shopName}</span>
               <span style="color: #ddd;">|</span>
               <span class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">No.${b.id}</span>
             </div>
             
-            <div class="p-4 bg-gray-50 rounded-2xl flex flex-col gap-2.5" style="border: 1px solid var(--border-light);">
+            <div class="p-3 bg-gray-50 rounded-2xl flex flex-col gap-2" style="border: 1px solid var(--border-light); margin-bottom:12px;">
               <div class="flex justify-between items-center text-xs text-regular">
                 <span>💰 起拍底价</span>
                 <span class="text-main font-bold">${b.startPrice}</span>
               </div>
               <div class="flex justify-between items-center text-xs text-regular">
                 <span>🔥 当前最高出价</span>
-                <span class="text-danger font-bold text-base">${b.currentMaxOffer || b.startPrice}</span>
+                <span class="text-danger font-bold text-base">${b.currentMaxOffer}</span>
               </div>
               <div class="flex justify-between items-center text-xs text-regular">
                 <span>⏰ 截止竞价时间</span>
                 <span class="text-main">${b.bidEndTime}</span>
               </div>
             </div>
+            
+            ${actionCardHTML}
           </div>
           <div class="mt-2 border-t pt-4">
             <h3 class="font-bold text-sm text-main">🚀 竞价项目节点流转</h3>
@@ -680,16 +971,99 @@ const H5App = {
       `;
     }
 
+    const footerEl = document.getElementById('h5-bid-detail-footer');
     if (footerEl) {
       footerEl.innerHTML = `
-        <button class="btn btn-outline flex-1 py-3" style="border-radius: 24px;" onclick="UI.closeModal('sheet-h5-bid-detail')">关闭</button>
-        <button class="btn btn-primary flex-2 py-3" style="border-radius: 24px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);" ${b.status !== 1 ? 'disabled' : ''} onclick="event.stopPropagation(); UI.toast('参与出价成功，等待系统确认！', 'success'); UI.closeModal('sheet-h5-bid-detail');">
-          ${b.status === 1 ? '立即出价参与' : '竞价已结束'}
-        </button>
+        <button class="btn btn-outline w-full py-3" style="border-radius: 24px;" onclick="UI.closeModal('sheet-h5-bid-detail')">关闭</button>
       `;
     }
 
     UI.openModal('sheet-h5-bid-detail');
+  },
+
+  signUpForBidInspection(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    b.status = 1;
+    UI.toast('看货报名成功！已激活现场核验步骤。', 'success');
+    this.showBidDetail(id);
+    this.renderBids();
+  },
+
+  handleBidPhotoSelected(input) {
+    const file = input.files[0];
+    if (!file) return;
+    this._bidPhotoFile = file;
+    
+    document.getElementById('h5-bid-photo-name').innerText = `📸 ${file.name}`;
+    document.getElementById('h5-bid-photo-card').style.display = 'flex';
+    
+    const submitBtn = document.getElementById('h5-bid-photo-submit-btn');
+    if (submitBtn) {
+      submitBtn.style.background = 'var(--primary-color)';
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.disabled = false;
+    }
+    UI.toast('现场实勘照片选择成功，请点击确认提交！', 'success');
+  },
+
+  clearBidPhoto() {
+    this._bidPhotoFile = null;
+    document.getElementById('h5-bid-photo-picker').value = '';
+    document.getElementById('h5-bid-photo-card').style.display = 'none';
+    
+    const submitBtn = document.getElementById('h5-bid-photo-submit-btn');
+    if (submitBtn) {
+      submitBtn.style.background = '#cbd5e1';
+      submitBtn.style.cursor = 'not-allowed';
+      submitBtn.disabled = true;
+    }
+  },
+
+  submitBidPhoto(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    b.status = 2;
+    UI.toast('现场自拍核验通过！出价通道开启。', 'success');
+    this.showBidDetail(id);
+    this.renderBids();
+  },
+
+  submitBidPrice(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    
+    const inputEl = document.getElementById('h5-bid-price-input');
+    if (!inputEl) return;
+    
+    const offerPriceVal = parseFloat(inputEl.value);
+    const startPriceVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, ''));
+    const maxOfferVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
+    const minRequired = Math.max(startPriceVal, maxOfferVal);
+
+    if (isNaN(offerPriceVal) || offerPriceVal <= minRequired) {
+      UI.toast(`加价必须高于当前最高价 (当前最小出价要求: ¥${minRequired.toLocaleString()})`, 'error');
+      return;
+    }
+
+    const offerPriceStr = '¥' + offerPriceVal.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+    
+    MockData.biddingOffers.unshift({
+      id: 'OFR' + Math.floor(1000 + Math.random() * 9000),
+      bidId: id,
+      buyerName: 'H5买家用户',
+      offerPrice: offerPriceStr,
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 0
+    });
+
+    b.currentMaxOffer = offerPriceStr;
+    b.status = 3;
+
+    UI.toast(`提交成功！金额 ${offerPriceStr} 已录入系统。`, 'success');
+    this.showBidDetail(id);
+    this.renderBids();
+    this.renderUserBids();
   },
 
   // === 搜索与商铺 ===
@@ -831,72 +1205,111 @@ const H5App = {
       return;
     }
 
+    // Group items by shopId
+    const grouped = {};
+    MockData.cart.forEach(item => {
+      const shopId = item.shopId || 'unknown';
+      if (!grouped[shopId]) {
+        grouped[shopId] = {
+          shopName: item.shopName || '其他店铺',
+          items: []
+        };
+      }
+      grouped[shopId].items.push(item);
+    });
+
     let html = '';
     let totalAmount = 0;
     let selectedCount = 0;
     let invalidCount = 0;
 
-    MockData.cart.forEach(item => {
-      if (item.status === 0) {
-        invalidCount++;
-        html += `
-          <div style="background: #fafafa; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; color: #999;">
-            <span class="tag tag-secondary text-xs">失效</span>
-            <div style="flex:1;">
-              <div style="font-size: 13px; margin-bottom: 4px;">${item.name}</div>
-              <div class="text-xs">店内: ${item.shopName}</div>
+    Object.keys(grouped).forEach(shopId => {
+      const group = grouped[shopId];
+      const shopName = group.shopName;
+      const shopItems = group.items;
+
+      const activeShopItems = shopItems.filter(i => i.status === 1);
+      const allShopChecked = activeShopItems.length > 0 && activeShopItems.every(i => i.checked);
+
+      let shopItemsHtml = '';
+      shopItems.forEach((item, index) => {
+        const isLast = index === shopItems.length - 1;
+        const borderStyle = isLast ? '' : 'border-bottom: 1px solid #f8fafc; padding-bottom: 12px; margin-bottom: 12px;';
+
+        if (item.status === 0) {
+          invalidCount++;
+          shopItemsHtml += `
+            <div style="display: flex; align-items: center; gap: 10px; color: #999; ${borderStyle}">
+              <span class="tag tag-secondary text-xs" style="padding:2px 6px;">失效</span>
+              <div style="flex:1;">
+                <div style="font-size: 13px; margin-bottom: 4px;">${item.name}</div>
+              </div>
+              <button class="btn btn-text btn-sm text-danger" onclick="H5App.removeCartItem('${item.id}')">删除</button>
             </div>
-            <button class="btn btn-text btn-sm text-danger" onclick="H5App.removeCartItem(${item.id})">删除</button>
-          </div>
-        `;
-      } else {
-        if (item.checked) {
-          totalAmount += item.price * item.quantity;
-          selectedCount += item.quantity;
-        }
-        
-        html += `
-          <div style="background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="H5App.toggleCartItem(${item.id}, this.checked)">
-            <div style="flex:1;">
-              <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.name}</div>
-              <div class="text-xs text-secondary mb-2" onclick="H5App.goToShop(${item.shopId}, '${item.shopName}')">店铺: ${item.shopName} ></div>
-              <div class="flex justify-between items-center">
-                <span style="color: var(--danger-color); font-weight: bold;">¥${item.price}</span>
-                <div class="flex gap-2 items-center">
-                  <button class="btn btn-sm" style="padding: 0 8px;" onclick="H5App.updateCartQty(${item.id}, -1)">-</button>
-                  <input type="number" class="form-control" style="width:40px; height: 24px; text-align:center; padding:0; font-size:12px;" value="${item.quantity}" onchange="H5App.setCartQty(${item.id}, this.value)">
-                  <button class="btn btn-sm" style="padding: 0 8px;" onclick="H5App.updateCartQty(${item.id}, 1)">+</button>
+          `;
+        } else {
+          if (item.checked) {
+            totalAmount += item.price * item.quantity;
+            selectedCount += item.quantity;
+          }
+
+          shopItemsHtml += `
+            <div style="display: flex; align-items: center; gap: 10px; ${borderStyle}">
+              <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="H5App.toggleCartItem('${item.id}', this.checked)" style="width:16px; height:16px; cursor:pointer;">
+              <div style="flex:1; overflow:hidden;">
+                <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color:#1e293b;">${item.name}</div>
+                <div class="flex justify-between items-center" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                  <span style="color: var(--danger-color); font-weight: bold; font-size:14px; font-family:monospace;">¥${item.price}</span>
+                  <div class="flex gap-2 items-center" style="display:flex; align-items:center; gap:6px;">
+                    <button class="btn btn-outline" style="width:24px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:4px;" onclick="H5App.updateCartQty('${item.id}', -1)">-</button>
+                    <input type="number" class="form-control" style="width:35px; height: 24px; text-align:center; padding:0; font-size:12px;" value="${item.quantity}" onchange="H5App.setCartQty('${item.id}', this.value)">
+                    <button class="btn btn-outline" style="width:24px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:4px;" onclick="H5App.updateCartQty('${item.id}', 1)">+</button>
+                  </div>
                 </div>
               </div>
+              <button class="btn btn-text text-danger px-1" onclick="H5App.removeCartItem('${item.id}')" style="margin-left:8px; font-size:12px;">删除</button>
             </div>
-            <button class="btn btn-text text-danger px-1" onclick="H5App.removeCartItem(${item.id})">删</button>
+          `;
+        }
+      });
+
+      html += `
+        <div style="background: #fff; border-radius: 12px; margin-bottom: 16px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow:hidden;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #f8fafc; padding-bottom:8px; margin-bottom:8px;">
+            <label class="flex items-center gap-2 font-bold text-slate-800 text-sm" style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" ${allShopChecked ? 'checked' : ''} onchange="H5App.toggleShopCart('${shopId}', this.checked)" style="width:16px; height:16px;">
+              🏪 ${shopName}
+            </label>
+            <span class="text-xs text-secondary" onclick="H5App.goToShop('${shopId}', '${shopName}')">进店 &gt;</span>
           </div>
-        `;
-      }
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+            ${shopItemsHtml}
+          </div>
+        </div>
+      `;
     });
+
     container.innerHTML = html;
 
     if (footer) {
       footer.style.display = 'flex';
       const allActive = MockData.cart.filter(c => c.status === 1);
       const allChecked = allActive.length > 0 && allActive.every(c => c.checked);
-      
+
       footer.innerHTML = `
         <div class="flex items-center gap-2 flex-1">
-          <label class="flex items-center gap-1 text-sm"><input type="checkbox" ${allChecked ? 'checked' : ''} onchange="H5App.toggleAllCart(this.checked)"> 全选</label>
+          <label class="flex items-center gap-1 text-sm" style="display:flex; align-items:center; gap:4px; font-weight:bold; color:#475569;"><input type="checkbox" ${allChecked ? 'checked' : ''} onchange="H5App.toggleAllCart(this.checked)" style="width:16px; height:16px;"> 全选</label>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3" style="display:flex; align-items:center; gap:12px;">
           <div class="text-right">
-            <div class="text-sm">合计: <span class="text-danger font-bold text-lg">¥${totalAmount}</span></div>
+            <div class="text-sm" style="color:#475569;">合计: <span class="text-danger font-bold text-base" style="font-family:monospace; font-size:16px; font-weight:900;">¥${totalAmount}</span></div>
             ${invalidCount > 0 ? `<div class="text-xs text-secondary">${invalidCount}件失效</div>` : ''}
           </div>
-          <button class="btn btn-primary" style="height: 40px; padding: 0 24px; border-radius: 20px;" ${selectedCount === 0 ? 'disabled' : ''} onclick="UI.toast('去结算功能开发中', 'info')">结算(${selectedCount})</button>
+          <button class="btn btn-primary" style="height: 40px; padding: 0 24px; border-radius: 20px; font-weight:bold; font-size:13px;" ${selectedCount === 0 ? 'disabled' : ''} onclick="H5App.checkoutCart()">生成订单</button>
         </div>
       `;
     }
 
-    // Update profile cart badge
     const badge = document.getElementById('h5-cart-badge');
     if (badge) {
       const totalQty = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
@@ -909,8 +1322,17 @@ const H5App = {
     }
   },
 
+  toggleShopCart(shopId, checked) {
+    MockData.cart.forEach(item => {
+      if (item.shopId === shopId && item.status === 1) {
+        item.checked = checked;
+      }
+    });
+    this.renderCart();
+  },
+
   toggleCartItem(id, checked) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) item.checked = checked;
     this.renderCart();
   },
@@ -923,7 +1345,7 @@ const H5App = {
   },
 
   updateCartQty(id, delta) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) {
       const newQty = item.quantity + delta;
       if (newQty > 0) {
@@ -934,7 +1356,7 @@ const H5App = {
   },
 
   setCartQty(id, value) {
-    const item = MockData.cart.find(c => c.id === id);
+    const item = MockData.cart.find(c => c.id == id);
     if (item) {
       const newQty = parseInt(value, 10);
       if (!isNaN(newQty) && newQty > 0) {
@@ -946,10 +1368,67 @@ const H5App = {
 
   removeCartItem(id) {
     if (confirm('确认移除？')) {
-      MockData.cart = MockData.cart.filter(c => c.id !== id);
+      MockData.cart = MockData.cart.filter(c => c.id != id);
       this.renderCart();
       UI.toast('已移除', 'success');
     }
+  },
+
+  checkoutCart() {
+    const selectedItems = MockData.cart.filter(item => item.status === 1 && item.checked);
+    if (selectedItems.length === 0) {
+      UI.toast('请先勾选需要结算的商品', 'warning');
+      return;
+    }
+
+    // 校验是否是同一个商家
+    const shopIds = [...new Set(selectedItems.map(item => item.shopId))];
+    if (shopIds.length > 1) {
+      alert('⚠️ 大宗商品交易不支持跨商户合并结算！\n\n请只勾选同一家店铺的商品后再进行结算。');
+      return;
+    }
+
+    const firstItem = selectedItems[0];
+    const totalAmount = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const orderId = 'ORD' + Date.now().toString().substring(5);
+
+    // 构建商品名称串 (支持同商家多个货品显示)
+    const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
+
+    const newOrder = {
+      id: orderId,
+      shopId: firstItem.shopId,
+      shopName: firstItem.shopName,
+      buyerName: 'H5买家用户',
+      productName: productNamesStr,
+      amount: amountStr,
+      status: 0, // 待买家签约
+      type: '现货交易',
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      products: selectedItems.map(item => ({
+        name: item.productName || item.name,
+        price: item.price,
+        quantity: item.quantity,
+        amount: item.price * item.quantity
+      }))
+    };
+
+    // 插入订单库
+    MockData.orders.unshift(newOrder);
+
+    // 清理选中的购物车项
+    MockData.cart = MockData.cart.filter(item => !item.checked);
+
+    // 更新购物车渲染与角标
+    this.renderCart();
+    this.updateCartBadge();
+    if (window.MainApp) MainApp.updateCartCount();
+
+    UI.toast(`订单已生成，请在此进行签约！`, 'success');
+
+    // 切换到“我的”订单列表
+    this.showView('view-uc-orders');
   },
 
   currentUserOrderFilter: 'all',
@@ -993,13 +1472,13 @@ const H5App = {
         if (o.status === 4) {
           statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959;">待付款</span>`;
           btn = `<div style="display:flex; gap:8px;">
-                   <button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.toast('支付成功！', 'success'); o.status = 0; H5App.renderUserOrders();">立即付款</button>
+                   <button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showPaymentModal('${o.id}', () => H5App.renderUserOrders())">立即付款</button>
                    <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '买家', 'H5买家用户', () => H5App.renderUserOrders())">取消</button>
                  </div>`;
         } else if (o.status === 0) {
           statusTag = `<span class="tag tag-warning">待买家签约</span>`;
           btn = `<div style="display:flex; gap:8px;">
-                   <button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); H5App.openUserContractModal('${o.id}')">立即签约</button>
+                   <button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', false, () => H5App.renderUserOrders())">立即签约</button>
                    <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '买家', 'H5买家用户', () => H5App.renderUserOrders())">取消</button>
                  </div>`;
         } else if (o.status === 5) {
@@ -1011,6 +1490,9 @@ const H5App = {
           statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货</span>`;
         } else if (o.status === 3) {
           statusTag = `<span class="tag tag-success">已完结</span>`;
+          if (!o.invoiceApplied) {
+            btn = `<button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); H5App.applyInvoice('${o.id}')">申请发票</button>`;
+          }
         } else {
           statusTag = `<span class="tag tag-danger">已关闭</span>`;
         }
@@ -1131,26 +1613,55 @@ const H5App = {
   renderUserBids() {
     const list = document.getElementById('h5-uc-bids-list');
     if (!list) return;
-    list.innerHTML = `
-      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
-        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
-          <strong class="text-slate-800 text-sm">BID20260705 南美白橡木竞标</strong>
-          <span class="tag tag-success" style="font-size:10px;">竞标成功</span>
+
+    // Filter offers for 'H5买家用户'
+    const myOffers = MockData.biddingOffers.filter(o => o.buyerName === 'H5买家用户');
+    const uniqueBidIds = [...new Set(myOffers.map(o => o.bidId))];
+
+    if (uniqueBidIds.length === 0) {
+      list.innerHTML = `<div class="text-center py-12 text-secondary text-sm">您尚未参与任何竞拍项目</div>`;
+      return;
+    }
+
+    let html = '';
+    uniqueBidIds.forEach(bidId => {
+      const b = MockData.biddingAnnouncements.find(x => x.id === bidId);
+      if (!b) return;
+
+      const myOffersForBid = myOffers.filter(o => o.bidId === bidId);
+      const myMaxOfferVal = Math.max(...myOffersForBid.map(o => parseFloat(o.offerPrice.replace(/[^\d\.]/g, '')) || 0));
+      const myMaxOfferStr = '¥' + myMaxOfferVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+
+      let tag = '';
+      if (b.status === 0) tag = `<span class="tag tag-warning" style="font-size: 10px; padding: 2px 6px; background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+      else if (b.status === 1) tag = `<span class="tag tag-warning" style="font-size: 10px; padding: 2px 6px; background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+      else if (b.status === 2) tag = `<span class="tag tag-success" style="font-size: 10px; padding: 2px 6px; background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+      else if (b.status === 3) tag = `<span class="tag tag-success" style="font-size: 10px; padding: 2px 6px; background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+      else if (b.status === 4) tag = b.winner === 'H5买家用户'
+        ? `<span class="tag tag-success" style="font-size: 10px; padding: 2px 6px; background:#f6ffed; color:#52c41a; border-color:#b7eb8f; font-weight:bold;">🏆 中标</span>`
+        : `<span class="tag tag-secondary" style="font-size: 10px; padding: 2px 6px;">未中标</span>`;
+
+      html += `
+        <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px; cursor:pointer;" onclick="H5App.showBidDetail('${b.id}')">
+          <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between; align-items:center;">
+            <strong class="text-slate-800 text-sm" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; max-width: 60%;">${b.title}</strong>
+            ${tag}
+          </div>
+          <div class="text-xs text-secondary mb-1">项目编号: ${b.id} | 起拍价: ${b.startPrice}</div>
+          <div class="text-xs text-secondary mb-1">当前最高价: <span class="text-danger font-bold">${b.currentMaxOffer}</span></div>
+          <div class="text-xs font-bold" style="color:var(--primary-color);">我的最高出价: ${myMaxOfferStr}</div>
+          <div class="text-[10px] text-slate-400 mt-2">截止时间: ${b.bidEndTime}</div>
         </div>
-        <div class="text-xs text-secondary mb-1">起拍价: ¥2,000,000.00</div>
-        <div class="text-xs font-bold" style="color:#22c55e;">我的最高出价: ¥2,450,000.00 (已中标)</div>
-        <div class="text-[10px] text-slate-400 mt-2">出价时间: 2026-07-06 10:30</div>
-      </div>
-      <div class="card p-3 mb-3 bg-white" style="border:1px solid #f1f5f9; border-radius:8px;">
-        <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between;">
-          <strong class="text-slate-800 text-sm">BID20260801 报废钢材处理竞拍一批</strong>
-          <span class="tag tag-primary" style="font-size:10px;">竞价中</span>
-        </div>
-        <div class="text-xs text-secondary mb-1">起拍价: ¥800,000.00</div>
-        <div class="text-xs font-bold text-primary">我的当前出价: ¥850,000.00</div>
-        <div class="text-[10px] text-slate-400 mt-2">结束时间: 2026-07-22 10:00</div>
-      </div>
-    `;
+      `;
+    });
+
+    list.innerHTML = html;
+  },
+
+  applyInvoice(orderId) {
+    UI.showInvoiceModal(orderId, () => {
+      this.renderUserOrders();
+    });
   },
 
   renderUserInvoices() {

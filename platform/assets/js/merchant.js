@@ -231,19 +231,17 @@ const MerchantApp = {
       if(o.status === 0) {
         statusTag = `<span class="tag tag-warning">待买家签约</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
-                    <span class="text-sm text-secondary">等买家签约</span>
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
       } else if(o.status === 5) {
         statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
-                    <button class="btn btn-primary btn-sm" onclick="UI.toast('模拟卖家端签约完成。', 'success'); o.status = 4; MerchantApp.renderOrders();">立即签约</button>
+                    <button class="btn btn-primary btn-sm" onclick="UI.showContractSigningModal('${o.id}', true, () => MerchantApp.renderOrders())">立即签约</button>
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
       } else if(o.status === 4) {
         statusTag = `<span class="tag tag-secondary">待付款</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
-                    <span class="text-sm text-secondary">等买家付款</span>
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
       } else if(o.status === 1) {
@@ -251,13 +249,13 @@ const MerchantApp = {
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipModal('${o.id}')">去发货</button>`;
       } else if(o.status === 2) {
         statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货(待签收)</span>`;
-        actBtn = `<div class="text-sm text-secondary">已录入物流</div>`;
+        actBtn = '';
       } else if(o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
-        actBtn = `<span class="text-sm text-secondary">已结清</span>`;
+        actBtn = '';
       } else if(o.status === -1) {
         statusTag = `<span class="tag tag-danger">已关闭</span>`;
-        actBtn = `<span class="text-sm text-secondary">线下协商退款</span>`;
+        actBtn = '';
       }
 
       html += `
@@ -349,10 +347,40 @@ const MerchantApp = {
       }
 
       myAnn.forEach(a => {
-        let tag = a.status === 1 ? `<span class="tag tag-success">竞价中</span>` : (a.status === 0 ? `<span class="tag tag-warning">未开始</span>` : `<span class="tag tag-secondary">已结束</span>`);
-        let acts = a.status === 0 
-          ? `<button class="btn btn-text btn-sm">修改底价</button> <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('公告已撤销', 'info')">撤销</button>`
-          : `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}')">查看出价/定标</button>`;
+        let tag = '';
+        if (a.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
+        else if (a.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
+        else if (a.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+        else if (a.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+        else if (a.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
+
+        let auditTag = '';
+        const aStatus = a.auditStatus || '已通过';
+        if (aStatus === '待审核') {
+          auditTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
+        } else if (aStatus === '已通过') {
+          auditTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已通过</span>`;
+        } else if (aStatus === '已拒绝') {
+          auditTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border-color:#ffccc7;">已拒绝</span>`;
+        } else if (aStatus === '已撤回') {
+          auditTag = `<span class="tag tag-secondary">已撤回</span>`;
+        }
+        
+        let acts = '';
+        if (aStatus === '待审核' || aStatus === '已拒绝') {
+          acts += `<button class="btn btn-warning btn-sm" onclick="MerchantApp.openEditAnnModal('${a.id}')">编辑</button>`;
+          acts += `<button class="btn btn-outline btn-sm text-danger" onclick="MerchantApp.deleteBiddingAnn('${a.id}')">删除</button>`;
+        } else if (aStatus === '已通过') {
+          if (a.status !== 4) {
+            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}')">查看出价/定标</button>`;
+            acts += `<button class="btn btn-outline btn-sm text-danger" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">撤回</button>`;
+          } else {
+            acts += `<button class="btn btn-outline btn-sm" onclick="MerchantApp.openAwardModal('${a.id}')">查看结果</button>`;
+          }
+        } else {
+          acts += `<span class="text-secondary text-sm">已撤回</span>`;
+        }
+
         html += `
           <tr>
             <td>${a.id}</td>
@@ -361,11 +389,12 @@ const MerchantApp = {
             <td class="text-danger font-bold">${a.startPrice}</td>
             <td class="text-primary">${a.bidEndTime}</td>
             <td>${tag}</td>
+            <td>${auditTag}</td>
             <td><div class="flex gap-2">${acts}</div></td>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
       this._appendPagination(tbody, myAnn.length);
     }
   },
@@ -383,24 +412,28 @@ const MerchantApp = {
     if (offers.length === 0) {
       html = `<tr><td colspan="5" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
     } else {
-      // Sort offers by price descending (simple string reverse sort for mock)
-      offers.sort((a, b) => b.offerPrice.localeCompare(a.offerPrice));
+      // Sort offers desc by price
+      offers.sort((x, y) => {
+        const px = parseFloat(x.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+        const py = parseFloat(y.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+        return py - px;
+      });
       
       offers.forEach(o => {
         let tag = '';
         let btn = '';
         
-        if (ann.status === 3) { // 已经结束定标了
-          if (o.status === 1) {
+        if (ann.status === 4) { // 已结束
+          if (o.status === 1 || ann.winner === o.buyerName) {
             tag = `<span class="tag tag-success">已中标</span>`;
-            btn = `<span class="text-secondary text-sm">已生成订单</span>`;
+            btn = `<span class="text-secondary text-sm">已生成合同及订单</span>`;
           } else {
             tag = `<span class="tag tag-secondary">未中标</span>`;
             btn = `-`;
           }
-        } else { // 竞价中
+        } else { // 竞拍中/等待定标
           tag = `<span class="tag tag-primary">出价有效</span>`;
-          btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
+          btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
         }
         
         html += `
@@ -420,11 +453,216 @@ const MerchantApp = {
   },
   
   selectWinner(offerId) {
-    if(confirm('确认选择该出价作为最终中标方？系统将自动生成订单并结束本场竞价。')) {
+    const offer = MockData.biddingOffers.find(o => o.id === offerId);
+    if (!offer) return;
+    const ann = MockData.biddingAnnouncements.find(a => a.id === offer.bidId);
+    if (!ann) return;
+
+    if (confirm(`确认选择 ${offer.buyerName}（出价：${offer.offerPrice}）作为最终中标方？系统将自动结束本场竞价，并为买家生成待签约履约订单。`)) {
+      // Update offer statuses
+      const offers = MockData.biddingOffers.filter(o => o.bidId === ann.id);
+      offers.forEach(o => {
+        o.status = (o.id === offerId) ? 1 : 0;
+      });
+
+      // Update announcement status
+      ann.status = 4; // 已结束
+      ann.winner = offer.buyerName;
+      ann.currentMaxOffer = offer.offerPrice;
+
+      // Generate transaction order
+      const orderId = 'ORD' + Math.floor(100000 + Math.random() * 900000);
+      const newOrder = {
+        id: orderId,
+        productId: ann.resId,
+        productName: ann.title,
+        specs: '大宗交易竞拍标的资产包',
+        price: offer.offerPrice,
+        quantity: 1,
+        amount: offer.offerPrice,
+        shopId: ann.shopId || 'S001',
+        shopName: ann.shopName,
+        buyerName: offer.buyerName,
+        status: 0, // 待买家签约
+        time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        type: '竞价交易',
+        paymentVoucher: null,
+        contractFile: null
+      };
+      MockData.orders.unshift(newOrder);
+
       UI.closeModal('modal-bid-award');
-      UI.toast('定标成功！已自动生成待签约订单。', 'success');
-      // In a real app, this would refresh the data from the server.
+      UI.toast(`定标成功！已为买家 ${offer.buyerName} 自动生成待签约订单：${orderId}`, 'success');
+      
+      this.renderBidding();
+      this.renderMerchantDashboard();
     }
+  },
+
+  editingAnnId: null,
+
+  openAddAnnModal() {
+    this.editingAnnId = null;
+    const titleEl = document.getElementById('add-ann-modal-title');
+    if (titleEl) titleEl.innerText = '关联资源发布竞价公告';
+
+    const selectEl = document.getElementById('add-ann-resource-select');
+    if (!selectEl) return;
+
+    // Filter approved resources
+    const myApproved = MockData.biddingResources.filter(r => r.status === '已通过');
+    if (myApproved.length === 0) {
+      UI.toast('暂无可发布的已审核通过竞价资源，请先新增资源并等待平台审核。', 'warning');
+      return;
+    }
+
+    selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">${r.id} - ${r.name}</option>`).join('');
+    
+    // Prefill title
+    this.onAnnResourceChanged(selectEl);
+
+    // Set default dates
+    const now = new Date();
+    
+    const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    // Format to yyyy-MM-ddThh:mm
+    const formatDate = (d) => {
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    document.getElementById('add-ann-view-end').value = formatDate(threeDaysLater);
+    document.getElementById('add-ann-bid-end').value = formatDate(sevenDaysLater);
+    document.getElementById('add-ann-start-price').value = '';
+
+    UI.showModal('modal-add-ann');
+  },
+
+  openEditAnnModal(annId) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === annId);
+    if (!a) return;
+
+    this.editingAnnId = annId;
+    const titleEl = document.getElementById('add-ann-modal-title');
+    if (titleEl) titleEl.innerText = `编辑竞价公告 (${annId})`;
+
+    // Filter approved resources
+    const myApproved = MockData.biddingResources.filter(r => r.status === '已通过');
+    const selectEl = document.getElementById('add-ann-resource-select');
+    if (selectEl) {
+      selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">${r.id} - ${r.name}</option>`).join('');
+      selectEl.value = a.resId;
+    }
+
+    // When editing, remove the prefix tag if exists
+    let title = a.title || '';
+    title = title.replace(/^【看货报名阶段】|^【现场看货阶段】|^【竞价出价阶段】|^【等待公布阶段】|^【已结束】|^【待审核测试】|^【已拒绝测试】|^【已撤回测试】/, '');
+    document.getElementById('add-ann-title').value = title;
+    document.getElementById('add-ann-start-price').value = parseFloat((a.startPrice || '').replace(/[^\d\.]/g, '')) || 0;
+
+    const formatDateForInput = (str) => {
+      if (!str) return '';
+      return str.replace(' ', 'T');
+    };
+
+    document.getElementById('add-ann-view-end').value = formatDateForInput(a.viewEndTime || '');
+    document.getElementById('add-ann-bid-end').value = formatDateForInput(a.bidEndTime || '');
+
+    UI.showModal('modal-add-ann');
+  },
+
+  deleteBiddingAnn(annId) {
+    if (confirm(`确认要删除竞价公告 ${annId} 吗？`)) {
+      const idx = MockData.biddingAnnouncements.findIndex(x => x.id === annId);
+      if (idx !== -1) {
+        MockData.biddingAnnouncements.splice(idx, 1);
+        UI.toast('公告已成功删除', 'success');
+        this.renderBiddingAnn();
+      }
+    }
+  },
+
+  withdrawBiddingAnn(annId) {
+    if (confirm(`确认要撤回竞价公告 ${annId} 吗？`)) {
+      const a = MockData.biddingAnnouncements.find(x => x.id === annId);
+      if (a) {
+        a.auditStatus = '已撤回';
+        UI.toast(`公告 ${annId} 已成功撤回`, 'success');
+        this.renderBiddingAnn();
+      }
+    }
+  },
+
+  onAnnResourceChanged(selectEl) {
+    const resId = selectEl.value;
+    const res = MockData.biddingResources.find(r => r.id === resId);
+    const titleEl = document.getElementById('add-ann-title');
+    if (res && titleEl) {
+      titleEl.value = res.name;
+    }
+  },
+
+  submitBiddingAnnouncement() {
+    const resId = document.getElementById('add-ann-resource-select').value;
+    const title = document.getElementById('add-ann-title').value.trim();
+    const priceVal = parseFloat(document.getElementById('add-ann-start-price').value);
+    const viewEnd = document.getElementById('add-ann-view-end').value;
+    const bidEnd = document.getElementById('add-ann-bid-end').value;
+
+    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !viewEnd || !bidEnd) {
+      UI.toast('请填写完整且合法的竞价公告信息！', 'error');
+      return;
+    }
+
+    if (new Date(viewEnd) >= new Date(bidEnd)) {
+      UI.toast('竞拍截止时间必须晚于看货报名截止时间！', 'error');
+      return;
+    }
+
+    const res = MockData.biddingResources.find(r => r.id === resId);
+    const priceStr = '¥' + priceVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+
+    if (this.editingAnnId) {
+      // Edit mode
+      const a = MockData.biddingAnnouncements.find(x => x.id === this.editingAnnId);
+      if (a) {
+        a.resId = resId;
+        a.image = res ? res.image : a.image;
+        a.title = `【看货报名阶段】${title}`;
+        a.startPrice = priceStr;
+        a.viewEndTime = viewEnd.replace('T', ' ');
+        a.bidEndTime = bidEnd.replace('T', ' ');
+        a.status = 0; // Reset status to phase 0 (报名阶段)
+        a.auditStatus = '待审核'; // Needs re-audit
+        UI.toast(`竞价公告 ${this.editingAnnId} 修改成功，已重新提交审核！`, 'success');
+      }
+      this.editingAnnId = null;
+    } else {
+      // Create mode
+      const newAnn = {
+        id: 'BID2026' + String(Math.floor(1000 + Math.random() * 9000)),
+        resId: resId,
+        image: res ? res.image : 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80',
+        shopId: 'S001',
+        shopName: '远大钢铁官方直营店',
+        title: `【看货报名阶段】${title}`,
+        startPrice: priceStr,
+        bidEndTime: bidEnd.replace('T', ' '),
+        viewEndTime: viewEnd.replace('T', ' '),
+        status: 0, // 看货报名阶段
+        currentMaxOffer: '-',
+        winner: '-',
+        auditStatus: '待审核'
+      };
+
+      MockData.biddingAnnouncements.unshift(newAnn);
+      UI.toast(`竞价公告发布成功，已提交平台审核！公告编号: ${newAnn.id}`, 'success');
+    }
+
+    UI.closeModal('modal-add-ann');
+    this.renderBiddingAnn();
   },
 
   renderMerchantDashboard() {

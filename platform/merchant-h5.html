@@ -236,7 +236,7 @@
            </div>
          </div>
          <div style="padding: 0 0 12px;">
-           <button class="btn btn-warning" style="width:100%; height:44px; border-radius:12px; font-weight:bold; box-shadow: 0 4px 12px rgba(227, 115, 24, 0.15); border: none;" onclick="UI.showModal('modal-mh5-add-ann')">关联资源发布公告</button>
+           <button class="btn btn-warning" style="width:100%; height:44px; border-radius:12px; font-weight:bold; box-shadow: 0 4px 12px rgba(227, 115, 24, 0.15); border: none;" onclick="MerchantH5App.openAddAnnModal()">关联资源发布公告</button>
          </div>
          <div id="mh5-bidding-ann-list">
            <!-- JS 渲染公告列表 -->
@@ -306,21 +306,34 @@
 
 <!-- 移动端发布公告弹窗 -->
 <div class="modal-overlay" id="modal-mh5-add-ann">
-  <div class="h5-bottom-sheet" style="height: 80vh; overflow-y: auto;">
-    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;">关联资源发公告</div>
+  <div class="h5-bottom-sheet" style="height: 85vh; overflow-y: auto;">
+    <div style="font-weight:bold; font-size:18px; margin-bottom:16px;" id="mh5-add-ann-modal-title">关联资源发布公告</div>
     <div class="form-group mb-4">
-      <label class="text-sm text-secondary">选择已审核的资源</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;"><option>RES001 - 报废钢材处理</option></select>
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">选择已审核的资源 *</label>
+      <select id="mh5-add-ann-resource-select" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" onchange="MerchantH5App.onAnnResourceChanged(this)">
+        <!-- JS 动态渲染 -->
+      </select>
     </div>
     <div class="form-group mb-4">
-      <label class="text-sm text-secondary">起拍底价 (元)</label>
-      <input type="number" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="输入最低起拍价">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">公告标题 *</label>
+      <input type="text" id="mh5-add-ann-title" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="请输入公告标题">
+    </div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">起拍底价 (元) *</label>
+      <input type="number" id="mh5-add-ann-start-price" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" placeholder="输入最低起拍价">
+    </div>
+    <div class="form-group mb-4">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">看货报名截止时间 *</label>
+      <input type="datetime-local" id="mh5-add-ann-view-end" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
     </div>
     <div class="form-group mb-6">
-      <label class="text-sm text-secondary">竞拍截止时间</label>
-      <input type="datetime-local" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+      <label class="text-sm text-secondary" style="display:block; margin-bottom:4px;">竞拍截止时间 *</label>
+      <input type="datetime-local" id="mh5-add-ann-bid-end" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
     </div>
-    <button class="btn btn-warning" style="width:100%; height:44px; border-radius:22px;" onclick="UI.closeModal('modal-mh5-add-ann'); UI.toast('竞价公告发布成功', 'success')">确认发布公告</button>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" style="flex:1; height:44px; border-radius:22px;" onclick="UI.closeModal('modal-mh5-add-ann')">取消</button>
+      <button class="btn btn-warning" style="flex:2; height:44px; border-radius:22px;" onclick="MerchantH5App.submitBiddingAnnouncement()">确认发布公告</button>
+    </div>
   </div>
 </div>
 

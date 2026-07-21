@@ -174,6 +174,12 @@
                 <input type="date" id="demand-search-delivery-end" class="form-control" style="width: 135px; height: 38px;">
               </div>
               <button class="btn btn-primary" style="height: 38px; padding: 0 20px;" onclick="MallApp.doDemandSearch()">搜索筛查</button>
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; color:var(--text-main); margin-left:12px;">
+                <input type="checkbox" id="demand-filter-my" onchange="document.getElementById('demand-filter-joined').checked = false; MallApp.renderDemands()" style="width:16px; height:16px; cursor:pointer;"> 只看我发布的求购
+              </label>
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; color:var(--text-main); margin-left:12px;">
+                <input type="checkbox" id="demand-filter-joined" onchange="document.getElementById('demand-filter-my').checked = false; MallApp.renderDemands()" style="width:16px; height:16px; cursor:pointer;"> 只看我参与的求购
+              </label>
             </div>
             
             <!-- Horizontal Divider inside Card -->
@@ -252,15 +258,9 @@
           <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
             <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> 我的购物车
           </h2>
-          <table class="table">
-            <thead style="background:#f8f9fa;"><tr><th>商品名称</th><th>单价</th><th>数量</th><th>小计</th><th>操作</th></tr></thead>
-            <tbody>
-              <tr><td colspan="5" class="text-center py-12">
-                <div class="text-secondary mb-4">购物车空空如也，快去挑点好货吧！</div>
-                <button class="btn btn-primary" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-spot\']').click()">去逛逛</button>
-              </td></tr>
-            </tbody>
-          </table>
+          <div id="cart-grouped-container">
+            <!-- JS 渲染按店铺分类的购物车商品 -->
+          </div>
         </div>
       </div>
     </div>
@@ -365,8 +365,8 @@
             </div>
             <div class="uc-menu-item active" data-target="uc-orders">我的订单</div>
             <div class="uc-menu-item" data-target="uc-invoices">发票申请</div>
-            <div class="uc-menu-item" data-target="uc-demands-pub">我发表的求购单</div>
-            <div class="uc-menu-item" data-target="uc-demands-join">我参与的求购单</div>
+            <div class="uc-menu-item" data-target="uc-bids">我参与的竞价</div>
+            <div class="uc-menu-item" data-target="uc-messages">消息中心</div>
 
           </div>
         </aside>
@@ -448,40 +448,46 @@
             </div>
           </div>
 
-          <!-- 3. 我发表的求购单 -->
-          <div id="uc-demands-pub" class="uc-view">
-            <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
-              <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">我发表的求购意向 (寻源记录)</h3>
-                <button class="btn btn-primary" onclick="UI.openModal('modal-publish-demand')">新增求购意向</button>
+          <!-- 3. 消息中心 -->
+          <div id="uc-messages" class="uc-view" style="display:none;">
+            <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px; padding: 20px;">
+              <div class="flex justify-between items-center mb-6" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 class="text-xl font-bold" style="margin:0; color:#1e293b;">💬 消息沟通中心</h3>
               </div>
-              <table class="table" id="table-uc-demands-pub">
-                <thead style="background:#f8f9fa;"><tr><th>求购单号</th><th>意向标题</th><th>发布时间</th><th>收到的报价数</th><th>状态</th><th>操作</th></tr></thead>
-                <tbody><!-- JS 渲染 --></tbody>
-              </table>
-              
-              <div class="flex justify-center items-center gap-2 mt-6">
-                <button class="btn btn-text" disabled>&lt; 上一页</button>
-                <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
-                <button class="btn btn-text">下一页 &gt;</button>
+              <div class="flex gap-4 mb-6">
+                <button class="btn btn-primary" id="btn-msg-tab-spot" onclick="MallApp.switchMsgTab('spot')" style="border-radius:18px; padding: 6px 16px; font-size:12px;">现货沟通</button>
+                <button class="btn btn-outline" id="btn-msg-tab-demand" onclick="MallApp.switchMsgTab('demand')" style="border-radius:18px; padding: 6px 16px; font-size:12px;">求购需求沟通</button>
+              </div>
+              <div id="uc-messages-list" style="display:flex; flex-direction:column; gap:10px;">
+                <!-- JS 动态渲染消息列表 -->
               </div>
             </div>
           </div>
-
-          <!-- 4. 我参与的求购单 -->
-          <div id="uc-demands-join" class="uc-view">
+          
+          <!-- 我参与的竞价 -->
+          <div id="uc-bids" class="uc-view">
             <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
-              <h3 class="text-xl font-bold mb-6">我参与的求购单 (我的报价记录)</h3>
-              <table class="table" id="table-uc-demands-join">
-                <thead style="background:#f8f9fa;"><tr><th>求购单号</th><th>意向标题</th><th>买家</th><th>我的报价</th><th>状态</th><th>操作</th></tr></thead>
+              <h3 class="text-xl font-bold mb-6">我参与的竞价项目 (我的出价记录)</h3>
+              <table class="table" id="table-uc-bids">
+                <thead style="background:#f8f9fa;">
+                  <tr>
+                    <th>项目编号</th>
+                    <th>竞价公告标题</th>
+                    <th>起拍底价</th>
+                    <th>当前最高价</th>
+                    <th>我的最高出价</th>
+                    <th>当前状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr><td colspan="6" class="text-center text-secondary py-8">暂无参与记录，快去求购大厅寻找商机吧</td></tr>
+                  <!-- JS 动态渲染 -->
                 </tbody>
               </table>
               <div class="flex justify-center items-center gap-2 mt-6">
                 <button class="btn btn-text" disabled>&lt; 上一页</button>
                 <button class="btn btn-primary" style="padding: 4px 12px;">1</button>
-                <button class="btn btn-text">下一页 &gt;</button>
+                <button class="btn btn-text" disabled>下一页 &gt;</button>
               </div>
             </div>
           </div>
@@ -767,7 +773,7 @@
     </div>
     <div class="p-4 border-t border-light flex justify-end gap-3">
       <button class="btn btn-outline" onclick="UI.closeModal('modal-publish-demand')">取消</button>
-      <button class="btn btn-primary px-6" onclick="event.stopPropagation(); UI.toast('求购意向发布成功！', 'success'); UI.closeModal('modal-publish-demand');">确认发布</button>
+      <button class="btn btn-primary px-6" onclick="event.stopPropagation(); MallApp.submitPublishDemand();">确认发布</button>
     </div>
   </div>
 </div>
@@ -812,7 +818,7 @@
     </div>
     <div class="p-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">
       <button class="btn btn-outline" style="border-radius: 12px; font-size: 12px; font-weight: bold; padding: 6px 16px;" onclick="UI.closeModal('modal-quote')">取消</button>
-      <button class="btn btn-primary" style="background: var(--primary-color); border-radius: 12px; border: none; height: 32px; display: flex; align-items: center; font-size: 12px; font-weight: bold; padding: 0 20px; color: #fff; cursor: pointer;" onclick="event.stopPropagation(); UI.toast('报价提交成功！等待采购商联系。', 'success'); UI.closeModal('modal-quote');">确认提交报价</button>
+      <button class="btn btn-primary" style="background: var(--primary-color); border-radius: 12px; border: none; height: 32px; display: flex; align-items: center; font-size: 12px; font-weight: bold; padding: 0 20px; color: #fff; cursor: pointer;" onclick="event.stopPropagation(); MallApp.submitQuote();">确认提交报价</button>
     </div>
   </div>
 </div>
