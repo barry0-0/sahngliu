@@ -18,31 +18,17 @@
           咖喱粑粑
         </div>
         <nav class="mall-nav">
-          <div class="mall-nav-item active" data-target="mall-home">首页</div>
+          <div class="mall-nav-item active" data-target="mall-home">交易首页</div>
           <div class="mall-nav-item" data-target="mall-spot">现货市场</div>
-          <div class="mall-nav-item" data-target="mall-demand">求购大厅 (寻源)</div>
+          <div class="mall-nav-item" data-target="mall-demand">求购大厅</div>
           <div class="mall-nav-item" data-target="mall-bid">竞价大厅</div>
         </nav>
       </div>
-      <div class="flex items-center gap-6">
-        <div class="mall-search flex" style="align-items: stretch; border: 2px solid var(--primary-color); border-radius: 4px; overflow: hidden; height: 38px;">
-          <select id="search-type" style="border: none; background: #f8f9fa; padding: 0 10px; outline: none; border-right: 1px solid #e0e0e0;">
-            <option value="product">搜商品</option>
-            <option value="merchant">搜商户</option>
-          </select>
-          <input type="text" id="search-keyword" placeholder="搜索关键词..." style="border: none; outline: none; padding: 0 15px; width: 220px;">
-          <button class="btn btn-primary" style="border-radius: 0; border: none; height: 100%;" onclick="window.MallApp && window.MallApp.doSearch()">搜索</button>
-        </div>
-        <div class="flex items-center gap-4">
-          <button class="btn btn-text flex items-center gap-2" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click()">
-            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            购物车 <span class="tag tag-danger" style="border-radius:10px; padding:2px 6px;">0</span>
-          </button>
-          <button class="btn btn-text flex items-center gap-2" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-ucenter\']').click()">
-            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            个人中心
-          </button>
-        </div>
+      <div class="flex items-center gap-4">
+        <button class="btn btn-text flex items-center gap-2" onclick="document.querySelector('.mall-nav-item[data-target=\'mall-ucenter\']').click()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          个人中心
+        </button>
       </div>
     </div>
   </header>
@@ -56,15 +42,32 @@
     <!-- ================== 1. 首页 ================== -->
     <div id="mall-home" class="mall-view active">
       <div class="mall-container">
-        
+        <!-- 全宽拉长搜索栏 -->
+        <div class="home-search-bar-row mb-6" style="background:#fff; border-radius:12px; padding: 16px 24px; display:flex; justify-content:center; align-items:center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 24px;">
+          <div class="flex" style="display:flex; align-items: stretch; border: 2px solid var(--primary-color); border-radius: 8px; overflow: hidden; height: 46px; width: 100%; max-width: 900px; background:#fff;">
+            <select id="banner-search-type" style="border: none; background: #f8f9fa; padding: 0 20px; outline: none; border-right: 1px solid #e2e8f0; font-size:14px; color:#333; font-weight:bold;">
+              <option value="product">搜商品</option>
+              <option value="merchant">搜商户</option>
+            </select>
+            <input type="text" id="banner-search-keyword" placeholder="请输入想要搜索的钢材、水泥、木方等大宗物资商品或商户店铺名称..." style="border: none; outline: none; padding: 0 16px; flex: 1; font-size:14px; color:#333; height:100%; box-sizing:border-box;">
+            <button class="btn btn-primary" style="border-radius: 0; border: none; height: 100%; font-size:14px; font-weight:bold; padding: 0 32px; background: var(--primary-color); color:#fff; cursor:pointer;" onclick="window.MallApp && window.MallApp.doBannerSearch()">大宗搜索</button>
+          </div>
+        </div>
+
         <div class="home-hero-section">
           <!-- 左侧类目菜单 -->
           <div class="home-category-menu" id="home-category-menu">
             <div style="padding: 16px 20px 8px; font-weight: bold; color: var(--text-main); font-size: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 8px;">📦 全部品类</div>
             <!-- JS 渲染 -->
           </div>
-          <!-- 右侧 Banner -->
-          <div class="home-banner">享 宇 森 云 · 数 字 供 应 链</div>
+          <!-- 右侧 Banner (大宗物资港口/集装箱货场背景) -->
+          <div class="home-banner" style="flex: 1; border-radius: 12px; background-image: url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8); position: relative; overflow: hidden; min-height: 280px; box-sizing: border-box;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%); z-index: 1;"></div>
+            <div style="z-index: 2; position: relative;">
+              <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 12px 0; font-family: var(--font-serif); letter-spacing: 2px; color:#fff; line-height: 1.2;">咖喱粑粑大宗供应链</h1>
+              <p style="font-size: 15px; opacity: 0.95; margin: 0; font-weight: 300;">数智化大宗商品采购平台 · 提供钢材、木材、水泥等一站式集采与安全支付结算保障</p>
+            </div>
+          </div>
         </div>
 
         <div class="flex justify-between items-end mb-6 mt-8">
@@ -119,13 +122,24 @@
       <div class="mall-container">
         <div class="card mb-6 shadow-sm border-0">
           <div class="card-body">
-            <div class="flex gap-4 items-center mb-4 pb-4 border-b border-light">
-              <span class="font-bold text-secondary w-20">综合筛选:</span>
-              <span class="tag tag-primary cursor-pointer">全部商品</span>
-              <span class="text-secondary cursor-pointer hover:text-primary">钢材</span>
-              <span class="text-secondary cursor-pointer hover:text-primary">木材</span>
-              <span class="text-secondary cursor-pointer hover:text-primary">水泥</span>
-              <span class="text-secondary cursor-pointer hover:text-primary">五金辅材</span>
+            <div class="flex gap-4 items-center mb-4 pb-4 border-b border-light justify-between" style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="flex gap-4 items-center" style="display:flex; align-items:center; gap:16px;">
+                <span class="font-bold text-secondary w-20">综合筛选:</span>
+                <span class="tag tag-primary cursor-pointer">全部商品</span>
+                <span class="text-secondary cursor-pointer hover:text-primary">钢材</span>
+                <span class="text-secondary cursor-pointer hover:text-primary">木材</span>
+                <span class="text-secondary cursor-pointer hover:text-primary">水泥</span>
+                <span class="text-secondary cursor-pointer hover:text-primary">五金辅材</span>
+              </div>
+              <!-- 现货市场搜索框 -->
+              <div class="mall-search flex" style="display:flex; align-items: stretch; border: 2px solid var(--primary-color); border-radius: 4px; overflow: hidden; height: 34px; background:#fff;">
+                <select id="search-type" style="border: none; background: #f8f9fa; padding: 0 10px; outline: none; border-right: 1px solid #e0e0e0; font-size:12px;">
+                  <option value="product">搜商品</option>
+                  <option value="merchant">搜商户</option>
+                </select>
+                <input type="text" id="search-keyword" placeholder="搜索商品/店铺..." style="border: none; outline: none; padding: 0 12px; width: 180px; font-size:12px;">
+                <button class="btn btn-primary" style="border-radius: 0; border: none; height: 100%; font-size:12px; padding: 0 12px;" onclick="window.MallApp && window.MallApp.doSearch()">搜索</button>
+              </div>
             </div>
             <div class="flex gap-4 items-center">
               <span class="font-bold text-secondary w-20">价格排序:</span>
@@ -251,19 +265,7 @@
       </div>
     </div>
 
-    <!-- ================== 5. 购物车 ================== -->
-    <div id="mall-cart" class="mall-view">
-      <div class="mall-container">
-        <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
-          <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> 我的购物车
-          </h2>
-          <div id="cart-grouped-container">
-            <!-- JS 渲染按店铺分类的购物车商品 -->
-          </div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- ================== 5.5 店铺主页 (商户主页) ================== -->
     <div id="mall-shop" class="mall-view">
@@ -364,6 +366,7 @@
               <span style="color:#10b981;">💼</span> 交易市场
             </div>
             <div class="uc-menu-item active" data-target="uc-orders">我的订单</div>
+            <div class="uc-menu-item" data-target="uc-cart">我的购物车 <span class="tag tag-danger" id="cart-badge-uc" style="border-radius:10px; padding:2px 6px; font-size:10px; margin-left:4px; display:none; background:#ff4d4f; color:#fff; font-weight:bold;">0</span></div>
             <div class="uc-menu-item" data-target="uc-invoices">发票申请</div>
             <div class="uc-menu-item" data-target="uc-bids">我参与的竞价</div>
             <div class="uc-menu-item" data-target="uc-messages">消息中心</div>
@@ -434,6 +437,193 @@
             </div>
           </div>
 
+          <!-- 1.1 订单详情 (PC专属全新页面) -->
+          <div id="uc-order-detail" class="uc-view" style="display: none;">
+            <!-- 面包屑 / 返回导航 -->
+            <div style="display:flex; align-items:center; justify-space-between:space-between; margin-bottom:20px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#64748b;">
+                <span style="cursor:pointer; color:#1e293b;" onclick="MallApp.showUCTab('uc-orders')">我的订单</span>
+                <span>/</span>
+                <span style="color:var(--primary-color); font-weight:bold;">订单详情</span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="MallApp.showUCTab('uc-orders')" style="border-radius:20px; padding:6px 16px;">
+                ← 返回订单列表
+              </button>
+            </div>
+
+            <!-- 1. 状态大卡片 & 6步流程进度条 -->
+            <div class="card shadow-sm border-0 mb-6" style="background:#fff; border-radius:12px; padding:24px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #f1f5f9;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                    <h2 class="text-2xl font-bold" id="pc-detail-order-id" style="margin:0; color:#0f172a; font-family:monospace;">ORD-20260707-1002</h2>
+                    <span id="pc-detail-type-tag" class="tag tag-primary">现货交易订单</span>
+                  </div>
+                  <div style="font-size:13px; color:#64748b; display:flex; gap:20px;">
+                    <span>下单时间: <strong id="pc-detail-create-time" style="color:#334155;">2026-07-07 10:15</strong></span>
+                    <span>付款方式: <strong id="pc-detail-pay-method" style="color:#334155;">线上担保支付 (托管账户)</strong></span>
+                  </div>
+                </div>
+                <!-- 顶部快捷操作 -->
+                <div id="pc-detail-top-actions" style="display:flex; gap:12px; align-items:center;">
+                  <!-- JS 动态渲染按状态操作按钮 -->
+                </div>
+              </div>
+
+              <!-- 状态 banner 提示 -->
+              <div id="pc-detail-status-banner" style="background: linear-gradient(135deg, rgba(174,134,231,0.1) 0%, rgba(154,102,228,0.05) 100%); border:1px solid rgba(174,134,231,0.3); border-radius:10px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:40px; height:40px; border-radius:50%; background:var(--primary-color); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">✓</div>
+                  <div>
+                    <div id="pc-detail-status-title" style="font-size:16px; font-weight:bold; color:#1e1b4b;">当前状态：卖家已发货 (待买家确认收货)</div>
+                    <div id="pc-detail-status-desc" style="font-size:12px; color:#64748b; margin-top:2px;">商品已由极速物流发出，请在收到货品后核对质量并确认收货。</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 6步可视化流程 -->
+              <div>
+                <div style="font-size:13px; font-weight:bold; color:#475569; margin-bottom:14px;">交易履约节点进度:</div>
+                <div id="pc-detail-steps" style="display:flex; justify-content:space-between; position:relative; padding:0 10px;">
+                  <!-- JS 动态渲染进度节点 -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. PC 两栏主要内容布局 -->
+            <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px;">
+              <!-- 左侧：商品列表、费用汇总、合同与附件、状态调试器 -->
+              <div style="display:flex; flex-direction:column; gap:20px;">
+                <!-- 商品清单明细 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+                    <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+                    订购货品与计价明细
+                  </h3>
+                  <table class="table" style="width:100%; font-size:13px;">
+                    <thead style="background:#f8fafc;">
+                      <tr>
+                        <th style="padding:10px 12px; text-align:left;">商品名称</th>
+                        <th style="padding:10px 12px; text-align:center;">货品品类</th>
+                        <th style="padding:10px 12px; text-align:right;">单价</th>
+                        <th style="padding:10px 12px; text-align:center;">数量</th>
+                        <th style="padding:10px 12px; text-align:right;">小计</th>
+                      </tr>
+                    </thead>
+                    <tbody id="pc-detail-goods-tbody">
+                      <!-- JS 动态渲染 -->
+                    </tbody>
+                  </table>
+
+                  <!-- 费用计算单 -->
+                  <div style="display:flex; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px dashed #e2e8f0;">
+                    <div style="width:280px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+                      <div style="display:flex; justify-content:space-between; color:#64748b;">
+                        <span>商品总额:</span>
+                        <span id="pc-detail-subtotal-price" style="font-weight:bold; color:#334155;">¥ 0.00</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; color:#64748b;">
+                        <span>运费/专车配送费:</span>
+                        <span style="color:#16a34a; font-weight:bold;">包含在包厢单价中 (免运费)</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; color:#64748b;">
+                        <span>平台综合服务费:</span>
+                        <span style="color:#64748b;">¥ 0.00 (免服务费)</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:10px; border-top:1px solid #e2e8f0; font-size:15px;">
+                        <span class="font-bold" style="color:#0f172a;">订单实付金额:</span>
+                        <span id="pc-detail-total-amount" class="text-xl font-bold" style="color:#ef4444;">¥ 0.00</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 电子合同与签署凭证 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+                    <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+                    电子合同与法务存证
+                  </h3>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <div style="font-size:24px;">📄</div>
+                      <div>
+                        <div style="font-weight:bold; color:#1e293b; font-size:14px;" id="pc-detail-contract-name">《大宗物资买卖交易合同及质量保证金协议》</div>
+                        <div style="font-size:12px; color:#64748b; margin-top:2px;">合同编号: <span id="pc-detail-contract-no">HT-20260707-8891</span> | 双方已完成数字签章 (司法区块链存证)</div>
+                      </div>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="UI.toast('已成功调起电子合同查看', 'info')" style="border-radius:6px;">预览存证合同</button>
+                  </div>
+                </div>
+
+                <!-- 货款付款凭证 -->
+                <div class="card shadow-sm border-0" id="pc-detail-payment-voucher-card" style="background:#fff; border-radius:12px; padding:20px; margin-top:16px; display:none;">
+                  <!-- Dynamic content via JS -->
+                </div>
+
+                <!-- 演示专供：状态快速切换器 (方便展示给开发/测试看) -->
+                <div class="card shadow-sm border-0" style="background:#fff7ed; border:1px dashed #fdba74; border-radius:12px; padding:16px 20px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="font-size:13px; font-weight:bold; color:#c2410c; display:flex; align-items:center; gap:6px;">
+                      <span>⚡ 演示辅助控制台：模拟订单全状态流转切换 (方便开发及设计验收)</span>
+                    </div>
+                    <div id="pc-detail-status-switchers" style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <!-- JS 动态渲染切换按钮 -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 右侧：收货地址与物流、商家店铺卡片、履约日志 -->
+              <div style="display:flex; flex-direction:column; gap:20px;">
+                <!-- 物流与收货人 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">📦 收货信息与物流跟踪</h4>
+                  <div style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货人:</span>
+                      <strong id="pc-detail-receiver-name" style="color:#1e293b;">张三</strong>
+                      <span id="pc-detail-receiver-phone" style="color:#64748b; margin-left:8px;">138****8818</span>
+                    </div>
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货地址:</span>
+                      <span id="pc-detail-receiver-addr" style="color:#334155;">浙江省杭州市萧山区大宗仓储物流园区5号仓库</span>
+                    </div>
+                    <div style="margin-top:4px; padding-top:8px; border-top:1px dashed #f1f5f9;">
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">承运物流:</span>
+                      <span id="pc-detail-logistics-comp" style="color:#1e293b; font-weight:bold;">顺丰专车大宗运输</span>
+                    </div>
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">运单单号:</span>
+                      <span id="pc-detail-logistics-no" style="font-family:monospace; color:#0284c7; font-weight:bold;">SF1480928120</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 卖家/商户信息 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">🏪 卖家商户信息</h4>
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <div id="pc-detail-shop-avatar" style="width:40px; height:40px; border-radius:50%; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">商</div>
+                    <div>
+                      <div id="pc-detail-shop-name" style="font-weight:bold; color:#0f172a; font-size:14px;">远大钢铁官方直营店</div>
+                      <div style="font-size:11px; color:#16a34a; margin-top:2px;">✓ 平台认证真实企业商户</div>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline btn-sm w-full" onclick="UI.toast('已拉起IM客服会话', 'info')" style="width:100%; border-radius:6px;">💬 联系卖家在线客服</button>
+                </div>
+
+                <!-- 关键履约日志 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">⏱️ 履约存证日志</h4>
+                  <div id="pc-detail-logs" style="font-size:12px; display:flex; flex-direction:column; gap:10px; color:#64748b;">
+                    <!-- JS 动态渲染日志 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 2. 发票申请 -->
           <div id="uc-invoices" class="uc-view">
             <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px;">
@@ -500,6 +690,17 @@
                 <thead style="background:#f8f9fa;"><tr><th>时间</th><th>标题</th><th>内容</th></tr></thead>
                 <tbody><!-- JS 渲染 --></tbody>
               </table>
+            </div>
+          </div>
+
+          <div id="uc-cart" class="uc-view">
+            <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
+              <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> 我的购物车
+              </h2>
+              <div id="cart-grouped-container">
+                <!-- JS 渲染按店铺分类的购物车商品 -->
+              </div>
             </div>
           </div>
 
@@ -603,7 +804,7 @@
     <!-- Action Buttons -->
     <div class="flex gap-4" style="display:flex; gap:16px;">
       <button class="btn btn-outline flex-1 py-3 text-sm font-bold transition-all hover:bg-slate-50" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail');">加入购物车</button>
-      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-cart\']').click();">立即购买</button>
+      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-ucenter\']').click(); setTimeout(() => { const cartMenu = document.querySelector('.uc-menu-item[data-target=\'uc-cart\']'); if (cartMenu) cartMenu.click(); }, 50);">立即购买</button>
     </div>
   </div>
 </div>
@@ -759,17 +960,31 @@
     </div>
     <div class="p-5 flex flex-col gap-4">
       <div>
-        <label class="block text-sm text-secondary mb-1">求购标题 <span class="text-danger">*</span></label>
-        <input type="text" id="pd-title" class="form-control w-full" placeholder="例如：急求某某型号原木100方">
+        <label class="block text-sm text-secondary mb-1">求购货品 <span class="text-danger">*</span></label>
+        <input type="text" id="pd-goods-name" class="form-control w-full" placeholder="例如：HRB400E 抗震螺纹钢 / 樟子松原木">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 120px; gap:12px;">
+        <div>
+          <label class="block text-sm text-secondary mb-1">需求数量 <span class="text-danger">*</span></label>
+          <input type="number" id="pd-quantity" class="form-control w-full" placeholder="例如：50" value="50">
+        </div>
+        <div>
+          <label class="block text-sm text-secondary mb-1">计量单位 <span class="text-danger">*</span></label>
+          <select id="pd-unit" class="form-control w-full">
+            <option value="吨">吨</option>
+            <option value="袋">袋</option>
+            <option value="箱">箱</option>
+            <option value="斤">斤</option>
+            <option value="立方">立方</option>
+            <option value="件">件</option>
+          </select>
+        </div>
       </div>
       <div>
-        <label class="block text-sm text-secondary mb-1">期望价格</label>
-        <input type="text" id="pd-price" class="form-control w-full" placeholder="例如：面议 或 3000元/方">
+        <label class="block text-sm text-secondary mb-1">交期时间范围 <span class="text-danger">*</span></label>
+        <input type="text" id="pd-delivery-period" class="form-control w-full" placeholder="例如：2026-08-01 至 2026-08-15">
       </div>
-      <div>
-        <label class="block text-sm text-secondary mb-1">求购详情说明</label>
-        <textarea id="pd-desc" class="form-control w-full" rows="3" placeholder="请详细描述您的需求，例如材质、交货地、交期等..."></textarea>
-      </div>
+
     </div>
     <div class="p-4 border-t border-light flex justify-end gap-3">
       <button class="btn btn-outline" onclick="UI.closeModal('modal-publish-demand')">取消</button>
@@ -801,19 +1016,9 @@
         <span style="line-height: 1.4; color: #475569;">报价提交后，采购方将直接在后台收到通知，并可通过平台沟通机制（消息中心聊天室）与您线下商议合同细节。</span>
       </div>
 
-      <div class="grid grid-cols-2 gap-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-          <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价单价 <span class="text-danger">*</span></label>
-          <input type="text" id="quote-price" class="form-control w-full" style="height: 38px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-size: 13px; font-weight: bold;" placeholder="例如：4150元/吨">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-600 mb-1.5 font-bold">可供货数量 <span class="text-danger">*</span></label>
-          <input type="text" id="quote-qty" class="form-control w-full" style="height: 38px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-size: 13px; font-weight: bold;" placeholder="例如：50吨">
-        </div>
-      </div>
       <div>
-        <label class="block text-xs text-slate-600 mb-1.5 font-bold">报价备注说明</label>
-        <textarea id="quote-notes" class="form-control w-full" rows="3" style="border-radius: 10px; border: 1px solid #e2e8f0; padding: 10px 12px; font-size: 13px;" placeholder="请在此描述付款方式、运输负责方、发票开立类型或交货期限等详细说明..."></textarea>
+        <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价金额 <span class="text-danger">*</span></label>
+        <input type="text" id="quote-price" class="form-control w-full" style="height: 38px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-size: 13px; font-weight: bold;" placeholder="例如：4150元/吨">
       </div>
     </div>
     <div class="p-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">

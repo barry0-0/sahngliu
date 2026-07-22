@@ -4,11 +4,11 @@
  */
 
 :root {
-  /* 品牌色 - 偏现代工业/自然高质感深绿或深蓝 (这里采用深邃科技蓝) */
-  --primary-color: #0052d9;
-  --primary-hover: #266fe8;
-  --primary-active: #003cab;
-  --primary-bg: #e3efff;
+  /* 品牌色 - rgb(174, 134, 231) */
+  --primary-color: rgb(174, 134, 231);
+  --primary-hover: rgb(194, 160, 241);
+  --primary-active: rgb(154, 110, 218);
+  --primary-bg: #f5effd;
 
   /* 功能色 */
   --success-color: #2ba471;
@@ -445,24 +445,25 @@ select.form-control {
 }
 .sidebar {
   width: 240px;
-  background-color: #0f172a;
-  color: #94a3b8;
+  background-color: #ffffff;
+  color: #1e293b;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   transition: width 0.2s;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  border-right: 1px solid #e2e8f0;
 }
 .sidebar .logo {
   height: 60px;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  font-size: 20px;
+  font-size: 16px;
   font-family: var(--font-family);
   font-weight: bold;
-  color: #fff;
-  background-color: #020617;
+  color: var(--primary-color);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   letter-spacing: 1px;
 }
 .menu-list {
@@ -482,38 +483,40 @@ select.form-control {
   cursor: pointer;
   transition: all 0.2s;
   width: 100%;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
 }
 .menu-title:hover {
-  color: #fff;
-  background-color: #1e293b;
+  color: var(--primary-color);
+  background-color: var(--primary-bg);
 }
 .menu-item.active > .menu-title {
-  background: #1e293b;
+  background: var(--primary-bg);
   border-left: 4px solid var(--primary-color);
-  color: #fff;
+  color: var(--primary-color);
   font-weight: 600;
   box-shadow: none;
 }
 .sub-menu {
-  background-color: #020617;
+  background-color: #ffffff;
 }
 .sub-menu-item {
   padding: 12px 24px 12px 48px;
   cursor: pointer;
   transition: all 0.2s;
-  color: #94a3b8;
-  font-size: 14px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
 }
 .sub-menu-item:hover {
-  color: #fff;
-  background-color: #0f172a;
+  color: var(--primary-color);
+  background-color: var(--primary-bg);
 }
 .sub-menu-item.active {
-  color: #fff;
-  font-weight: 600;
-  background-color: var(--primary-color);
+  color: var(--primary-color);
+  font-weight: bold;
+  background-color: var(--primary-bg);
   box-shadow: none;
   border-radius: 4px;
   margin: 0 12px;

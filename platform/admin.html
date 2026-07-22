@@ -198,6 +198,7 @@
           </div>
         </div>
       </div>
+
       <!-- ================== 商家店铺管理 ================== -->
       <div id="tab-merchant-shop" class="page-view" style="display: none;">
         <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
@@ -206,23 +207,45 @@
             <span class="text-secondary text-sm" id="shop-management-count">共 0 个商家店铺</span>
           </div>
           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
-            <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light" style="align-items: center; justify-content: space-between;">
+            <!-- 筛选区 -->
+            <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light items-end flex-wrap">
+              <div class="form-group mb-0">
+                <label class="text-xs text-secondary mb-1 block">商户号</label>
+                <input type="text" id="admin-search-shop-id" class="form-control" placeholder="输入商户号..." style="width:140px;">
+              </div>
+              <div class="form-group mb-0">
+                <label class="text-xs text-secondary mb-1 block">店铺名/公司名</label>
+                <input type="text" id="admin-search-shop-keyword" class="form-control" placeholder="搜索店铺名/公司名..." style="width:200px;">
+              </div>
+              <div class="form-group mb-0">
+                <label class="text-xs text-secondary mb-1 block">店铺状态</label>
+                <select id="admin-search-shop-status" class="form-control" style="width:140px;">
+                  <option value="">全部状态</option>
+                  <option value="待审核">待审核</option>
+                  <option value="闭店中">闭店中</option>
+                  <option value="正常营业">正常营业</option>
+                </select>
+              </div>
               <div class="flex gap-2">
-                <input type="text" id="admin-search-shop-keyword" class="form-control" placeholder="输入店铺名/公司名搜索..." style="width:260px;">
-                <button class="btn btn-primary" onclick="AdminApp.renderMerchantShops()">搜索</button>
+                <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderMerchantShops()">查询</button>
+                <button class="btn btn-outline h-[38px]" onclick="AdminApp.resetMerchantShopsFilter()">重置</button>
               </div>
             </div>
             <div style="overflow-x: auto;">
               <table class="table" style="width:100%; border-collapse: collapse;">
                 <thead>
-                  <tr style="border-bottom: 2px solid var(--border-light); text-align: left;">
+                  <tr style="border-bottom: 2px solid var(--border-light); text-align: left; background:#f8fafc;">
+                    <th style="padding:12px;">序号</th>
+                    <th style="padding:12px;">商户号</th>
+                    <th style="padding:12px; text-align:center;">店铺头像</th>
+                    <th style="padding:12px; text-align:center;">店铺Banner</th>
                     <th style="padding:12px;">店铺名称</th>
                     <th style="padding:12px;">公司名称</th>
-                    <th style="padding:12px; text-align: center;">状态</th>
-                    <th style="padding:12px; text-align: center;">货品数量</th>
+                    <th style="padding:12px; text-align:center;">店铺状态</th>
+                    <th style="padding:12px; text-align:center;">货品数量</th>
                     <th style="padding:12px;">信用代码</th>
-                    <th style="padding:12px;">注册时间</th>
-                    <th style="padding:12px; text-align: center;">操作</th>
+                    <th style="padding:12px; text-align:center;">更新时间</th>
+                    <th style="padding:12px; text-align:center;">操作</th>
                   </tr>
                 </thead>
                 <tbody id="admin-shop-tbody">
@@ -241,117 +264,193 @@
             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📚 分类数据字典</h3>
           </div>
           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
-             <!-- 新增表单筛选区 -->
-             <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light">
+             <!-- 分类筛选区 -->
+             <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light items-end">
+                <div class="form-group mb-0 flex-1">
+                  <label class="text-xs text-secondary mb-1 block">分类级别 <span class="text-danger">*</span></label>
+                  <select id="filter-cat-level" class="form-control">
+                    <option value="">全部级别</option>
+                    <option value="1">一级分类</option>
+                    <option value="2">二级分类</option>
+                    <option value="3">三级分类</option>
+                  </select>
+                </div>
                 <div class="form-group mb-0 flex-1">
                   <label class="text-xs text-secondary mb-1 block">类别名称</label>
-                  <input type="text" class="form-control" placeholder="支持模糊搜索">
-                </div>
-                <div class="form-group mb-0 flex-1">
-                  <label class="text-xs text-secondary mb-1 block">状态</label>
-                  <select class="form-control"><option>全部</option><option>启用</option><option>禁用</option></select>
+                  <input type="text" id="filter-cat-name" class="form-control" placeholder="支持类别名称模糊搜索">
                 </div>
                 <div class="flex items-end gap-2">
-                  <button class="btn btn-primary h-[38px]">查询</button>
-                  <button class="btn btn-primary h-[38px]" onclick="window.openAddCategoryModal()">新增一级分类</button>
+                  <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderBaseProducts()">查询</button>
+                  <button class="btn btn-outline h-[38px]" onclick="AdminApp.resetBaseProductsFilter()">重置</button>
+                  <button class="btn btn-primary h-[38px]" style="background:#10b981; border-color:#10b981;" onclick="window.openAddCategoryModal()">新增一级分类</button>
                 </div>
              </div>
              <table class="table" id="table-base-category">
-              <thead><tr style="background: #f4f6f8;"><th>类别名称</th><th>类别编码</th><th>级别</th><th>状态</th><th>操作</th></tr></thead>
+              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>类别名称</th><th>类别编码</th><th>级别</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
         </div>
       </div>
       <div id="tab-prod-merchant" class="page-view" style="display: none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
-             <!-- 新增表单筛选区 -->
-             <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📦 上架商品管理</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+             <!-- 上架商品筛选区 -->
+             <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light items-end flex-wrap">
                 <div class="form-group mb-0 flex-1">
                   <label class="text-xs text-secondary mb-1 block">商品名称</label>
-                  <input type="text" class="form-control" placeholder="支持模糊匹配" value="螺纹钢">
+                  <input type="text" id="filter-merchant-prod-kw" class="form-control" placeholder="按商品名称模糊匹配">
                 </div>
                 <div class="form-group mb-0 flex-1">
-                  <label class="text-xs text-secondary mb-1 block">所属商家</label>
-                  <select class="form-control"><option>全部商家</option><option selected>远大钢铁官方直营店</option></select>
+                  <label class="text-xs text-secondary mb-1 block">店铺名称</label>
+                  <input type="text" id="filter-merchant-prod-shop" class="form-control" placeholder="按店铺名称模糊匹配">
+                </div>
+                <div class="form-group mb-0 flex-1">
+                  <label class="text-xs text-secondary mb-1 block">公司名称</label>
+                  <input type="text" id="filter-merchant-prod-company" class="form-control" placeholder="按公司名称模糊匹配">
                 </div>
                 <div class="form-group mb-0 flex-1">
                   <label class="text-xs text-secondary mb-1 block">商品状态</label>
-                  <select class="form-control"><option>全部</option><option>待审核</option><option selected>已上架</option></select>
+                  <select id="filter-merchant-prod-status" class="form-control">
+                    <option value="">全部状态</option>
+                    <option value="0">待审核</option>
+                    <option value="1">已上架</option>
+                    <option value="2">已下架</option>
+                  </select>
                 </div>
-                <div class="flex items-end"><button class="btn btn-primary h-[38px]">执行筛查</button></div>
+                <div class="flex gap-2">
+                  <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderMerchantProducts()">查询</button>
+                  <button class="btn btn-outline h-[38px]" onclick="AdminApp.resetMerchantProductsFilter()">重置</button>
+                </div>
              </div>
              <table class="table" id="table-merchant-products">
-              <thead><tr><th>主图</th><th>所属商家</th><th>商品名称</th><th>货品类别</th><th>单价</th><th>当前状态</th><th>管理操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>上架单号</th><th>主图</th><th>店铺名称</th><th>公司名称</th><th>商品名称</th><th>类别</th><th>货品类别</th><th>单价</th><th>销量</th><th>创建时间</th><th>上架时间</th><th>更新时间</th><th>当前状态</th><th>管理操作</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
         </div>
+      </div>
       <!-- ================== 4. 供求中心 ================== -->
       <div id="page-demands" class="page-view" style="display: none;">
-        <div class="card-body table-wrapper" style="background:#fff;">
-          <div class="flex gap-4 mb-4">
-            <input type="text" class="form-control" placeholder="筛查买家/标题" style="width: 200px;">
-            <button class="btn btn-primary">筛查</button>
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+          <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+            <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📢 供求信息审核</h3>
           </div>
-          <table class="table" id="table-demands">
-            <thead><tr><th>求购单号</th><th>买方主体</th><th>意向标题</th><th>上架状态</th><th>操作菜单 (上架/驳回/下架)</th></tr></thead>
-            <tbody><!-- JS 渲染 --></tbody>
-          </table>
+          <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+            <div class="flex gap-4 mb-4 items-end">
+              <div class="form-group mb-0 flex-1">
+                <label class="text-xs text-secondary mb-1 block">搜索筛选</label>
+                <input type="text" id="filter-demand-kw" class="form-control" placeholder="筛查买家/用户名/手机号/求购货品..." style="width: 320px;">
+              </div>
+              <div class="flex gap-2">
+                <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderDemands()">查询</button>
+                <button class="btn btn-outline h-[38px]" onclick="AdminApp.resetDemandsFilter()">重置</button>
+              </div>
+            </div>
+            <table class="table" id="table-demands">
+              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>求购单号</th><th>买家</th><th>手机号</th><th>意向货品</th><th>数量(单位)</th><th>发布时间</th><th>更新时间</th><th>当前状态</th><th>操作</th></tr></thead>
+              <tbody><!-- JS 渲染 --></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <!-- ================== 5. 交易中心 ================== -->
       <div id="tab-trades-order" class="page-view" style="display: none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
-             <div class="flex gap-4 mb-4">
-                <input type="text" class="form-control" placeholder="关联筛查 买家/卖家" style="width: 250px;">
-                <button class="btn btn-primary">筛查</button>
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📋 订单透视监控</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+             <div class="flex gap-4 mb-4 items-end">
+                <div class="form-group mb-0 flex-1">
+                  <label class="text-xs text-secondary mb-1 block">订单搜索</label>
+                  <input type="text" id="filter-admin-order-kw" class="form-control" placeholder="关联筛查 买家/买家手机号/卖家/卖家公司..." style="width: 340px;">
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderOrders()">查询</button>
+                  <button class="btn btn-outline h-[38px]" onclick="AdminApp.resetOrdersFilter()">重置</button>
+                </div>
              </div>
              <table class="table" id="table-orders">
-              <thead><tr><th>订单编号</th><th>关联买家</th><th>关联卖家</th><th>总金额</th><th>履约状态</th><th>操作菜单</th></tr></thead>
-              <tbody><!-- JS 渲染 --></tbody>
-            </table>
-          </div>
-      </div>
-      <div id="tab-trades-chat" class="page-view" style="display: none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
-             <table class="table" id="table-chats">
-              <thead><tr><th>关联求购单号</th><th>买方</th><th>卖方</th><th>最近互动时间</th><th>操作</th></tr></thead>
+              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>订单编号</th><th>订单类型</th><th>买家</th><th>买家手机号</th><th>关联卖家</th><th>卖家公司</th><th>订单金额</th><th>平台抽佣</th><th>履约状态</th><th>创建时间</th><th>操作菜单</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
         </div>
+      </div>
+      <div id="tab-trades-chat" class="page-view" style="display: none;">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">💬 供求IM沟通监控</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+             <table class="table" id="table-chats">
+              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>关联求购单号</th><th>买方(手机号)</th><th>卖方</th><th>最近互动时间</th><th>操作</th></tr></thead>
+              <tbody><!-- JS 渲染 --></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <!-- ================== 6. 竞价中心 ================== -->
       <div id="tab-bidding-res" class="page-view" style="display: none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">🔨 竞价资源监控</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
              <table class="table" id="table-admin-bidding-res">
-               <thead><tr><th>资源编号</th><th>提报商家</th><th>资源标题</th><th>资源图片</th><th>审核状态</th><th>操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>资源编号</th><th>提报商家</th><th>资源标题</th><th>资源图片</th><th>审核状态</th><th>操作</th></tr></thead>
                <tbody><!-- JS渲染 --></tbody>
              </table>
            </div>
+        </div>
       </div>
       <div id="tab-bidding-ann" class="page-view" style="display:none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📢 竞价公告监控</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+              <!-- 公告监控筛选区 -->
+              <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light items-end">
+                <div class="form-group mb-0 flex-1">
+                  <label class="text-xs text-secondary mb-1 block">公告搜索</label>
+                  <input type="text" id="filter-admin-bid-kw" class="form-control" placeholder="搜索公告标题/商家名称/项目编号...">
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderBidding()">查询</button>
+                  <button class="btn btn-outline h-[38px]" onclick="if(document.getElementById('filter-admin-bid-kw')) document.getElementById('filter-admin-bid-kw').value=''; AdminApp.renderBidding();">重置</button>
+                </div>
+              </div>
               <table class="table" id="table-admin-bidding-ann">
-                <thead><tr><th>公告编号</th><th>发布商家</th><th>公告标题</th><th>关联资源编号</th><th>当前状态</th><th>审核状态</th><th>操作</th></tr></thead>
+                <thead><tr style="background: #f4f6f8;"><th>序号</th><th>公告编号</th><th>发布商家</th><th>公告标题</th><th>关联资源编号</th><th>当前最高出价</th><th>竞价与审核状态</th><th>操作</th></tr></thead>
                 <tbody><!-- JS渲染 --></tbody>
               </table>
            </div>
         </div>
+      </div>
       <!-- ================== 7. 配置中心 ================== -->
       <div id="tab-config-commission" class="page-view" style="display:none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
-             <div class="flex justify-between mb-4">
-                <div class="text-secondary">全局默认规则不可删除，针对商家/分类的特殊规则优先级高于全局。</div>
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+           <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">⚙️ 抽佣规则配置</h3>
+           </div>
+           <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
+             <div class="flex justify-between mb-4 items-center">
+                <div class="text-secondary text-sm">抽佣规则只支持【全局模式】、【按特定商家】、【按特定商品类别】三种模式。</div>
                 <button class="btn btn-primary" onclick="UI.showModal('modal-add-commission')">新增抽佣规则</button>
              </div>
              <table class="table" id="table-admin-commission">
-               <thead><tr><th>规则编号</th><th>规则名称</th><th>针对目标</th><th>抽佣比例(%)</th><th>固定抽成(元)</th><th>状态</th><th>操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>规则编号</th><th>规则名称</th><th>抽佣模式</th><th>针对目标</th><th>抽佣比例(%)</th><th>状态</th><th>操作</th></tr></thead>
                <tbody><!-- JS渲染 --></tbody>
              </table>
            </div>
+        </div>
       </div>
       
       <div id="tab-config-decoration" class="page-view" style="display:none;">
@@ -428,29 +527,40 @@
   </main>
 </div>
 
-<!-- 新增：抽佣配置弹窗 -->
-<div class="modal-overlay" id="modal-add-commission">
-  <div class="modal" style="width: 500px;">
-    <div class="modal-header">
-      <div class="modal-title">新增抽佣规则</div>
-      <button class="modal-close" data-close-modal="modal-add-commission">&times;</button>
+<!-- 新增/编辑抽佣配置弹窗 -->
+<div class="modal-overlay" id="modal-add-commission" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-add-commission')">
+  <div class="modal" style="width: 520px; background:#fff; border-radius: 16px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold" style="font-size:16px; margin:0; color:#0f172a;">配置抽佣规则</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-add-commission')">&times;</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">规则类型</label>
-        <select class="form-control" style="width:100%"><option>按特定商家</option><option>按特定商品分类</option><option>按订单金额梯队</option></select>
+    <div class="modal-body" style="padding:20px; font-size:13px; display:flex; flex-direction:column; gap:16px;">
+      <div class="form-group mb-0">
+        <label class="form-label font-bold mb-1 block">抽佣模式选择 <span class="text-danger">*</span></label>
+        <select id="comm-rule-type" class="form-control" style="width:100%; padding:8px;" onchange="AdminApp.toggleCommissionRuleType()">
+          <option value="global">全局模式 (全平台默认规则)</option>
+          <option value="merchant">按特定商家 (关联具体店铺)</option>
+          <option value="category">按特定商品类别 (关联分类数据字典)</option>
+        </select>
       </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">规则名称</label>
-        <input type="text" class="form-control" placeholder="如：某某大客户专享抽点" style="width:100%">
+      <div class="form-group mb-0">
+        <label class="form-label font-bold mb-1 block">规则名称 <span class="text-danger">*</span></label>
+        <input type="text" id="comm-rule-name" class="form-control" style="width:100%; padding:8px;" placeholder="如: 全局默认基础抽点 / 核心大客户优惠抽费">
       </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">抽佣比例 (%)</label>
-        <input type="number" class="form-control" placeholder="支持两位小数" style="width:100%">
+      <div class="form-group mb-0" id="comm-rule-target-group" style="display:none;">
+        <label class="form-label font-bold mb-1 block" id="comm-rule-target-label">针对目标选择 <span class="text-danger">*</span></label>
+        <select id="comm-rule-target-select" class="form-control" style="width:100%; padding:8px;">
+          <!-- JS 动态填入商家或类别 -->
+        </select>
+      </div>
+      <div class="form-group mb-0">
+        <label class="form-label font-bold mb-1 block">平台抽佣比例 (%) <span class="text-danger">*</span></label>
+        <input type="number" id="comm-rule-rate" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 0.60 (代表 0.6%)" value="0.60" step="0.01">
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" onclick="UI.closeModal('modal-add-commission'); UI.toast('抽佣规则新增成功', 'success')">保存配置</button>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-add-commission')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveCommissionRule()">保存生效</button>
     </div>
   </div>
 </div>
@@ -586,108 +696,112 @@
 <script src="./assets/js/prd-data-admin.js"></script>
 <script src="./assets/js/prd-pin-tool.js"></script>
 
-<!-- 新增：协议配置弹窗 -->
-<div class="modal-overlay" id="modal-add-agreement">
-  <div class="modal" style="width: 600px;">
-    <div class="modal-header">
-      <div class="modal-title">新增协议</div>
-      <button class="modal-close" data-close-modal="modal-add-agreement">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">协议类型</label>
-        <select class="form-control" id="agreement-type-select" style="width:100%">
-          <option value="商家入驻协议">商家入驻协议</option>
-          <option value="隐私政策">隐私政策</option>
-        </select>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">版本号</label>
-        <input type="text" class="form-control" id="agreement-version-input" placeholder="例如：V2.0" style="width:100%">
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">协议内容 (简易富文本)</label>
-        <textarea class="form-control" rows="5" placeholder="输入协议正文内容..."></textarea>
-      </div>
-      <div class="text-sm text-secondary">注：新增协议后，旧版本协议将自动置为失效状态，无需手动删除。</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" onclick="window.saveNewAgreement()">发布并生效</button>
-    </div>
-  </div>
-</div>
-
-<!-- 强行关停店铺弹窗 -->
-<div class="modal-overlay" id="modal-suspend-shop" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-suspend-shop')">
-  <div class="modal" style="width: 500px; background:#fff; border-radius: 16px; overflow:hidden;">
-    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px;">
-      <div class="modal-title font-bold" id="suspend-modal-title" style="font-size:16px;">强行关停店铺</div>
-      <button class="modal-close" style="background:none; border:none; font-size:20px; cursor:pointer;" onclick="UI.closeModal('modal-suspend-shop')">&times;</button>
-    </div>
-    <div class="modal-body" style="padding:20px;">
-      <input type="hidden" id="suspend-shop-id">
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-2 block" style="font-size:14px; color:#475569;">关停理由 <span class="text-danger">*</span></label>
-        <textarea class="form-control" id="suspend-reason-input" rows="4" style="width:100%; border-radius: 8px; padding:10px; border: 1px solid #e2e8f0;" placeholder="请输入违规关停的具体原因（例如：售卖假货、违规竞价、交易欺诈等，该信息将展示给商家后台）..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
-      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-suspend-shop')">取消</button>
-      <button class="btn btn-danger" style="border-radius:8px;" onclick="window.confirmSuspendShop()">确认关停</button>
-    </div>
-  </div>
-</div>
-
 <!-- 编辑上架商品弹窗 -->
-<div class="modal-overlay" id="modal-edit-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-edit-product')">
-  <div class="modal" style="width: 520px; background:#fff; border-radius: 16px; overflow:hidden;">
+<div class="modal-overlay" id="modal-edit-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-edit-product')">
+  <div class="modal" style="width: 540px; background:#fff; border-radius: 16px; overflow:hidden;">
     <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-      <div class="modal-title font-bold" style="font-size:16px; margin:0;">编辑商品信息</div>
+      <div class="modal-title font-bold" style="font-size:16px; margin:0;">编辑上架商品信息</div>
       <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-edit-product')">&times;</button>
     </div>
     <div class="modal-body" style="padding:20px; font-size:13px;">
       <input type="hidden" id="edit-prod-id">
       <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品名称</label>
-        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px;">
+        <label class="form-label font-bold mb-1 block">商品名称 <span class="text-danger">*</span></label>
+        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" disabled>
       </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品单价</label>
-        <input type="text" id="edit-prod-price" class="form-control" style="width:100%; padding:8px;">
+      <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 140px; gap:12px;">
+        <div>
+          <label class="form-label font-bold mb-1 block">售卖单价 (数值) <span class="text-danger">*</span></label>
+          <input type="text" id="edit-prod-price-num" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 280.00">
+        </div>
+        <div>
+          <label class="form-label font-bold mb-1 block">计价单位 <span class="text-danger">*</span></label>
+          <select id="edit-prod-unit" class="form-control" style="width:100%; padding:8px;">
+            <option value="/ 吨">/ 吨</option>
+            <option value="/ 袋">/ 袋</option>
+            <option value="/ 箱">/ 箱</option>
+            <option value="/ 斤">/ 斤</option>
+            <option value="/ 立方">/ 立方</option>
+            <option value="/ 件">/ 件</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div>
+          <label class="form-label font-bold mb-1 block">现货 / 预售 <span class="text-danger">*</span></label>
+          <select id="edit-prod-shelf-type" class="form-control" style="width:100%; padding:8px;" onchange="AdminApp.toggleEditProductShelfType()">
+            <option value="现货">现货</option>
+            <option value="预售">预售</option>
+          </select>
+        </div>
+        <div id="edit-prod-stock-group">
+          <label class="form-label font-bold mb-1 block">库存数量 (现货必填)</label>
+          <input type="number" id="edit-prod-stock" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 500">
+        </div>
       </div>
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
         <div>
           <label class="form-label font-bold mb-1 block">货品品类</label>
-          <select id="edit-prod-cat" class="form-control" style="width:100%; padding:8px;">
-            <option value="钢材">钢材</option>
-            <option value="木材">木材</option>
-            <option value="水泥">水泥</option>
+          <select id="edit-prod-cat" class="form-control" style="width:100%; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" disabled>
+            <option value="钢材">建材-金属-钢材</option>
+            <option value="木材">建材-板材-木材</option>
+            <option value="水泥">建材-粉材-水泥</option>
+            <option value="大米">粮油-谷物-大米</option>
+            <option value="面粉">粮油-谷物-面粉</option>
+            <option value="苹果">生鲜-水果-苹果</option>
           </select>
         </div>
         <div>
-          <label class="form-label font-bold mb-1 block">库存量</label>
-          <input type="number" id="edit-prod-stock" class="form-control" style="width:100%; padding:8px;">
+          <label class="form-label font-bold mb-1 block">起售数量</label>
+          <input type="text" id="edit-prod-min-qty" class="form-control" style="width:100%; padding:8px;" placeholder="如: 10袋 / 1吨">
         </div>
       </div>
       <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">现货 / 预售</label>
-        <select id="edit-prod-shelf-type" class="form-control" style="width:100%; padding:8px;">
-          <option value="现货">现货</option>
-          <option value="预售">预售</option>
-        </select>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品图片 (URL 或文件路径)</label>
+        <label class="form-label font-bold mb-1 block">商品图片</label>
         <div style="display:flex; gap:12px; align-items:center;">
           <img id="edit-prod-img-preview" src="" style="width:60px; height:60px; border-radius:6px; border:1px solid #ddd; object-fit:cover;">
-          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px;" onchange="document.getElementById('edit-prod-img-preview').src = this.value;">
+          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" placeholder="请输入网络图片或选择上传" disabled>
         </div>
-        <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="UI.toast('已模拟触发本地文件选择', 'info')">上传本地图片</button>
       </div>
     </div>
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
       <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-edit-product')">取消</button>
-      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveProductInfo()">保存修改</button>
+      <button class="btn btn-outline" style="border-radius:8px; border-color: var(--primary-color); color: var(--primary-color);" onclick="AdminApp.saveProductInfo(0)">仅保存 (待审核)</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveProductInfo(1)">审核通过并上架</button>
+    </div>
+  </div>
+</div>
+
+<!-- 供求信息报价明细弹窗 (查看所有报价人信息) -->
+<div class="modal-overlay" id="modal-demand-quotes" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-demand-quotes')">
+  <div class="modal" style="width: 720px; background:#fff; border-radius: 16px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div class="modal-title font-bold" id="demand-quotes-modal-title" style="font-size:16px; margin:0; color:#0f172a;">求购单报价人信息明细</div>
+        <div style="font-size:12px; color:#64748b; margin-top:2px;" id="demand-quotes-sub-info">求购单号: REQ001</div>
+      </div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-demand-quotes')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px; max-height:60vh; overflow-y:auto;">
+      <table class="table" style="width:100%;">
+        <thead style="background:#f8fafc;">
+          <tr>
+            <th style="padding:8px 10px;">序号</th>
+            <th style="padding:8px 10px;">报价商家店铺</th>
+            <th style="padding:8px 10px;">联系电话</th>
+            <th style="padding:8px 10px; text-align:right;">报价单价</th>
+            <th style="padding:8px 10px;">规格/运费说明</th>
+            <th style="padding:8px 10px;">报价时间</th>
+            <th style="padding:8px 10px; text-align:center;">交易状态</th>
+          </tr>
+        </thead>
+        <tbody id="demand-quotes-tbody">
+          <!-- JS 动态渲染 -->
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:12px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-demand-quotes')">关闭</button>
     </div>
   </div>
 </div>
@@ -720,6 +834,186 @@
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
       <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-admin-edit-ann')">取消</button>
       <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveBiddingAnnInfo()">保存修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 1. 店铺入驻审核弹窗 -->
+<div class="modal-overlay" id="modal-audit-shop" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-audit-shop')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 12px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold text-main" id="audit-modal-shop-title" style="font-size:16px; margin:0; color:#0f172a;">店铺入驻审核</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-audit-shop')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="audit-shop-target-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-2 block">审核结果</label>
+        <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-result-radio" value="pass" checked onchange="document.getElementById('audit-reject-reason-box').style.display='none'">
+            <span style="color:#10b981; font-weight:bold;">通过入驻</span>
+          </label>
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-result-radio" value="reject" onchange="document.getElementById('audit-reject-reason-box').style.display='block'">
+            <span style="color:#ef4444; font-weight:bold;">拒绝入驻</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group" id="audit-reject-reason-box" style="display:none; margin-top:12px;">
+        <label class="form-label font-bold mb-1 block" style="color:#ef4444;">拒绝理由 (最多50字) *</label>
+        <div style="position:relative;">
+          <textarea id="audit-reject-reason-input" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; min-height:80px;" placeholder="请详细输入拒绝或打回原因..." maxlength="50" oninput="this.parentElement.querySelector('.char-counter').innerText = this.value.length + '/50'"></textarea>
+          <span class="char-counter" style="position:absolute; right:8px; bottom:8px; font-size:11px; color:#94a3b8;">0/50</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-audit-shop')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="window.confirmSubmitAuditShop()">确定提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 商品上架审核弹窗 -->
+<div class="modal-overlay" id="modal-audit-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-audit-product')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 12px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold text-main" id="audit-modal-product-title" style="font-size:16px; margin:0; color:#0f172a;">商品上架审核</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-audit-product')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="audit-product-target-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-2 block">审核结果</label>
+        <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-product-radio" value="pass" checked onchange="document.getElementById('audit-product-reject-box').style.display='none'">
+            <span style="color:#10b981; font-weight:bold;">通过上架</span>
+          </label>
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-product-radio" value="reject" onchange="document.getElementById('audit-product-reject-box').style.display='block'">
+            <span style="color:#ef4444; font-weight:bold;">拒绝上架</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group" id="audit-product-reject-box" style="display:none; margin-top:12px;">
+        <label class="form-label font-bold mb-1 block" style="color:#ef4444;">拒绝理由 (最多50字) *</label>
+        <div style="position:relative;">
+          <textarea id="audit-product-reject-input" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; min-height:80px;" placeholder="请详细输入拒绝理由..." maxlength="50" oninput="this.parentElement.querySelector('.char-counter').innerText = this.value.length + '/50'"></textarea>
+          <span class="char-counter" style="position:absolute; right:8px; bottom:8px; font-size:11px; color:#94a3b8;">0/50</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-audit-product')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="window.confirmSubmitAuditProduct()">确定提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 供求信息审核弹窗 -->
+<div class="modal-overlay" id="modal-audit-demand" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-audit-demand')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 12px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold text-main" id="audit-modal-demand-title" style="font-size:16px; margin:0; color:#0f172a;">供求信息审核</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-audit-demand')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="audit-demand-target-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-2 block">审核结果</label>
+        <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-demand-radio" value="pass" checked onchange="document.getElementById('audit-demand-reject-box').style.display='none'">
+            <span style="color:#10b981; font-weight:bold;">通过发布</span>
+          </label>
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-demand-radio" value="reject" onchange="document.getElementById('audit-demand-reject-box').style.display='block'">
+            <span style="color:#ef4444; font-weight:bold;">拒绝发布</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group" id="audit-demand-reject-box" style="display:none; margin-top:12px;">
+        <label class="form-label font-bold mb-1 block" style="color:#ef4444;">拒绝理由 (最多50字) *</label>
+        <div style="position:relative;">
+          <textarea id="audit-demand-reject-input" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; min-height:80px;" placeholder="请详细输入拒绝理由..." maxlength="50" oninput="this.parentElement.querySelector('.char-counter').innerText = this.value.length + '/50'"></textarea>
+          <span class="char-counter" style="position:absolute; right:8px; bottom:8px; font-size:11px; color:#94a3b8;">0/50</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-audit-demand')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="window.confirmSubmitAuditDemand()">确定提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. 竞价公告审核弹窗 -->
+<div class="modal-overlay" id="modal-audit-bidding-ann" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-audit-bidding-ann')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 12px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold text-main" id="audit-modal-bidding-ann-title" style="font-size:16px; margin:0; color:#0f172a;">竞价公告审核</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-audit-bidding-ann')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="audit-bidding-ann-target-id">
+      <div class="form-group mb-4">
+        <label class="form-label font-bold mb-2 block">审核结果</label>
+        <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-bidding-ann-radio" value="pass" checked onchange="document.getElementById('audit-bidding-ann-reject-box').style.display='none'">
+            <span style="color:#10b981; font-weight:bold;">通过发布</span>
+          </label>
+          <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <input type="radio" name="audit-bidding-ann-radio" value="reject" onchange="document.getElementById('audit-bidding-ann-reject-box').style.display='block'">
+            <span style="color:#ef4444; font-weight:bold;">拒绝发布</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group" id="audit-bidding-ann-reject-box" style="display:none; margin-top:12px;">
+        <label class="form-label font-bold mb-1 block" style="color:#ef4444;">拒绝理由 (最多50字) *</label>
+        <div style="position:relative;">
+          <textarea id="audit-bidding-ann-reject-input" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; min-height:80px;" placeholder="请详细输入拒绝理由..." maxlength="50" oninput="this.parentElement.querySelector('.char-counter').innerText = this.value.length + '/50'"></textarea>
+          <span class="char-counter" style="position:absolute; right:8px; bottom:8px; font-size:11px; color:#94a3b8;">0/50</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-audit-bidding-ann')">取消</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="window.confirmSubmitAuditBiddingAnn()">确定提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 竞价监督出价详情弹窗 (只读) -->
+<div class="modal-overlay" id="modal-admin-bid-detail" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-admin-bid-detail')">
+  <div class="modal" style="width: 700px; background:#fff; border-radius: 16px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div class="modal-title font-bold" style="font-size:16px; margin:0; color:#0f172a;">竞价公告详情与出价明细</div>
+        <div style="font-size:12px; color:#64748b; margin-top:2px;" id="admin-bid-detail-title">--</div>
+      </div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-admin-bid-detail')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px; max-height:60vh; overflow-y:auto;">
+      <table class="table" id="table-admin-bid-offers" style="width:100%;">
+        <thead style="background:#f8fafc;">
+          <tr>
+            <th style="padding:8px 10px;">序号</th>
+            <th style="padding:8px 10px;">买家名称</th>
+            <th style="padding:8px 10px;">出价时间</th>
+            <th style="padding:8px 10px; text-align:right;">出价金额</th>
+            <th style="padding:8px 10px; text-align:center;">状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS 动态渲染 -->
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:12px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-admin-bid-detail')">关闭</button>
     </div>
   </div>
 </div>

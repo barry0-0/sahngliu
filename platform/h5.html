@@ -543,17 +543,31 @@
     <!-- 表单区域 -->
     <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4">
       <div>
-        <label class="block text-sm text-secondary mb-1">求购标题 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-pd-title" class="form-control w-full" placeholder="例如：急求某某型号原木100方" style="height: 40px; font-size: 14px;">
+        <label class="block text-sm text-secondary mb-1">求购货品 <span class="text-danger">*</span></label>
+        <input type="text" id="h5-pd-goods-name" class="form-control w-full" placeholder="例如：HRB400E 抗震螺纹钢 / 樟子松原木" style="height: 40px; font-size: 14px;">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 110px; gap:10px;">
+        <div>
+          <label class="block text-sm text-secondary mb-1">需求数量 <span class="text-danger">*</span></label>
+          <input type="number" id="h5-pd-quantity" class="form-control w-full" placeholder="例如：50" value="50" style="height: 40px; font-size: 14px;">
+        </div>
+        <div>
+          <label class="block text-sm text-secondary mb-1">计量单位 <span class="text-danger">*</span></label>
+          <select id="h5-pd-unit" class="form-control w-full" style="height: 40px; font-size: 14px;">
+            <option value="吨">吨</option>
+            <option value="袋">袋</option>
+            <option value="箱">箱</option>
+            <option value="斤">斤</option>
+            <option value="立方">立方</option>
+            <option value="件">件</option>
+          </select>
+        </div>
       </div>
       <div>
-        <label class="block text-sm text-secondary mb-1">期望价格</label>
-        <input type="text" id="h5-pd-price" class="form-control w-full" placeholder="例如：面议 或 3000元/方" style="height: 40px; font-size: 14px;">
+        <label class="block text-sm text-secondary mb-1">交期时间范围 <span class="text-danger">*</span></label>
+        <input type="text" id="h5-pd-delivery-period" class="form-control w-full" placeholder="例如：2026-08-01 至 2026-08-15" style="height: 40px; font-size: 14px;">
       </div>
-      <div>
-        <label class="block text-sm text-secondary mb-1">求购详情说明</label>
-        <textarea id="h5-pd-desc" class="form-control w-full" rows="5" placeholder="请详细描述您的需求，例如材质、交货地、交期等..." style="font-size: 14px; padding: 10px;"></textarea>
-      </div>
+
     </div>
 
     <!-- 底部按钮 -->
@@ -611,16 +625,8 @@
       </div>
 
       <div>
-        <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价单价 <span class="text-danger">*</span></label>
+        <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价金额 <span class="text-danger">*</span></label>
         <input type="text" id="h5-quote-price" class="form-control w-full" placeholder="例如：4150元/吨" style="height: 40px; font-size: 13px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-weight: bold;">
-      </div>
-      <div>
-        <label class="block text-xs text-slate-600 mb-1.5 font-bold">可供货数量 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-quote-qty" class="form-control w-full" placeholder="例如：50吨" style="height: 40px; font-size: 13px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-weight: bold;">
-      </div>
-      <div>
-        <label class="block text-xs text-slate-600 mb-1.5 font-bold">报价备注说明</label>
-        <textarea id="h5-quote-notes" class="form-control w-full" rows="3" placeholder="例如：规格标准、交期长短、物流承担方等..." style="font-size: 13px; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0;"></textarea>
       </div>
     </div>
     <!-- 底部按钮 -->

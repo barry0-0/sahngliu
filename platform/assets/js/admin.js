@@ -21,8 +21,13 @@ const AdminApp = {
     this.renderAgreementConfig();
 
     // 默认激活第一个菜单
-    document.querySelector('.menu-item[data-page="page-data"]').click();
+    const defaultPage = document.querySelector('[data-page="page-data"]') || document.querySelector('.menu-item');
+    if (defaultPage) defaultPage.click();
   },
+
+  openAuditShopModal(shopId) { if (window.openAuditShopModal) window.openAuditShopModal(shopId); },
+  openAuditProductModal(prodId) { if (window.openAuditProductModal) window.openAuditProductModal(prodId); },
+  openAuditDemandModal(demandId) { if (window.openAuditDemandModal) window.openAuditDemandModal(demandId); },
 
   _appendPagination(tbody, totalItems) {
     if (!tbody) return;
@@ -134,98 +139,86 @@ const AdminApp = {
     const tbody = document.getElementById('admin-shop-tbody');
     if (!tbody) return;
 
-    const kw = document.getElementById('admin-search-shop-keyword')?.value.trim() || '';
-    let filtered = MockData.shops || [];
+    const shopIdKw = document.getElementById('admin-search-shop-id')?.value.trim().toLowerCase() || '';
+    const kw = document.getElementById('admin-search-shop-keyword')?.value.trim().toLowerCase() || '';
+    const statusKw = document.getElementById('admin-search-shop-status')?.value || '';
+
+    let filtered = (MockData.shops || []).filter(s => s.status !== '未开店');
+    if (shopIdKw) {
+      filtered = filtered.filter(s => s.id.toLowerCase().includes(shopIdKw));
+    }
     if (kw) {
-      filtered = filtered.filter(s => s.shopName.includes(kw) || s.companyName.includes(kw));
+      filtered = filtered.filter(s => s.shopName.toLowerCase().includes(kw) || (s.companyName && s.companyName.toLowerCase().includes(kw)));
+    }
+    if (statusKw) {
+      if (statusKw === '闭店中') {
+        filtered = filtered.filter(s => s.status === '闭店中' || s.status === '已关停' || s.status === '已禁用' || s.status === '审核未通过');
+      } else {
+        filtered = filtered.filter(s => s.status === statusKw);
+      }
     }
 
-    document.getElementById('shop-management-count').innerText = `共 ${filtered.length} 个商家店铺`;
+    const countEl = document.getElementById('shop-management-count');
+    if (countEl) countEl.innerText = `共 ${filtered.length} 个商家店铺`;
 
     let html = '';
-    filtered.forEach(s => {
-      // Calculate product count dynamically from MockData.products
-      const prodCount = MockData.products.filter(p => p.shopId == s.id).length;
+    filtered.forEach((s, idx) => {
+      const prodCount = MockData.products.filter(p => p.shopId == s.id || p.shopName === s.shopName).length;
       
-      // Setup status tag
       let statusTag = '';
-      if (s.status === '正常' || s.status === '正常营业') {
+      if (s.status === '正常营业' || s.status === '正常') {
         statusTag = '<span class="tag tag-success">正常营业</span>';
-      } else if (s.status === '已关停' || s.status === '已禁用') {
-        statusTag = '<span class="tag tag-danger">已关停</span>';
+      } else if (s.status === '待审核') {
+        statusTag = '<span class="tag tag-warning">待审核</span>';
       } else {
-        statusTag = `<span class="tag tag-warning">${s.status || '待审核'}</span>`;
+        statusTag = s.suspendReason ? '<span class="tag tag-danger">闭店中 (已下架)</span>' : '<span class="tag tag-secondary">闭店中</span>';
       }
 
-      // Add suspend action button
+      let reasonTip = '';
+      if (s.suspendReason) {
+        reasonTip = `<div class="text-[10px] text-danger mt-1">理由: ${s.suspendReason}</div>`;
+      } else if (s.rejectReason) {
+        reasonTip = `<div class="text-[10px] text-danger mt-1" style="font-size:11px; color:#ef4444;">原因: ${s.rejectReason}</div>`;
+      }
+
       let actionBtn = '';
-      if (s.status === '正常' || s.status === '正常营业') {
+      if (s.status === '正常营业' || s.status === '正常') {
         actionBtn = `<button class="btn btn-text btn-sm text-danger" onclick="window.openSuspendShopModal('${s.id}')">强行关停</button>`;
-      } else if (s.status === '已关停' || s.status === '已禁用') {
-        actionBtn = `<button class="btn btn-text btn-sm text-success" onclick="window.toggleShopStatus('${s.id}', '正常')">重新开启</button>`;
+      } else if (s.status === '待审核') {
+        actionBtn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditShopModal('${s.id}')">审核</button>`;
       } else {
-        actionBtn = `<button class="btn btn-text btn-sm text-primary" onclick="window.toggleShopStatus('${s.id}', '正常')">同意开店</button>`;
+        actionBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       }
 
-      // If suspended, show hover reason or list reason
-      const reasonTip = s.suspendReason ? `<div class="text-[10px] text-danger mt-1">理由: ${s.suspendReason}</div>` : '';
+      const avatarHtml = s.avatar ? `<img src="${s.avatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0; cursor:pointer;" onclick="UI.openImagePreview('${s.avatar}')" title="点击预览">` : `<div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-bg); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${s.shopName.charAt(0)}</div>`;
+      const bannerUrl = s.banner || 'https://images.unsplash.com/photo-1541888081-30d890632a7e?w=1200&h=300&fit=crop';
+      const bannerHtml = `<img src="${bannerUrl}" style="width: 60px; height: 30px; border-radius: 4px; object-fit: cover; border: 1px solid #e2e8f0; cursor:pointer;" onclick="UI.openImagePreview('${bannerUrl}')" title="点击预览">`;
 
       html += `
         <tr style="border-bottom: 1px solid var(--border-light);">
+          <td style="padding:12px; font-family:monospace; font-weight:bold; color:var(--text-main);">${idx + 1}</td>
+          <td style="padding:12px; font-family:monospace; font-weight:bold; color:var(--text-main);">${s.id}</td>
+          <td style="padding:12px; text-align:center;">${avatarHtml}</td>
+          <td style="padding:12px; text-align:center;">${bannerHtml}</td>
           <td style="padding:12px; font-weight:bold; color:var(--text-main);">${s.shopName}</td>
           <td style="padding:12px;">${s.companyName || '--'}</td>
-          <td style="padding:12px; text-align:center;">
-            ${statusTag}
-            ${reasonTip}
-          </td>
+          <td style="padding:12px; text-align:center;">${statusTag} ${reasonTip}</td>
           <td style="padding:12px; text-align:center; font-weight:bold; color:var(--primary-color);">${prodCount}</td>
           <td style="padding:12px; font-family:monospace; font-size:12px;">${s.creditCode || '--'}</td>
-          <td style="padding:12px; font-size:12px;">${s.regTime || '--'}</td>
-          <td style="padding:12px; text-align:center;">
-            ${actionBtn}
-          </td>
+          <td style="padding:12px; text-align:center; font-family:monospace; font-size:12px;">${s.updateTime || '2026-07-20 12:00'}</td>
+          <td style="padding:12px; text-align:center;">${actionBtn}</td>
         </tr>
       `;
     });
 
-    tbody.innerHTML = html || '<tr><td colspan="7" class="text-center py-8 text-secondary">暂无商家店铺记录</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="11" class="text-center py-8 text-secondary">暂无符合条件的商家店铺记录</td></tr>';
+  },
 
-    // Mount global modal handlers if not already mounted
-    if (!window.openSuspendShopModal) {
-      window.openSuspendShopModal = (shopId) => {
-        document.getElementById('suspend-shop-id').value = shopId;
-        document.getElementById('suspend-reason-input').value = '';
-        UI.showModal('modal-suspend-shop');
-      };
-
-      window.confirmSuspendShop = () => {
-        const id = document.getElementById('suspend-shop-id').value;
-        const reason = document.getElementById('suspend-reason-input').value.trim();
-        if (!reason) {
-          UI.toast('请输入关停理由', 'warning');
-          return;
-        }
-
-        const shop = MockData.shops.find(s => s.id == id);
-        if (shop) {
-          shop.status = '已关停';
-          shop.suspendReason = reason;
-          UI.toast(`已强行关停店铺: ${shop.shopName}`, 'error');
-          UI.closeModal('modal-suspend-shop');
-          AdminApp.renderMerchantShops();
-        }
-      };
-
-      window.toggleShopStatus = (shopId, newStatus) => {
-        const shop = MockData.shops.find(s => s.id == shopId);
-        if (shop) {
-          shop.status = newStatus;
-          delete shop.suspendReason;
-          UI.toast(`店铺状态已更新为: ${newStatus}`, 'success');
-          AdminApp.renderMerchantShops();
-        }
-      };
-    }
+  resetMerchantShopsFilter() {
+    if (document.getElementById('admin-search-shop-id')) document.getElementById('admin-search-shop-id').value = '';
+    if (document.getElementById('admin-search-shop-keyword')) document.getElementById('admin-search-shop-keyword').value = '';
+    if (document.getElementById('admin-search-shop-status')) document.getElementById('admin-search-shop-status').value = '';
+    this.renderMerchantShops();
   },
 
   // === 2. 客户管理 ===
@@ -233,15 +226,13 @@ const AdminApp = {
     const tbody = document.querySelector('#table-customers tbody');
     if (!tbody) return;
     
-    // 把 showCustomerDetail 挂载到 window 方便内联 onclick 调用
     window.showCustomerDetail = (accountNo, certStatus, merchantStatus, regTime) => {
       document.getElementById('detail-account-no').innerText = accountNo;
       
       let html = '';
       
-      // 企业认证节点
       let companyText = '未认证';
-      let companyColor = 'error'; // red
+      let companyColor = 'error';
       if (merchantStatus === 2) { companyText = '已认证'; companyColor = 'success'; }
       else if (merchantStatus === 1) { companyText = '待审核'; companyColor = 'warning'; }
       html += `
@@ -254,7 +245,6 @@ const AdminApp = {
         </div>
       `;
 
-      // 个人认证节点
       let personalText = certStatus > 0 ? '已认证' : '未认证';
       let personalColor = certStatus > 0 ? 'success' : 'error';
       html += `
@@ -267,7 +257,6 @@ const AdminApp = {
         </div>
       `;
 
-      // 注册节点
       html += `
         <div class="timeline-item">
           <div class="timeline-dot success"></div>
@@ -282,11 +271,9 @@ const AdminApp = {
 
     let html = '';
     MockData.users.forEach((u, idx) => {
-      // 个人认证状态
       let personalStatus = u.certStatus > 0 ? '已认证' : '未认证';
       let personalTime = u.certStatus > 0 ? u.regTime : ''; 
       
-      // 企业认证状态
       let companyStatus = '未认证';
       let companyTime = '';
       if (u.merchantStatus === 2) {
@@ -296,7 +283,6 @@ const AdminApp = {
         companyStatus = '待审核';
       }
 
-      // 操作列
       let acts = `<a href="javascript:;" class="text-primary mr-3" style="color: #9a66e4;" onclick="showCustomerDetail('${u.mobile}', ${u.certStatus}, ${u.merchantStatus}, '${u.regTime}')">详情</a>`;
       
       if (companyStatus === '待审核' || (u.certStatus > 0 && u.merchantStatus === 0)) {
@@ -324,65 +310,77 @@ const AdminApp = {
   // === 3. 商品中心 ===
   renderBaseProducts() {
     const tbody = document.querySelector('#table-base-category tbody');
-    if (tbody && MockData.productCategories) {
-      let html = '';
-      
-      // 递归展平树状结构供表格展示
-      const flattenCategories = (cats, parentName = '-', parentId = '', result = []) => {
-        cats.forEach(c => {
-          result.push({ ...c, parentName, parentId });
-          if (c.children && c.children.length > 0) {
-            flattenCategories(c.children, c.name, c.id, result);
-          }
-        });
-        return result;
-      };
+    if (!tbody || !MockData.productCategories) return;
 
-      const flatList = flattenCategories(MockData.productCategories);
-      
-      flatList.forEach(c => {
-        let levelBadge = '';
-        if (c.level === 1) levelBadge = `<span class="tag tag-primary">一级</span>`;
-        if (c.level === 2) levelBadge = `<span class="tag tag-success">二级</span>`;
-        if (c.level === 3) levelBadge = `<span class="tag" style="background:#e6f4ff; color:#1677ff; border:1px solid #91caff;">三级</span>`;
-        
-        // 层级缩进视觉效果 (可选)
-        const indent = (c.level - 1) * 20;
-        const hasChildren = c.children && c.children.length > 0;
-        const expandIcon = hasChildren ? `<span style="cursor:pointer; display:inline-block; width:20px; color:#999;" onclick="AdminApp.toggleCategory(this, '${c.id}')">▼</span>` : `<span style="display:inline-block; width:20px;"></span>`;
+    const levelVal = document.getElementById('filter-cat-level')?.value;
+    const nameKw = document.getElementById('filter-cat-name')?.value.trim().toLowerCase();
 
-        html += `
-          <tr data-id="${c.id}" data-parent="${c.parentId}" class="cat-row">
-            <td style="padding-left: ${indent + 12}px; font-weight: ${c.level === 1 ? 'bold' : 'normal'}">${expandIcon} ${c.name}</td>
-            <td>${c.id}</td>
-            <td>${levelBadge}</td>
-            <td>${c.status === 1 ? '<span class="tag tag-success">启用</span>' : '<span class="tag tag-error">禁用</span>'}</td>
-            <td>
-              <button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.parentId}', '${c.id}', '${c.name}', '${c.id}', true)">编辑</button>
-              ${c.level < 3 ? `<button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.id}', '', '', '', false)">新增下级</button>` : ''}
-              <button class="btn btn-text btn-sm ${c.status === 1 ? 'text-danger' : 'text-success'}" onclick="window.toggleCategoryStatus('${c.id}', ${c.status})">${c.status === 1 ? '禁用' : '启用'}</button>
-              <button class="btn btn-text btn-sm text-danger" onclick="if(confirm('确认删除吗？')) { UI.toast('删除成功', 'success'); }">删除</button>
-            </td>
-          </tr>
-        `;
+    const flattenCategories = (cats, parentName = '-', parentId = '', result = []) => {
+      cats.forEach(c => {
+        result.push({ ...c, parentName, parentId });
+        if (c.children && c.children.length > 0) {
+          flattenCategories(c.children, c.name, c.id, result);
+        }
       });
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, flatList.length);
+      return result;
+    };
+
+    let flatList = flattenCategories(MockData.productCategories);
+
+    if (levelVal) {
+      flatList = flatList.filter(c => String(c.level) === String(levelVal));
     }
+    if (nameKw) {
+      flatList = flatList.filter(c => c.name.toLowerCase().includes(nameKw));
+    }
+
+    let html = '';
+    flatList.forEach((c, idx) => {
+      let levelBadge = '';
+      if (c.level === 1) levelBadge = `<span class="tag tag-primary">一级</span>`;
+      else if (c.level === 2) levelBadge = `<span class="tag tag-success">二级</span>`;
+      else if (c.level === 3) levelBadge = `<span class="tag" style="background:#e6f4ff; color:#1677ff; border:1px solid #91caff;">三级</span>`;
+      
+      const indent = (c.level - 1) * 20;
+      const hasChildren = c.children && c.children.length > 0;
+      const expandIcon = hasChildren ? `<span style="cursor:pointer; display:inline-block; width:20px; color:#999;" onclick="AdminApp.toggleCategory(this, '${c.id}')">▼</span>` : `<span style="display:inline-block; width:20px;"></span>`;
+
+      html += `
+        <tr data-id="${c.id}" data-parent="${c.parentId}" class="cat-row">
+          <td>${idx + 1}</td>
+          <td style="padding-left: ${indent + 12}px; font-weight: ${c.level === 1 ? 'bold' : 'normal'}">${expandIcon} ${c.name}</td>
+          <td style="font-family:monospace;">${c.id}</td>
+          <td>${levelBadge}</td>
+          <td>${c.status === 1 ? '<span class="tag tag-success">启用</span>' : '<span class="tag tag-error">禁用</span>'}</td>
+          <td style="font-family:monospace; font-size:12px;">${c.updateTime || '2026-07-20 12:00'}</td>
+          <td>
+            <button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.parentId}', '${c.id}', '${c.name}', '${c.id}', true)">编辑</button>
+            ${c.level < 3 ? `<button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.id}', '', '', '', false)">新增下级</button>` : ''}
+            <button class="btn btn-text btn-sm ${c.status === 1 ? 'text-danger' : 'text-success'}" onclick="window.toggleCategoryStatus('${c.id}', ${c.status})">${c.status === 1 ? '禁用' : '启用'}</button>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的分类数据</td></tr>';
+    this._appendPagination(tbody, flatList.length);
+  },
+
+  resetBaseProductsFilter() {
+    if (document.getElementById('filter-cat-level')) document.getElementById('filter-cat-level').value = '';
+    if (document.getElementById('filter-cat-name')) document.getElementById('filter-cat-name').value = '';
+    this.renderBaseProducts();
   },
 
   toggleCategory(iconEl, catId) {
     const isExpanded = iconEl.innerText === '▼';
     iconEl.innerText = isExpanded ? '▶' : '▼';
     
-    // 递归查找并切换状态
     const toggleChildren = (parentId, show) => {
       document.querySelectorAll(`.cat-row[data-parent="${parentId}"]`).forEach(row => {
         row.style.display = show ? '' : 'none';
         const rowId = row.getAttribute('data-id');
         const icon = row.querySelector('span[onclick^="AdminApp.toggleCategory"]');
         if (icon) {
-          // 如果当前是收起动作，子级全部隐藏；如果是展开动作，只有子级状态是展开的才显示它的子级
           if (!show) {
             toggleChildren(rowId, false);
           } else if (icon.innerText === '▼') {
@@ -395,79 +393,112 @@ const AdminApp = {
     toggleChildren(catId, !isExpanded);
   },
 
-  addSubCategory(parentId) {
-    UI.showModal('modal-add-category');
-    // 设置默认父级
-    setTimeout(() => {
-      const parentSelect = document.getElementById('select-parent-category');
-      if(parentSelect) {
-        // 先检查 parentId 是否是一级分类
-        const isL1 = MockData.productCategories.some(c => c.id === parentId);
-        if(isL1) {
-          parentSelect.value = parentId;
-          parentSelect.dispatchEvent(new Event('change'));
-        } else {
-          // parentId 是二级分类
-          let foundL1 = '';
-          MockData.productCategories.forEach(c => {
-            if(c.children && c.children.some(sub => sub.id === parentId)) {
-              foundL1 = c.id;
-            }
-          });
-          if(foundL1) {
-            parentSelect.value = foundL1;
-            parentSelect.dispatchEvent(new Event('change'));
-            setTimeout(() => {
-              const subSelect = document.getElementById('select-sub-category');
-              if(subSelect) subSelect.value = parentId;
-            }, 50);
-          }
-        }
-      }
-    }, 100);
-  },
-
   renderMerchantProducts() {
+    const catMap = {
+      '大米': '粮油-谷物-大米',
+      '面粉': '粮油-谷物-面粉',
+      '食用油': '粮油-油类-食用油',
+      '钢材': '建材-金属-钢材',
+      '木材': '建材-板材-木材',
+      '水泥': '建材-粉材-水泥'
+    };
     const tbody = document.querySelector('#table-merchant-products tbody');
     let html = '';
-    MockData.products.forEach(p => {
-      let statusTag = p.status === 1 ? `<span class="tag tag-success">已上架</span>` : `<span class="tag tag-warning">待审核/下架</span>`;
-      let shelfTypeTag = p.shelfType === '预售' 
-        ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px; margin-left:6px;">预售</span>`
-        : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px; margin-left:6px;">现货</span>`;
-      
-      let auditBtn = p.status === 1 
-        ? `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已强制违规下架该商品', 'error'); MockData.products.find(x => x.id === '${p.id}').status = 0; AdminApp.renderMerchantProducts();">违规下架</button>` 
-        : `<button class="btn btn-primary btn-sm" onclick="UI.toast('商品审核通过', 'success'); MockData.products.find(x => x.id === '${p.id}').status = 1; AdminApp.renderMerchantProducts();">允许上架</button>`;
+    let list = MockData.products || [];
+    const kw = document.getElementById('filter-merchant-prod-kw')?.value.trim().toLowerCase();
+    const shopKw = document.getElementById('filter-merchant-prod-shop')?.value.trim().toLowerCase();
+    const companyKw = document.getElementById('filter-merchant-prod-company')?.value.trim().toLowerCase();
+    const statusKw = document.getElementById('filter-merchant-prod-status')?.value;
 
-      let editBtn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.editProduct('${p.id}')">编辑</button>`;
+    if (kw) list = list.filter(p => p.name.toLowerCase().includes(kw));
+    if (shopKw) list = list.filter(p => (p.shopName && p.shopName.toLowerCase().includes(shopKw)));
+    if (companyKw) {
+      list = list.filter(p => {
+        const shop = MockData.shops.find(s => s.id === p.shopId || s.shopName === p.shopName);
+        return shop && shop.companyName && shop.companyName.toLowerCase().includes(companyKw);
+      });
+    }
+    if (statusKw !== '' && statusKw !== undefined) {
+      list = list.filter(p => String(p.status) === String(statusKw));
+    }
+    list.forEach((p, idx) => {
+      const shop = MockData.shops.find(s => s.id === p.shopId || s.shopName === p.shopName);
+      const companyName = shop ? shop.companyName : (p.companyName || '华东物资贸易有限公司');
+
+      let statusTag = '';
+      let actBtn = '';
+
+      if (p.status === 0) {
+        statusTag = `<span class="tag tag-warning">待审核</span>`;
+        actBtn = `
+          <button class="btn btn-text btn-sm text-primary" onclick="AdminApp.editProduct('${p.id}')">编辑</button>
+          <button class="btn btn-primary btn-sm" onclick="window.openAuditProductModal('${p.id}')" style="margin-left:4px;">审核</button>
+        `;
+      } else if (p.status === 1) {
+        statusTag = `<span class="tag tag-success">已上架</span>`;
+        actBtn = `<button class="btn btn-text btn-sm text-danger" onclick="window.forceOfflineProduct('${p.id}')">强制下架</button>`;
+      } else if (p.status === 2 || p.status === '已下架' || p.status === '未上架') {
+        statusTag = `<span class="tag tag-danger">已下架</span>`;
+        if (p.rejectReason) {
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2; white-space:nowrap;">(拒审原因：${p.rejectReason})</div>`;
+        } else if (p.offlineReason || p.downReason) {
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2; white-space:nowrap;">(强制下架原因：${p.offlineReason || p.downReason})</div>`;
+        } else {
+          statusTag += `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2; white-space:nowrap;">(自主下架)</div>`;
+        }
+        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
+      } else if (p.status === 3 || p.status === '已售罄') {
+        statusTag = `<span class="tag tag-secondary">已售罄</span>`;
+        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
+      } else {
+        statusTag = `<span class="tag tag-secondary">${p.status}</span>`;
+        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
+      }
+
+      let shelfTypeTag = p.shelfType === '预售' 
+        ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px;">预售</span>`
+        : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px;">现货</span>`;
 
       html += `
         <tr>
+          <td>${idx + 1}</td>
+          <td style="font-family:monospace; font-weight:bold; color:var(--primary-color);">${p.listNo || ('LST-202607-' + p.id)}</td>
           <td><img src="${p.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"></td>
-          <td>${p.shopName}</td>
+          <td style="font-weight:bold; color:#0f172a;">${p.shopName}</td>
+          <td style="font-size:12px; color:#475569;">${companyName}</td>
           <td>
             <div style="font-weight:bold; display:flex; align-items:center;">
               ${p.name}
-              ${shelfTypeTag}
             </div>
           </td>
-          <td>${p.category}</td>
+          <td>${shelfTypeTag}</td>
+          <td>${catMap[p.category] || p.category}</td>
           <td class="text-danger font-bold">${p.priceStr}</td>
+          <td class="font-bold" style="color:#0f172a;">${(p.sales || 0).toLocaleString()}</td>
+          <td class="text-xs text-secondary">${p.createTime || '2026-05-20 14:30'}</td>
+          <td class="text-xs text-secondary">${p.listTime || '2026-06-01 10:00'}</td>
+          <td class="text-xs text-secondary">${p.opTime || '2026-06-01 10:00'}</td>
           <td>${statusTag}</td>
           <td>
             <div style="display:flex; gap:8px; align-items:center;">
-              ${editBtn}
-              ${auditBtn}
+              ${actBtn}
             </div>
           </td>
         </tr>
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, MockData.products.length);
+      tbody.innerHTML = html || '<tr><td colspan="15" class="text-center p-4 text-secondary">没有找到符合条件的商品</td></tr>';
+      this._appendPagination(tbody, list.length);
     }
+  },
+
+  resetMerchantProductsFilter() {
+    if (document.getElementById('filter-merchant-prod-kw')) document.getElementById('filter-merchant-prod-kw').value = '';
+    if (document.getElementById('filter-merchant-prod-shop')) document.getElementById('filter-merchant-prod-shop').value = '';
+    if (document.getElementById('filter-merchant-prod-company')) document.getElementById('filter-merchant-prod-company').value = '';
+    if (document.getElementById('filter-merchant-prod-status')) document.getElementById('filter-merchant-prod-status').value = '';
+    this.renderMerchantProducts();
   },
 
   editProduct(productId) {
@@ -475,90 +506,244 @@ const AdminApp = {
     if (!p) return;
     document.getElementById('edit-prod-id').value = p.id;
     document.getElementById('edit-prod-name').value = p.name;
-    document.getElementById('edit-prod-price').value = p.priceStr;
+    
+    const priceStr = p.priceStr || '¥280.00 / 袋';
+    const priceMatch = priceStr.match(/(?:¥\s*)?([\d\.,]+)\s*(\/.*)?/);
+    if (priceMatch) {
+      document.getElementById('edit-prod-price-num').value = priceMatch[1];
+      if (priceMatch[2]) {
+        const unitEl = document.getElementById('edit-prod-unit');
+        if (unitEl) unitEl.value = priceMatch[2].trim();
+      }
+    } else {
+      document.getElementById('edit-prod-price-num').value = p.priceStr;
+    }
+
     document.getElementById('edit-prod-cat').value = p.category;
     document.getElementById('edit-prod-stock').value = p.stock || 0;
+    const minQtyEl = document.getElementById('edit-prod-min-qty');
+    if (minQtyEl) minQtyEl.value = p.minQty || '1';
     document.getElementById('edit-prod-shelf-type').value = p.shelfType || '现货';
+    this.toggleEditProductShelfType();
+
     document.getElementById('edit-prod-img').value = p.image;
     document.getElementById('edit-prod-img-preview').src = p.image;
+
+    const salesEl = document.getElementById('edit-prod-sales');
+    if (salesEl) salesEl.value = p.sales || 0;
+    const createTimeEl = document.getElementById('edit-prod-create-time');
+    if (createTimeEl) createTimeEl.value = p.createTime || '2026-05-20 14:30';
+    const listTimeEl = document.getElementById('edit-prod-list-time');
+    if (listTimeEl) listTimeEl.value = p.listTime || '2026-06-01 10:00';
+    const opTimeEl = document.getElementById('edit-prod-op-time');
+    if (opTimeEl) opTimeEl.value = p.opTime || '2026-06-01 10:00';
+
     UI.showModal('modal-edit-product');
   },
 
-  saveProductInfo() {
+  toggleEditProductShelfType() {
+    const type = document.getElementById('edit-prod-shelf-type')?.value;
+    const stockGroup = document.getElementById('edit-prod-stock-group');
+    if (stockGroup) {
+      stockGroup.style.display = type === '现货' ? 'block' : 'none';
+    }
+  },
+
+  handleEditProductFileSelect(fileInput) {
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('edit-prod-img').value = e.target.result;
+        document.getElementById('edit-prod-img-preview').src = e.target.result;
+        UI.toast('本地图片解析成功', 'success');
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    }
+  },
+
+  saveProductInfo(newStatus) {
     const id = document.getElementById('edit-prod-id').value;
     const p = MockData.products.find(x => x.id === id);
     if (!p) return;
     p.name = document.getElementById('edit-prod-name').value;
-    p.priceStr = document.getElementById('edit-prod-price').value;
+    const num = document.getElementById('edit-prod-price-num').value || '0.00';
+    const unit = document.getElementById('edit-prod-unit').value || '/ 吨';
+    p.priceStr = `¥${num} ${unit}`;
     p.category = document.getElementById('edit-prod-cat').value;
-    p.stock = parseInt(document.getElementById('edit-prod-stock').value) || 0;
     p.shelfType = document.getElementById('edit-prod-shelf-type').value;
+    p.stock = p.shelfType === '现货' ? (parseInt(document.getElementById('edit-prod-stock').value) || 0) : 0;
+    const minQtyEl = document.getElementById('edit-prod-min-qty');
+    if (minQtyEl) p.minQty = minQtyEl.value;
     p.image = document.getElementById('edit-prod-img').value;
 
+    const salesEl = document.getElementById('edit-prod-sales');
+    if (salesEl) p.sales = parseInt(salesEl.value) || 0;
+    const createTimeEl = document.getElementById('edit-prod-create-time');
+    if (createTimeEl) p.createTime = createTimeEl.value || '2026-05-20 14:30';
+    const listTimeEl = document.getElementById('edit-prod-list-time');
+    if (listTimeEl) p.listTime = listTimeEl.value || '2026-06-01 10:00';
+
+    if (newStatus !== undefined) {
+      p.status = newStatus;
+      if (newStatus === 1) {
+        delete p.rejectReason;
+      }
+    }
+
+    const now = new Date();
+    const formattedTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    p.opTime = formattedTime;
+
     UI.closeModal('modal-edit-product');
-    UI.toast('商品信息更新成功', 'success');
+    if (p.status === 1) {
+      UI.toast('商品信息已审核通过并成功上架', 'success');
+    } else {
+      UI.toast('商品信息保存成功，状态变更为待审核', 'success');
+    }
     this.renderMerchantProducts();
   },
 
-  // === 4. 供需中心 ===
+  // === 4. 供求信息审核 ===
   renderDemands() {
     const tbody = document.querySelector('#table-demands tbody');
     let html = '';
-    MockData.demands.forEach(d => {
-      let statusTag = d.status === 1 ? `<span class="tag tag-success">大厅上架中</span>` : `<span class="tag tag-warning">待审核</span>`;
-      let actBtn = d.status === 1 
-        ? `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已强行下架此商机', 'info')">下架</button>` 
-        : `<button class="btn btn-primary btn-sm" onclick="UI.toast('审核通过', 'success')">同意上架</button>
-           <button class="btn btn-text btn-sm text-danger">驳回</button>`;
+    let list = MockData.demands || [];
+    const kw = document.getElementById('filter-demand-kw')?.value.trim().toLowerCase();
+    if (kw) {
+      list = list.filter(d => 
+        (d.goodsName && d.goodsName.toLowerCase().includes(kw)) ||
+        (d.buyerPhone && d.buyerPhone.includes(kw)) ||
+        (d.buyerName && d.buyerName.toLowerCase().includes(kw)) ||
+        (d.username && d.username.toLowerCase().includes(kw)) ||
+        d.id.toLowerCase().includes(kw)
+      );
+    }
+
+    list.forEach((d, idx) => {
+      let statusTag = '';
+      let actBtn = '';
+
+      if (d.status === 0) {
+        statusTag = `<span class="tag tag-warning">待审核</span>`;
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditDemandModal('${d.id}')">审核</button>`;
+      } else if (d.status === 1) {
+        statusTag = `<span class="tag tag-success">展示中</span>`;
+        actBtn = `
+          <button class="btn btn-text btn-sm text-danger" onclick="window.forceOfflineDemand('${d.id}')">强行下架</button>
+          <button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px; margin-left:4px;">查看报价 (${d.quotesCount || 0})</button>
+        `;
+      } else if (d.status === 2) {
+        statusTag = `<span class="tag tag-secondary">已完结</span>`;
+        actBtn = `<button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px;">查看报价 (${d.quotesCount || 0})</button>`;
+      } else if (d.status === '已下架' || d.status === '审核未通过') {
+        statusTag = `<span class="tag tag-danger">已下架</span>`;
+        if (d.rejectReason) {
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(拒审原因：${d.rejectReason})</div>`;
+        } else if (d.offlineReason) {
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(强制下架原因：${d.offlineReason})</div>`;
+        } else {
+          statusTag += `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(自主下架)</div>`;
+        }
+        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
+      } else {
+        statusTag = `<span class="tag tag-secondary">${d.status}</span>`;
+        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
+      }
+
+      const qtyUnitStr = `${d.quantity || '50'}${d.unit || '吨'}`;
 
       html += `
         <tr>
-          <td>${d.id}</td>
-          <td>${d.buyerName}</td>
-          <td>${d.title}</td>
-          <td>${statusTag}</td>
+          <td>${idx + 1}</td>
+          <td style="font-family:monospace; font-weight:bold;">${d.id}</td>
+          <td style="font-weight:bold; color:#0f172a;">${d.buyerName}</td>
+          <td style="font-family:monospace; font-weight:bold; color:#0284c7;">${d.buyerPhone || '138****8818'}</td>
+          <td style="font-weight:bold; color:#0f172a;">${d.goodsName || d.title}</td>
+          <td style="font-weight:bold; color:#1e293b;">${qtyUnitStr}</td>
+          <td style="font-size:12px; color:#64748b;">${d.publishTime || '2026-07-20'}</td>
+          <td style="font-size:12px; color:#64748b;">${d.updateTime || d.publishTime || '2026-07-20 15:00'}</td>
+          <td style="vertical-align:middle;">${statusTag}</td>
           <td>
-            <div class="flex gap-2">${actBtn}</div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              ${actBtn}
+            </div>
           </td>
         </tr>
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, MockData.demands.length);
+      tbody.innerHTML = html || '<tr><td colspan="10" class="text-center p-4 text-secondary">暂无供求数据</td></tr>';
+      this._appendPagination(tbody, list.length);
     }
   },
 
-  // === 5. 交易中心 ===
+  resetDemandsFilter() {
+    if (document.getElementById('filter-demand-kw')) document.getElementById('filter-demand-kw').value = '';
+    this.renderDemands();
+  },
+
+  // === 5. 交易中心 (订单透视) ===
   renderOrders() {
     const tbody = document.querySelector('#table-orders tbody');
     let html = '';
-    MockData.orders.forEach(o => {
+    let list = MockData.orders || [];
+    const kw = document.getElementById('filter-admin-order-kw')?.value.trim().toLowerCase();
+    if (kw) {
+      list = list.filter(o => 
+        o.id.toLowerCase().includes(kw) || 
+        o.buyerName.toLowerCase().includes(kw) || 
+        (o.buyerPhone && o.buyerPhone.includes(kw)) ||
+        o.shopName.toLowerCase().includes(kw) || 
+        (o.companyName && o.companyName.toLowerCase().includes(kw)) ||
+        o.productName.toLowerCase().includes(kw)
+      );
+    }
+
+    list.forEach((o, idx) => {
       let statusText = '';
       let statusColor = '';
       if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
       else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
       else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
       else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
-      else if (o.status === 2) { statusText = '待签收'; statusColor = '#0958d9'; }
+      else if (o.status === 2) { statusText = '待签收(已发货)'; statusColor = '#0958d9'; }
       else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
       else if (o.status === -1) { statusText = '已关闭'; statusColor = '#ff4d4f'; }
       
       let statusTag = `<span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">${statusText}</span>`;
       
-      let closeBtn = o.status !== -1 
-        ? `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.closeOrder('${o.id}')">关闭(并退款)</button>` 
+      let confirmReceiptBtn = o.status === 2 
+        ? `<button class="btn btn-primary btn-sm" onclick="AdminApp.confirmAdminReceipt('${o.id}')" style="background:#10b981; border-color:#10b981;">代确认收货</button>` 
         : '';
+
+      let closeBtn = (o.status !== -1 && o.status !== 3)
+        ? `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.closeOrder('${o.id}')">关闭(退款)</button>` 
+        : '';
+
+      const buyerPhone = o.buyerPhone || '138****8818';
+      const shop = MockData.shops.find(s => s.id === o.shopId || s.shopName === o.shopName);
+      const companyName = shop ? shop.companyName : (o.sellerCompany || '华东大宗物资贸易有限公司');
+
+      const amountVal = parseFloat(o.amount.replace(/[^\d\.]/g, '')) || 100000;
+      const rateStr = o.commissionRate || '0.60%';
+      const commFee = (amountVal * 0.006).toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
       html += `
         <tr>
-          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
-          <td>${o.buyerName}</td>
-          <td>${o.shopName}</td>
+          <td>${idx + 1}</td>
+          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
+          <td><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
+          <td style="font-weight:bold;">${o.buyerName}</td>
+          <td style="font-family:monospace; color:#0284c7;">${buyerPhone}</td>
+          <td style="font-weight:bold;">${o.shopName}</td>
+          <td style="font-size:12px; color:#475569;">${companyName}</td>
           <td class="font-bold text-danger">${o.amount}</td>
+          <td style="font-size:12px;"><span style="color:#0284c7; font-weight:bold;">${rateStr}</span> <div style="font-size:10px; color:#64748b;">(¥${commFee})</div></td>
           <td>${statusTag}</td>
+          <td style="font-size:12px; color:#64748b;">${o.time || '2026-07-08 09:12'}</td>
           <td>
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${confirmReceiptBtn}
               ${closeBtn}
               <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
             </div>
@@ -567,9 +752,22 @@ const AdminApp = {
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, MockData.orders.length);
+      tbody.innerHTML = html || '<tr><td colspan="12" class="text-center p-4 text-secondary">暂无符合条件的订单记录</td></tr>';
+      this._appendPagination(tbody, list.length);
     }
+  },
+
+  resetOrdersFilter() {
+    if (document.getElementById('filter-admin-order-kw')) document.getElementById('filter-admin-order-kw').value = '';
+    this.renderOrders();
+  },
+
+  confirmAdminReceipt(orderId) {
+    const o = MockData.orders.find(item => item.id === orderId);
+    if (!o) return;
+    o.status = 3;
+    UI.toast(`平台已成功代买家确认收货，订单 ${orderId} 状态变更为已完成！`, 'success');
+    this.renderOrders();
   },
 
   closeOrder(orderId) {
@@ -586,9 +784,10 @@ const AdminApp = {
   renderChats() {
     const tbody = document.querySelector('#table-chats tbody');
     let html = '';
-    MockData.chats.forEach(c => {
+    MockData.chats.forEach((c, idx) => {
       html += `
         <tr>
+          <td>${idx + 1}</td>
           <td>${c.demandId}</td>
           <td>${c.buyer}</td>
           <td>${c.seller}</td>
@@ -608,13 +807,14 @@ const AdminApp = {
     const resBody = document.querySelector('#table-admin-bidding-res tbody');
     if (resBody) {
       let resHtml = '';
-      MockData.biddingResources.forEach(r => {
+      MockData.biddingResources.forEach((r, idx) => {
         let tag = r.status === '已通过' ? `<span class="tag tag-success">已通过</span>` : `<span class="tag tag-warning">待审核</span>`;
         let btn = r.status === '待审核' 
-          ? `<button class="btn btn-primary btn-sm" onclick="UI.toast('资源审核通过', 'success')">审核通过</button>`
-          : `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('驳回成功', 'warning')">驳回重审</button>`;
+          ? `<button class="btn btn-primary btn-sm" onclick="MockData.biddingResources.find(x => x.id === '${r.id}').status = '已通过'; AdminApp.renderBidding(); UI.toast('资源审核通过', 'success')">审核</button>`
+          : ``;
         resHtml += `
           <tr>
+            <td>${idx + 1}</td>
             <td>${r.id}</td>
             <td>${r.shopName}</td>
             <td><div class="font-bold">${r.name}</div><div class="text-xs text-secondary">${r.specs}</div></td>
@@ -631,36 +831,35 @@ const AdminApp = {
     const annBody = document.querySelector('#table-admin-bidding-ann tbody');
     if (annBody) {
       let annHtml = '';
-      MockData.biddingAnnouncements.forEach(a => {
-        let tag = '';
-        if (a.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
-        else if (a.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
-        else if (a.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
-        else if (a.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
-        else if (a.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
-
-        let auditTag = '';
+      MockData.biddingAnnouncements.forEach((a, idx) => {
         const aStatus = a.auditStatus || '已通过';
+        let combinedTag = '';
         if (aStatus === '待审核') {
-          auditTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
-        } else if (aStatus === '已通过') {
-          auditTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已通过</span>`;
+          combinedTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待审核</span>`;
         } else if (aStatus === '已拒绝') {
-          auditTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border-color:#ffccc7;">已拒绝</span>`;
+          combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已拒绝</span>`;
         } else if (aStatus === '已撤回') {
-          auditTag = `<span class="tag tag-secondary">已撤回</span>`;
+          combinedTag = `<span class="tag tag-secondary">已撤回</span>`;
+        } else {
+          let stageName = '';
+          if (a.status === 0) stageName = '看货报名';
+          else if (a.status === 1) stageName = '现场看货';
+          else if (a.status === 2) stageName = '参加竞价';
+          else if (a.status === 3) stageName = '等待公布';
+          else if (a.status === 4) stageName = '竞价已结束';
+          
+          let tagClass = a.status === 4 ? 'tag-secondary' : 'tag-success';
+          let borderStyle = a.status === 4 
+            ? 'background:#f5f5f5; color:#555; border:1px solid #d9d9d9;' 
+            : 'background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f;';
+          
+          combinedTag = `<span class="tag ${tagClass}" style="${borderStyle}">${stageName}</span>`;
         }
 
         let btn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.showBiddingDetail('${a.id}')">查看详情</button>`;
         
         if (aStatus === '待审核') {
-          btn += `<button class="btn btn-text btn-sm text-success" onclick="AdminApp.approveBiddingAnn('${a.id}')">通过</button>`;
-          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.rejectBiddingAnn('${a.id}')">拒绝</button>`;
-        }
-        
-        if (aStatus === '待审核' || aStatus === '已拒绝') {
-          btn += `<button class="btn btn-text btn-sm text-warning" onclick="AdminApp.openEditBiddingAnnModal('${a.id}')">编辑</button>`;
-          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.deleteBiddingAnn('${a.id}')">删除</button>`;
+          btn += `<button class="btn btn-primary btn-sm" onclick="window.openAuditBiddingAnnModal('${a.id}')">审核</button>`;
         }
         
         if (aStatus === '已通过' && a.status !== 4) {
@@ -669,12 +868,13 @@ const AdminApp = {
 
         annHtml += `
           <tr>
+            <td>${idx + 1}</td>
             <td>${a.id}</td>
             <td>${a.shopName}</td>
             <td>${a.title}</td>
             <td>${a.resId}</td>
-            <td>${tag}</td>
-            <td>${auditTag}</td>
+            <td style="font-weight:bold; color:#ef4444;">${a.currentMaxOffer || a.startPrice}</td>
+            <td>${combinedTag}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
@@ -684,129 +884,31 @@ const AdminApp = {
     }
   },
 
-  showBiddingDetail(id) {
-    const a = MockData.biddingAnnouncements.find(x => x.id === id);
-    if (!a) return;
-
-    const offers = MockData.biddingOffers.filter(o => o.bidId === id);
-    // Sort offers desc by price
-    const sortedOffers = [...offers].sort((x, y) => {
-      const px = parseFloat(x.offerPrice.replace(/[^\d\.]/g, '')) || 0;
-      const py = parseFloat(y.offerPrice.replace(/[^\d\.]/g, '')) || 0;
-      return py - px;
-    });
-
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
-
-    let offersHtml = '';
-    if (sortedOffers.length === 0) {
-      offersHtml = `<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:20px 0;">暂无出价记录</td></tr>`;
-    } else {
-      sortedOffers.forEach((o, index) => {
-        let isWinnerTag = a.winner === o.buyerName ? '<span class="tag tag-success" style="font-size:10px; margin-left:4px;">中标签订</span>' : '';
-        offersHtml += `
-          <tr style="${index === 0 ? 'background:#fff9f0;' : ''}">
-            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; font-weight:${index === 0 ? 'bold' : 'normal'};">
-              ${o.buyerName} ${isWinnerTag}
-            </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#ef4444; font-family:monospace; font-weight:bold;">
-              ${o.offerPrice}
-            </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#64748b; font-size:11px;">
-              ${o.time}
-            </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9;">
-              <span class="tag ${index === 0 ? 'tag-primary' : 'tag-secondary'}" style="font-size:10px;">
-                ${index === 0 ? '最高报价' : '参与报价'}
-              </span>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    modal.innerHTML = `
-      <div class="modal-content" style="width:620px; background:#ffffff; border-radius:16px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:85vh; overflow:hidden; animation: popIn 0.3s ease-out; box-sizing:border-box;">
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #f1f5f9; flex-shrink:0;">
-          <div>
-            <h3 style="margin:0; font-size:16px; font-weight:800; color:#1e293b;">📋 竞价单流转详情 (运营监督)</h3>
-            <div style="width:32px; height:3px; background:#1677ff; border-radius:2px; margin-top:4px;"></div>
-          </div>
-          <button style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">✕</button>
-        </div>
-
-        <div style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:16px; font-size:13px; line-height:1.5; color:#334155; box-sizing:border-box;">
-          
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; display:flex; gap:16px; box-sizing:border-box;">
-            <img src="${a.image}" style="width:120px; height:90px; object-fit:cover; border-radius:8px; flex-shrink:0;">
-            <div style="flex:1;">
-              <div style="font-weight:bold; font-size:14px; color:#0f172a; margin-bottom:6px;">${a.title}</div>
-              <div style="font-size:11px; color:#64748b;">
-                <div><strong>项目编号：</strong>${a.id}</div>
-                <div><strong>处置商家：</strong>${a.shopName}</div>
-                <div><strong>起拍底价：</strong>${a.startPrice} | <strong>成交价：</strong>${a.currentMaxOffer}</div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h4 style="margin:0 0 10px 0; font-weight:bold; color:#0f172a; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
-              <span>👥 所有参与的竞价人及价格 (${offers.length} 人次)</span>
-            </h4>
-            <div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
-              <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
-                <thead>
-                  <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
-                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价人</th>
-                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价价格</th>
-                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">竞价时间</th>
-                    <th style="padding:10px 12px; font-weight:bold; color:#475569;">状态</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${offersHtml}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div style="padding:14px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; background:#f8fafc; flex-shrink:0;">
-          <button style="background:#1677ff; color:#fff; border:none; padding:8px 20px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">关闭窗口</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  },
-
-  // === 9. 配置中心 (抽佣规则) ===
+  // === 9. 配置中心 (抽佣规则: 支持 global, merchant, category 三种) ===
   renderConfig() {
     const tbody = document.querySelector('#table-admin-commission tbody');
     if (tbody) {
       let html = '';
-      MockData.commissionRules.forEach(c => {
+      MockData.commissionRules.forEach((c, idx) => {
         let tag = c.status === 1 ? `<span class="tag tag-success">生效中</span>` : `<span class="tag tag-secondary">已停用</span>`;
         let btn = c.type === 'global'
-          ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('暂不可修改全局默认', 'warning')">修改</button>`
-          : `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('打开编辑弹窗', 'info')">编辑</button>
+          ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑全局默认规则', 'info')">修改</button>`
+          : `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑抽佣规则', 'info')">编辑</button>
              <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('规则已删除', 'info')">删除</button>`;
         
         let typeBadge = '';
-        if (c.type === 'global') typeBadge = `<span class="tag" style="background:#e6f7ff;color:#1890ff;border-color:#91d5ff;">全局</span>`;
-        if (c.type === 'merchant') typeBadge = `<span class="tag" style="background:#f6ffed;color:#52c41a;border-color:#b7eb8f;">商家</span>`;
-        if (c.type === 'category') typeBadge = `<span class="tag" style="background:#fff0f6;color:#eb2f96;border-color:#ffadd2;">类目</span>`;
-        if (c.type === 'fixed') typeBadge = `<span class="tag" style="background:#fff7e6;color:#fa8c16;border-color:#ffd591;">梯队</span>`;
+        if (c.type === 'global') typeBadge = `<span class="tag" style="background:#e6f7ff;color:#1890ff;border-color:#91d5ff;">全局模式</span>`;
+        if (c.type === 'merchant') typeBadge = `<span class="tag" style="background:#f6ffed;color:#52c41a;border-color:#b7eb8f;">按特定商家</span>`;
+        if (c.type === 'category') typeBadge = `<span class="tag" style="background:#fff0f6;color:#eb2f96;border-color:#ffadd2;">按特定商品类别</span>`;
 
         html += `
           <tr>
+            <td>${idx + 1}</td>
             <td>${c.id}</td>
-            <td>${typeBadge} ${c.name}</td>
-            <td>${c.target}</td>
+            <td style="font-weight:bold;">${c.name}</td>
+            <td>${typeBadge}</td>
+            <td style="color:#0f172a; font-weight:500;">${c.target}</td>
             <td class="font-bold text-danger">${c.rate}</td>
-            <td class="font-bold text-danger">${c.amount}</td>
             <td>${tag}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
@@ -815,6 +917,68 @@ const AdminApp = {
       tbody.innerHTML = html;
       this._appendPagination(tbody, MockData.commissionRules.length);
     }
+  },
+
+  toggleCommissionRuleType() {
+    const type = document.getElementById('comm-rule-type')?.value;
+    const targetGroup = document.getElementById('comm-rule-target-group');
+    const targetSelect = document.getElementById('comm-rule-target-select');
+    const targetLabel = document.getElementById('comm-rule-target-label');
+    if (!targetGroup || !targetSelect) return;
+
+    if (type === 'global') {
+      targetGroup.style.display = 'none';
+    } else if (type === 'merchant') {
+      targetGroup.style.display = 'block';
+      targetLabel.innerText = '针对商家店铺选择 *';
+      let html = '';
+      (MockData.shops || []).forEach(s => {
+        html += `<option value="${s.shopName}">${s.shopName} (${s.companyName || s.id})</option>`;
+      });
+      targetSelect.innerHTML = html;
+    } else if (type === 'category') {
+      targetGroup.style.display = 'block';
+      targetLabel.innerText = '针对商品类别选择 *';
+      let html = `
+        <option value="建材-金属-钢材">建材-金属-钢材</option>
+        <option value="建材-板材-木材">建材-板材-木材</option>
+        <option value="建材-粉材-水泥">建材-粉材-水泥</option>
+        <option value="粮油-谷物-大米">粮油-谷物-大米</option>
+        <option value="粮油-谷物-面粉">粮油-谷物-面粉</option>
+        <option value="生鲜-水果-苹果">生鲜-水果-苹果</option>
+      `;
+      targetSelect.innerHTML = html;
+    }
+  },
+
+  saveCommissionRule() {
+    const type = document.getElementById('comm-rule-type')?.value || 'global';
+    const name = document.getElementById('comm-rule-name')?.value.trim();
+    const rateVal = document.getElementById('comm-rule-rate')?.value;
+    const targetSelect = document.getElementById('comm-rule-target-select');
+    
+    if (!name || !rateVal) {
+      UI.toast('请填写完整规则名称与抽佣比例！', 'warning');
+      return;
+    }
+
+    let target = '全平台通用';
+    if (type === 'merchant') target = targetSelect ? targetSelect.value : '特定商家店铺';
+    if (type === 'category') target = targetSelect ? targetSelect.value : '特定商品类别';
+
+    const newRule = {
+      id: 'CR-' + (MockData.commissionRules.length + 1).toString().padStart(3, '0'),
+      type: type,
+      name: name,
+      target: target,
+      rate: `${parseFloat(rateVal).toFixed(2)}%`,
+      status: 1
+    };
+
+    MockData.commissionRules.push(newRule);
+    UI.closeModal('modal-add-commission');
+    UI.toast('抽佣规则配置保存成功！', 'success');
+    this.renderConfig();
   },
 
   renderDecorationConfig() {
@@ -971,6 +1135,55 @@ const AdminApp = {
     }
   },
 
+  showBiddingDetail(bidId) {
+    const ann = MockData.biddingAnnouncements.find(a => a.id === bidId);
+    if (!ann) return;
+    
+    const titleEl = document.getElementById('admin-bid-detail-title');
+    if (titleEl) titleEl.innerText = `${ann.title} (${bidId})`;
+    
+    const offers = MockData.biddingOffers.filter(o => o.bidId === bidId);
+    const tbody = document.querySelector('#table-admin-bid-offers tbody');
+    let html = '';
+    
+    if (offers.length === 0) {
+      html = `<tr><td colspan="5" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
+    } else {
+      // Sort offers desc by price
+      offers.sort((x, y) => {
+        const px = parseFloat(x.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+        const py = parseFloat(y.offerPrice.replace(/[^\d\.]/g, '')) || 0;
+        return py - px;
+      });
+      
+      offers.forEach((o, idx) => {
+        let tag = '';
+        if (ann.status === 4) { // 已结束
+          if (o.status === 1 || ann.winner === o.buyerName) {
+            tag = `<span class="tag tag-success">已中标</span>`;
+          } else {
+            tag = `<span class="tag tag-secondary">未中标</span>`;
+          }
+        } else {
+          tag = `<span class="tag tag-primary">出价有效</span>`;
+        }
+        
+        html += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>${o.buyerName}</td>
+            <td>${o.time}</td>
+            <td class="font-bold text-danger">${o.offerPrice}</td>
+            <td>${tag}</td>
+          </tr>
+        `;
+      });
+    }
+    
+    if (tbody) tbody.innerHTML = html;
+    UI.showModal('modal-admin-bid-detail');
+  },
+
   renderAgreementConfig() {
     window.renderAgreementConfig();
   }
@@ -1024,16 +1237,26 @@ window.openAddCategoryModal = function(parentId = '0', catId = '', name = '', co
 
 window.toggleCategoryStatus = function(catId, currentStatus) {
   if (currentStatus === 1) {
-    // 禁用逻辑模拟：必须没有货品挂在这个类别
-    // 假设“钢材”(C01) 和 “木材”(C02) 下有货品
     if (catId === '1' || catId === '2' || catId === '111') {
       UI.toast('该类别下有关联商品，无法禁用！', 'error');
       return;
     }
-    UI.toast('已成功禁用', 'success');
-  } else {
-    UI.toast('已成功启用', 'success');
   }
+  const findAndToggle = (cats) => {
+    for (let c of cats) {
+      if (c.id === catId) {
+        c.status = currentStatus === 1 ? 0 : 1;
+        const now = new Date();
+        c.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        return true;
+      }
+      if (c.children && findAndToggle(c.children)) return true;
+    }
+    return false;
+  };
+  findAndToggle(MockData.productCategories || []);
+  UI.toast(currentStatus === 1 ? '已成功禁用' : '已成功启用', 'success');
+  AdminApp.renderBaseProducts();
 };
 
 // === 侧边栏子菜单折叠逻辑 ===
@@ -1081,6 +1304,49 @@ window.renderAgreementConfig = function() {
   }
 };
 
+window.openDemandQuotesModal = (demandId) => {
+  if (window.UI && typeof window.UI.showDemandQuotesModal === 'function') {
+    window.UI.showDemandQuotesModal(demandId, false, null, true);
+    return;
+  }
+  const demand = MockData.demands.find(d => d.id === demandId);
+  const titleEl = document.getElementById('demand-quotes-modal-title');
+  if (titleEl) titleEl.innerText = `求购单报价人明细 - ${demand ? (demand.goodsName || demand.id) : demandId}`;
+  const subEl = document.getElementById('demand-quotes-sub-info');
+  if (subEl) subEl.innerText = `求购单号: ${demandId} | 买方主体电话: ${demand ? (demand.buyerPhone || '138****8818') : '-'}`;
+
+  let quotes = (MockData.demandQuotes || []).filter(q => q.demandId === demandId);
+  if (quotes.length === 0) {
+    quotes = [
+      { demandId, shopName: '远大钢铁官方直营店', shopPhone: '139****8811', priceStr: '¥4,100.00 / 吨', remark: '含专车送达运费，附带材质检测合格报告。', time: '2026-07-07 10:15', status: '交易达成' },
+      { demandId, shopName: '华东木材集散中心', shopPhone: '138****5566', priceStr: '¥4,150.00 / 吨', remark: '现货仓储配送，质保期12个月。', time: '2026-07-07 11:30', status: '未中标' }
+    ];
+  }
+
+  const tbody = document.getElementById('demand-quotes-tbody');
+  if (tbody) {
+    let html = '';
+    quotes.forEach((q, idx) => {
+      let stTag = q.status === '交易达成' || q.status === 1
+        ? '<span class="tag tag-success">交易达成</span>'
+        : '<span class="tag tag-secondary" style="background:#f1f5f9; color:#64748b;">未中标</span>';
+      html += `
+        <tr>
+          <td style="padding:10px 8px;">${idx + 1}</td>
+          <td style="padding:10px 8px; font-weight:bold; color:#0f172a;">${q.shopName}</td>
+          <td style="padding:10px 8px; font-family:monospace; color:#0284c7;">${q.shopPhone || '139****8811'}</td>
+          <td style="padding:10px 8px; text-align:right; font-weight:bold; color:#ef4444;">${q.priceStr || q.price}</td>
+          <td style="padding:10px 8px; font-size:12px; color:#475569; max-width:200px;">${q.remark || '大宗现货协议供应，品质包退换。'}</td>
+          <td style="padding:10px 8px; font-size:12px; color:#64748b;">${q.time}</td>
+          <td style="padding:10px 8px; text-align:center;">${stTag}</td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  }
+  UI.showModal('modal-demand-quotes');
+};
+
 window.saveAgreement = function() {
   const type = document.getElementById('form-agreement-type').value;
   const version = document.getElementById('form-agreement-version').value || 'V1.0';
@@ -1114,8 +1380,306 @@ window.saveAgreement = function() {
   }
 };
 
+window.AdminApp = AdminApp;
+window.editProduct = (prodId) => AdminApp.editProduct(prodId);
+window.openEditProductModal = (prodId) => AdminApp.editProduct(prodId);
+window.saveProductInfo = (newStatus) => AdminApp.saveProductInfo(newStatus);
+
 document.addEventListener('DOMContentLoaded', () => {
   AdminApp.init();
   // 预初始化级联下拉框数据
   if (window.renderCategoryCascader) window.renderCategoryCascader();
 });
+
+
+window.openSuspendShopModal = (shopId) => {
+  document.getElementById('suspend-shop-id').value = shopId;
+  document.getElementById('suspend-reason-input').value = '';
+  UI.showModal('modal-suspend-shop');
+};
+
+window.confirmSuspendShop = () => {
+  const id = document.getElementById('suspend-shop-id').value;
+  const reason = document.getElementById('suspend-reason-input').value.trim();
+  if (!reason) {
+    UI.toast('请输入关停理由', 'warning');
+    return;
+  }
+  const shop = MockData.shops.find(s => s.id == id);
+  if (shop) {
+    shop.status = '闭店中';
+    shop.suspendReason = reason;
+    delete shop.rejectReason;
+    const now = new Date();
+    shop.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    UI.toast(`已强行关停店铺: ${shop.shopName} (状态变更为闭店中)`, 'error');
+    UI.closeModal('modal-suspend-shop');
+    AdminApp.renderMerchantShops();
+  }
+};
+
+window.toggleShopStatus = (shopId, newStatus) => {
+  const shop = MockData.shops.find(s => s.id == shopId);
+  if (shop) {
+    shop.status = newStatus;
+    delete shop.suspendReason;
+    delete shop.rejectReason;
+    const now = new Date();
+    shop.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    UI.toast(`店铺状态已更新为: ${newStatus}`, 'success');
+    AdminApp.renderMerchantShops();
+  }
+};
+
+window.openAuditShopModal = (shopId) => {
+  const shop = MockData.shops.find(s => s.id == shopId);
+  if (!shop) return;
+  document.getElementById('audit-shop-target-id').value = shopId;
+  const titleEl = document.getElementById('audit-modal-shop-title');
+  if (titleEl) titleEl.innerText = `店铺入驻审核 - ${shop.shopName}`;
+  const inputEl = document.getElementById('audit-reject-reason-input');
+  if (inputEl) inputEl.value = '';
+  const counterEl = inputEl?.parentElement?.querySelector('.char-counter');
+  if (counterEl) counterEl.innerText = '0/50';
+  document.getElementById('audit-reject-reason-box').style.display = 'none';
+  const passRadio = document.querySelector('input[name="audit-result-radio"][value="pass"]');
+  if (passRadio) passRadio.checked = true;
+  UI.showModal('modal-audit-shop');
+};
+
+window.confirmSubmitAuditShop = () => {
+  const shopId = document.getElementById('audit-shop-target-id').value;
+  const shop = MockData.shops.find(s => s.id == shopId);
+  if (!shop) return;
+  const result = document.querySelector('input[name="audit-result-radio"]:checked')?.value;
+  if (result === 'pass') {
+    shop.status = '正常营业';
+    delete shop.rejectReason;
+    delete shop.suspendReason;
+    UI.toast(`店铺 ${shop.shopName} 入驻审核通过，已上线正常营业！`, 'success');
+  } else {
+    const reason = document.getElementById('audit-reject-reason-input').value.trim();
+    if (!reason) {
+      UI.toast('请输入审核未通过的原因说明（最多50字）', 'warning');
+      return;
+    }
+    shop.status = '闭店中';
+    shop.rejectReason = reason;
+    delete shop.suspendReason;
+    UI.toast(`店铺 ${shop.shopName} 审核拒绝，状态变更为闭店中`, 'error');
+  }
+  const now = new Date();
+  shop.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  UI.closeModal('modal-audit-shop');
+  AdminApp.renderMerchantShops();
+};
+
+window.openAuditProductModal = (prodId) => {
+  const prod = MockData.products.find(p => p.id == prodId);
+  if (!prod) return;
+  document.getElementById('audit-product-target-id').value = prodId;
+  const titleEl = document.getElementById('audit-modal-product-title');
+  if (titleEl) titleEl.innerText = `上架商品审核 - ${prod.name}`;
+  const inputEl = document.getElementById('audit-product-reject-input');
+  if (inputEl) inputEl.value = '';
+  const counterEl = inputEl?.parentElement?.querySelector('.char-counter');
+  if (counterEl) counterEl.innerText = '0/50';
+  document.getElementById('audit-product-reject-box').style.display = 'none';
+  const passRadio = document.querySelector('input[name="audit-product-radio"][value="pass"]');
+  if (passRadio) passRadio.checked = true;
+  UI.showModal('modal-audit-product');
+};
+
+window.confirmSubmitAuditProduct = () => {
+  const id = document.getElementById('audit-product-target-id').value;
+  const prod = MockData.products.find(p => p.id == id);
+  if (!prod) return;
+  const result = document.querySelector('input[name="audit-product-radio"]:checked')?.value;
+  if (result === 'pass') {
+    prod.status = 1; // 已上架
+    delete prod.rejectReason;
+    UI.toast(`商品 ${prod.name} 审核通过，已成功上架`, 'success');
+  } else {
+    const reason = document.getElementById('audit-product-reject-input').value.trim();
+    if (!reason) {
+      UI.toast('请输入审核未通过的原因说明（最多50字）', 'warning');
+      return;
+    }
+    prod.status = '未上架';
+    prod.rejectReason = reason;
+    UI.toast(`商品 ${prod.name} 审核拒绝`, 'error');
+  }
+  UI.closeModal('modal-audit-product');
+  AdminApp.renderMerchantProducts();
+};
+
+window.openAuditDemandModal = (demandId) => {
+  const demand = MockData.demands.find(d => d.id == demandId);
+  if (!demand) return;
+  document.getElementById('audit-demand-target-id').value = demandId;
+  const titleEl = document.getElementById('audit-modal-demand-title');
+  if (titleEl) titleEl.innerText = `供求信息审核 - ${demand.goodsName || demand.title}`;
+  const inputEl = document.getElementById('audit-demand-reject-input');
+  if (inputEl) inputEl.value = '';
+  const counterEl = inputEl?.parentElement?.querySelector('.char-counter');
+  if (counterEl) counterEl.innerText = '0/50';
+  document.getElementById('audit-demand-reject-box').style.display = 'none';
+  const passRadio = document.querySelector('input[name="audit-demand-radio"][value="pass"]');
+  if (passRadio) passRadio.checked = true;
+  UI.showModal('modal-audit-demand');
+};
+
+window.confirmSubmitAuditDemand = () => {
+  const id = document.getElementById('audit-demand-target-id').value;
+  const demand = MockData.demands.find(d => d.id == id);
+  if (!demand) return;
+  const result = document.querySelector('input[name="audit-demand-radio"]:checked')?.value;
+  if (result === 'pass') {
+    demand.status = 1; // 大厅展示
+    delete demand.rejectReason;
+    UI.toast(`供求信息审核通过并已上架大厅`, 'success');
+  } else {
+    const reason = document.getElementById('audit-demand-reject-input').value.trim();
+    if (!reason) {
+      UI.toast('请输入审核未通过的原因说明（最多50字）', 'warning');
+      return;
+    }
+    demand.status = '已下架';
+    demand.rejectReason = reason;
+    UI.toast(`供求信息审核拒绝`, 'error');
+  }
+  const now = new Date();
+  demand.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  UI.closeModal('modal-audit-demand');
+  AdminApp.renderDemands();
+};
+
+window.forceOfflineDemand = (demandId) => {
+  const reason = prompt("确定要强行下架该供求信息吗？请输入强行下架原因：");
+  if (reason === null) return; // User cancelled
+  const cleanReason = reason.trim();
+  if (!cleanReason) {
+    UI.toast("请输入强行下架原因！", "warning");
+    return;
+  }
+  const dem = MockData.demands.find(x => x.id === demandId);
+  if (dem) {
+    dem.status = '已下架';
+    dem.offlineReason = cleanReason;
+    delete dem.rejectReason;
+    const now = new Date();
+    dem.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    UI.toast("已成功强行下架该供求信息", "success");
+    AdminApp.renderDemands();
+  }
+};
+
+window.forceOfflineProduct = (prodId) => {
+  const reason = prompt("确定要强制下架该商品吗？请输入强制下架原因：");
+  if (reason === null) return; // User cancelled
+  const cleanReason = reason.trim();
+  if (!cleanReason) {
+    UI.toast("请输入强制下架原因！", "warning");
+    return;
+  }
+  const prod = MockData.products.find(x => x.id === prodId);
+  if (prod) {
+    prod.status = 2; // 已下架
+    prod.offlineReason = cleanReason;
+    delete prod.rejectReason;
+    delete prod.downReason;
+    const now = new Date();
+    prod.opTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    UI.toast(`已强制下架该商品: ${prod.name}`, "error");
+    AdminApp.renderMerchantProducts();
+  }
+};
+
+window.openAuditBiddingAnnModal = (annId) => {
+  const ann = MockData.biddingAnnouncements.find(a => a.id == annId);
+  if (!ann) return;
+  document.getElementById('audit-bidding-ann-target-id').value = annId;
+  const titleEl = document.getElementById('audit-modal-bidding-ann-title');
+  if (titleEl) titleEl.innerText = `竞价公告审核 - ${ann.title}`;
+  const inputEl = document.getElementById('audit-bidding-ann-reject-input');
+  if (inputEl) inputEl.value = '';
+  const counterEl = inputEl?.parentElement?.querySelector('.char-counter');
+  if (counterEl) counterEl.innerText = '0/50';
+  document.getElementById('audit-bidding-ann-reject-box').style.display = 'none';
+  const passRadio = document.querySelector('input[name="audit-bidding-ann-radio"][value="pass"]');
+  if (passRadio) passRadio.checked = true;
+  UI.showModal('modal-audit-bidding-ann');
+};
+
+window.confirmSubmitAuditBiddingAnn = () => {
+  const id = document.getElementById('audit-bidding-ann-target-id').value;
+  const ann = MockData.biddingAnnouncements.find(a => a.id == id);
+  if (!ann) return;
+  const result = document.querySelector('input[name="audit-bidding-ann-radio"]:checked')?.value;
+  if (result === 'pass') {
+    ann.auditStatus = '已通过';
+    delete ann.rejectReason;
+    UI.toast(`公告 ${id} 审核通过并已发布入大厅`, 'success');
+  } else {
+    const reason = document.getElementById('audit-bidding-ann-reject-input').value.trim();
+    if (!reason) {
+      UI.toast('请输入审核未通过的原因说明（最多50字）', 'warning');
+      return;
+    }
+    ann.auditStatus = '已拒绝';
+    ann.rejectReason = reason;
+    UI.toast(`公告 ${id} 审核已拒绝`, 'error');
+  }
+  UI.closeModal('modal-audit-bidding-ann');
+  AdminApp.renderBidding();
+};
+
+window.cycleShopStatus = (shopId) => {
+  const shop = MockData.shops.find(s => s.id == shopId);
+  if (!shop) return;
+  if (shop.status === '未开店' || !shop.status) {
+    shop.status = '待审核';
+    delete shop.rejectReason;
+    delete shop.suspendReason;
+  } else if (shop.status === '待审核') {
+    shop.status = '正常营业';
+    delete shop.rejectReason;
+    delete shop.suspendReason;
+  } else if (shop.status === '正常营业') {
+    shop.status = '闭店中';
+    shop.rejectReason = '资质文件模糊，无法辨识营业执照主体公章。';
+    delete shop.suspendReason;
+  } else if (shop.status === '闭店中' && shop.rejectReason) {
+    shop.status = '闭店中';
+    shop.suspendReason = '商家售卖违规大宗物资产品，平台强行闭店限期整改。';
+    delete shop.rejectReason;
+  } else {
+    shop.status = '未开店';
+    delete shop.rejectReason;
+    delete shop.suspendReason;
+  }
+  UI.toast(`[演示] 店铺状态已切换，当前状态: ${shop.status}`, 'info');
+  AdminApp.renderMerchantShops();
+};
+
+if (!UI.openImagePreview) {
+  UI.openImagePreview = (url) => {
+    let modal = document.getElementById('modal-image-preview');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modal-image-preview';
+      modal.className = 'modal-overlay';
+      modal.style.cssText = 'display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 2000;';
+      modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+      modal.innerHTML = `
+        <div style="background:#fff; padding:12px; border-radius:12px; max-width:80%; max-height:80%; position:relative; box-shadow:0 20px 25px rgba(0,0,0,0.25);">
+          <button style="position:absolute; right:10px; top:10px; border:none; background:none; font-size:24px; cursor:pointer; font-weight:bold;" onclick="document.getElementById('modal-image-preview').style.display='none'">&times;</button>
+          <img id="preview-large-img" src="" style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:6px; display:block; margin-top:24px;">
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    document.getElementById('preview-large-img').src = url;
+    modal.style.display = 'flex';
+  };
+}

@@ -95,10 +95,10 @@ window.MockData = {
 
   // --- 1.5 平台抽佣配置规则 ---
   commissionRules: [
-    { id: 'CR-001', type: 'global', name: '全局默认抽佣规则', target: '所有交易', rate: '1.00%', amount: '-', status: 1 },
-    { id: 'CR-002', type: 'merchant', name: '远大钢铁KA客户专享', target: '远大钢铁官方直营店', rate: '0.50%', amount: '-', status: 1 },
-    { id: 'CR-003', type: 'category', name: '五金类目特殊抽点', target: '五金分类', rate: '2.00%', amount: '-', status: 1 },
-    { id: 'CR-004', type: 'fixed', name: '特价大宗按单收取', target: '订单额>100万', rate: '-', amount: '¥5,000.00/单', status: 0 }
+    { id: 'CR-001', type: 'global', name: '全局默认基础抽用规则', target: '全平台通用', rate: '0.60%', status: 1 },
+    { id: 'CR-002', type: 'merchant', name: '远大钢铁KA商家优惠', target: '远大钢铁官方直营店', rate: '0.40%', status: 1 },
+    { id: 'CR-003', type: 'category', name: '建材金属类大宗抽费', target: '建材-金属-钢材', rate: '0.50%', status: 1 },
+    { id: 'CR-004', type: 'category', name: '粮油谷物类算抽点', target: '粮油-谷物-大米', rate: '0.80%', status: 1 }
   ],
 
   // --- 2. 统一用户库 (sys_user) ---
@@ -136,41 +136,40 @@ window.MockData = {
     { id: '3', name: '水泥', code: 'C03', status: 1, children: [] },
     { id: '4', name: '五金', code: 'C04', status: 0, children: [] }
   ],
-
   // --- 5. 商品库 (product & sku) ---
   products: [
-    { id: 'P1001', shopId: 'S001', shopName: '丰收粮油直营店', name: '东北一级大米 50kg装', category: '大米', image: 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=400&q=80', priceStr: '¥280.00 / 袋', sales: 12500, stock: 500, status: 1 },
-    { id: 'P1002', shopId: 'S002', shopName: '华东农副集散中心', name: '特级富士苹果 礼盒装', category: '苹果', image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=400&q=80', priceStr: '¥120.00 / 箱', sales: 800, stock: 3000, status: 1 },
-    { id: 'P1003', shopId: 'S001', shopName: '丰收粮油直营店', name: '高筋面粉 25kg装 (烘焙专用)', category: '面粉', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80', priceStr: '¥145.00 / 袋', sales: 3200, stock: 1000, status: 1 },
-    { id: 'P1004', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '有机大白菜 散装批发', category: '白菜', image: 'https://images.unsplash.com/photo-1550158464-672d98e24172?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.80 / 斤', sales: 45000, stock: 10000, status: 1 },
-    { id: 'P1005', shopId: 'S001', shopName: '丰收粮油直营店', name: '非转基因大豆油 5L*4桶装', category: '豆油', image: 'https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?auto=format&fit=crop&w=400&q=80', priceStr: '¥210.00 / 箱', sales: 1120, stock: 450, status: 1 },
-    { id: 'P1006', shopId: 'S002', shopName: '华东农副集散中心', name: '山东红富士 原箱直发', category: '苹果', image: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=400&q=80', priceStr: '¥56.00 / 箱', sales: 50, stock: 200, status: 1 },
-    { id: 'P1007', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '新鲜土豆 产地直供', category: '土豆', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.20 / 斤', sales: 89000, stock: 20000, status: 1 },
-    { id: 'P1008', shopId: 'S001', shopName: '丰收粮油直营店', name: '优质玉米 特级品', category: '玉米', image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80', priceStr: '¥1,450.00 / 吨', sales: 150, stock: 60, status: 0 } // 待审核
+    { id: 'P1001', shopId: 'S001', shopName: '丰收粮油直营店', name: '东北一级大米 50kg装', category: '大米', image: 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=400&q=80', priceStr: '¥280.00 / 袋', sales: 12500, stock: 500, status: 1, shelfType: '现货', createTime: '2026-05-20 14:30', listTime: '2026-06-01 10:00', opTime: '2026-06-01 10:00' },
+    { id: 'P1002', shopId: 'S002', shopName: '华东农副集散中心', name: '特级富士苹果 礼盒装', category: '苹果', image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=400&q=80', priceStr: '¥120.00 / 箱', sales: 800, stock: 3000, status: 1, shelfType: '预售', createTime: '2026-05-21 09:15', listTime: '2026-06-02 11:00', opTime: '2026-06-02 11:00' },
+    { id: 'P1003', shopId: 'S001', shopName: '丰收粮油直营店', name: '高筋面粉 25kg装 (烘焙专用)', category: '面粉', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80', priceStr: '¥145.00 / 袋', sales: 3200, stock: 1000, status: '未上架', rejectReason: '单价与市场均价偏差过大', shelfType: '现货', createTime: '2026-05-22 16:00', listTime: '2026-06-03 09:30', opTime: '2026-06-03 09:30' },
+    { id: 'P1004', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '有机大白菜 散装批发', category: '白菜', image: 'https://images.unsplash.com/photo-1550158464-672d98e24172?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.80 / 斤', sales: 45000, stock: 10000, status: 2, offlineReason: '主图包含外部联系方式', shelfType: '现货', createTime: '2026-05-23 10:20', listTime: '2026-06-04 14:15', opTime: '2026-06-04 14:15' },
+    { id: 'P1005', shopId: 'S001', shopName: '丰收粮油直营店', name: '非转基因大豆油 5L*4桶装', category: '豆油', image: 'https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?auto=format&fit=crop&w=400&q=80', priceStr: '¥210.00 / 箱', sales: 1120, stock: 450, status: 2, shelfType: '现货', createTime: '2026-05-24 11:00', listTime: '2026-06-05 16:30', opTime: '2026-06-05 16:30' },
+    { id: 'P1006', shopId: 'S002', shopName: '华东农副集散中心', name: '山东红富士 原箱直发', category: '苹果', image: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=400&q=80', priceStr: '¥56.00 / 箱', sales: 50, stock: 0, status: 3, shelfType: '预售', createTime: '2026-05-25 15:40', listTime: '2026-06-06 10:00', opTime: '2026-06-06 10:00' },
+    { id: 'P1007', shopId: 'S004', shopName: '绿源鲜蔬总代', name: '新鲜土豆 产地直供', category: '土豆', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80', priceStr: '¥1.20 / 斤', sales: 89000, stock: 20000, status: 1, shelfType: '现货', createTime: '2026-05-26 09:00', listTime: '2026-06-07 11:20', opTime: '2026-06-07 11:20' },
+    { id: 'P1008', shopId: 'S001', shopName: '丰收粮油直营店', name: '优质玉米 特级品', category: '玉米', image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80', priceStr: '¥1,450.00 / 吨', sales: 150, stock: 60, status: 0, shelfType: '现货', createTime: '2026-07-09 08:00', listTime: '2026-07-09 08:00', opTime: '2026-07-09 08:00' }
   ],
-
   // --- 6. 订单台账库 (orders) ---
-  // status: 0待签约, 1待发货, 2待签收, 3已完成, -1已关闭
+  // status: 0待签约, 1待发货, 2待签收(待收货), 3已完成, -1已关闭
   orders: [
-    { id: 'ORD202607080001', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'HRB400E 抗震螺纹钢 12mm', amount: '¥385,000.00', type: '现货交易', status: 0, time: '2026-07-08 09:12' },
-    { id: 'ORD202607070088', buyerName: '万通建材采购部', shopName: '华东木材集散中心', shopId: 'S002', productName: '俄罗斯进口 樟子松原木 (竞标中标)', amount: '¥240,000.00', type: '竞价交易', status: 1, time: '2026-07-07 15:30' },
-    { id: 'ORD202607050032', buyerName: '张三 (普通买家)', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '测试小批量钢管', amount: '¥8,500.00', type: '现货交易', status: 2, time: '2026-07-05 10:00' },
-    { id: 'ORD202607149999', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待付款测试钢筋批次', amount: '¥45,000.00', type: '现货交易', status: 4, time: '2026-07-14 15:00' },
-    { id: 'ORD202607148888', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待卖家签约测试槽钢', amount: '¥98,000.00', type: '现货交易', status: 5, time: '2026-07-14 15:20' },
-    { id: 'ORD202606280011', buyerName: '星辉建筑公司', shopName: '华东木材集散中心', shopId: 'S002', productName: '定制加工木方批次', amount: '¥150,000.00', type: '现货交易', status: -1, time: '2026-06-28 14:20', closeReason: '买卖双方线下协商退款取消' },
-    { id: 'ORD202607090001', buyerName: '万通建材采购部', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.O 42.5 散装硅酸盐水泥', amount: '¥155,000.00', type: '现货交易', status: 3, time: '2026-07-09 08:30' },
-    { id: 'ORD202607090002', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'Q345B 低合金高强度槽钢', amount: '¥40,500.00', type: '现货交易', status: 1, time: '2026-07-09 11:20' },
-    { id: 'ORD202607090003', buyerName: '星辉建筑公司', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.C 32.5 袋装水泥', amount: '¥18,000.00', type: '现货交易', status: 2, time: '2026-07-09 14:00' },
-    { id: 'ORD202607010045', buyerName: '万通建材采购部', shopName: '华东木材集散中心', shopId: 'S002', productName: '北美白橡木 实木大板', amount: '¥56,000.00', type: '现货交易', status: 3, time: '2026-07-01 09:15' }
+    { id: 'ORD202607080001', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'HRB400E 抗震螺纹钢 12mm', amount: '¥385,000.00', type: '现货交易订单', status: 0, time: '2026-07-08 09:12' },
+    { id: 'ORD202607070088', buyerName: '万通建材采购部', shopName: '华东木材集散中心', shopId: 'S002', productName: '俄罗斯进口 樟子松原木 (竞标中标)', amount: '¥240,000.00', type: '竞价交易订单', status: 1, time: '2026-07-07 15:30' },
+    { id: 'ORD202607050032', buyerName: '张三 (普通买家)', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '测试小批量钢管', amount: '¥8,500.00', type: '供求交易订单', status: 2, time: '2026-07-05 10:00' },
+    { id: 'ORD202607149999', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待付款测试钢筋批次', amount: '¥45,000.00', type: '预售交易订单', status: 4, time: '2026-07-14 15:00' },
+    { id: 'ORD202607148888', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '待卖家签约测试槽钢', amount: '¥98,000.00', type: '现货交易订单', status: 5, time: '2026-07-14 15:20' },
+    { id: 'ORD202606280011', buyerName: '星辉建筑公司', shopName: '华东木材集散中心', shopId: 'S002', productName: '定制加工木方批次', amount: '¥150,000.00', type: '预售交易订单', status: -1, time: '2026-06-28 14:20', closeReason: '买卖双方线下协商退款取消' },
+    { id: 'ORD202607090001', buyerName: '万通建材采购部', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.O 42.5 散装硅酸盐水泥', amount: '¥155,000.00', type: '现货交易订单', status: 3, time: '2026-07-09 08:30' },
+    { id: 'ORD202607090002', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'Q345B 低合金高强度槽钢', amount: '¥40,500.00', type: '供求交易订单', status: 1, time: '2026-07-09 11:20' },
+    { id: 'ORD202607090003', buyerName: '星辉建筑公司', shopName: '海螺水泥华东总代', shopId: 'S004', productName: '海螺牌 P.C 32.5 袋装水泥', amount: '¥18,000.00', type: '现货交易订单', status: 2, time: '2026-07-09 14:00' },
+    { id: 'ORD202607010045', buyerName: '万通建材采购部', shopName: '华东木材集散中心', shopId: 'S002', productName: '北美白橡木 实木大板', amount: '¥56,000.00', type: '竞价交易订单', status: 3, time: '2026-07-01 09:15' }
   ],
 
   // --- 7. 求购大厅与咨询监控库 (supply_demand & chats) ---
   demands: [
-    { id: 'REQ001', buyerName: '万通建材采购部', title: '急求 50吨 Q345B 槽钢，交期7天内', category: '钢材', expectedPrice: '¥4,200/吨', publishTime: '2026-07-07 09:00', status: 1, quotesCount: 3 },
-    { id: 'REQ002', buyerName: '星辉建筑公司', title: '寻优质防腐木供应商，年框采购量约5000立方', category: '木材', expectedPrice: '面议', publishTime: '2026-07-08 10:15', status: 1, quotesCount: 1 },
-    { id: 'REQ003', buyerName: 'H5买家用户', title: '急购中联/海螺 PO42.5 水泥 100吨，需送达工地', category: '水泥', expectedPrice: '¥320/吨', publishTime: '2026-07-08 14:00', status: 1, quotesCount: 0 },
-    { id: 'REQ004', buyerName: '万通建材采购部', title: '采购 P.O 42.5 散装水泥 500吨 需送达杭州工地', category: '水泥', expectedPrice: '¥300/吨', publishTime: '2026-07-09 08:00', status: 1, quotesCount: 5 },
-    { id: 'REQ005', buyerName: '万通建材采购部', title: '【已结束】上个月的废钢管处理', category: '钢材', expectedPrice: '面议', publishTime: '2026-06-15 08:00', status: 2, quotesCount: 12 }
+    { id: 'REQ001', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: 'Q345B 槽钢 50吨', category: '钢材', deliveryPeriod: '2026-08-01 至 2026-08-15', remark: '需包含运输到场费用，提供材质单。', publishTime: '2026-07-07 09:00', status: 1, quotesCount: 3 },
+    { id: 'REQ002', buyerName: '星辉建筑公司', buyerPhone: '159****3322', goodsName: '防腐木 樟子松 5000立方', category: '木材', deliveryPeriod: '2026-08-10 至 2026-09-10', remark: '要求全烘干处理，满足防腐特级标准。', publishTime: '2026-07-08 10:15', status: 0, quotesCount: 1 },
+    { id: 'REQ003', buyerName: 'H5买家用户', buyerPhone: '186****9966', goodsName: 'PO42.5 散装水泥 100吨', category: '水泥', deliveryPeriod: '2026-07-25 至 2026-07-30', remark: '直接送达萧山在建工地现场。', publishTime: '2026-07-08 14:00', status: '已下架', rejectReason: '配送范围超出本省' },
+    { id: 'REQ004', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '海螺牌 P.O 42.5 水泥 500吨', category: '水泥', deliveryPeriod: '2026-08-05 至 2026-08-20', remark: '需按周分批配送至项目部仓库。', publishTime: '2026-07-09 08:00', status: '已下架', offlineReason: '采购计划变更' },
+    { id: 'REQ005', buyerName: '丰收农贸直销', buyerPhone: '135****4422', goodsName: '进口小麦 300吨', category: '大米', deliveryPeriod: '2026-07-10 至 2026-07-20', remark: '自主清空仓库处理。', publishTime: '2026-07-10 09:00', status: '已下架' },
+    { id: 'REQ006', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '镀锌废钢管 30吨', category: '钢材', deliveryPeriod: '2026-06-20 至 2026-06-25', remark: '【已完结】旧管切割回收批次。', publishTime: '2026-06-15 08:00', status: 2, quotesCount: 12 }
   ],
   chats: [ 
     { demandId: 'REQ001', buyer: '万通建材采购部', seller: '远大钢铁官方直营店', time: '2026-07-07 10:15', history: [{ role: 'buyer', msg: '老板，50吨能做4100吗？' }, { role: 'seller', msg: '做不了，最底4150，发您正式报价了。' }] },

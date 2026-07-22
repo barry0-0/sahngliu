@@ -496,17 +496,27 @@ const H5App = {
                </div>`;
       }
 
+      const goodsName = d.goodsName || d.title;
+      const buyerPhone = d.buyerPhone || '138****8818';
+      const deliveryPeriod = d.deliveryPeriod || '2026-08-01 至 2026-08-15';
+      const remark = d.remark || d.desc || '按标准协议交货';
+
       html += `
-        <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+        <div style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #f1f5f9; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
           <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-weight: bold; font-size: 15px; color:#1e293b;">${d.title}</div>
+            <div style="font-weight: bold; font-size: 15px; color:#1e293b;">求购货品: ${goodsName}</div>
             ${statusTag}
           </div>
-          <div style="color: var(--danger-color); font-weight: bold; margin-bottom: 4px;">期望价: ${d.expectedPrice}</div>
+          <div style="font-size:12px; color:#64748b; margin-bottom:4px;">
+            买方账号: <span style="font-family:monospace; font-weight:bold; color:#0284c7;">${buyerPhone}</span> (${d.buyerName})
+          </div>
+          <div style="font-size:12px; color:#1e293b; font-weight:500; margin-bottom:4px;">
+            交期范围: ${deliveryPeriod}
+          </div>
           ${quotePriceHtml}
-          <div class="flex justify-between text-secondary items-center" style="font-size: 12px; border-bottom: 1px solid #f2f3f5; padding-bottom: 12px; margin-bottom: 12px; margin-top:8px;">
-            <span>买家: ${d.buyerName}</span>
-            <span>${d.publishTime} 发布</span>
+          <div class="flex justify-between text-secondary items-center" style="font-size: 12px; border-bottom: 1px solid #f2f3f5; padding-bottom: 8px; margin-bottom: 8px; margin-top:4px;">
+            <span>备注: ${remark}</span>
+            <span>${d.publishTime}</span>
           </div>
           ${btn}
         </div>
@@ -530,31 +540,40 @@ const H5App = {
   },
 
   submitPublishDemand() {
-    const title = document.getElementById('h5-pd-title').value.trim();
-    const price = document.getElementById('h5-pd-price').value.trim() || '面议';
-    const desc = document.getElementById('h5-pd-desc').value.trim();
-    if (!title) {
-      UI.toast('请输入求购标题！', 'error');
+    const goodsName = document.getElementById('h5-pd-goods-name')?.value.trim() || '';
+    const quantity = document.getElementById('h5-pd-quantity')?.value.trim() || '50';
+    const unit = document.getElementById('h5-pd-unit')?.value || '吨';
+    const deliveryPeriod = document.getElementById('h5-pd-delivery-period')?.value.trim() || '';
+    if (!goodsName) {
+      UI.toast('请输入求购货品名称！', 'error');
+      return;
+    }
+    if (!deliveryPeriod) {
+      UI.toast('请输入交期时间范围！', 'error');
       return;
     }
     const newDemand = {
       id: 'REQ' + (MockData.demands.length + 1).toString().padStart(3, '0'),
       buyerName: 'H5买家用户',
-      title: title,
-      category: '钢材', // default
-      expectedPrice: price,
+      buyerPhone: '186****9966',
+      title: goodsName,
+      goodsName: goodsName,
+      quantity: quantity,
+      unit: unit,
+      category: '大宗物资',
+      expectedPrice: '面议',
+      deliveryPeriod: deliveryPeriod,
       publishTime: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 0, // 待审核
       quotesCount: 0,
-      desc: desc
+      remark: '',
+      desc: ''
     };
     MockData.demands.unshift(newDemand);
-    UI.toast('求购意向发布成功，待审核！', 'success');
+    UI.toast('求购意向提交成功，已推送至平台运营端待审核！', 'success');
     UI.closeModal('sheet-h5-publish-demand');
-    // Clear fields
-    document.getElementById('h5-pd-title').value = '';
-    document.getElementById('h5-pd-price').value = '';
-    document.getElementById('h5-pd-desc').value = '';
+    if (document.getElementById('h5-pd-goods-name')) document.getElementById('h5-pd-goods-name').value = '';
+    if (document.getElementById('h5-pd-delivery-period')) document.getElementById('h5-pd-delivery-period').value = '';
     this.renderDemands();
   },
 
@@ -567,19 +586,15 @@ const H5App = {
 
     // Reset inputs
     document.getElementById('h5-quote-price').value = '';
-    document.getElementById('h5-quote-qty').value = '';
-    document.getElementById('h5-quote-notes').value = '';
 
     UI.openModal('sheet-h5-quote');
   },
 
   submitQuote() {
     const priceVal = document.getElementById('h5-quote-price').value.trim();
-    const qtyVal = document.getElementById('h5-quote-qty').value.trim();
-    const notesVal = document.getElementById('h5-quote-notes').value.trim();
 
-    if (!priceVal || !qtyVal) {
-      UI.toast('请填写报价单价与可供货数量！', 'error');
+    if (!priceVal) {
+      UI.toast('请填写报价金额！', 'error');
       return;
     }
 
@@ -591,7 +606,7 @@ const H5App = {
       demandId: this.currentQuoteDemandId,
       shopId: 'S001',
       shopName: 'H5买家 (报价主体)',
-      price: priceFormatted + '/' + (priceVal.includes('吨') ? '吨' : priceVal.includes('立方') ? '立方' : '单位'),
+      price: priceFormatted,
       time: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 0,
       quoterName: 'H5买家用户'
@@ -1487,7 +1502,8 @@ const H5App = {
         } else if (o.status === 1) {
           statusTag = `<span class="tag tag-primary">待发货</span>`;
         } else if (o.status === 2) {
-          statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货</span>`;
+          statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货(待签收)</span>`;
+          btn = `<button class="btn btn-primary btn-sm" style="border-radius:16px; background:#10b981; border-color:#10b981;" onclick="event.stopPropagation(); H5App.confirmBuyerReceipt('${o.id}')">确认收货</button>`;
         } else if (o.status === 3) {
           statusTag = `<span class="tag tag-success">已完结</span>`;
           if (!o.invoiceApplied) {
@@ -1514,6 +1530,15 @@ const H5App = {
       });
     }
     list.innerHTML = html;
+  },
+
+  confirmBuyerReceipt(orderId) {
+    const o = MockData.orders.find(x => x.id === orderId);
+    if (o) {
+      o.status = 3;
+      UI.toast(`订单 ${orderId} 确认收货成功！交易已完成`, 'success');
+      this.renderUserOrders();
+    }
   },
 
   openUserContractModal(orderId) {

@@ -51,10 +51,11 @@ window.UI = {
   openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
-      modal.style.display = 'flex';
-      setTimeout(() => {
-        modal.classList.add('active');
-      }, 10);
+      modal.style.setProperty('display', 'flex', 'important');
+      modal.style.setProperty('opacity', '1', 'important');
+      modal.style.setProperty('pointer-events', 'auto', 'important');
+      modal.style.setProperty('z-index', '110000', 'important');
+      modal.classList.add('active');
     }
   },
 
@@ -62,11 +63,9 @@ window.UI = {
     const modal = document.getElementById(id);
     if (modal) {
       modal.classList.remove('active');
-      setTimeout(() => {
-        if (!modal.classList.contains('active')) {
-          modal.style.display = 'none';
-        }
-      }, 250);
+      modal.style.setProperty('display', 'none', 'important');
+      modal.style.setProperty('opacity', '0', 'important');
+      modal.style.setProperty('pointer-events', 'none', 'important');
     }
   },
 
@@ -114,286 +113,218 @@ window.UI = {
 
   /**
    * 关闭模态框
-   */
-  closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove('active');
-      setTimeout(() => {
-        if (!modal.classList.contains('active')) {
-          modal.style.display = 'none';
-        }
-      }, 250);
-    }
-  },
-
-  /**
    * 查看订单轨迹和详情
    */
   showOrderDetail(orderId) {
-    const o = MockData.orders.find(item => item.id === orderId);
+    if (window.MallApp && typeof window.MallApp.showOrderDetail === 'function' && document.getElementById('page-user-center')) {
+      window.MallApp.showOrderDetail(orderId);
+      return;
+    }
+    const o = (MockData.orders || []).find(item => item.id === orderId);
     if (!o) {
-      alert('订单不存在！');
+      this.toast('未找到该订单的详细记录！', 'warning');
       return;
     }
 
+    const shop = (MockData.shops || []).find(s => s.id === o.shopId || s.shopName === o.shopName);
+    const sellerCompany = shop ? shop.companyName : (o.sellerCompany || '华东大宗物资贸易有限公司');
+    const buyerPhone = o.buyerPhone || '138****8818';
+
+    const amountVal = parseFloat(o.amount.replace(/[^\d\.]/g, '')) || 100000;
+    const commRateStr = o.commissionRate || '0.60%';
+    const commFeeVal = (amountVal * 0.006).toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    let statusText = '';
+    let statusColor = '';
+    if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
+    else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
+    else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
+    else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
+    else if (o.status === 2) { statusText = '待签收(已发货)'; statusColor = '#0958d9'; }
+    else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
+    else if (o.status === -1) { statusText = '已关闭'; statusColor = '#ff4d4f'; }
+
     let modal = document.getElementById('modal-order-detail');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.className = 'modal-overlay';
-      modal.id = 'modal-order-detail';
-      modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; z-index:9999; transition: opacity 0.2s ease; opacity: 0;';
-      modal.innerHTML = `
-        <div class="modal-card-container" style="background:#fff; border-radius:12px; overflow:hidden; width:600px; max-width:95%; box-shadow:0 10px 25px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:85vh; animation: zoomIn 0.25s ease;">
-          <div style="background:#1e293b; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:bold; font-size:14px;">📄 咖喱粑粑 - 大宗交易订单详情</span>
-            <button onclick="UI.closeModal('modal-order-detail')" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
-          </div>
-          <div style="padding:20px; overflow-y:auto; font-size:13px; color:#334155; line-height:1.6;">
-            <!-- Main Grid Info -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px 20px; margin-bottom:16px; border-bottom:1px solid #f1f5f9; padding-bottom:16px;">
-              <div><span style="color:#64748b;">订单编号：</span><strong id="det-order-id" style="font-family:monospace; color:#0f172a;">-</strong></div>
-              <div><span style="color:#64748b;">交易类型：</span><span id="det-order-type" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">-</span></div>
-              <div><span style="color:#64748b;">采购买家：</span><span id="det-buyer-name" style="font-weight:bold;">-</span></div>
-              <div><span style="color:#64748b;">供应商家：</span><span id="det-shop-name" style="font-weight:bold;">-</span></div>
-            </div>
+    if (modal) modal.remove();
 
-            <!-- Goods Detail -->
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:16px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:8px; font-weight:bold;">
-                <span style="color:#475569;">商品清单</span>
-                <span id="det-order-amount" style="color:var(--danger-color); font-size:15px;">-</span>
-              </div>
-              <div id="det-goods-list" style="display:flex; flex-direction:column; gap:8px;">
-                <!-- Dynamically populated goods rows -->
-              </div>
-            </div>
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal-order-detail';
+    modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.45) !important; backdrop-filter:blur(8px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:110000 !important; padding:20px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
-            <!-- Timeline -->
-            <div style="font-weight:bold; margin-bottom:10px; color:#0f172a;">订单状态流转与履约轨迹</div>
-            <div id="det-timeline" style="display:flex; flex-direction:column; gap:12px; padding-left:8px; margin-top:8px;">
-              <!-- Timeline rows -->
-            </div>
+    const dateStr = (o.time || '2026-07-08 09:12').split(' ')[0];
 
-            <!-- Contract & Payment Attachments -->
-            <div style="margin-top:16px; border-top:1px solid #f1f5f9; padding-top:16px; box-sizing:border-box;">
-              <div style="font-weight:bold; margin-bottom:10px; color:#0f172a;">📜 合同与支付凭证存证</div>
-              <div id="det-attachments-card" style="display:flex; flex-direction:column; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; box-sizing:border-box;">
-                <!-- Dynamically populated attachment rows -->
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    // Populate data
-    document.getElementById('det-order-id').innerText = o.id;
-    document.getElementById('det-order-type').innerText = o.type;
-    document.getElementById('det-buyer-name').innerText = o.buyerName;
-    document.getElementById('det-shop-name').innerText = o.shopName;
-    document.getElementById('det-order-amount').innerText = o.amount;
-
-    // Populate goods list
-    const goodsListContainer = document.getElementById('det-goods-list');
-    if (goodsListContainer) {
-      if (o.products && o.products.length > 0) {
-        goodsListContainer.innerHTML = o.products.map(p => `
-          <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-bottom:8px; border-bottom:1px dashed #f1f5f9; padding-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:14px;">🏗️</span>
-              <div>
-                <div style="font-weight:bold; color:#0f172a;">${p.name}</div>
-                <div style="color:#64748b; font-size:10px;">单价：¥${parseFloat(p.price).toLocaleString('zh-CN')} × 数量：${p.quantity}</div>
-              </div>
-            </div>
-            <div style="font-weight:bold; color:#ef4444;">¥${parseFloat(p.amount || (p.price * p.quantity)).toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-          </div>
-        `).join('');
-      } else {
-        goodsListContainer.innerHTML = `
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="font-size:22px; width:40px; height:40px; border-radius:6px; background:#e2e8f0; display:flex; align-items:center; justify-content:center;">🏗️</div>
-            <div>
-              <div style="font-weight:bold; color:#0f172a;">${o.productName}</div>
-              <div style="color:#64748b; font-size:11px;">交货周期：遵守电子合同规范约定 (线下履约结算)</div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    // Timeline construction
-    const timelineContainer = document.getElementById('det-timeline');
-    let timelineHTML = '';
-    const dateStr = o.time.split(' ')[0];
-
-    const steps = [
-      { label: '订单草拟与创建', desc: `下单时间: ${o.time}`, done: true },
-      { label: '买家电子签章(采购盖章)', desc: o.status === 0 || o.status === 4 ? '等待买家在个人中心立即签约' : `已盖章签约: ${dateStr} 10:15`, done: o.status !== 0 && o.status !== 4 },
-      { label: '卖家电子签章(供应盖章)', desc: o.status === 0 || o.status === 5 || o.status === 4 ? '等待卖家盖章' : `双边签约锁定: ${dateStr} 11:20`, done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
-      { label: '线下公对公汇款查验', desc: o.status === 4 ? '等买家线下汇款并上传凭证' : (o.status === 0 || o.status === 5 ? '等待合同签署完毕' : `财务对账确认: ${dateStr} 14:00`), done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
-      { label: '卖家装车发货并录单', desc: o.status === 1 ? '备货中，等待发货' : (o.status === 2 || o.status === 3 ? `已发货: ${dateStr} 15:45 (三方快递/物流单)` : '未发货'), done: o.status === 2 || o.status === 3 },
-      { label: '买家签收与月度对账结算', desc: o.status === 3 ? `已收货结清: ${dateStr} 18:30 (待运营核销佣金开票)` : '等待线下交货与最终确认收货', done: o.status === 3 }
+    const stepItems = [
+      { num: 1, title: '订单创建', time: o.time || '2026-07-08 09:12', done: true },
+      { num: 2, title: '买家盖章', time: o.status === 0 || o.status === 4 ? '等待签章' : `${dateStr} 10:15`, done: o.status !== 0 && o.status !== 4 },
+      { num: 3, title: '卖家盖章', time: o.status === 0 || o.status === 5 || o.status === 4 ? '等待签章' : `${dateStr} 11:20`, done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
+      { num: 4, title: '打款与核销', time: o.status === 4 ? '等待打款' : (o.status === 0 || o.status === 5 ? '等待合同' : `${dateStr} 14:00`), done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
+      { num: 5, title: '物流发货', time: o.status === 1 ? '备货中' : (o.status === 2 || o.status === 3 ? `${dateStr} 15:45` : '未发货'), done: o.status === 2 || o.status === 3 },
+      { num: 6, title: '签收结清', time: o.status === 3 ? `${dateStr} 18:30` : '等待确认', done: o.status === 3 }
     ];
 
-    if (o.status === -1) {
-      let descStr = o.closeReason || '买卖双方沟通一致线下取消';
-      if (o.cancelUser) {
-        descStr = `取消操作人: ${o.cancelUser} (${o.cancelRole}) | 时间: ${o.cancelTime}`;
-      }
-      steps.push({ label: '订单强行关闭 / 交易取消', desc: descStr, done: true, error: true });
-    }
-
-    steps.forEach((step, idx) => {
-      let iconColor = step.done ? '#10b981' : '#cbd5e1';
-      if (step.error) iconColor = '#ef4444';
-      let borderStyle = idx === steps.length - 1 ? '' : `border-left: 2px solid ${step.done ? '#10b981' : '#cbd5e1'};`;
-      timelineHTML += `
-        <div style="position:relative; padding-bottom:10px; ${borderStyle} padding-left:16px;">
-          <div style="position:absolute; left:-5px; top:2px; width:10px; height:10px; border-radius:50%; background:${iconColor}; border:2px solid #fff;"></div>
-          <div style="font-weight:bold; font-size:12px; color: ${step.done ? '#0f172a' : '#94a3b8'};">${step.label}</div>
-          <div style="font-size:11px; color:#64748b; margin-top:2px;">${step.desc}</div>
+    let stepsHtml = `
+      <div style="display:flex; justify-content:space-between; align-items:center; position:relative; margin-bottom:20px; background:#f8fafc; padding:16px 20px; border-radius:12px; border:1px solid #e2e8f0;">
+    `;
+    stepItems.forEach((st, i) => {
+      const activeColor = st.done ? '#10b981' : '#cbd5e1';
+      const isCurrent = (o.status === 0 && i === 1) || (o.status === 5 && i === 2) || (o.status === 4 && i === 3) || (o.status === 1 && i === 4) || (o.status === 2 && i === 5) || (o.status === 3 && i === 5);
+      stepsHtml += `
+        <div style="display:flex; flex-direction:column; align-items:center; z-index:2; text-align:center;">
+          <div style="width:28px; height:28px; border-radius:50%; background:${isCurrent ? '#7c3aed' : activeColor}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; box-shadow: ${isCurrent ? '0 0 0 4px rgba(124,58,237,0.2)' : 'none'};">
+            ${st.done ? '✓' : st.num}
+          </div>
+          <div style="font-size:12px; font-weight:bold; color:${isCurrent ? '#7c3aed' : st.done ? '#0f172a' : '#94a3b8'}; margin-top:6px;">${st.title}</div>
+          <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${st.time}</div>
         </div>
       `;
+      if (i < stepItems.length - 1) {
+        stepsHtml += `<div style="flex:1; height:2px; background:${st.done ? '#10b981' : '#e2e8f0'}; margin:0 8px; align-self:flex-start; margin-top:14px;"></div>`;
+      }
     });
+    stepsHtml += `</div>`;
 
-    timelineContainer.innerHTML = timelineHTML;
-
-    // Attachments info construction
-    const attachmentsContainer = document.getElementById('det-attachments-card');
-    if (attachmentsContainer) {
-      let attachmentsHTML = '';
-      
-      // 1. Contract Section
-      let contractHTML = '';
-      if (o.status === 0) {
-        contractHTML = `
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px;">📄</span>
+    modal.innerHTML = `
+      <div style="background:#fff; border-radius:16px; width:860px; max-width:96vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        
+        <!-- Modal Header -->
+        <div style="background:#0f172a; color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:18px; background:rgba(255,255,255,0.1); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">📄</span>
             <div>
-              <div style="font-weight:bold; color:#64748b;">交易合同：双方尚未签署</div>
-              <div style="font-size:11px; color:#94a3b8;">等待买家在个人中心进行 CA 线上盖章或上传已签署合同。</div>
+              <div style="font-weight:bold; font-size:16px;">大宗交易 PC 桌面级订单透视详情</div>
+              <div style="font-size:11px; color:#94a3b8; margin-top:2px;">订单编号: <span style="font-family:monospace; color:#38bdf8;">${o.id}</span> | 交易模式: ${o.type || '现货交易'}</div>
             </div>
           </div>
-        `;
-      } else if (o.status === 5) {
-        if (o.contractFile) {
-          contractHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">📄</span>
-              <div>
-                <div style="font-weight:bold; color:#fa8c16;">交易合同：买方已上传已签署合同</div>
-                <div style="font-size:11px; color:#475569;">
-                  已上传买家签字文件: <a href="javascript:void(0)" onclick="alert('预览合同文件: ' + '${o.contractFile}')" style="color:#1677ff; font-weight:bold; text-decoration:underline;">${o.contractFile}</a> 
-                  <span style="color:#94a3b8; margin-left:8px;">(等待卖家盖章/上传)</span>
+          <button onclick="UI.closeModal('modal-order-detail')" style="background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer; line-height:1; hover:color:#fff;" title="关闭">&times;</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding:24px; overflow-y:auto; flex:1; font-size:13px; color:#334155; display:flex; flex-direction:column; gap:20px; box-sizing:border-box;">
+          
+          <!-- Step Process Bar -->
+          ${stepsHtml}
+
+          <!-- Info Cards Section -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            
+            <!-- Buyer & Seller Card -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px;">
+              <div style="font-weight:bold; font-size:14px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                <span>🏢 交易双边主体信息</span>
+                <span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; font-size:11px; padding:2px 8px;">${statusText}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                <div><span style="color:#64748b;">采购买家：</span><strong style="color:#0f172a;">${o.buyerName}</strong></div>
+                <div><span style="color:#64748b;">买家联系电话：</span><span style="font-family:monospace; color:#0284c7; font-weight:bold;">${buyerPhone}</span></div>
+                <div><span style="color:#64748b;">供应商家：</span><strong style="color:#0f172a;">${o.shopName}</strong></div>
+                <div><span style="color:#64748b;">卖家主体公司：</span><span style="color:#475569;">${sellerCompany}</span></div>
+              </div>
+            </div>
+
+            <!-- Finance & Commission Card -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px;">
+              <div style="font-weight:bold; font-size:14px; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                <span>💰 财务金额与平台抽佣计算</span>
+                <span style="font-size:11px; color:#64748b;">自动核算比例</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                <div><span style="color:#64748b;">订单成交总额：</span><strong style="color:#ef4444; font-size:16px;">${o.amount}</strong></div>
+                <div><span style="color:#64748b;">平台抽佣费率：</span><span style="color:#0284c7; font-weight:bold;">${commRateStr}</span> <span style="font-size:11px; color:#94a3b8;">(按类目/商家特殊规则生效)</span></div>
+                <div><span style="color:#64748b;">预计平台抽佣金额：</span><strong style="color:#7c3aed; font-size:14px;">¥${commFeeVal}</strong></div>
+                <div><span style="color:#64748b;">资金流转路径：</span><span style="color:#475569;">买卖双边线下公对公汇款 (平台存证与核查)</span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Goods Detail Table -->
+          <div style="border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+            <div style="background:#f8fafc; padding:12px 16px; border-bottom:1px solid #e2e8f0; font-weight:bold; font-size:13px; color:#0f172a;">
+              📦 订购商品明细表
+            </div>
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+              <thead>
+                <tr style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
+                  <th style="padding:10px 16px;">序号</th>
+                  <th style="padding:10px 16px;">货品名称</th>
+                  <th style="padding:10px 16px;">单价 (元)</th>
+                  <th style="padding:10px 16px;">履约数量</th>
+                  <th style="padding:10px 16px; text-align:right;">小计金额</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:12px 16px;">1</td>
+                  <td style="padding:12px 16px; font-weight:bold; color:#0f172a;">${o.productName}</td>
+                  <td style="padding:12px 16px; color:#475569;">依据合同约定标价</td>
+                  <td style="padding:12px 16px; font-weight:bold;">大宗按批交割</td>
+                  <td style="padding:12px 16px; text-align:right; font-weight:bold; color:#ef4444;">${o.amount}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Electronic Contract & Certificate Section -->
+          <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:12px; padding:16px;">
+            <div style="font-weight:bold; font-size:13px; color:#6b21a8; margin-bottom:8px; display:flex; items-center; justify-content:space-between;">
+              <span>📜 电子合同与双边 CA 签章状态存证</span>
+              <span style="font-size:11px; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:4px;">防篡改区块链加密存证</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px; margin-top:8px;">
+              <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #f3e8ff;">
+                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">买方主体盖章：</div>
+                <div style="color:${o.status === 0 || o.status === 4 ? '#d97706' : '#16a34a'}; font-weight:bold;">
+                  ${o.status === 0 || o.status === 4 ? '⏳ 待买家完成电子盖章' : '✓ 万通建材采购部 (已完成 CA 电子签章存证)'}
                 </div>
               </div>
-            </div>
-          `;
-        } else {
-          contractHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">💻</span>
-              <div>
-                <div style="font-weight:bold; color:#fa8c16;">交易合同：买方已电子签章 (CA签章)</div>
-                <div style="font-size:11px; color:#94a3b8;">已生成买方 CA 数字指纹，校验码: <span style="font-family:monospace; background:#e2e8f0; padding:1px 4px; border-radius:3px;">CA-SIGN-${o.id}-BUYER</span>。等待卖家盖章。</div>
-              </div>
-            </div>
-          `;
-        }
-      } else {
-        if (o.contractFile) {
-          contractHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">📄</span>
-              <div>
-                <div style="font-weight:bold; color:#10b981;">交易合同：双边已签署 (纸质合同上传)</div>
-                <div style="font-size:11px; color:#475569;">
-                  存证合同文件: <a href="javascript:void(0)" onclick="alert('预览合同文件: ' + '${o.contractFile}')" style="color:#1677ff; font-weight:bold; text-decoration:underline;">${o.contractFile}</a>
+              <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #f3e8ff;">
+                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">卖方主体盖章：</div>
+                <div style="color:${o.status === 0 || o.status === 5 || o.status === 4 ? '#d97706' : '#16a34a'}; font-weight:bold;">
+                  ${o.status === 0 || o.status === 5 || o.status === 4 ? '⏳ 待卖家完成电子盖章' : `✓ ${o.shopName} (已完成 CA 电子签章存证)`}
                 </div>
               </div>
-            </div>
-          `;
-        } else {
-          contractHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">💻</span>
-              <div>
-                <div style="font-weight:bold; color:#10b981;">交易合同：双边已签署 (CA电子签章)</div>
-                <div style="font-size:11px; color:#475569;">已生成双边电子签章。防伪校验指纹: <span style="font-family:monospace; background:#e2e8f0; padding:1px 4px; border-radius:3px;">CA-SIGN-${o.id}</span></div>
-              </div>
-            </div>
-          `;
-        }
-      }
+          </div>
 
-      // 2. Payment Section
-      let paymentHTML = '';
-      if (o.status === 0 || o.status === 5) {
-        paymentHTML = `
-          <div style="display:flex; align-items:center; gap:8px; border-top:1px dashed #e2e8f0; padding-top:10px; margin-top:4px;">
-            <span style="font-size:16px;">⏳</span>
-            <div>
-              <div style="font-weight:bold; color:#64748b;">付款凭证：等待合同签约完毕</div>
-              <div style="font-size:11px; color:#94a3b8;">签约完成后，买方可在个人中心执行货款结算。</div>
+          <!-- Payment Voucher Card -->
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px;">
+            <div style="font-weight:bold; font-size:13px; color:#166534; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+              <span>💳 货款支付凭证核实</span>
+              <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px;">财务确认入账</span>
+            </div>
+            <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #bbf7d0; font-size:12px;">
+              ${o.status === 0 || o.status === 5 || o.status === 4 
+                ? `<span style="color:#fa8c16; font-weight:bold;">⏳ 订单尚未付款</span>`
+                : o.paymentVoucher 
+                  ? `<div style="display:flex; justify-content:space-between; align-items:center;">
+                       <div>
+                         <div style="font-weight:bold; color:#0f172a;">线下汇款回执：${o.paymentVoucher}</div>
+                         <div style="color:#64748b; font-size:11px; margin-top:2px;">付款金额: ${o.amount} | 汇款方式: 银行公对公转账</div>
+                       </div>
+                       <button class="btn btn-outline btn-sm" onclick="alert('正在预览付款凭证：' + '${o.paymentVoucher}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看凭证</button>
+                     </div>`
+                  : `<div style="display:flex; justify-content:space-between; align-items:center;">
+                       <div>
+                         <div style="font-weight:bold; color:#15803d;">在线支付：担保结算已结清</div>
+                         <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 托管状态: 平台监管中</div>
+                       </div>
+                       <button class="btn btn-outline btn-sm" onclick="alert('正在预览在线支付电子回单：TXN-PAY-' + '${o.id}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
+                     </div>`
+              }
             </div>
           </div>
-        `;
-      } else if (o.status === 4) {
-        paymentHTML = `
-          <div style="display:flex; align-items:center; gap:8px; border-top:1px dashed #e2e8f0; padding-top:10px; margin-top:4px;">
-            <span style="font-size:16px;">💳</span>
-            <div>
-              <div style="font-weight:bold; color:#fa8c16;">付款凭证：等待买方付款</div>
-              <div style="font-size:11px; color:#94a3b8;">合同已生效，等待买方进行在线快捷支付或上传线下打款水单凭证。</div>
-            </div>
-          </div>
-        `;
-      } else if (o.status === -1) {
-        paymentHTML = `
-          <div style="display:flex; align-items:center; gap:8px; border-top:1px dashed #e2e8f0; padding-top:10px; margin-top:4px;">
-            <span style="font-size:16px;">❌</span>
-            <div>
-              <div style="font-weight:bold; color:#ef4444;">付款凭证：订单交易已取消/关闭</div>
-            </div>
-          </div>
-        `;
-      } else {
-        if (o.paymentVoucher) {
-          paymentHTML = `
-            <div style="display:flex; align-items:center; gap:8px; border-top:1px dashed #e2e8f0; padding-top:10px; margin-top:4px;">
-              <span style="font-size:16px;">🏦</span>
-              <div>
-                <div style="font-weight:bold; color:#10b981;">付款凭证：线下对公汇款 (已上传)</div>
-                <div style="font-size:11px; color:#475569;">
-                  汇款回执凭证: <a href="javascript:void(0)" onclick="alert('预览打款凭证: ' + '${o.paymentVoucher}')" style="color:#1677ff; font-weight:bold; text-decoration:underline;">${o.paymentVoucher}</a>
-                </div>
-              </div>
-            </div>
-          `;
-        } else {
-          paymentHTML = `
-            <div style="display:flex; align-items:center; gap:8px; border-top:1px dashed #e2e8f0; padding-top:10px; margin-top:4px;">
-              <span style="font-size:16px;">⚡</span>
-              <div>
-                <div style="font-weight:bold; color:#10b981;">付款凭证：在线快捷支付 (已结清)</div>
-                <div style="font-size:11px; color:#475569;">支付流水号: <span style="font-family:monospace; background:#e2e8f0; padding:1px 4px; border-radius:3px;">TXN-PAY-${o.id}</span></div>
-              </div>
-            </div>
-          `;
-        }
-      }
-      
-      attachmentsContainer.innerHTML = contractHTML + paymentHTML;
-    }
-    
-    // Trigger modal open
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="background:#f8fafc; padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:12px; flex-shrink:0;">
+          <button class="btn btn-outline" style="border-radius:8px; padding:8px 20px;" onclick="UI.closeModal('modal-order-detail')">关闭窗口</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
     this.openModal('modal-order-detail');
-    setTimeout(() => {
-      modal.style.opacity = '1';
-    }, 50);
   },
 
   /**
@@ -439,7 +370,7 @@ window.UI = {
   },
 
   /**
-   * 生成通用的分页 HTML 代码 (模拟)
+   * 生成通用的分页 HTML 代码 (包含共多少条，X条/页下拉框，上一页/下一页)
    * @param {number} totalItems 总数据量
    * @param {number} currentPage 当前页
    * @param {number} pageSize 每页条数
@@ -447,12 +378,20 @@ window.UI = {
   renderPagination(totalItems, currentPage = 1, pageSize = 10) {
     const totalPages = Math.ceil(totalItems / pageSize) || 1;
     let html = `
-      <div class="flex justify-between items-center mt-4 text-sm text-secondary" style="border-top: 1px solid #f2f3f5; padding-top: 16px;">
-        <div>共 <span class="text-primary font-bold">${totalItems}</span> 条记录，当前第 ${currentPage}/${totalPages} 页</div>
-        <div class="flex gap-2">
-          <button class="btn btn-outline btn-sm" ${currentPage <= 1 ? 'disabled' : ''}>上一页</button>
-          <button class="btn btn-primary btn-sm">${currentPage}</button>
-          <button class="btn btn-outline btn-sm" ${currentPage >= totalPages ? 'disabled' : ''}>下一页</button>
+      <div class="pagination-bar flex justify-between items-center mt-4 text-sm text-secondary flex-wrap gap-2" style="border-top: 1px solid #f2f3f5; padding-top: 14px;">
+        <div class="flex items-center gap-3">
+          <span>共 <strong style="color:var(--primary-color, #ae86e7); font-weight:bold;">${totalItems}</strong> 条</span>
+          <select class="form-control page-size-select" style="padding: 2px 6px; font-size: 12px; height: 28px; width: 92px; border-radius:4px; border: 1px solid #cbd5e1;">
+            <option value="5" ${pageSize == 5 ? 'selected' : ''}>5 条/页</option>
+            <option value="10" ${pageSize == 10 ? 'selected' : ''}>10 条/页</option>
+            <option value="15" ${pageSize == 15 ? 'selected' : ''}>15 条/页</option>
+            <option value="30" ${pageSize == 30 ? 'selected' : ''}>30 条/页</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-outline btn-sm" style="padding:3px 10px; font-size:12px;" ${currentPage <= 1 ? 'disabled' : ''}>上一页</button>
+          <span style="font-size:12px; font-weight:bold; color:#475569;">${currentPage} / ${totalPages} 页</span>
+          <button class="btn btn-outline btn-sm" style="padding:3px 10px; font-size:12px;" ${currentPage >= totalPages ? 'disabled' : ''}>下一页</button>
         </div>
       </div>
     `;
@@ -499,12 +438,77 @@ window.MainApp = {
 document.addEventListener('DOMContentLoaded', () => {
   UI.initTabs();
   
-  // 绑定所有带 data-close-modal 属性的按钮关闭事件
-  document.querySelectorAll('[data-close-modal]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const modalId = this.getAttribute('data-close-modal');
-      UI.closeModal(modalId);
-    });
+  // 绑定 50 字限制动态计数器
+  document.body.addEventListener('input', (e) => {
+    if (e.target.matches('[maxlength="50"], .limit-50')) {
+      const val = e.target.value;
+      const container = e.target.parentElement;
+      if (container) {
+        let countEl = container.querySelector('.char-counter');
+        if (!countEl) {
+          countEl = document.createElement('div');
+          countEl.className = 'char-counter';
+          countEl.style.cssText = 'font-size: 11px; color: #94a3b8; text-align: right; margin-top: 4px; font-family: monospace;';
+          container.appendChild(countEl);
+        }
+        countEl.innerText = `${val.length}/50`;
+        if (val.length >= 50) {
+          countEl.style.color = '#ef4444';
+        } else {
+          countEl.style.color = '#94a3b8';
+        }
+      }
+    }
+  });
+
+  // 全局演示辅助：点击任何含有状态特征的元素，就地循环切换其文本内容，方便开发查看不同 UI 样式
+  document.body.addEventListener('click', (e) => {
+    let el = e.target.closest('.tag, .badge, [class*="status"], [class*="state"]');
+    if (!el) return;
+    
+    // 如果已经有了自定义的周期切换函数（如 cycleShopStatus 等），则不打断其自带的 JS 逻辑
+    if (el.onclick || el.getAttribute('onclick') || el.closest('[onclick]')) {
+      return; 
+    }
+    
+    const text = el.innerText.trim();
+    if (!text || text.length > 25) return; // 太长的句子不属于状态标签
+    
+    // 各种状态的常见映射组
+    const groups = [
+      ['正常营业', '待审核', '闭店中'],
+      ['待审批', '已同意', '已拒绝', '待提交'],
+      ['现货', '预售'],
+      ['售卖中', '已下架', '已售罄', '违规下架'],
+      ['交易中', '待付款', '待收货', '已完成', '已取消', '退款中'],
+      ['求购中', '已成单', '已关闭', '待审核'],
+      ['竞价中', '已中标', '已废标', '已结束']
+    ];
+    
+    for (const group of groups) {
+      // 模糊匹配
+      const matchIndex = group.findIndex(s => text.includes(s));
+      if (matchIndex !== -1) {
+        const nextState = group[(matchIndex + 1) % group.length];
+        
+        // 动态变更类名和背景字色，使样式更配合
+        el.innerText = nextState;
+        if (['正常营业', '已同意', '现货', '售卖中', '已完成', '已成单', '已中标'].includes(nextState)) {
+          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-success';
+          el.style.backgroundColor = ''; el.style.color = '';
+        } else if (['待审核', '待提交', '预售', '交易中', '待付款', '待收货', '求购中', '竞价中', '待审批'].includes(nextState)) {
+          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-warning';
+          el.style.backgroundColor = ''; el.style.color = '';
+        } else {
+          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-danger';
+          el.style.backgroundColor = ''; el.style.color = '';
+        }
+        UI.toast(`[演示切换] 状态已切换为: ${nextState}`, 'info');
+        e.preventDefault();
+        e.stopPropagation();
+        break;
+      }
+    }
   });
 });
 
@@ -1103,12 +1107,20 @@ Object.assign(window.UI, {
       if (callback) callback();
     };
   },
+  showDemandQuotesModal(demandId, isMobile, callback, isAdmin) {
+    const demand = (MockData.demands || []).find(d => d.id === demandId || d.demandNo === demandId) || {
+      id: demandId,
+      goodsName: `大宗求购货品项目 (${demandId})`
+    };
+    const demandTitle = (demand.goodsName || demand.title || '大宗求购货品项目').replace(/'/g, "\\'");
 
-  showDemandQuotesModal(demandId, isMobile, callback) {
-    const demand = MockData.demands.find(d => d.id === demandId);
-    if (!demand) return;
-
-    const quotes = MockData.demandQuotes.filter(q => q.demandId === demandId);
+    let quotes = (MockData.demandQuotes || []).filter(q => q.demandId === demandId || q.demandId === demand.id);
+    if (quotes.length === 0) {
+      quotes = [
+        { id: 'QT001', demandId, shopId: 'S001', shopName: '远大钢铁官方直营店', price: '¥4,100.00 / 吨', time: '2026-07-07 10:15', status: 0 },
+        { id: 'QT002', demandId, shopId: 'S002', shopName: '华东木材集散中心', price: '¥4,150.00 / 吨', time: '2026-07-07 11:30', status: 0 }
+      ];
+    }
 
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1121,17 +1133,20 @@ Object.assign(window.UI, {
     }
 
     let quotesHtml = '';
-    if (quotes.length === 0) {
-      quotesHtml = `<div style="text-align:center; padding:40px 20px; color:#64748b; font-size:14px;">暂无商家报价</div>`;
-    } else {
-      quotes.forEach(q => {
-        let actionBtn = q.status === 1 
-          ? `<span style="color:#52c41a; font-weight:bold; font-size:12px;">已采纳成单</span>` 
-          : `<div style="display:flex; gap:8px;">
-               <button class="btn btn-outline btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.chatWithQuoteSeller('${q.shopName}', '${q.shopId}', '${demand.title.replace(/'/g, "\\'")}', '${q.price}')">💬 沟通</button>
-               <button class="btn btn-primary btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.acceptDemandQuote('${q.id}', ${isMobile})">确认采纳</button>
-             </div>`;
-
+    quotes.forEach(q => {
+        let actionBtn = '';
+        if (isAdmin) {
+          actionBtn = q.status === 1 
+            ? `<span style="color:#52c41a; font-weight:bold; font-size:12px;">已采纳成单</span>` 
+            : `<span style="color:#64748b; font-size:12px;">未采纳</span>`;
+        } else {
+          actionBtn = q.status === 1 
+            ? `<span style="color:#52c41a; font-weight:bold; font-size:12px;">已采纳成单</span>` 
+            : `<div style="display:flex; gap:8px;">
+                 <button class="btn btn-outline btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.chatWithQuoteSeller('${q.shopName}', '${q.shopId}', '${demandTitle}', '${q.price}')">💬 沟通</button>
+                 <button class="btn btn-primary btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.acceptDemandQuote('${q.id}', ${isMobile})">确认采纳</button>
+               </div>`;
+        }
         quotesHtml += `
           <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:10px;">
             <div>
@@ -1145,14 +1160,13 @@ Object.assign(window.UI, {
           </div>
         `;
       });
-    }
 
     overlay.innerHTML = `
       <div style="width:${contentWidth}; background:#ffffff; border-radius:${isMobile ? '24px 24px 0 0' : '16px'}; border:1px solid rgba(0,0,0,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:80vh; overflow:hidden; box-sizing:border-box;">
         <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #f1f5f9; flex-shrink:0;">
           <div>
             <h3 style="margin:0; font-size:16px; font-weight:800; color:#1e293b;">📋 求购报价列表</h3>
-            <div style="font-size:12px; color:#64748b; margin-top:4px; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${demand.title}</div>
+            <div style="font-size:12px; color:#64748b; margin-top:4px; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${demandTitle}</div>
           </div>
           <button style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">✕</button>
         </div>
