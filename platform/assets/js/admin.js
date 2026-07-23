@@ -1,3 +1,11 @@
+
+function formatTimeSec(str) {
+  if (!str || str === "--") return "--";
+  str = String(str).trim();
+  if (str.length === 10) return str + " 00:00:00";
+  if (str.length === 16) return str + ":00";
+  return str;
+}
 /**
  * 运营端后台业务逻辑 (Admin Dashboard V2)
  */
@@ -177,8 +185,8 @@ const AdminApp = {
 
     // Sort: updated time new-to-old, default
     filtered.sort((a, b) => {
-      const tA = new Date(a.updateTime || '2026-07-20 12:00').getTime();
-      const tB = new Date(b.updateTime || '2026-07-20 12:00').getTime();
+      const tA = new Date(a.updateTime || '2026-07-20 12:00:00').getTime();
+      const tB = new Date(b.updateTime || '2026-07-20 12:00:00').getTime();
       return tB - tA;
     });
 
@@ -229,7 +237,7 @@ const AdminApp = {
           <td style="padding:12px; text-align:center;">${statusTag} ${reasonTip}</td>
           <td style="padding:12px; text-align:center; font-weight:bold; color:var(--primary-color);">${prodCount.toLocaleString('zh-CN')}</td>
           <td style="padding:12px; font-family:monospace; font-size:12px;">${s.creditCode || '--'}</td>
-          <td style="padding:12px; text-align:center; font-family:monospace; font-size:12px;">${s.updateTime || '2026-07-20 12:00'}</td>
+          <td style="padding:12px; text-align:center; font-family:monospace; font-size:12px;">${s.updateTime || '2026-07-20 12:00:00'}</td>
           <td style="padding:12px; text-align:center;">${actionBtn}</td>
         </tr>
       `;
@@ -337,7 +345,7 @@ const AdminApp = {
     const tbody = document.querySelector('#table-base-category tbody');
     if (!tbody || !MockData.productCategories) return;
 
-    const levelVal = document.getElementById('filter-cat-level')?.value || '1';
+    const levelVal = document.getElementById('filter-cat-level')?.value;
     const nameKw = document.getElementById('filter-cat-name')?.value.trim().toLowerCase();
 
     const flattenCategories = (cats, parentName = '-', parentId = '', result = []) => {
@@ -361,8 +369,8 @@ const AdminApp = {
 
     // Default sorting by createTime (new-to-old)
     flatList.sort((a, b) => {
-      const tA = new Date(a.createTime || '2026-07-01 00:00').getTime();
-      const tB = new Date(b.createTime || '2026-07-01 00:00').getTime();
+      const tA = new Date(a.createTime || '2026-07-01 00:00:00').getTime();
+      const tB = new Date(b.createTime || '2026-07-01 00:00:00').getTime();
       return tB - tA;
     });
 
@@ -384,11 +392,11 @@ const AdminApp = {
           <td style="font-family:monospace;">${c.id}</td>
           <td>${levelBadge}</td>
           <td>${c.status === 1 ? '<span class="tag tag-success">启用</span>' : '<span class="tag tag-error">禁用</span>'}</td>
-          <td style="font-family:monospace; font-size:12px;">${c.updateTime || '2026-07-20 12:00'}</td>
-          <td style="font-family:monospace; font-size:12px;">${c.createTime || '2026-07-01 10:00'}</td>
+          <td style="font-family:monospace; font-size:12px;">${formatTimeSec(c.createTime || '2026-06-01 09:00:00')}</td>
+          <td style="font-family:monospace; font-size:12px;">${formatTimeSec(c.updateTime || '2026-07-01 10:00:00')}</td>
           <td>
-            <button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.parentId}', '${c.id}', '${c.name}', '${c.id}', true)">编辑</button>
-            ${c.level < 3 ? `<button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.id}', '', '', '', false)">新增下级</button>` : ''}
+            <button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.parentId}', '${c.id}', '${c.name}', true)">编辑</button>
+            ${c.level < 3 ? `<button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.id}', '', '', false)">新增下级</button>` : ''}
             <button class="btn btn-text btn-sm ${c.status === 1 ? 'text-danger' : 'text-success'}" onclick="window.toggleCategoryStatus('${c.id}', ${c.status})">${c.status === 1 ? '禁用' : '启用'}</button>
           </td>
         </tr>
@@ -400,7 +408,7 @@ const AdminApp = {
 
   resetBaseProductsFilter() {
     const levelSelect = document.getElementById('filter-cat-level');
-    if (levelSelect) levelSelect.value = '1';
+    if (levelSelect) levelSelect.value = '';
     if (document.getElementById('filter-cat-name')) document.getElementById('filter-cat-name').value = '';
     this.renderBaseProducts();
   },
@@ -463,11 +471,11 @@ const AdminApp = {
     // Filter by Date Range (listTime)
     if (startDateKw) {
       const startMs = new Date(startDateKw + ' 00:00:00').getTime();
-      list = list.filter(p => new Date(p.listTime || '2026-06-01').getTime() >= startMs);
+      list = list.filter(p => new Date(p.listTime || '2026-06-01 09:00:00').getTime() >= startMs);
     }
     if (endDateKw) {
       const endMs = new Date(endDateKw + ' 23:59:59').getTime();
-      list = list.filter(p => new Date(p.listTime || '2026-06-01').getTime() <= endMs);
+      list = list.filter(p => new Date(p.listTime || '2026-06-01 09:00:00').getTime() <= endMs);
     }
 
     // Filter by Status
@@ -485,8 +493,8 @@ const AdminApp = {
 
     // Sort: default new-to-old by createTime
     list.sort((a, b) => {
-      const tA = new Date(a.createTime || '2026-05-20').getTime();
-      const tB = new Date(b.createTime || '2026-05-20').getTime();
+      const tA = new Date(a.createTime || '2026-05-20 09:00:00').getTime();
+      const tB = new Date(b.createTime || '2026-05-20 09:00:00').getTime();
       return tB - tA;
     });
 
@@ -546,9 +554,9 @@ const AdminApp = {
           <td>${shelfTypeTag}</td>
           <td class="text-danger font-bold">${p.priceStr}</td>
           <td class="font-bold" style="color:#0f172a;">${(p.sales || 0).toLocaleString()}</td>
-          <td class="text-xs text-secondary">${p.listTime || '2026-06-01 10:00'}</td>
-          <td class="text-xs text-secondary">${p.createTime || '2026-05-20 14:30'}</td>
-          <td class="text-xs text-secondary">${p.opTime || '2026-06-01 10:00'}</td>
+          <td class="text-xs text-secondary">${formatTimeSec(p.listTime)}</td>
+          <td class="text-xs text-secondary">${formatTimeSec(p.createTime)}</td>
+          <td class="text-xs text-secondary">${p.opTime || '2026-06-01 10:00:00'}</td>
           <td>${statusTag}</td>
           <td>
             <div style="display:flex; gap:8px; align-items:center;">
@@ -603,11 +611,11 @@ const AdminApp = {
     const salesEl = document.getElementById('edit-prod-sales');
     if (salesEl) salesEl.value = p.sales || 0;
     const createTimeEl = document.getElementById('edit-prod-create-time');
-    if (createTimeEl) createTimeEl.value = p.createTime || '2026-05-20 14:30';
+    if (createTimeEl) createTimeEl.value = p.createTime || '2026-05-20 14:30:00';
     const listTimeEl = document.getElementById('edit-prod-list-time');
-    if (listTimeEl) listTimeEl.value = p.listTime || '2026-06-01 10:00';
+    if (listTimeEl) listTimeEl.value = p.listTime || '2026-06-01 10:00:00';
     const opTimeEl = document.getElementById('edit-prod-op-time');
-    if (opTimeEl) opTimeEl.value = p.opTime || '2026-06-01 10:00';
+    if (opTimeEl) opTimeEl.value = p.opTime || '2026-06-01 10:00:00';
 
     UI.showModal('modal-edit-product');
   },
@@ -650,9 +658,9 @@ const AdminApp = {
     const salesEl = document.getElementById('edit-prod-sales');
     if (salesEl) p.sales = parseInt(salesEl.value) || 0;
     const createTimeEl = document.getElementById('edit-prod-create-time');
-    if (createTimeEl) p.createTime = createTimeEl.value || '2026-05-20 14:30';
+    if (createTimeEl) p.createTime = createTimeEl.value || '2026-05-20 14:30:00';
     const listTimeEl = document.getElementById('edit-prod-list-time');
-    if (listTimeEl) p.listTime = listTimeEl.value || '2026-06-01 10:00';
+    if (listTimeEl) p.listTime = listTimeEl.value || '2026-06-01 10:00:00';
 
     if (newStatus !== undefined) {
       p.status = newStatus;
@@ -696,8 +704,8 @@ const AdminApp = {
 
     // Sort: default by publishTime (createTime) descending
     list.sort((a, b) => {
-      const tA = new Date(a.publishTime || '2026-07-20').getTime();
-      const tB = new Date(b.publishTime || '2026-07-20').getTime();
+      const tA = new Date(a.publishTime || '2026-07-20 09:00:00').getTime();
+      const tB = new Date(b.publishTime || '2026-07-20 09:00:00').getTime();
       return tB - tA;
     });
 
@@ -748,7 +756,7 @@ const AdminApp = {
           <td style="font-weight:bold; color:#0f172a;">${goodsText}</td>
           <td style="font-weight:bold; color:#1e293b;">${qtyStr}</td>
           <td>${deliveryPeriod}</td>
-          <td style="font-size:12px; color:#64748b;">${d.publishTime || '--'}</td>
+          <td style="font-size:12px; color:#64748b;">${formatTimeSec(d.publishTime)}</td>
           <td style="font-size:12px; color:#64748b;">${d.updateTime || d.publishTime || '--'}</td>
           <td style="vertical-align:middle;">${statusTag}</td>
           <td>
@@ -780,8 +788,7 @@ const AdminApp = {
     const sellerShopKw = document.getElementById('filter-admin-order-seller-shop')?.value.trim().toLowerCase() || '';
     const sellerCompanyKw = document.getElementById('filter-admin-order-seller-company')?.value.trim().toLowerCase() || '';
     const statusKw = document.getElementById('filter-admin-order-status')?.value || '';
-    const startDateKw = document.getElementById('filter-admin-order-start')?.value || '';
-    const endDateKw = document.getElementById('filter-admin-order-end')?.value || '';
+    const dateRangeKw = document.getElementById('filter-admin-order-date-range')?.value.trim() || '';
 
     let list = MockData.orders || [];
 
@@ -813,29 +820,36 @@ const AdminApp = {
     if (statusKw) {
       list = list.filter(o => {
         let statusText = '';
-        if (o.status === 0 || o.status === 5) statusText = '待签约';
-        else if (o.status === 4) statusText = '待支付';
-        else if (o.status === 1) statusText = '待发运';
-        else if (o.status === 2) statusText = '待收货';
-        else if (o.status === 3) statusText = '已结单';
+        if (o.status === 0) statusText = '待买家签约';
+        else if (o.status === 5) statusText = '待卖家签约';
+        else if (o.status === 4) statusText = '待付款';
+        else if (o.status === 1) statusText = '待发货';
+        else if (o.status === 2) statusText = '待签收';
+        else if (o.status === 3) statusText = '已完成';
         else if (o.status === -1) statusText = '已取消';
+        else if (o.status === -2) statusText = '已关闭';
+        
+        if (statusKw === '待签约') return o.status === 0 || o.status === 5;
         return statusText === statusKw;
       });
     }
     // Filter by Date Range
-    if (startDateKw) {
-      const startMs = new Date(startDateKw + ' 00:00:00').getTime();
-      list = list.filter(o => new Date(o.time || '2026-07-20').getTime() >= startMs);
-    }
-    if (endDateKw) {
-      const endMs = new Date(endDateKw + ' 23:59:59').getTime();
-      list = list.filter(o => new Date(o.time || '2026-07-20').getTime() <= endMs);
+    if (dateRangeKw) {
+      const parts = dateRangeKw.split('~').map(s => s.trim());
+      if (parts[0]) {
+        const startMs = new Date(parts[0] + ' 00:00:00').getTime();
+        list = list.filter(o => new Date(o.time || '2026-07-20 09:00:00').getTime() >= startMs);
+      }
+      if (parts[1]) {
+        const endMs = new Date(parts[1] + ' 23:59:59').getTime();
+        list = list.filter(o => new Date(o.time || '2026-07-20 09:00:00').getTime() <= endMs);
+      }
     }
 
     // Default sorting: createTime (o.time) new-to-old
     list.sort((a, b) => {
-      const tA = new Date(a.time || '2026-07-20').getTime();
-      const tB = new Date(b.time || '2026-07-20').getTime();
+      const tA = new Date(a.time || '2026-07-20 09:00:00').getTime();
+      const tB = new Date(b.time || '2026-07-20 09:00:00').getTime();
       return tB - tA;
     });
 
@@ -846,10 +860,12 @@ const AdminApp = {
       if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
       else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
       else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
-      else if (o.status === 1) { statusText = '待发运'; statusColor = '#1677ff'; }
-      else if (o.status === 2) { statusText = '待收货'; statusColor = '#0958d9'; }
-      else if (o.status === 3) { statusText = '已结单'; statusColor = '#52c41a'; }
-      else if (o.status === -1) { statusText = '已取消'; statusColor = '#ff4d4f'; }
+      else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
+      else if (o.status === 2) { statusText = '待签收'; statusColor = '#0958d9'; }
+      else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
+      else if (o.status === -1) { statusText = '已取消'; statusColor = '#ef4444'; }
+      else if (o.status === -2) { statusText = '已关闭'; statusColor = '#64748b'; }
+      else { statusText = '待签约'; statusColor = '#fa8c16'; }
       
       let statusTag = `<span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">${statusText}</span>`;
       
@@ -857,7 +873,7 @@ const AdminApp = {
         ? `<button class="btn btn-primary btn-sm" onclick="AdminApp.confirmAdminReceipt('${o.id}')" style="background:#10b981; border-color:#10b981;">代确认收货</button>` 
         : '';
 
-      let closeBtn = (o.status !== -1 && o.status !== 3)
+      let closeBtn = (o.status !== -1 && o.status !== -2 && o.status !== 3)
         ? `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.closeOrder('${o.id}')">关闭(退款)</button>` 
         : '';
 
@@ -881,7 +897,7 @@ const AdminApp = {
           <td class="font-bold text-danger">${o.amount}</td>
           <td style="font-size:12px;"><span style="color:#0284c7; font-weight:bold;">${rateStr}</span> <div style="font-size:10px; color:#64748b;">(¥${commFee})</div></td>
           <td>${statusTag}</td>
-          <td style="font-size:12px; color:#64748b;">${o.time || '2026-07-08 09:12'}</td>
+          <td style="font-size:12px; color:#64748b;">${formatTimeSec(o.time)}</td>
           <td>
             <div style="display:flex; align-items:center; gap:6px;">
               ${confirmReceiptBtn}
@@ -903,8 +919,7 @@ const AdminApp = {
     if (document.getElementById('filter-admin-order-seller-shop')) document.getElementById('filter-admin-order-seller-shop').value = '';
     if (document.getElementById('filter-admin-order-seller-company')) document.getElementById('filter-admin-order-seller-company').value = '';
     if (document.getElementById('filter-admin-order-status')) document.getElementById('filter-admin-order-status').value = '';
-    if (document.getElementById('filter-admin-order-start')) document.getElementById('filter-admin-order-start').value = '';
-    if (document.getElementById('filter-admin-order-end')) document.getElementById('filter-admin-order-end').value = '';
+    if (document.getElementById('filter-admin-order-date-range')) document.getElementById('filter-admin-order-date-range').value = '';
     this.renderOrders();
   },
 
@@ -938,6 +953,7 @@ const AdminApp = {
       const fShop = (document.getElementById('filter-bidres-shop')?.value || '').trim().toLowerCase();
       const fCompany = (document.getElementById('filter-bidres-company')?.value || '').trim().toLowerCase();
       const fName = (document.getElementById('filter-bidres-name')?.value || '').trim().toLowerCase();
+      const fSpecs = (document.getElementById('filter-bidres-specs')?.value || '').trim().toLowerCase();
       const fStatus = (document.getElementById('filter-bidres-status')?.value || '');
 
       let filtered = MockData.biddingResources.filter(r => {
@@ -945,6 +961,7 @@ const AdminApp = {
         if (fShop && !r.shopName.toLowerCase().includes(fShop)) return false;
         if (fCompany && !(r.companyName || '').toLowerCase().includes(fCompany)) return false;
         if (fName && !r.name.toLowerCase().includes(fName)) return false;
+        if (fSpecs && !(r.specs || '').toLowerCase().includes(fSpecs)) return false;
         if (fStatus && r.status !== fStatus) return false;
         return true;
       });
@@ -966,14 +983,15 @@ const AdminApp = {
         resHtml += `
           <tr>
             <td>${idx + 1}</td>
-            <td style="font-family:monospace; font-size:12px;">${r.id}</td>
+            <td style="font-family:monospace; font-size:12px; font-weight:bold;">${r.id}</td>
+            <td><img src="${r.image}" style="width:60px;height:40px;border-radius:4px;object-fit:cover;cursor:pointer;" onclick="UI.previewDocument('资源图片', '${r.image}')"></td>
             <td>${r.shopName}</td>
             <td>${r.companyName || '--'}</td>
-            <td>${r.name}</td>
-            <td><img src="${r.image}" style="width:60px;height:40px;border-radius:4px;object-fit:cover;cursor:pointer;" onclick="UI.previewDocument('资源图片', '${r.image}')"></td>
+            <td style="font-weight:bold; color:#0f172a;">${r.name}</td>
+            <td style="font-size:12px; color:#64748b;">${r.specs || '规格标准'}</td>
             <td>${tag}</td>
-            <td>${r.createdAt || '--'}</td>
-            <td>${r.updatedAt || '--'}</td>
+            <td>${formatTimeSec(r.createdAt)}</td>
+            <td>${formatTimeSec(r.updatedAt)}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
@@ -987,6 +1005,7 @@ const AdminApp = {
     if (annBody) {
       // 读取公告筛选条件
       const fAnnId = (document.getElementById('filter-bidann-id')?.value || '').trim();
+      const fAnnTitle = (document.getElementById('filter-bidann-title')?.value || '').trim().toLowerCase();
       const fAnnShop = (document.getElementById('filter-bidann-shop')?.value || '').trim().toLowerCase();
       const fAnnCompany = (document.getElementById('filter-bidann-company')?.value || '').trim().toLowerCase();
       const fAnnStatus = (document.getElementById('filter-bidann-status')?.value || '');
@@ -998,10 +1017,11 @@ const AdminApp = {
         if (aStatus === '已拒绝' || aStatus === '已撤回') return '已下架';
         // 已通过 → based on stage
         if (a.status === 4) return '已结束';
-        if (a.status === 0) return '看货报名';
-        if (a.status === 2) return '参加竞价';
+        if (a.status === 0) return '竞价中';
+        if (a.status === 1) return '竞价中';
+        if (a.status === 2) return '竞价中';
         if (a.status === 3) return '等待公布';
-        return '看货报名';
+        return '竞价中';
       };
 
       let filteredAnn = MockData.biddingAnnouncements.filter(a => {
@@ -1009,6 +1029,7 @@ const AdminApp = {
         const companyName = shop ? (shop.companyName || '') : '';
 
         if (fAnnId && a.id !== fAnnId) return false;
+        if (fAnnTitle && !a.title.toLowerCase().includes(fAnnTitle)) return false;
         if (fAnnShop && !a.shopName.toLowerCase().includes(fAnnShop)) return false;
         if (fAnnCompany && !companyName.toLowerCase().includes(fAnnCompany)) return false;
         if (fAnnStatus && getDisplayStatus(a) !== fAnnStatus) return false;
@@ -1034,21 +1055,22 @@ const AdminApp = {
           combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span>
                          <div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">拒审原因：${a.rejectReason || '起拍底价设置过低'}</div>`;
           btn = '';
-        } else if (aStatus === '已撤回') {
+        } else if (aStatus === '已撤回' || aStatus === '已下架') {
           combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已下架</span>
                          <div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
           btn = '';
         } else {
           // 已通过
           if (a.status === 4) {
-            combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已结束</span>`;
-            btn = '';
+            combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#64748b; border:1px solid #cbd5e1;">已结束</span>`;
+            btn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.showBiddingDetail('${a.id}')">查看详情</button>`;
           } else {
             let stageName = '';
-            if (a.status === 0) stageName = '看货报名';
-            else if (a.status === 2) stageName = '参加竞价';
+            if (a.status === 0) stageName = '竞价中';
+            else if (a.status === 1) stageName = '竞价中';
+            else if (a.status === 2) stageName = '竞价中';
             else if (a.status === 3) stageName = '等待公布';
-            else stageName = '看货报名';
+            else stageName = '竞价中';
             
             combinedTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f;">${stageName}</span>`;
             btn = `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.forceOfflineBiddingAnn('${a.id}')">强制下架</button>
@@ -1060,12 +1082,14 @@ const AdminApp = {
           <tr>
             <td>${idx + 1}</td>
             <td>${a.id}</td>
+            <td><div style="font-weight:bold; color:#0f172a; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${a.title}">${a.title}</div></td>
             <td>${a.shopName}</td>
             <td>${companyName}</td>
             <td>${a.resId}</td>
+            <td style="font-weight:bold; color:#475569;">${a.startPrice}</td>
             <td style="font-weight:bold; color:#ef4444;">${a.currentMaxOffer || a.startPrice}</td>
             <td>${combinedTag}</td>
-            <td>${a.createdAt || '--'}</td>
+            <td>${formatTimeSec(a.createdAt || a.createTime || '2026-07-01 09:00:00')}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
@@ -1076,7 +1100,7 @@ const AdminApp = {
   },
 
   resetBidResFilter() {
-    ['filter-bidres-id', 'filter-bidres-shop', 'filter-bidres-company', 'filter-bidres-name'].forEach(id => {
+    ['filter-bidres-id', 'filter-bidres-shop', 'filter-bidres-company', 'filter-bidres-name', 'filter-bidres-specs'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -1086,7 +1110,7 @@ const AdminApp = {
   },
 
   resetBidAnnFilter() {
-    ['filter-bidann-id', 'filter-bidann-shop', 'filter-bidann-company'].forEach(id => {
+    ['filter-bidann-id', 'filter-bidann-title', 'filter-bidann-shop', 'filter-bidann-company'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -1132,11 +1156,12 @@ const AdminApp = {
       html += `
         <tr>
           <td>${idx + 1}</td>
+          <td style="font-family:monospace; font-weight:bold; font-size:12px;">${c.id || ('RULE00' + (idx + 1))}</td>
           <td style="font-weight:bold; color:#0f172a;">${c.name}</td>
           <td>${typeBadge}</td>
           <td style="color:#475569; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${c.target}">${c.target}</td>
           <td class="font-bold text-danger">${c.rate}</td>
-          <td>${c.createdAt || '2026-07-01'}</td>
+          <td style="font-size:12px; color:#64748b;">${formatTimeSec(c.createdAt)}</td>
           <td><div class="flex gap-2">${btn}</div></td>
         </tr>
       `;
@@ -1159,31 +1184,143 @@ const AdminApp = {
     const type = document.getElementById('comm-rule-type')?.value;
     const targetGroup = document.getElementById('comm-rule-target-group');
     const targetSelect = document.getElementById('comm-rule-target-select');
+    const cascaderWrapper = document.getElementById('comm-category-cascader-wrapper');
     const targetLabel = document.getElementById('comm-rule-target-label');
-    if (!targetGroup || !targetSelect) return;
+    if (!targetGroup) return;
 
     if (type === 'global') {
       targetGroup.style.display = 'none';
     } else if (type === 'merchant') {
       targetGroup.style.display = 'block';
+      if (targetSelect) targetSelect.style.display = 'block';
+      if (cascaderWrapper) cascaderWrapper.style.display = 'none';
       targetLabel.innerText = '针对商家店铺选择 *';
       let html = '';
       (MockData.shops || []).forEach(s => {
         html += `<option value="${s.shopName}">${s.shopName} (${s.companyName || s.id})</option>`;
       });
-      targetSelect.innerHTML = html;
+      if (targetSelect) targetSelect.innerHTML = html;
     } else if (type === 'category') {
       targetGroup.style.display = 'block';
-      targetLabel.innerText = '针对商品类别选择 *';
-      let html = `
-        <option value="建材-金属-钢材">建材-金属-钢材</option>
-        <option value="建材-板材-木材">建材-板材-木材</option>
-        <option value="建材-粉材-水泥">建材-粉材-水泥</option>
-        <option value="粮油-谷物-大米">粮油-谷物-大米</option>
-        <option value="粮油-谷物-面粉">粮油-谷物-面粉</option>
-        <option value="生鲜-水果-苹果">生鲜-水果-苹果</option>
+      if (targetSelect) targetSelect.style.display = 'none';
+      if (cascaderWrapper) cascaderWrapper.style.display = 'block';
+      targetLabel.innerText = '针对商品类别选择 (三级级联选择) *';
+      this.initCommCatCascader();
+    }
+  },
+
+  _commPickedCatNames: [],
+  _commL1Index: 0,
+  _commL2Index: 0,
+
+  initCommCatCascader() {
+    const cats = MockData.productCategories || [];
+    const l1Container = document.getElementById('comm-cat-l1-list');
+    if (!l1Container || cats.length === 0) return;
+
+    let l1Html = '';
+    cats.forEach((c1, idx) => {
+      l1Html += `
+        <div class="comm-cat-l1-item" style="padding:8px 12px; cursor:pointer; font-size:12px; display:flex; justify-content:space-between; align-items:center; ${idx === this._commL1Index ? 'background:#f1f5f9; font-weight:bold; color:#7c3aed;' : 'color:#334155;'}" onclick="AdminApp.selectCommL1(${idx})">
+          <span>${c1.name}</span>
+          <span style="font-size:10px; color:#cbd5e1;">›</span>
+        </div>
       `;
-      targetSelect.innerHTML = html;
+    });
+    l1Container.innerHTML = l1Html;
+    this.renderCommL2();
+  },
+
+  selectCommL1(idx) {
+    this._commL1Index = idx;
+    this._commL2Index = 0;
+    this.initCommCatCascader();
+  },
+
+  renderCommL2() {
+    const cats = MockData.productCategories || [];
+    const c1 = cats[this._commL1Index];
+    const l2Container = document.getElementById('comm-cat-l2-list');
+    if (!l2Container || !c1 || !c1.children) return;
+
+    let l2Html = '';
+    c1.children.forEach((c2, idx) => {
+      l2Html += `
+        <div class="comm-cat-l2-item" style="padding:8px 12px; cursor:pointer; font-size:12px; display:flex; justify-content:space-between; align-items:center; ${idx === this._commL2Index ? 'background:#f8fafc; font-weight:bold; color:#7c3aed;' : 'color:#334155;'}" onclick="AdminApp.selectCommL2(${idx})">
+          <span>${c2.name}</span>
+          <span style="font-size:10px; color:#cbd5e1;">›</span>
+        </div>
+      `;
+    });
+    l2Container.innerHTML = l2Html;
+    this.renderCommL3();
+  },
+
+  selectCommL2(idx) {
+    this._commL2Index = idx;
+    this.renderCommL2();
+  },
+
+  renderCommL3() {
+    const cats = MockData.productCategories || [];
+    const c1 = cats[this._commL1Index];
+    if (!c1 || !c1.children) return;
+    const c2 = c1.children[this._commL2Index];
+    const l3Container = document.getElementById('comm-cat-l3-list');
+    if (!l3Container || !c2 || !c2.children) return;
+
+    let l3Html = '';
+    c2.children.forEach(c3 => {
+      const isChecked = this._commPickedCatNames.includes(c3.name);
+      l3Html += `
+        <label style="display:flex; align-items:center; gap:6px; padding:6px 12px; cursor:pointer; font-size:12px; color:#334155;">
+          <input type="checkbox" value="${c3.name}" ${isChecked ? 'checked' : ''} onchange="AdminApp.toggleCommCatCheck('${c3.name}', this.checked)">
+          <span>${c3.name}</span>
+        </label>
+      `;
+    });
+    l3Container.innerHTML = l3Html;
+  },
+
+  toggleCommCatCheck(name, checked) {
+    if (checked) {
+      if (!this._commPickedCatNames.includes(name)) this._commPickedCatNames.push(name);
+    } else {
+      this._commPickedCatNames = this._commPickedCatNames.filter(x => x !== name);
+    }
+  },
+
+  toggleCommCatPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('comm-cat-panel');
+    if (panel) {
+      panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
+    }
+  },
+
+  clearCommCatPicked() {
+    this._commPickedCatNames = [];
+    this.renderCommL3();
+    const txt = document.getElementById('comm-cat-trigger-text');
+    if (txt) {
+      txt.innerText = '请选择商品分类';
+      txt.style.color = '#94a3b8';
+    }
+  },
+
+  confirmCommCatPicked() {
+    const panel = document.getElementById('comm-cat-panel');
+    if (panel) panel.style.display = 'none';
+    const txt = document.getElementById('comm-cat-trigger-text');
+    if (txt) {
+      if (this._commPickedCatNames.length === 0) {
+        txt.innerText = '请选择商品分类';
+        txt.style.color = '#94a3b8';
+      } else {
+        txt.innerText = `已选择 (${this._commPickedCatNames.length}项): ` + this._commPickedCatNames.join('、');
+        txt.style.color = '#7c3aed';
+        txt.style.fontWeight = 'bold';
+      }
     }
   },
 
@@ -1200,7 +1337,13 @@ const AdminApp = {
 
     let target = '全平台通用';
     if (type === 'merchant') target = targetSelect ? targetSelect.value : '特定商家店铺';
-    if (type === 'category') target = targetSelect ? targetSelect.value : '特定商品类别';
+    if (type === 'category') {
+      if (this._commPickedCatNames.length > 0) {
+        target = this._commPickedCatNames.join('、');
+      } else {
+        target = '建材-金属-螺纹钢/盘螺类';
+      }
+    }
 
     const newRule = {
       id: 'CR-' + (MockData.commissionRules.length + 1).toString().padStart(3, '0'),
@@ -1354,7 +1497,7 @@ const AdminApp = {
     // Dates formatting
     const formatDateForInput = (str) => {
       if (!str) return '';
-      // '2026-08-01 12:00' -> '2026-08-01T12:00'
+      // '2026-08-01 12:00:00' -> '2026-08-01T12:00'
       return str.replace(' ', 'T');
     };
     
@@ -1380,7 +1523,7 @@ const AdminApp = {
     }
 
     if (new Date(viewEnd) >= new Date(bidEnd)) {
-      UI.toast('竞拍截止时间必须晚于看货报名截止时间！', 'error');
+      UI.toast('竞拍截止时间必须晚于现场看货截止时间！', 'error');
       return;
     }
 
@@ -1466,7 +1609,7 @@ const AdminApp = {
         }
 
         // Synthesize registration time (1 day before bid time)
-        let regTime = '2026-07-18 09:00';
+        let regTime = '2026-07-18 09:00:00';
         if (o.time) {
           const d = new Date(o.time.replace(/-/g, '/'));
           if (!isNaN(d.getTime())) {
@@ -1480,13 +1623,12 @@ const AdminApp = {
         
         html += `
           <tr>
-            <td>${idx + 1}</td>
-            <td>${o.buyerName}</td>
-            <td>${phone}</td>
-            <td>${regTime}</td>
-            <td>${o.time}</td>
-            <td class="font-bold text-danger">${o.offerPrice}</td>
-            <td>${tag}</td>
+            <td style="padding:10px;">${idx + 1}</td>
+            <td style="padding:10px; font-weight:bold; color:#1e293b;">${o.buyerName}</td>
+            <td style="padding:10px; font-family:monospace; color:#475569;">${phone}</td>
+            <td style="padding:10px; color:#64748b;">${o.time}</td>
+            <td style="padding:10px; text-align:right; font-weight:bold; color:#ef4444;">${o.offerPrice}</td>
+            <td style="padding:10px; text-align:center;">${tag}</td>
           </tr>
         `;
       });
@@ -1502,11 +1644,10 @@ const AdminApp = {
 };
 
 // === 货品字典操作逻辑 ===
-window.openAddCategoryModal = function(parentId = '0', catId = '', name = '', code = '', isEdit = false) {
+window.openAddCategoryModal = function(parentId = '0', catId = '', name = '', isEdit = false) {
   const modalTitle = document.getElementById('category-modal-title');
   const parentSelect = document.getElementById('select-parent-category');
   const nameInput = document.getElementById('category-name-input');
-  const codeInput = document.getElementById('category-code-input');
 
   if (isEdit) {
     modalTitle.innerText = '编辑货品类别';
@@ -1515,34 +1656,33 @@ window.openAddCategoryModal = function(parentId = '0', catId = '', name = '', co
   }
 
   // 渲染所有可能作为父级的选项 (一二级分类)
-  parentSelect.innerHTML = '<option value="0">作为一级大类</option>';
-  if (MockData.productCategories) {
-    MockData.productCategories.forEach(c1 => {
-      // 避免自己成为自己的父级 (简单规避)
-      if (c1.id !== catId) {
-        parentSelect.add(new Option(c1.name, c1.id));
-        if (c1.children) {
-          c1.children.forEach(c2 => {
-            if (c2.id !== catId) {
-              parentSelect.add(new Option('　├─ ' + c2.name, c2.id));
-            }
-          });
+  if (parentSelect) {
+    parentSelect.innerHTML = '<option value="0">作为一级大类</option>';
+    if (MockData.productCategories) {
+      MockData.productCategories.forEach(c1 => {
+        // 避免自己成为自己的父级
+        if (c1.id !== catId) {
+          parentSelect.add(new Option(c1.name, c1.id));
+          if (c1.children) {
+            c1.children.forEach(c2 => {
+              if (c2.id !== catId) {
+                parentSelect.add(new Option('　├─ ' + c2.name, c2.id));
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    }
+    parentSelect.value = parentId || '0';
+    // 如果是顶部的“新增一级分类”，禁用父级选择（只能是一级）
+    if (!isEdit && (parentId === '0' || !parentId)) {
+      parentSelect.disabled = true;
+    } else {
+      parentSelect.disabled = false;
+    }
   }
 
-  // 赋值
-  parentSelect.value = parentId;
-  nameInput.value = name;
-  codeInput.value = code;
-
-  // 如果是顶部的“新增一级分类”，禁用父级选择（只能是一级）
-  if (!isEdit && parentId === '0') {
-    parentSelect.disabled = true;
-  } else {
-    parentSelect.disabled = false;
-  }
+  if (nameInput) nameInput.value = name || '';
 
   UI.showModal('modal-add-category');
 };
@@ -1630,8 +1770,8 @@ window.openDemandQuotesModal = (demandId) => {
   let quotes = (MockData.demandQuotes || []).filter(q => q.demandId === demandId);
   if (quotes.length === 0) {
     quotes = [
-      { demandId, shopName: '远大钢铁官方直营店', shopPhone: '139****8811', priceStr: '¥4,100.00 / 吨', remark: '含专车送达运费，附带材质检测合格报告。', time: '2026-07-07 10:15', status: '交易达成' },
-      { demandId, shopName: '华东木材集散中心', shopPhone: '138****5566', priceStr: '¥4,150.00 / 吨', remark: '现货仓储配送，质保期12个月。', time: '2026-07-07 11:30', status: '未中标' }
+      { demandId, shopName: '远大钢铁官方直营店', shopPhone: '139****8811', priceStr: '¥4,100.00 / 吨', remark: '含专车送达运费，附带材质检测合格报告。', time: '2026-07-07 10:15:00', status: '交易达成' },
+      { demandId, shopName: '华东木材集散中心', shopPhone: '138****5566', priceStr: '¥4,150.00 / 吨', remark: '现货仓储配送，质保期12个月。', time: '2026-07-07 11:30:00', status: '未中标' }
     ];
   }
 
@@ -2029,7 +2169,7 @@ AdminApp.showOrderDetailPage = function(orderId) {
   typeTag.innerText = o.type;
   typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
 
-  document.getElementById('admin-detail-create-time').innerText = o.time || '2026-07-07 10:15';
+  document.getElementById('admin-detail-create-time').innerText = o.time || '2026-07-07 10:15:00';
   document.getElementById('admin-detail-buyer-name').innerText = o.buyerName || '--';
   document.getElementById('admin-detail-shop-name').innerText = o.shopName || '--';
 
@@ -2056,11 +2196,11 @@ AdminApp.showOrderDetailPage = function(orderId) {
 
   const steps = [
     { name: '1. 提交买单', time: o.time },
-    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20' : '' },
-    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00' : '' },
-    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30' : '' },
-    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30' : '' },
-    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00' : '' }
+    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
+    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
+    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
+    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
+    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00:00' : '' }
   ];
 
   stepsContainer.innerHTML = steps.map((st, index) => {
@@ -2074,7 +2214,7 @@ AdminApp.showOrderDetailPage = function(orderId) {
           ${done ? '✓' : index + 1}
         </div>
         <div style="font-weight:bold; color:${active ? '#1e293b' : '#64748b'}; font-size:12px;">${st.name}</div>
-        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${st.time || '--'}</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${formatTimeSec(st.time)}</div>
       </div>
     `;
   }).join('') + `
@@ -2101,7 +2241,7 @@ AdminApp.showOrderDetailPage = function(orderId) {
   document.getElementById('admin-detail-subtotal-price').innerText = o.amount;
   document.getElementById('admin-detail-total-amount').innerText = o.amount;
 
-  // 渲染合同模块
+  // 渲染合同模块 (最多支持10张合同附件)
   const contractWrapper = document.getElementById('admin-detail-contract-wrapper');
   if (contractWrapper) {
     if (o.status === 0 || o.status === 5) {
@@ -2112,33 +2252,37 @@ AdminApp.showOrderDetailPage = function(orderId) {
       `;
     } else {
       const contractNo = o.contractNo || ('HT-' + o.id);
+      const contractImages = (o.contractImages || [
+        { label: '1. 主交易合同 (买家盖章联)', name: '《大宗物资买卖交易主合同》- 买家CA签署联', type: 'contract' },
+        { label: '2. 主交易合同 (卖家盖章联)', name: '《大宗物资买卖交易主合同》- 卖家CA签署联', type: 'contract' },
+        { label: '3. 货品质量验收标准附件', name: '《大宗商品质量检验与交付验收约定表》', type: 'contract' },
+        { label: '4. CA数字证书签署存证', name: '《国家CA中心数字证书签署存证证明》', type: 'contract' }
+      ]).slice(0, 10);
+
       contractWrapper.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-            <span style="font-weight:bold; color:#1e293b; font-size:13px;">买家合同</span>
-            <button class="btn btn-outline btn-sm" id="admin-detail-preview-contract-btn-buyer" style="border-radius:6px; padding:4px 12px;">【预览】</button>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-            <span style="font-weight:bold; color:#1e293b; font-size:13px;">卖家合同</span>
-            <button class="btn btn-outline btn-sm" id="admin-detail-preview-contract-btn-seller" style="border-radius:6px; padding:4px 12px;">【预览】</button>
-          </div>
+        <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">📄 已存档电子合同附件 (${contractImages.length}/10 份)：</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          ${contractImages.map((img, i) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+              <span style="font-weight:bold; color:#1e293b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${img.label}">${img.label}</span>
+              <button class="btn btn-outline btn-xs" id="admin-detail-preview-contract-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; flex-shrink:0;">【预览】</button>
+            </div>
+          `).join('')}
         </div>
       `;
-      document.getElementById('admin-detail-preview-contract-btn-buyer').onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 买家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
-      };
-      document.getElementById('admin-detail-preview-contract-btn-seller').onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 卖家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
-      };
+      contractImages.forEach((img, i) => {
+        const btn = document.getElementById(`admin-detail-preview-contract-btn-${i}`);
+        if (btn) btn.onclick = () => UI.previewDocument(img.name, img.type, contractNo, o.amount, o.buyerName, o.shopName);
+      });
     }
   }
 
-  // 渲染支付凭证模块
+  // 渲染支付凭证模块 (最多支持5张凭证附件)
   const voucherCard = document.getElementById('admin-detail-payment-voucher-card');
   if (voucherCard) {
-    const voucherTitle = `<h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+    const voucherTitle = `<h3 class="text-base font-bold mb-3" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
       <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
-      支付凭证
+      支付凭证与资金托管存证
     </h3>`;
     if (o.status === 0 || o.status === 5 || o.status === 4) {
       voucherCard.innerHTML = voucherTitle + `
@@ -2148,16 +2292,27 @@ AdminApp.showOrderDetailPage = function(orderId) {
       `;
     } else {
       const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
-      const isOnline = !o.paymentVoucher;
+      const voucherImages = (o.voucherImages || [
+        { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
+        { label: '2. 平台托管账户资金划转凭单', name: '《平台合规托管账户资金划转确认函》', type: 'voucher' },
+        { label: '3. 财务对账清算划转凭据', name: '《交易货款清算划划拨款凭单》', type: 'voucher' }
+      ]).slice(0, 5);
+
       voucherCard.innerHTML = voucherTitle + `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-          <span style="font-weight:bold; color:#334155; font-size:13px;">支付凭证</span>
-          <button class="btn btn-outline btn-sm" id="admin-detail-preview-voucher-btn" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+        <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">💳 已上传支付凭证附件 (${voucherImages.length}/5 份)：</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${voucherImages.map((vImg, i) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+              <span style="font-weight:bold; color:#166534; font-size:12px;">${vImg.label}</span>
+              <button class="btn btn-outline btn-xs" id="admin-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
+            </div>
+          `).join('')}
         </div>
       `;
-      document.getElementById('admin-detail-preview-voucher-btn').onclick = () => {
-        UI.previewDocument(isOnline ? '在线支付电子回单' : '线下对公转账凭证', 'voucher', voucherNo, o.amount, o.buyerName, o.shopName);
-      };
+      voucherImages.forEach((vImg, i) => {
+        const btn = document.getElementById(`admin-detail-preview-voucher-btn-${i}`);
+        if (btn) btn.onclick = () => UI.previewDocument(vImg.name, vImg.type, voucherNo, o.amount, o.buyerName, o.shopName);
+      });
     }
   }
 

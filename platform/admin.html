@@ -148,9 +148,7 @@
               </div>
               <div class="flex items-center gap-2">
                 <span class="text-secondary whitespace-nowrap">注册时间：</span>
-                <input type="date" class="form-control">
-                <span class="text-secondary">至</span>
-                <input type="date" class="form-control">
+                <input type="text" class="form-control" placeholder="注册时间范围 (如: 2026-07-01 ~ 2026-07-30)" style="width: 260px;">
               </div>
               <div class="flex items-center gap-2">
                 <span class="text-secondary whitespace-nowrap">个人认证状态：</span>
@@ -279,7 +277,7 @@
                 </div>
              </div>
              <table class="table" id="table-base-category">
-              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>类别名称</th><th>类别编码</th><th>级别</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+              <thead><tr style="background: #f4f6f8;"><th>序号</th><th>类别名称</th><th>类别编码</th><th>级别</th><th>状态</th><th>创建时间</th><th>更新时间</th><th>操作</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
@@ -321,7 +319,7 @@
                 </div>
              </div>
              <table class="table" id="table-merchant-products">
-               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>上架单号</th><th>主图</th><th>店铺名称</th><th>公司名称</th><th>商品名称</th><th>类别</th><th>货品类别</th><th>单价</th><th>销量</th><th>创建时间</th><th>上架时间</th><th>更新时间</th><th>当前状态</th><th>管理操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>上架单号</th><th>主图</th><th>店铺名称</th><th>公司名称</th><th>商品名称</th><th>上架单类别</th><th>货品类别</th><th>单价</th><th>销量</th><th>创建时间</th><th>上架时间</th><th>更新时间</th><th>当前状态</th><th>管理操作</th></tr></thead>
               <tbody><!-- JS 渲染 --></tbody>
             </table>
           </div>
@@ -374,10 +372,12 @@
                   </div>
                   <div class="form-group mb-0">
                     <label class="text-xs text-secondary mb-1 block">订单类型</label>
-                    <select id="filter-admin-order-type" class="form-control" style="width:120px;">
+                    <select id="filter-admin-order-type" class="form-control" style="width:140px;">
                       <option value="">全部类型</option>
                       <option value="现货交易订单">现货交易订单</option>
-                      <option value="专车配送订单">专车配送订单</option>
+                      <option value="预售交易订单">预售交易订单</option>
+                      <option value="供求交易订单">供求交易订单</option>
+                      <option value="竞价交易订单">竞价交易订单</option>
                     </select>
                   </div>
                   <div class="form-group mb-0">
@@ -397,21 +397,19 @@
                     <select id="filter-admin-order-status" class="form-control" style="width:100px;">
                       <option value="">全部状态</option>
                       <option value="待签约">待签约</option>
-                      <option value="待支付">待支付</option>
-                      <option value="待发运">待发运</option>
-                      <option value="待收货">待收货</option>
-                      <option value="待结算">待结算</option>
-                      <option value="已结单">已结单</option>
+                      <option value="待卖家签约">待卖家签约</option>
+                      <option value="待买家签约">待买家签约</option>
+                      <option value="待付款">待付款</option>
+                      <option value="待发货">待发货</option>
+                      <option value="待签收">待签收</option>
+                      <option value="已完成">已完成</option>
                       <option value="已取消">已取消</option>
+                      <option value="已关闭">已关闭</option>
                     </select>
                   </div>
                   <div class="form-group mb-0">
-                    <label class="text-xs text-secondary mb-1 block">创建开始时间</label>
-                    <input type="date" id="filter-admin-order-start" class="form-control" style="width:130px;">
-                  </div>
-                  <div class="form-group mb-0">
-                    <label class="text-xs text-secondary mb-1 block">创建结束时间</label>
-                    <input type="date" id="filter-admin-order-end" class="form-control" style="width:130px;">
+                    <label class="text-xs text-secondary mb-1 block">创建时间范围</label>
+                    <input type="text" id="filter-admin-order-date-range" class="form-control" placeholder="创建时间范围 (如: 2026-07-01 ~ 2026-07-30)" style="width:260px;">
                   </div>
                   <div class="flex gap-2">
                     <button class="btn btn-primary h-[38px]" onclick="AdminApp.renderOrders()">查询</button>
@@ -608,10 +606,15 @@
                  <label class="text-xs text-secondary mb-1 block">资源货品名</label>
                  <input type="text" id="filter-bidres-name" class="form-control" placeholder="输入货品名模糊查询" style="width:180px;">
                </div>
+                <div class="form-group mb-0">
+                  <label class="text-xs text-secondary mb-1 block">货品规格描述</label>
+                  <input type="text" id="filter-bidres-specs" class="form-control" placeholder="输入规格描述模糊查询" style="width:160px;">
+                </div>
+
                <div class="form-group mb-0">
                  <label class="text-xs text-secondary mb-1 block">状态</label>
                  <select id="filter-bidres-status" class="form-control" style="width:130px;">
-                   <option value="">全部</option>
+                   <option value="">全部状态</option>
                    <option value="待审核">待审核</option>
                    <option value="已通过">已通过</option>
                    <option value="未通过">未通过</option>
@@ -623,7 +626,7 @@
                </div>
              </div>
              <table class="table" id="table-admin-bidding-res">
-               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>资源编号</th><th>提报商家店铺名</th><th>公司名</th><th>资源货品名</th><th>资源图片</th><th>状态</th><th>创建时间</th><th>更新时间</th><th>操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>资源编号</th><th>图片</th><th>提报商家店铺名</th><th>公司名</th><th>资源货品名</th><th>货品规格描述</th><th>状态</th><th>创建时间</th><th>更新时间</th><th>操作</th></tr></thead>
                <tbody><!-- JS渲染 --></tbody>
              </table>
            </div>
@@ -639,24 +642,27 @@
               <div class="flex gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-light items-end flex-wrap">
                 <div class="form-group mb-0">
                   <label class="text-xs text-secondary mb-1 block">公告编号</label>
-                  <input type="text" id="filter-bidann-id" class="form-control" placeholder="输入公告编号精确匹配" style="width:200px;">
+                  <input type="text" id="filter-bidann-id" class="form-control" placeholder="输入公告编号精确匹配" style="width:180px;">
+                </div>
+                <div class="form-group mb-0">
+                  <label class="text-xs text-secondary mb-1 block">公告标题</label>
+                  <input type="text" id="filter-bidann-title" class="form-control" placeholder="输入公告标题模糊查询" style="width:180px;">
                 </div>
                 <div class="form-group mb-0">
                   <label class="text-xs text-secondary mb-1 block">发布商家店铺</label>
-                  <input type="text" id="filter-bidann-shop" class="form-control" placeholder="输入店铺名称模糊查询" style="width:180px;">
+                  <input type="text" id="filter-bidann-shop" class="form-control" placeholder="输入店铺名称模糊查询" style="width:160px;">
                 </div>
                 <div class="form-group mb-0">
                   <label class="text-xs text-secondary mb-1 block">公司名称</label>
-                  <input type="text" id="filter-bidann-company" class="form-control" placeholder="输入公司名模糊查询" style="width:180px;">
+                  <input type="text" id="filter-bidann-company" class="form-control" placeholder="输入公司名模糊查询" style="width:160px;">
                 </div>
                 <div class="form-group mb-0">
                   <label class="text-xs text-secondary mb-1 block">状态</label>
-                  <select id="filter-bidann-status" class="form-control" style="width:140px;">
+                  <select id="filter-bidann-status" class="form-control" style="width:130px;">
                     <option value="">全部</option>
                     <option value="待审核">待审核</option>
-                    <option value="看货报名">看货报名</option>
                     <option value="已下架">已下架</option>
-                    <option value="参加竞价">参加竞价</option>
+                    <option value="竞价中">竞价中</option>
                     <option value="等待公布">等待公布</option>
                     <option value="已结束">已结束</option>
                   </select>
@@ -667,7 +673,7 @@
                 </div>
               </div>
               <table class="table" id="table-admin-bidding-ann">
-                <thead><tr style="background: #f4f6f8;"><th>序号</th><th>公告编号</th><th>发布商家店铺</th><th>公司名称</th><th>关联资源编号</th><th>当前最高出价</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+                <thead><tr style="background: #f4f6f8;"><th>序号</th><th>公告编号</th><th>公告标题</th><th>发布商家店铺</th><th>公司名称</th><th>关联资源编号</th><th>起拍底价</th><th>当前最高出价</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
                 <tbody><!-- JS渲染 --></tbody>
               </table>
            </div>
@@ -681,66 +687,110 @@
            </div>
            <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
              <div class="flex justify-between mb-4 items-center">
-                <div class="text-secondary text-sm">抽佣规则只支持【全局模式】、【按特定商家】、【按特定商品类别】三种模式。</div>
+                <div class="text-secondary text-sm">抽佣规则支持【按特定商家】、【按特定商品类别】模式。</div>
                 <button class="btn btn-primary" onclick="UI.showModal('modal-add-commission')">新增抽佣规则</button>
              </div>
              <table class="table" id="table-admin-commission">
-               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>规则编号</th><th>规则名称</th><th>抽佣模式</th><th>针对目标</th><th>抽佣比例(%)</th><th>状态</th><th>操作</th></tr></thead>
+               <thead><tr style="background: #f4f6f8;"><th>序号</th><th>规则编号</th><th>规则名称</th><th>抽佣模式</th><th>针对目标</th><th>抽佣比例(%)</th><th>创建时间</th><th>操作</th></tr></thead>
                <tbody><!-- JS渲染 --></tbody>
              </table>
            </div>
         </div>
       </div>
       
-      <div id="tab-config-decoration" class="page-view" style="display:none;">
-           <div class="card-body table-wrapper" style="background:#fff;">
-             
-             <!-- 1. 首页分类金刚区配置 -->
-             <div class="mb-8">
-               <div class="flex justify-between items-center mb-4 border-b border-light pb-2">
-                 <h3 class="font-bold text-lg text-primary">首页分类金刚区配置</h3>
-                 <span class="text-sm text-secondary">从数据字典选取，最多展示 5 项</span>
-               </div>
-               <div class="bg-gray-50 p-6 rounded-lg border border-light">
-                 <div class="text-sm font-bold mb-4 text-secondary">请勾选需要外显的货品大类：</div>
-                 <div class="flex flex-wrap gap-4" id="decoration-categories">
-                   <!-- JS渲染多选框 -->
-                 </div>
-                 <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end">
-                   <button class="btn btn-primary" onclick="window.saveDecorationConfig()">保存分类配置</button>
-                 </div>
-               </div>
-             </div>
-             
-             <!-- 2. PC / H5 轮播图配置 -->
-             <div>
-               <div class="flex justify-between items-center mb-4 border-b border-light pb-2">
-                 <h3 class="font-bold text-lg text-primary">商城轮播图 (Banner) 配置</h3>
-                 <span class="text-sm text-secondary">PC与H5独立控制，建议上传对应尺寸的图片</span>
-               </div>
-               
-               <div class="mb-6 border border-light rounded-lg overflow-hidden">
-                 <div class="bg-gray-50 px-4 py-3 border-b border-light flex justify-between items-center">
-                   <h4 class="font-bold">PC端 Banner</h4>
-                   <button class="btn btn-primary btn-sm" onclick="UI.toast('模拟唤起PC图片上传', 'success')">+ 新增PC轮播图</button>
-                 </div>
-                 <table class="table mb-0" id="table-banner-pc">
-                   <thead><tr><th style="width: 150px">图片预览</th><th>跳转链接</th><th>状态</th><th style="width: 120px">操作</th></tr></thead>
-                   <tbody><!-- JS渲染 --></tbody>
-                 </table>
-               </div>
-               
-               <div class="border border-light rounded-lg overflow-hidden">
-                 <div class="bg-gray-50 px-4 py-3 border-b border-light flex justify-between items-center">
-                   <h4 class="font-bold">H5端 Banner</h4>
-                   <button class="btn btn-primary btn-sm" onclick="UI.toast('模拟唤起H5图片上传', 'success')">+ 新增H5轮播图</button>
-                 </div>
-                 <table class="table mb-0" id="table-banner-h5">
-                   <thead><tr><th style="width: 100px">图片预览</th><th>跳转链接</th><th>状态</th><th style="width: 120px">操作</th></tr></thead>
-                   <tbody><!-- JS渲染 --></tbody>
-                 </table>
-               </div>
-             </div>
+      <div id="tab-config-decoration" class="page-view" style="display:none; font-size:13px;">
+        <div style="display:flex; flex-direction:column; gap:24px;">
+
+          <!-- 1. 首页分类金刚区配置 -->
+          <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+              <div>
+                <h3 style="font-size:16px; font-weight:bold; color:#0f172a; margin:0; display:flex; align-items:center; gap:8px;">
+                  <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+                  首页分类金刚区配置
+                </h3>
+                <div style="font-size:12px; color:#64748b; margin-top:4px;">从数据字典选取，最多在商城首页外显展示 5 项核心大类</div>
+              </div>
+              <button class="btn btn-primary" style="background:var(--primary-color); border:none; padding:8px 20px; border-radius:8px; font-weight:bold; font-size:13px;" onclick="window.saveDecorationConfig()">
+                💾 保存分类配置
+              </button>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+              <div style="font-weight:bold; color:#334155; margin-bottom:14px; font-size:13px;">请勾选需要外显的货品大类：</div>
+              <div id="decoration-categories" style="display:flex; flex-wrap:wrap; gap:16px;">
+                <!-- JS 动态渲染多选框 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. PC / H5 轮播图配置 -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <!-- PC端 Banner 配置卡片 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:14px; margin-bottom:16px;">
+                <div>
+                  <h4 style="font-size:15px; font-weight:bold; color:#0f172a; margin:0; display:flex; align-items:center; gap:6px;">
+                    💻 PC端 轮播图 (Banner)
+                  </h4>
+                  <div style="font-size:11px; color:#94a3b8; margin-top:2px;">建议图片尺寸: 1200 x 300 px</div>
+                </div>
+                <button class="btn btn-primary btn-sm" style="border-radius:6px; background:var(--primary-color); border:none; padding:6px 12px; font-size:12px; font-weight:bold;" onclick="UI.toast('模拟唤起PC图片上传', 'success')">
+                  + 新增PC轮播图
+                </button>
+              </div>
+
+              <div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+                <table class="table" id="table-banner-pc" style="width:100%; margin:0; font-size:12px;">
+                  <thead style="background:#f8fafc;">
+                    <tr>
+                      <th style="width:140px; padding:10px;">图片预览</th>
+                      <th style="padding:10px;">跳转链接</th>
+                      <th style="width:70px; padding:10px; text-align:center;">状态</th>
+                      <th style="width:90px; padding:10px; text-align:center;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- JS 动态渲染 -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- H5端 Banner 配置卡片 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:14px; margin-bottom:16px;">
+                <div>
+                  <h4 style="font-size:15px; font-weight:bold; color:#0f172a; margin:0; display:flex; align-items:center; gap:6px;">
+                    📱 H5移动端 轮播图 (Banner)
+                  </h4>
+                  <div style="font-size:11px; color:#94a3b8; margin-top:2px;">建议图片尺寸: 750 x 320 px</div>
+                </div>
+                <button class="btn btn-primary btn-sm" style="border-radius:6px; background:var(--primary-color); border:none; padding:6px 12px; font-size:12px; font-weight:bold;" onclick="UI.toast('模拟唤起H5图片上传', 'success')">
+                  + 新增H5轮播图
+                </button>
+              </div>
+
+              <div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+                <table class="table" id="table-banner-h5" style="width:100%; margin:0; font-size:12px;">
+                  <thead style="background:#f8fafc;">
+                    <tr>
+                      <th style="width:120px; padding:10px;">图片预览</th>
+                      <th style="padding:10px;">跳转链接</th>
+                      <th style="width:70px; padding:10px; text-align:center;">状态</th>
+                      <th style="width:90px; padding:10px; text-align:center;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- JS 动态渲染 -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
            </div>
       </div>
@@ -777,7 +827,6 @@
       <div class="form-group mb-0">
         <label class="form-label font-bold mb-1 block">抽佣模式选择 <span class="text-danger">*</span></label>
         <select id="comm-rule-type" class="form-control" style="width:100%; padding:8px;" onchange="AdminApp.toggleCommissionRuleType()">
-          <option value="global">全局模式 (全平台默认规则)</option>
           <option value="merchant">按特定商家 (关联具体店铺)</option>
           <option value="category">按特定商品类别 (关联分类数据字典)</option>
         </select>
@@ -786,11 +835,50 @@
         <label class="form-label font-bold mb-1 block">规则名称 <span class="text-danger">*</span></label>
         <input type="text" id="comm-rule-name" class="form-control" style="width:100%; padding:8px;" placeholder="如: 全局默认基础抽点 / 核心大客户优惠抽费">
       </div>
-      <div class="form-group mb-0" id="comm-rule-target-group" style="display:none;">
+      <div class="form-group mb-0" id="comm-rule-target-group" style="display:none; position:relative;">
         <label class="form-label font-bold mb-1 block" id="comm-rule-target-label">针对目标选择 <span class="text-danger">*</span></label>
-        <select id="comm-rule-target-select" class="form-control" style="width:100%; padding:8px;">
-          <!-- JS 动态填入商家或类别 -->
+        
+        <!-- 普通商家选择框 -->
+        <select id="comm-rule-target-select" class="form-control" style="width:100%; padding:8px; display:block;">
+          <!-- JS 动态填入商家 -->
         </select>
+
+        <!-- 商品分类三级级联选择面板按钮 -->
+        <div id="comm-category-cascader-wrapper" style="display:none;">
+          <div id="comm-cat-trigger" style="width:100%; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="AdminApp.toggleCommCatPanel(event)">
+            <span id="comm-cat-trigger-text" style="color:#94a3b8;">请选择商品分类</span>
+            <span style="color:#94a3b8; font-size:12px;">▼</span>
+          </div>
+
+          <!-- 仿图中的 3 列三级级联下拉面板 -->
+          <div id="comm-cat-panel" style="display:none; position:absolute; top:100%; left:0; right:0; width:540px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); z-index:99999; margin-top:6px; padding:16px;">
+            <div style="font-size:13px; font-weight:bold; color:#334155; margin-bottom:12px;">商品分类</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1.2fr; border:1px solid #f1f5f9; border-radius:8px; height:240px; overflow:hidden;">
+              <!-- 一级分类 -->
+              <div style="border-right:1px solid #f1f5f9; background:#fafafa; overflow-y:auto; padding:8px 0;">
+                <div style="font-size:12px; font-weight:bold; color:#64748b; padding:4px 12px 8px 12px;">一级分类</div>
+                <div id="comm-cat-l1-list"><!-- JS 动态渲染 --></div>
+              </div>
+              <!-- 二级分类 -->
+              <div style="border-right:1px solid #f1f5f9; background:#fff; overflow-y:auto; padding:8px 0;">
+                <div style="font-size:12px; font-weight:bold; color:#64748b; padding:4px 12px 8px 12px;">二级分类</div>
+                <div id="comm-cat-l2-list" style="font-size:12px; color:#94a3b8; padding:12px; text-align:center;">请先选择一级分类</div>
+              </div>
+              <!-- 三级品类 (多选) -->
+              <div style="background:#fff; overflow-y:auto; padding:8px 0;">
+                <div style="font-size:12px; font-weight:bold; color:#64748b; padding:4px 12px 8px 12px;">三级品类 (可多选)</div>
+                <div id="comm-cat-l3-list" style="font-size:12px; color:#94a3b8; padding:12px; text-align:center;">请选择二/三级</div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; pt-2; border-top:1px solid #f1f5f9;">
+              <span style="font-size:12px; color:#94a3b8;">已勾选多个品类将进行联合抽佣配置</span>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-outline btn-sm" style="padding:4px 14px; border-radius:6px;" onclick="AdminApp.clearCommCatPicked()">清空</button>
+                <button type="button" class="btn btn-primary btn-sm" style="padding:4px 16px; border-radius:6px; background:#7c3aed; border:none;" onclick="AdminApp.confirmCommCatPicked()">确定</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="form-group mb-0">
         <label class="form-label font-bold mb-1 block">平台抽佣比例 (%) <span class="text-danger">*</span></label>
@@ -917,10 +1005,6 @@
       <div class="form-group mb-4">
         <label class="form-label font-bold">类别名称</label>
         <input type="text" class="form-control" id="category-name-input" placeholder="输入类别名称" style="width:100%">
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold">类别编码</label>
-        <input type="text" class="form-control" id="category-code-input" placeholder="例如：C12" style="width:100%">
       </div>
     </div>
     <div class="modal-footer">
@@ -1062,7 +1146,7 @@
         <input type="number" id="admin-edit-ann-start-price" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
       </div>
       <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">看货报名截止时间 *</label>
+        <label class="form-label font-bold mb-1 block">现场看货截止时间 *</label>
         <input type="datetime-local" id="admin-edit-ann-view-end" class="form-control" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
       </div>
       <div class="form-group mb-4">
@@ -1280,6 +1364,7 @@
           <tr>
             <th style="padding:8px 10px;">序号</th>
             <th style="padding:8px 10px;">买家名称</th>
+            <th style="padding:8px 10px;">联系手机号</th>
             <th style="padding:8px 10px;">出价时间</th>
             <th style="padding:8px 10px; text-align:right;">出价金额</th>
             <th style="padding:8px 10px; text-align:center;">状态</th>

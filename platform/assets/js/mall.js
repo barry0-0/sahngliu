@@ -1,3 +1,11 @@
+
+function formatTimeSec(str) {
+  if (!str || str === "--") return "--";
+  str = String(str).trim();
+  if (str.length === 10) return str + " 00:00:00";
+  if (str.length === 16) return str + ":00";
+  return str;
+}
 /**
  * 商城 PC 端业务逻辑
  */
@@ -27,18 +35,61 @@ const MallApp = {
   // === 渲染分类 ===
   renderCategories() {
     const menu = document.getElementById('home-category-menu');
-    if (menu && MockData.productCategories && MockData.decorationConfig) {
-      let html = '<div style="padding: 14px 20px 8px; font-weight: bold; color: var(--text-main); font-size: 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 8px;">📦 全部品类</div>';
+    if (menu && MockData.productCategories) {
+      let html = `
+        <div style="padding: 16px 20px; font-weight: 800; color: #0f172a; font-size: 15px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; justify-content: space-between;">
+          <span style="display:flex; align-items:center; gap:8px;">
+            <span style="display:inline-block; width:4px; height:16px; background:var(--primary-color); border-radius:2px;"></span>
+            📦 全部品类导航
+          </span>
+          <span style="font-size:11px; color:#94a3b8; font-weight:normal;">一站式全覆盖</span>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:4px 0;">
+          <!-- 1. 全部品类入口 -->
+          <div class="home-cat-item" onclick="MallApp.goToSpotMarket('')" style="display:flex; align-items:center; justify-content:space-between; padding:12px 18px; transition:all 0.2s; border-bottom:1px solid #f8fafc; background: rgba(22,119,255,0.03);">
+            <div style="display:flex; align-items:center; gap:12px; overflow:hidden;">
+              <span style="font-size:18px; width:26px; height:26px; border-radius:6px; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center;">📦</span>
+              <div style="display:flex; flex-direction:column; overflow:hidden;">
+                <span style="font-size:14px; font-weight:700; color:var(--primary-color);">全部品类</span>
+                <span style="font-size:11px; color:#94a3b8; margin-top:2px;">查看大宗全量现货</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+              <span style="font-size:10px; background:var(--primary-color); color:#fff; padding:2px 8px; border-radius:10px; font-weight:bold;">ALL</span>
+              <span style="color:var(--primary-color); font-size:12px;">›</span>
+            </div>
+          </div>
+      `;
 
-      const displayIds = MockData.decorationConfig.displayCategories.slice(0, 5);
-      const displayCats = MockData.productCategories.filter(c => displayIds.includes(c.id));
+      // Strictly limit categories to 5 items so total with '全部品类' is 6 items
+      const categories = (MockData.productCategories || []).slice(0, 5);
+      const catIcons = ['🔩', '🪵', '🧱', '🌾', '🍎'];
 
-      displayCats.forEach(c => {
-        html += `<div class="home-cat-item" onclick="MallApp.goToSpotMarket('${c.id}')">
-                   <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 
-                   ${c.name}
-                 </div>`;
+      categories.forEach((c, idx) => {
+        const icon = catIcons[idx % catIcons.length];
+        const childrenNames = c.children ? c.children.slice(0, 2).map(sub => sub.name).join(' / ') : '';
+        const levelBadge = `<span style="font-size:10px; background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.2)); color:#059669; padding:2px 6px; border-radius:10px; font-weight:bold;">${c.children ? c.children.length + '个类目' : '热销'}</span>`;
+
+        html += `
+          <div class="home-cat-item" onclick="MallApp.goToSpotMarket('${c.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:12px 18px; transition:all 0.2s; border-bottom:1px solid #f8fafc;">
+            <div style="display:flex; align-items:center; gap:12px; overflow:hidden;">
+              <span style="font-size:18px; width:26px; height:26px; border-radius:6px; background:#f1f5f9; display:flex; align-items:center; justify-content:center;">${icon}</span>
+              <div style="display:flex; flex-direction:column; overflow:hidden;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:14px; font-weight:600; color:#1e293b;">${c.name}</span>
+                </div>
+                ${childrenNames ? `<span style="font-size:11px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${childrenNames}</span>` : ''}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+              ${levelBadge}
+              <span style="color:#cbd5e1; font-size:12px;">›</span>
+            </div>
+          </div>
+        `;
       });
+
+      html += `</div>`;
       menu.innerHTML = html;
     }
   },
@@ -493,8 +544,6 @@ const MallApp = {
     } else if (showOnlyJoined) {
       const myQuotes = MockData.demandQuotes.filter(q => q.quoterName === this.currentBuyerName);
       filtered = filtered.filter(d => myQuotes.some(q => q.demandId === d.id));
-    } else {
-      filtered = filtered.filter(d => d.status === 1);
     }
 
     if (keyword) {
@@ -510,7 +559,7 @@ const MallApp = {
     }
 
     filtered.forEach(d => {
-      let isMine = d.buyerName === this.currentBuyerName;
+      let isMyDemand = d.buyerName === this.currentBuyerName;
       const myQuote = MockData.demandQuotes.find(q => q.demandId === d.id && q.quoterName === this.currentBuyerName);
       let isJoined = !!myQuote;
       let btn = '';
@@ -523,63 +572,61 @@ const MallApp = {
       if (showOnlyJoined && isJoined) {
         if (myQuote.status === 1) {
           statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已采纳</span>`;
-          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
-                   <span class="tag tag-success flex-1 text-center" style="font-size:12px; padding:6px 8px;">已采纳，请在线下执行订单合同</span>
-                 </div>`;
+          btn = `<span class="tag tag-success" style="display:block; text-align:center; font-size:12px; padding:8px 8px; width:100%;">已采纳，请在线下执行订单合同</span>`;
         } else {
           statusTag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border:1px solid #91d5ff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已报价</span>`;
-          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
-                   <button class="btn btn-primary btn-sm flex-1 w-full" onclick="MallApp.editMyQuote('${myQuote.id}')">修改报价</button>
-                 </div>`;
+          btn = `<button class="btn btn-primary" style="width:100%; height:36px; border-radius:8px; background:#9a66e4; border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="MallApp.editMyQuote('${myQuote.id}')">修改报价</button>`;
         }
-        quotePriceHtml = `<div><span class="inline-block w-20" style="color:var(--primary-color); font-weight:bold;">我的报价:</span> <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
-      } else if (isMine) {
+        quotePriceHtml = `<div>我的报价: <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
+      } else {
         if (d.status === 0) {
           statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">待审核</span>`;
         } else if (d.status === 1) {
-          statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">展示中</span>`;
-        } else if (d.status === 2) {
-          statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已完结</span>`;
-        } else if (d.status === -1) {
-          statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#cf1322; border:1px solid #ffa39e; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已撤销</span>`;
+          statusTag = `<span style="color:#16a34a; font-size:12px; font-weight:bold;">展示中</span>`;
+        } else if (d.status === 2 || d.status === -1 || d.status === '已下架') {
+          statusTag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已下架</span>`;
         }
- 
+
         const quotesCount = MockData.demandQuotes.filter(q => q.demandId === d.id).length;
- 
-        if (d.status === 0 || d.status === 1) {
-          btn = `<div style="display:flex; gap:10px; margin-top:12px;">
-                   <button class="btn btn-outline btn-sm flex-1" onclick="MallApp.cancelDemand('${d.id}')">撤销</button>
-                   <button class="btn btn-primary btn-sm flex-1" onclick="UI.showDemandQuotesModal('${d.id}', false, () => MallApp.renderDemands())">查看报价 (${quotesCount})</button>
-                 </div>`;
+        if (isMyDemand) {
+          if (d.status === 0 || d.status === 1) {
+            btn = `<div style="display:flex; gap:12px; width:100%;">
+                     <button class="btn btn-outline" style="flex:1; height:36px; border-radius:8px; border:1px solid #cbd5e1; color:#334155; font-size:13px; font-weight:500; cursor:pointer; background:#fff;" onclick="MallApp.cancelDemand('${d.id}')">下架</button>
+                     <button class="btn btn-primary" style="flex:1; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="UI.showDemandQuotesModal('${d.id}', false, () => MallApp.renderDemands())">查看报价 (${quotesCount})</button>
+                   </div>`;
+          } else {
+            btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
+          }
         } else {
-          btn = `<div class="text-secondary text-sm" style="margin-top:12px;">意向已关闭</div>`;
+          if (d.status === 2 || d.status === -1 || d.status === '已下架') {
+            btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
+          } else {
+            btn = `<button class="btn btn-primary" style="width:100%; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="MallApp.openQuoteModal('${d.id}')">立即报价</button>`;
+          }
         }
-      } else {
-        btn = `<div class="flex gap-2" style="margin-top: 12px;">
-                 <button class="btn btn-primary btn-sm flex-1 w-full" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.id}', '${demandTitle}', '${expectedPrice}'))">立即报价</button>
-               </div>`;
       }
- 
+
       const goodsName = d.goodsName || d.title;
       const buyerPhone = d.buyerPhone || '138****8818';
       const deliveryPeriod = d.deliveryPeriod || '2026-08-01 至 2026-08-15';
-      const remark = d.remark || d.desc || '按标准协议交货';
 
       html += `
-        <div class="card product-card" style="border-radius:12px; border:1px solid #e2e8f0; overflow:hidden;">
-          <div class="card-body" style="padding:16px;">
-            <div class="flex justify-between items-start mb-2" style="display:flex; justify-content:space-between; align-items:center;">
-              <h3 class="font-bold text-lg truncate flex-1" style="margin:0; font-size:16px; color:#0f172a;" title="${goodsName}">求购货品: ${goodsName}</h3>
-              ${statusTag}
+        <div class="card product-card" style="border-radius:16px; border:1px solid #e5e7eb; background:#fff; box-shadow: 0 4px 20px rgba(0,0,0,0.02); display:flex; flex-direction:column; min-height: 220px; box-sizing:border-box;">
+          <div class="card-body" style="padding:20px; display:flex; flex-direction:column; height:100%; box-sizing:border-box;">
+            <!-- 头部：标题与状态 tag -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:12px;">
+              <h3 style="margin:0; font-size:16px; font-weight:bold; color:#0f172a; line-height:1.4; flex:1;" title="${goodsName}">求购货品: ${goodsName}</h3>
+              <div style="flex-shrink:0;">${statusTag}</div>
             </div>
-            <div class="text-sm text-secondary mb-4 flex flex-col gap-1" style="font-size:13px;">
-              <div><span class="inline-block w-20" style="color:#64748b;">买方账号:</span> <span style="font-family:monospace; font-weight:bold; color:#0284c7;">${buyerPhone}</span> (${d.buyerName})</div>
-              <div><span class="inline-block w-20" style="color:#64748b;">交期范围:</span> <span style="color:#0f172a; font-weight:500;">${deliveryPeriod}</span></div>
-              <div><span class="inline-block w-20" style="color:#64748b;">发布时间:</span> <span class="text-dark">${d.publishTime}</span></div>
+
+            <!-- 中间内容 (Flex 1 自动撑开，保证固定底部位置) -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px; font-size:13px; color:#64748b; line-height:1.5;">
+              <div>买方账号: <span style="font-family:monospace; font-weight:bold; color:#0284c7;">${buyerPhone}</span> <span style="color:#64748b;">(${d.buyerName})</span></div>
+              <div>交期范围: <span style="color:#1e293b; font-weight:500;">${deliveryPeriod}</span></div>
+              <div>发布时间: <span style="color:#64748b;">${formatTimeSec(d.publishTime)}</span></div>
               ${quotePriceHtml}
-              <div><span class="inline-block w-20" style="color:#64748b;">备注说明:</span> <span class="text-secondary" style="color:#475569;">${remark}</span></div>
             </div>
-            <div class="border-t border-light pt-3">
+            <div style="margin-top:auto; padding-top:14px; border-top:1px dashed #f1f5f9;">
               ${btn}
             </div>
           </div>
@@ -597,8 +644,8 @@ const MallApp = {
   cancelDemand(demandId) {
     const d = MockData.demands.find(x => x.id === demandId);
     if (d) {
-      d.status = -1; // 已撤销
-      UI.toast('已撤销该求购信息！', 'success');
+      d.status = -1; // 已下架
+      UI.toast('已下架该求购信息！', 'success');
       this.renderDemands();
     }
   },
@@ -650,23 +697,26 @@ const MallApp = {
     }
     const statusVal = document.getElementById('bid-search-status')?.value || '';
     if (statusVal !== '') {
-      if (statusVal === '1') {
-        filtered = filtered.filter(b => b.status >= 0 && b.status <= 3);
-      } else if (statusVal === '0') {
+      if (statusVal === 'bidding') {
+        filtered = filtered.filter(b => b.status === 0 || b.status === 1 || b.status === 2);
+      } else if (statusVal === 'wait') {
+        filtered = filtered.filter(b => b.status === 3);
+      } else if (statusVal === 'ended') {
         filtered = filtered.filter(b => b.status === 4);
       }
     }
     filtered.forEach(b => {
       let tag = '';
-      if (b.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
-      else if (b.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
-      else if (b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
-      else if (b.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
-      else if (b.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
+      if (b.status === 0 || b.status === 1 || b.status === 2) {
+        tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
+      } else if (b.status === 3) {
+        tag = `<span class="tag tag-warning" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+      } else if (b.status === 4) {
+        tag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已结束</span>`;
+      }
 
-      let btnText = '参与竞价';
-      if (b.status === 0) btnText = '看货报名';
-      else if (b.status === 1) btnText = '现场看货';
+      let btnText = '竞价中';
+      if (b.status === 1) btnText = '竞价中';
       else if (b.status === 3) btnText = '等待公布';
       else if (b.status === 4) btnText = '查看结果';
 
@@ -791,14 +841,12 @@ const MallApp = {
       }
       actionCardHTML = `
         <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px; box-sizing:border-box; color:#15803d;">
-          <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">🎉 等待商户定标公布中</h4>
+          <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">⏳ 等待商户定标公布中</h4>
           ${myLastOfferHtml}
-          <p style="margin:4px 0 10px 0; font-size:11px; color:#64748b;">在商户最终选定中标人前，您依然可以追加报价：</p>
-          <div style="display:flex; gap:10px;">
-            <input type="number" id="bid-price-input" placeholder="输入追加报价 (元)" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:14px; padding: 0 16px;" min="${parseFloat(b.startPrice.replace(/[^\d\.]/g, ''))}">
-            <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 24px;" onclick="MallApp.submitBidPrice('${b.id}')">追加报价</button>
+          <p style="margin:4px 0; font-size:11px; color:#64748b;">商户正在评审出价，即将公布中标结果。请耐心等待...</p>
+          <div style="background:#dcfce7; border-radius:6px; padding:8px 12px; font-size:11px; color:#15803d; margin-top:8px;">
+            ⚠️ 该阶段已无法再次加价，请等待官方公布定标结果。
           </div>
-          <p style="margin:6px 0 0 0; font-size:11px; color:#94a3b8;">* 追加出价必须高于当前最高价 ${b.currentMaxOffer}</p>
         </div>
       `;
     } else if (b.status === 4) {
@@ -929,12 +977,15 @@ const MallApp = {
     this.renderUCBids();
   },
 
-  openQuoteModal(demandId, name, expectedPrice) {
+  openQuoteModal(demandId) {
     this.currentQuoteDemandId = demandId;
+    this.editingQuoteId = null;
+
+    const d = MockData.demands.find(x => x.id === demandId);
+    const name = d ? (d.goodsName || d.title || '采购项目') : '采购项目';
+
     const titleEl = document.getElementById('quote-prod-name');
-    const expectedEl = document.getElementById('quote-prod-expected');
     if (titleEl) titleEl.innerText = name;
-    if (expectedEl) expectedEl.innerText = '期望价格: ' + expectedPrice;
 
     // Reset inputs
     document.getElementById('quote-price').value = '';
@@ -952,20 +1003,31 @@ const MallApp = {
 
     const priceFormatted = priceVal.startsWith('¥') ? priceVal : '¥' + priceVal;
 
-    // Add to MockData.demandQuotes
-    const newQuote = {
-      id: 'QT' + (MockData.demandQuotes.length + 1).toString().padStart(3, '0'),
-      demandId: this.currentQuoteDemandId,
-      shopId: 'S001',
-      shopName: '万通建材 (报价主体)',
-      price: priceFormatted,
-      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      status: 0,
-      quoterName: this.currentBuyerName || '万通建材采购部'
-    };
+    if (this.editingQuoteId) {
+      const q = MockData.demandQuotes.find(x => x.id === this.editingQuoteId);
+      if (q) {
+        q.price = priceFormatted;
+        q.time = new Date().toISOString().replace('T', ' ').substring(0, 16);
+      }
+      this.editingQuoteId = null;
+      UI.toast('报价修改成功！', 'success');
+    } else {
+      // Add to MockData.demandQuotes
+      const newQuote = {
+        id: 'QT' + (MockData.demandQuotes.length + 1).toString().padStart(3, '0'),
+        demandId: this.currentQuoteDemandId,
+        shopId: 'S001',
+        shopName: '万通建材 (报价主体)',
+        price: priceFormatted,
+        time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        status: 0,
+        quoterName: this.currentBuyerName || '万通建材采购部'
+      };
 
-    MockData.demandQuotes.push(newQuote);
-    UI.toast('报价提交成功！等待采购商联系。', 'success');
+      MockData.demandQuotes.push(newQuote);
+      UI.toast('报价提交成功！等待采购商联系。', 'success');
+    }
+
     UI.closeModal('modal-quote');
     this.renderDemands();
   },
@@ -973,18 +1035,18 @@ const MallApp = {
   editMyQuote(quoteId) {
     const q = MockData.demandQuotes.find(x => x.id === quoteId);
     if (!q) return;
+    const d = MockData.demands.find(x => x.id === q.demandId);
+    const goodsName = d ? (d.goodsName || d.title) : '采购意向项目';
 
-    const newPrice = prompt('请输入新的报价（例如 ¥4,100.00/吨）：', q.price);
-    if (newPrice === null) return; // user cancelled
-    const trimmed = newPrice.trim();
-    if (!trimmed) {
-      UI.toast('报价不能为空！', 'error');
-      return;
-    }
+    this.currentQuoteDemandId = q.demandId;
+    this.editingQuoteId = quoteId; // 标记正在编辑的报价 ID
 
-    q.price = trimmed;
-    UI.toast('报价修改成功！', 'success');
-    this.renderDemands();
+    const nameEl = document.getElementById('quote-prod-name');
+    const priceEl = document.getElementById('quote-price');
+    if (nameEl) nameEl.innerText = goodsName + ' (修改现有报价)';
+    if (priceEl) priceEl.value = q.price;
+
+    UI.openModal('modal-quote');
   },
 
   toggleChatForm(type) {
@@ -1104,7 +1166,7 @@ const MallApp = {
       let statusTag = '';
       let actBtn = '';
       if (o.status === 0) {
-        statusTag = `<span class="tag tag-warning">待签约</span>`;
+        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待买家签约</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.signContract('${o.id}')">签署合同(盖章)</button>
                   <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 4) {
@@ -1118,7 +1180,7 @@ const MallApp = {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = '';
       } else if (o.status === 2) {
-        statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">待签收</span>`;
+        statusTag = `<span class="tag tag-info" style="color: #0958d9; background: #e6f4ff;">待签收</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.confirmBuyerReceipt('${o.id}')">确认收货</button>`;
       } else if (o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
@@ -1126,7 +1188,10 @@ const MallApp = {
           ? `<button class="btn btn-primary btn-sm" onclick="MallApp.applyInvoice('${o.id}')">申请发票</button>`
           : '';
       } else if (o.status === -1) {
-        statusTag = `<span class="tag tag-danger">已关闭</span>`;
+        statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#ef4444; border:1px solid #ffa39e;">已取消</span>`;
+        actBtn = '';
+      } else if (o.status === -2) {
+        statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#64748b; border:1px solid #d9d9d9;">已关闭</span>`;
         actBtn = '';
       }
       html += `
@@ -1206,7 +1271,7 @@ const MallApp = {
         buyerPhone: '138****8818',
         amount: '¥ 207,500.00',
         status: 2,
-        createTime: '2026-07-07 10:15',
+        createTime: '2026-07-07 10:15:00',
         typeStr: '现货交易订单',
         contractNo: 'HT-20260707-8891'
       };
@@ -1218,23 +1283,46 @@ const MallApp = {
     const typeEl = document.getElementById('pc-detail-type-tag');
     if (typeEl) typeEl.innerText = o.orderType || '现货交易订单';
     const timeEl = document.getElementById('pc-detail-create-time');
-    if (timeEl) timeEl.innerText = o.createTime || '2026-07-07 10:15';
+    if (timeEl) timeEl.innerText = o.createTime || '2026-07-07 10:15:00';
     const payEl = document.getElementById('pc-detail-pay-method');
     if (payEl) payEl.innerText = o.payMethod || '线上担保支付 (托管账户)';
     const contractEl = document.getElementById('pc-detail-contract-no');
     if (contractEl) contractEl.innerText = o.contractNo || ('HT-' + o.id);
 
-    const prevContractBtnBuyer = document.getElementById('pc-detail-preview-contract-btn-buyer');
-    if (prevContractBtnBuyer) {
-      prevContractBtnBuyer.onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量保证金协议》- 买家签署联', 'contract', o.contractNo || ('HT-' + o.id), o.amount, o.buyerName, o.shopName);
-      };
-    }
-    const prevContractBtnSeller = document.getElementById('pc-detail-preview-contract-btn-seller');
-    if (prevContractBtnSeller) {
-      prevContractBtnSeller.onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量保证金协议》- 卖家签署联', 'contract', o.contractNo || ('HT-' + o.id), o.amount, o.buyerName, o.shopName);
-      };
+    // 渲染合同模块 (最多支持10张合同附件)
+    const contractWrapper = document.getElementById('pc-detail-contract-wrapper');
+    if (contractWrapper) {
+      if (o.status === 0 || o.status === 5) {
+        contractWrapper.innerHTML = `
+          <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+            ⏳ 双方电子签约尚未完成，暂无可预览合同。
+          </div>
+        `;
+      } else {
+        const contractNo = o.contractNo || ('HT-' + o.id);
+        const contractImages = (o.contractImages || [
+          { label: '1. 主交易合同 (买家盖章联)', name: '《大宗物资买卖交易主合同》- 买家CA签署联', type: 'contract' },
+          { label: '2. 主交易合同 (卖家盖章联)', name: '《大宗物资买卖交易主合同》- 卖家CA签署联', type: 'contract' },
+          { label: '3. 货品质量验收标准附件', name: '《大宗商品质量检验与交付验收约定表》', type: 'contract' },
+          { label: '4. CA数字证书签署存证', name: '《国家CA中心数字证书签署存证证明》', type: 'contract' }
+        ]).slice(0, 10);
+
+        contractWrapper.innerHTML = `
+          <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">📄 已存档电子合同附件 (${contractImages.length}/10 份)：</div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            ${contractImages.map((img, i) => `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+                <span style="font-weight:bold; color:#1e293b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${img.label}">${img.label}</span>
+                <button class="btn btn-outline btn-xs" id="pc-detail-preview-contract-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; flex-shrink:0;">【预览】</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        contractImages.forEach((img, i) => {
+          const btn = document.getElementById(`pc-detail-preview-contract-btn-${i}`);
+          if (btn) btn.onclick = () => UI.previewDocument(img.name, img.type, contractNo, o.amount, o.buyerName, o.shopName);
+        });
+      }
     }
 
     // 5. 填充买家与收货物流
@@ -1341,36 +1429,39 @@ const MallApp = {
     const totalEl = document.getElementById('pc-detail-total-amount');
     if (totalEl) totalEl.innerText = o.amount;
 
-    // 渲染付款凭证
+    // 渲染付款凭证 (最多支持5张凭证附件)
     const voucherCard = document.getElementById('pc-detail-payment-voucher-card');
     if (voucherCard) {
+      const voucherTitle = `<h3 class="text-base font-bold mb-3" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 12px 0;">
+        <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
+        支付凭证与资金托管存证
+      </h3>`;
       if (o.status === 0 || o.status === 5 || o.status === 4) {
         voucherCard.style.display = 'none';
       } else {
         voucherCard.style.display = 'block';
-        if (o.paymentVoucher) {
-          voucherCard.innerHTML = `
-            <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 16px 0;">
-              <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
-              支付凭证
-            </h3>
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
-              <span style="font-weight:bold; color:#166534; font-size:13px;">支付凭证</span>
-              <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('线下对公转账凭证', 'voucher', '${o.paymentVoucher}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer; padding:4px 12px;">【预览】</button>
-            </div>
-          `;
-        } else {
-          voucherCard.innerHTML = `
-            <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 16px 0;">
-              <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
-              支付凭证
-            </h3>
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
-              <span style="font-weight:bold; color:#166534; font-size:13px;">支付凭证</span>
-              <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer; padding:4px 12px;">【预览】</button>
-            </div>
-          `;
-        }
+        const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
+        const voucherImages = (o.voucherImages || [
+          { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
+          { label: '2. 平台托管账户资金划转凭单', name: '《平台合规托管账户资金划转确认函》', type: 'voucher' },
+          { label: '3. 财务对账清算划转凭据', name: '《交易货款清算划划拨款凭单》', type: 'voucher' }
+        ]).slice(0, 5);
+
+        voucherCard.innerHTML = voucherTitle + `
+          <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">💳 已上传支付凭证附件 (${voucherImages.length}/5 份)：</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${voucherImages.map((vImg, i) => `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+                <span style="font-weight:bold; color:#166534; font-size:12px;">${vImg.label}</span>
+                <button class="btn btn-outline btn-xs" id="pc-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        voucherImages.forEach((vImg, i) => {
+          const btn = document.getElementById(`pc-detail-preview-voucher-btn-${i}`);
+          if (btn) btn.onclick = () => UI.previewDocument(vImg.name, vImg.type, voucherNo, o.amount, o.buyerName, o.shopName);
+        });
       }
     }
 
@@ -1553,9 +1644,9 @@ const MallApp = {
       const myMaxOfferStr = '¥' + myMaxOfferVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
 
       let tag = '';
-      if (b.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
-      else if (b.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
-      else if (b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
+      if (b.status === 0) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
+      else if (b.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">竞价中</span>`;
+      else if (b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
       else if (b.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
       else if (b.status === 4) tag = b.winner === (this.currentBuyerName || '万通建材采购部')
         ? `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f; font-weight:bold;">🏆 中标</span>`

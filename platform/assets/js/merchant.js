@@ -1,3 +1,11 @@
+
+function formatTimeSec(str) {
+  if (!str || str === "--") return "--";
+  str = String(str).trim();
+  if (str.length === 10) return str + " 00:00:00";
+  if (str.length === 16) return str + ":00";
+  return str;
+}
 /**
  * 商家端后台业务逻辑 (Merchant Dashboard V2)
  */
@@ -191,8 +199,8 @@ const MerchantApp = {
 
     // Sort newest first
     myProducts.sort((a, b) => {
-      const tA = new Date((a.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
-      const tB = new Date((b.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      const tA = new Date((a.createTime || '2026-01-01 09:00:00').replace(/-/g, '/')).getTime();
+      const tB = new Date((b.createTime || '2026-01-01 09:00:00').replace(/-/g, '/')).getTime();
       return tB - tA;
     });
 
@@ -225,7 +233,10 @@ const MerchantApp = {
 
     const formatDateTime = (dtStr) => {
       if (!dtStr) return '--';
-      return dtStr.length === 16 ? dtStr + ':00' : dtStr;
+      dtStr = String(dtStr).trim();
+      if (dtStr.length === 10) return dtStr + ' 00:00:00';
+      if (dtStr.length === 16) return dtStr + ':00';
+      return dtStr;
     };
 
     myProducts.forEach((p, idx) => {
@@ -237,8 +248,8 @@ const MerchantApp = {
 
       const pCode = getProductCode(p, idx);
       const catFull = getCategoryFullPath(p.category);
-      const cTime = formatDateTime(p.createTime || '2026-07-01 10:00');
-      const uTime = formatDateTime(p.opTime || p.createTime || '2026-07-01 10:00');
+      const cTime = formatDateTime(p.createTime || '2026-07-01 10:00:00');
+      const uTime = formatDateTime(p.opTime || p.createTime || '2026-07-01 10:00:00');
 
       html += `
         <tr>
@@ -633,31 +644,26 @@ const MerchantApp = {
       myProducts = myProducts.filter(p => this._selectedListedCatNames.includes(p.category));
     }
 
-    if (startDateEl && startDateEl.value) {
-      const startMs = new Date(startDateEl.value + ' 00:00:00').getTime();
+    const dateRangeEl = document.getElementById('filter-listed-prod-date-range');
+    if (dateRangeEl && dateRangeEl.value.trim() !== '') {
+      const parts = dateRangeEl.value.trim().split('~').map(s => s.trim());
+      const startMs = parts[0] ? new Date(parts[0] + ' 00:00:00').getTime() : 0;
+      const endMs = parts[1] ? new Date(parts[1] + ' 23:59:59').getTime() : (parts[0] ? new Date(parts[0] + ' 23:59:59').getTime() : Infinity);
       myProducts = myProducts.filter(p => {
-        const t = new Date((p.listTime || p.createTime || '2026-07-01').replace(/-/g, '/')).getTime();
-        return t >= startMs;
-      });
-    }
-
-    if (endDateEl && endDateEl.value) {
-      const endMs = new Date(endDateEl.value + ' 23:59:59').getTime();
-      myProducts = myProducts.filter(p => {
-        const t = new Date((p.listTime || p.createTime || '2026-07-01').replace(/-/g, '/')).getTime();
-        return t <= endMs;
+        const t = new Date((p.listTime || p.createTime || '2026-07-01 09:00:00').replace(/-/g, '/')).getTime();
+        return t >= startMs && t <= endMs;
       });
     }
 
     if (statusEl && statusEl.value !== '') {
       const statusVal = statusEl.value;
-      myProducts = myProducts.filter(p => String(p.status) === statusVal || (statusVal === '未上架' && String(p.status) === '未上架'));
+      myProducts = myProducts.filter(p => String(p.status) === statusVal || (statusVal === '草稿' && (String(p.status) === '草稿' || String(p.status) === '未上架')));
     }
 
     // Sort by listTime/createTime descending (newest first)
     myProducts.sort((a, b) => {
-      const tA = new Date((a.listTime || a.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
-      const tB = new Date((b.listTime || b.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      const tA = new Date((a.listTime || a.createTime || '2026-01-01 09:00:00').replace(/-/g, '/')).getTime();
+      const tB = new Date((b.listTime || b.createTime || '2026-01-01 09:00:00').replace(/-/g, '/')).getTime();
       return tB - tA;
     });
 
@@ -684,7 +690,10 @@ const MerchantApp = {
 
     const formatDateTime = (dtStr) => {
       if (!dtStr) return '--';
-      return dtStr.length === 16 ? dtStr + ':00' : dtStr;
+      dtStr = String(dtStr).trim();
+      if (dtStr.length === 10) return dtStr + ' 00:00:00';
+      if (dtStr.length === 16) return dtStr + ':00';
+      return dtStr;
     };
 
     const formatPriceStr = (p) => {
@@ -727,11 +736,12 @@ const MerchantApp = {
           <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
         `;
       } else {
-        // 未上架
-        statusDisplay = '<span class="tag" style="background:#f1f5f9; color:#475569;">未上架</span>';
+        // 草稿 (原未上架)
+        statusDisplay = '<span class="tag" style="background:#f1f5f9; color:#475569;">草稿</span>';
         acts = `
-          <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
           <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
+          <button class="btn btn-text btn-sm text-primary" style="margin-left:4px;" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
+          <button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.deleteListedProduct('${p.id}')">删除</button>
         `;
       }
 
@@ -742,9 +752,9 @@ const MerchantApp = {
       let catFull = getCategoryFullPath(p.category);
       let salesStr = (p.sales || 0).toLocaleString('zh-CN');
       let priceDisplay = formatPriceStr(p);
-      let lTime = formatDateTime(p.listTime || p.createTime || '2026-07-01 10:00');
-      let cTime = formatDateTime(p.createTime || '2026-07-01 10:00');
-      let uTime = formatDateTime(p.opTime || p.listTime || p.createTime || '2026-07-01 10:00');
+      let lTime = formatDateTime(p.listTime || p.createTime || '2026-07-01 10:00:00');
+      let cTime = formatDateTime(p.createTime || '2026-07-01 10:00:00');
+      let uTime = formatDateTime(p.opTime || p.listTime || p.createTime || '2026-07-01 10:00:00');
 
       html += `
         <tr>
@@ -1067,28 +1077,34 @@ const MerchantApp = {
     if (statusEl && statusEl.value !== '') {
       myOrders = myOrders.filter(o => {
         let statusText = '';
-        if (o.status === 0 || o.status === 5) statusText = '待签约';
+        if (o.status === 0) statusText = '待买家签约';
+        else if (o.status === 5) statusText = '待卖家签约';
         else if (o.status === 4) statusText = '待付款';
-        else if (o.status === 1) statusText = '待发运';
-        else if (o.status === 2) statusText = '待收货';
-        else if (o.status === 3) statusText = '已结单';
+        else if (o.status === 1) statusText = '待发货';
+        else if (o.status === 2) statusText = '待签收';
+        else if (o.status === 3) statusText = '已完成';
         else if (o.status === -1) statusText = '已取消';
+        else if (o.status === -2) statusText = '已关闭';
+        
+        if (statusEl.value === '待签约') return o.status === 0 || o.status === 5;
         return statusText === statusEl.value;
       });
     }
-    if (startEl && startEl.value !== '') {
-      const startTime = new Date(startEl.value + ' 00:00:00').getTime();
-      myOrders = myOrders.filter(o => new Date(o.time || '2026-07-20').getTime() >= startTime);
-    }
-    if (endEl && endEl.value !== '') {
-      const endTime = new Date(endEl.value + ' 23:59:59').getTime();
-      myOrders = myOrders.filter(o => new Date(o.time || '2026-07-20').getTime() <= endTime);
+    const dateRangeEl = document.getElementById('filter-order-date-range');
+    if (dateRangeEl && dateRangeEl.value.trim() !== '') {
+      const parts = dateRangeEl.value.trim().split('~').map(s => s.trim());
+      const startMs = parts[0] ? new Date(parts[0] + ' 00:00:00').getTime() : 0;
+      const endMs = parts[1] ? new Date(parts[1] + ' 23:59:59').getTime() : (parts[0] ? new Date(parts[0] + ' 23:59:59').getTime() : Infinity);
+      myOrders = myOrders.filter(o => {
+        const oMs = new Date(o.time || '2026-07-20 09:00:00').getTime();
+        return oMs >= startMs && oMs <= endMs;
+      });
     }
 
     // Default Sort: newest first
     myOrders.sort((a, b) => {
-      const tA = new Date(a.time || '2026-07-20').getTime();
-      const tB = new Date(b.time || '2026-07-20').getTime();
+      const tA = new Date(a.time || '2026-07-20 09:00:00').getTime();
+      const tB = new Date(b.time || '2026-07-20 09:00:00').getTime();
       return tB - tA;
     });
 
@@ -1097,18 +1113,18 @@ const MerchantApp = {
       let actBtn = '';
       
       if(o.status === 0) {
-        statusTag = `<span class="tag tag-warning">待买家签约</span>`;
+        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待买家签约</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
       } else if(o.status === 5) {
-        statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
+        statusTag = `<span class="tag tag-warning" style="background:#fcf0f7; color:#c41d7f; border:1px solid #ffadd2;">待卖家签约</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
                     <button class="btn btn-primary btn-sm" onclick="UI.showContractSigningModal('${o.id}', true, () => MerchantApp.renderOrders())">立即签约</button>
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
       } else if(o.status === 4) {
-        statusTag = `<span class="tag tag-secondary">待付款</span>`;
+        statusTag = `<span class="tag tag-secondary" style="background:#fffbe6; color:#d46b08; border:1px solid #ffe58f;">待付款</span>`;
         actBtn = `<div style="display:flex; gap:6px; align-items:center;">
                     <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
                   </div>`;
@@ -1116,13 +1132,16 @@ const MerchantApp = {
         statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipModal('${o.id}')">去发货</button>`;
       } else if(o.status === 2) {
-        statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货(待签收)</span>`;
+        statusTag = `<span class="tag tag-info" style="color: #0958d9; background: #e6f4ff; border:1px solid #91caff;">待签收</span>`;
         actBtn = '';
       } else if(o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
         actBtn = '';
       } else if(o.status === -1) {
-        statusTag = `<span class="tag tag-danger">已关闭</span>`;
+        statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#ef4444; border:1px solid #ffa39e;">已取消</span>`;
+        actBtn = '';
+      } else if(o.status === -2) {
+        statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#64748b; border:1px solid #d9d9d9;">已关闭</span>`;
         actBtn = '';
       }
 
@@ -1149,7 +1168,7 @@ const MerchantApp = {
           <td class="font-mono text-secondary">${buyerPhone}</td>
           <td class="font-bold text-danger">${o.amount}</td>
           <td>${statusTag}</td>
-          <td class="text-xs text-secondary font-mono">${o.time || '2026-07-20'}</td>
+          <td class="text-xs text-secondary font-mono">${formatTimeSec(o.time)}</td>
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
               ${actBtn}
@@ -1201,36 +1220,83 @@ const MerchantApp = {
       let myRes = MockData.biddingResources.filter(r => r.shopId === 'S001' || r.shopName === '远大钢铁官方直营店');
       
       // Apply filters
-      const kwEl = document.getElementById('filter-res-kw');
+      const idEl = document.getElementById('filter-res-id');
+      const nameEl = document.getElementById('filter-res-name');
       const statusEl = document.getElementById('filter-res-status');
-      if (kwEl && kwEl.value.trim() !== '') {
-        const kw = kwEl.value.trim().toLowerCase();
-        myRes = myRes.filter(r => r.name.toLowerCase().includes(kw) || r.id.toLowerCase().includes(kw));
+      
+      if (idEl && idEl.value.trim() !== '') {
+        const idVal = idEl.value.trim().toLowerCase();
+        myRes = myRes.filter(r => r.id.toLowerCase() === idVal);
+      }
+      if (nameEl && nameEl.value.trim() !== '') {
+        const nameVal = nameEl.value.trim().toLowerCase();
+        myRes = myRes.filter(r => r.name.toLowerCase().includes(nameVal));
       }
       if (statusEl && statusEl.value !== '') {
         myRes = myRes.filter(r => r.status === statusEl.value);
       }
 
       myRes.forEach((r, idx) => {
-        let tag = r.status === '已通过' ? `<span class="tag tag-success">已通过</span>` : `<span class="tag tag-warning">待审核</span>`;
-        let acts = r.status === '已通过' 
-          ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.showModal('modal-add-ann')">发布公告</button>`
-          : `<button class="btn btn-text btn-sm">编辑</button> <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('资源已删除', 'info')">删除</button>`;
+        let tag = '';
+        if (r.status === '草稿') {
+          tag = `<span class="tag tag-secondary" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">草稿</span>`;
+        } else if (r.status === '待审核') {
+          tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
+        } else if (r.status === '已通过') {
+          tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已通过</span>`;
+        } else {
+          tag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border-color:#ffccc7;">未通过</span><div style="font-size:11px; color:#ef4444; margin-top:4px;">拒审原因：${r.rejectReason || '规格材料不全'}</div>`;
+        }
+        
+        let acts = '';
+        if (r.status === '草稿') {
+          // 草稿：提交审核、编辑、删除 (只有草稿才有删除按钮)
+          acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.submitAuditRes('${r.id}')">提交审核</button>`;
+          acts += `<button class="btn btn-warning btn-sm" style="margin-left:4px;" onclick="MerchantApp.openEditResModal('${r.id}')">编辑</button>`;
+          acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.deleteBiddingRes('${r.id}')">删除</button>`;
+        } else if (r.status === '待审核') {
+          // 待审核状态：没有任何按钮
+          acts = `<span style="color:#94a3b8; font-size:12px;">--</span>`;
+        } else if (r.status === '已通过') {
+          // 已通过：只有编辑按钮
+          acts += `<button class="btn btn-warning btn-sm" onclick="MerchantApp.openEditResModal('${r.id}')">编辑</button>`;
+        } else {
+          // 未通过：提交审核、编辑 (无删除按钮)
+          acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.submitAuditRes('${r.id}')">提交审核</button>`;
+          acts += `<button class="btn btn-warning btn-sm" style="margin-left:4px;" onclick="MerchantApp.openEditResModal('${r.id}')">编辑</button>`;
+        }
+
+        const specsStr = r.specs || 'HRB400E 规格 25mm，总量约 300 吨';
+        const createTime = r.createdAt || '2026-07-01 09:00:00';
+
         html += `
           <tr>
             <td>${idx + 1}</td>
-            <td><img src="${r.image}" style="width:60px;height:40px;border-radius:4px;object-fit:cover;"></td>
-            <td>${r.id}</td>
-            <td><div class="font-bold">${r.name}</div></td>
-            <td>${r.specs}</td>
+            <td style="font-family:monospace; font-weight:bold; font-size:12px;">${r.id}</td>
+            <td><div class="font-bold" style="color:#0f172a;">${r.name}</div></td>
+            <td><img src="${r.image}" style="width:50px; height:40px; border-radius:4px; object-fit:cover; cursor:pointer;" onclick="UI.previewDocument('资源主图', '${r.image}')"></td>
+            <td style="font-size:12px; color:#475569;">${specsStr}</td>
             <td>${tag}</td>
-            <td>${acts}</td>
+            <td>${formatTimeSec(createTime)}</td>
+            <td><div class="flex gap-2">${acts}</div></td>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="6" class="text-center p-4 text-secondary">没有找到符合条件的竞价资源</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" class="text-center p-4 text-secondary">没有找到符合条件的竞价资源</td></tr>';
       this._appendPagination(tbody, myRes.length);
     }
+  },
+
+  resetBiddingAnnFilter() {
+    const elId = document.getElementById('filter-ann-id');
+    const elTitle = document.getElementById('filter-ann-title');
+    const elResId = document.getElementById('filter-ann-resid');
+    const elStatus = document.getElementById('filter-ann-status');
+    if (elId) elId.value = '';
+    if (elTitle) elTitle.value = '';
+    if (elResId) elResId.value = '';
+    if (elStatus) elStatus.value = '';
+    this.renderBiddingAnn();
   },
 
   renderBiddingAnn() {
@@ -1239,51 +1305,84 @@ const MerchantApp = {
       let html = '';
       let myAnn = MockData.biddingAnnouncements.filter(a => a.shopId === 'S001' || a.shopName === '远大钢铁官方直营店');
       
-      // Apply filters
-      const kwEl = document.getElementById('filter-ann-kw');
+      const getAnnStatusName = (a) => {
+        const aStatus = a.auditStatus || '已通过';
+        if (aStatus === '草稿') return '草稿';
+        if (aStatus === '待审核') return '待审核';
+        if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') return '已下架';
+        if (a.status === 4) return '已结束';
+        if (a.status === 3) return '等待公布';
+        return '竞价中';
+      };
+
+      // Apply filters:
+      // 1. 公告编号 (精确全匹配)
+      // 2. 公告标题 (模糊搜索)
+      // 3. 关联资源编号 (精确全匹配)
+      const annIdEl = document.getElementById('filter-ann-id');
+      const annTitleEl = document.getElementById('filter-ann-title');
+      const resIdEl = document.getElementById('filter-ann-resid');
       const statusEl = document.getElementById('filter-ann-status');
-      if (kwEl && kwEl.value.trim() !== '') {
-        const kw = kwEl.value.trim().toLowerCase();
-        myAnn = myAnn.filter(a => a.title.toLowerCase().includes(kw) || a.id.toLowerCase().includes(kw));
+
+      if (annIdEl && annIdEl.value.trim() !== '') {
+        const idVal = annIdEl.value.trim().toLowerCase();
+        myAnn = myAnn.filter(a => a.id.toLowerCase() === idVal);
+      }
+      if (annTitleEl && annTitleEl.value.trim() !== '') {
+        const titleVal = annTitleEl.value.trim().toLowerCase();
+        myAnn = myAnn.filter(a => a.title.toLowerCase().includes(titleVal));
+      }
+      if (resIdEl && resIdEl.value.trim() !== '') {
+        const resIdVal = resIdEl.value.trim().toLowerCase();
+        myAnn = myAnn.filter(a => (a.resId || '').toLowerCase() === resIdVal);
       }
       if (statusEl && statusEl.value !== '') {
-        myAnn = myAnn.filter(a => String(a.status) === statusEl.value);
+        myAnn = myAnn.filter(a => getAnnStatusName(a) === statusEl.value);
       }
 
       myAnn.forEach((a, idx) => {
-        let tag = '';
-        if (a.status === 0) tag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border-color:#91d5ff;">看货报名</span>`;
-        else if (a.status === 1) tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">现场看货</span>`;
-        else if (a.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">参加竞价</span>`;
-        else if (a.status === 3) tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
-        else if (a.status === 4) tag = `<span class="tag tag-secondary">已结束</span>`;
-
-        let auditTag = '';
         const aStatus = a.auditStatus || '已通过';
-        if (aStatus === '待审核') {
-          auditTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
-        } else if (aStatus === '已通过') {
-          auditTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已通过</span>`;
-        } else if (aStatus === '已拒绝') {
-          auditTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border-color:#ffccc7;">已拒绝</span>`;
-        } else if (aStatus === '已撤回') {
-          auditTag = `<span class="tag tag-secondary">已撤回</span>`;
+        let tag = '';
+        if (aStatus === '草稿') {
+          tag = `<span class="tag tag-secondary" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">草稿</span>`;
+        } else if (aStatus === '待审核') {
+          tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
+        } else if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') {
+          const reasonText = a.rejectReason ? `拒审原因：${a.rejectReason}` : '(主动下架)';
+          tag = `<span class="tag tag-secondary">已下架</span><div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
+        } else if (a.status === 3) {
+          tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
+        } else if (a.status === 4) {
+          tag = `<span class="tag tag-secondary">已结束</span>`;
+        } else {
+          tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
         }
         
         let acts = '';
-        if (aStatus === '待审核' || aStatus === '已拒绝') {
+        if (aStatus === '草稿') {
+          // 草稿：无法查看出价定标，只有编辑、提交审核、删除按钮 (唯一拥有删除按钮的状态)
+          acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.resubmitBiddingAnn('${a.id}')">提交审核</button>`;
+          acts += `<button class="btn btn-warning btn-sm" style="margin-left:4px;" onclick="MerchantApp.openEditAnnModal('${a.id}')">编辑</button>`;
+          acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.deleteBiddingAnn('${a.id}')">删除</button>`;
+        } else if (aStatus === '待审核') {
+          // 待审核：没有操作
+          acts = `<span style="color:#94a3b8; font-size:12px;">--</span>`;
+        } else if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') {
+          // 已下架：可以有编辑，提交审核的操作 (无删除按钮)
           acts += `<button class="btn btn-warning btn-sm" onclick="MerchantApp.openEditAnnModal('${a.id}')">编辑</button>`;
-          acts += `<button class="btn btn-outline btn-sm text-danger" onclick="MerchantApp.deleteBiddingAnn('${a.id}')">删除</button>`;
+          acts += `<button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="MerchantApp.resubmitBiddingAnn('${a.id}')">提交审核</button>`;
         } else if (aStatus === '已通过') {
           if (a.status !== 4) {
-            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}')">查看出价/定标</button>`;
-            acts += `<button class="btn btn-outline btn-sm text-danger" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">撤回</button>`;
+            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', false)">查看出价/定标</button>`;
+            acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">下架</button>`;
           } else {
-            acts += `<button class="btn btn-outline btn-sm" onclick="MerchantApp.openAwardModal('${a.id}')">查看结果</button>`;
+            // 已结束：查看出价 (不用定标)
+            acts += `<button class="btn btn-outline btn-sm text-primary" onclick="MerchantApp.openAwardModal('${a.id}', true)">查看出价</button>`;
           }
-        } else {
-          acts += `<span class="text-secondary text-sm">已撤回</span>`;
         }
+
+        let curMax = (a.currentMaxOffer && a.currentMaxOffer !== '-') ? a.currentMaxOffer : (a.startPrice || '--');
+        let createTime = a.createdAt || '2026-07-01 09:00:00';
 
         html += `
           <tr>
@@ -1291,20 +1390,29 @@ const MerchantApp = {
             <td>${a.id}</td>
             <td><div class="font-bold">${a.title}</div></td>
             <td>${a.resId}</td>
-            <td class="text-danger font-bold">${a.startPrice}</td>
-            <td class="text-primary">${a.bidEndTime}</td>
+            <td class="text-slate-700 font-bold">${a.startPrice}</td>
+            <td class="text-danger font-bold">${curMax}</td>
             <td>${tag}</td>
-            <td>${auditTag}</td>
+            <td class="text-secondary" style="font-size:12px;">${createTime}</td>
             <td><div class="flex gap-2">${acts}</div></td>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="8" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="9" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
       this._appendPagination(tbody, myAnn.length);
     }
   },
 
-  openAwardModal(bidId) {
+  resubmitBiddingAnn(annId) {
+    const a = MockData.biddingAnnouncements.find(x => x.id === annId);
+    if (a) {
+      a.auditStatus = '待审核';
+      UI.toast(`公告 ${annId} 已重新提交平台审核！`, 'success');
+      this.renderBiddingAnn();
+    }
+  },
+
+  openAwardModal(bidId, isViewOnly = false) {
     const ann = MockData.biddingAnnouncements.find(a => a.id === bidId);
     if (!ann) return;
     
@@ -1315,7 +1423,7 @@ const MerchantApp = {
     let html = '';
     
     if (offers.length === 0) {
-      html = `<tr><td colspan="5" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
+      html = `<tr><td colspan="7" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
     } else {
       // Sort offers desc by price
       offers.sort((x, y) => {
@@ -1328,23 +1436,37 @@ const MerchantApp = {
         let tag = '';
         let btn = '';
         
-        if (ann.status === 4) { // 已结束
+        if (ann.status === 4 || isViewOnly) { // 已结束或纯查看出价
           if (o.status === 1 || ann.winner === o.buyerName) {
-            tag = `<span class="tag tag-success">已中标</span>`;
-            btn = `<span class="text-secondary text-sm">已生成合同及订单</span>`;
+            tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已中标</span>`;
+            btn = `<span class="text-secondary text-sm">已生成履约订单</span>`;
           } else {
-            tag = `<span class="tag tag-secondary">未中标</span>`;
+            tag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959; border-color:#d9d9d9;">未中标</span>`;
             btn = `-`;
           }
-        } else { // 竞拍中/等待定标
-          tag = `<span class="tag tag-primary">出价有效</span>`;
+        } else { // 竞价中/等待公布
+          tag = `<span class="tag tag-primary" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">出价中</span>`;
           btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
+        }
+
+        const user = MockData.users.find(u => u.name && u.name.includes(o.buyerName)) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
+        let phone = '--';
+        if (user && user.mobile) {
+          phone = user.mobile.slice(0, 3) + '****' + user.mobile.slice(7);
+        } else {
+          let hash = 0;
+          for (let i = 0; i < o.buyerName.length; i++) {
+            hash = o.buyerName.charCodeAt(i) + ((hash << 5) - hash);
+          }
+          const middle = String(Math.abs(hash) % 9000 + 1000);
+          phone = `138****${middle}`;
         }
         
         html += `
           <tr>
             <td>${idx + 1}</td>
-            <td>${o.buyerName}</td>
+            <td style="font-weight:bold;">${o.buyerName}</td>
+            <td style="font-family:monospace; color:#475569;">${phone}</td>
             <td>${o.time}</td>
             <td class="font-bold text-danger text-lg">${o.offerPrice}</td>
             <td>${tag}</td>
@@ -1407,6 +1529,134 @@ const MerchantApp = {
 
   editingAnnId: null,
 
+  
+  openAddResModal() {
+    this.editingResId = null;
+    const titleEl = document.getElementById('modal-res-title');
+    if (titleEl) titleEl.innerText = '新增竞价物资资源';
+    
+    document.getElementById('add-res-name').value = '';
+    document.getElementById('add-res-specs').value = '';
+    document.getElementById('add-res-img-preview').src = 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80';
+    
+    const draftBtn = document.getElementById('btn-save-res-draft');
+    if (draftBtn) draftBtn.style.display = 'none';
+    const auditBtn = document.getElementById('btn-submit-res-audit');
+    if (auditBtn) auditBtn.innerText = '提交审核';
+
+    UI.showModal('modal-add-res');
+  },
+
+  openEditResModal(resId) {
+    const r = MockData.biddingResources.find(x => x.id === resId);
+    if (!r) return;
+
+    this.editingResId = resId;
+    const titleEl = document.getElementById('modal-res-title');
+    if (titleEl) titleEl.innerText = `编辑竞价资源 (${resId})`;
+
+    document.getElementById('add-res-name').value = r.name || '';
+    document.getElementById('add-res-specs').value = r.specs || '';
+    document.getElementById('add-res-img-preview').src = r.image || 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80';
+
+    const draftBtn = document.getElementById('btn-save-res-draft');
+    if (draftBtn) {
+      draftBtn.style.display = (r.status === '已通过') ? 'inline-block' : 'none';
+    }
+    const auditBtn = document.getElementById('btn-submit-res-audit');
+    if (auditBtn) auditBtn.innerText = (r.status === '已通过') ? '修改并重新提交审核' : '提交审核';
+
+    UI.showModal('modal-add-res');
+  },
+
+  handleResImageUpload(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('add-res-img-preview').src = e.target.result;
+        UI.toast('资源货品图片更换成功！', 'success');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  },
+
+  submitBiddingResource(submitAudit = false) {
+    this.saveBiddingRes(submitAudit);
+  },
+
+  saveBiddingRes(submitAudit = false) {
+    const name = document.getElementById('add-res-name').value.trim();
+    const specs = document.getElementById('add-res-specs').value.trim();
+    const image = document.getElementById('add-res-img-preview').src;
+
+    if (!name || !specs) {
+      UI.toast('请填写资源货品名称和规格描述！', 'error');
+      return;
+    }
+
+    if (this.editingResId) {
+      const r = MockData.biddingResources.find(x => x.id === this.editingResId);
+      if (r) {
+        r.name = name;
+        r.specs = specs;
+        r.image = image;
+        r.status = '待审核'; // 编辑后保存即为待审核状态
+        UI.toast(`资源 ${this.editingResId} 修改成功，已进入待审核状态！`, 'success');
+      }
+      this.editingResId = null;
+    } else {
+      const newRes = {
+        id: 'RES2607' + String(Math.floor(10000 + Math.random() * 90000)),
+        shopId: 'S001',
+        shopName: '远大钢铁官方直营店',
+        companyName: '远大钢铁集团有限公司',
+        name: name,
+        specs: specs,
+        image: image,
+        status: submitAudit ? '待审核' : '草稿',
+        createdAt: '2026-07-23 09:00:00',
+        updatedAt: '2026-07-23 09:00:00'
+      };
+      MockData.biddingResources.unshift(newRes);
+      UI.toast(`竞价资源创建成功（状态: ${newRes.status}）！编号: ${newRes.id}`, 'success');
+    }
+
+    UI.closeModal('modal-add-res');
+    this.renderBiddingRes();
+  },
+
+  deleteBiddingRes(resId) {
+    if (confirm(`确认要删除竞价资源 ${resId} 吗？`)) {
+      const idx = MockData.biddingResources.findIndex(x => x.id === resId);
+      if (idx !== -1) {
+        MockData.biddingResources.splice(idx, 1);
+        UI.toast('资源已成功删除！', 'success');
+        this.renderBiddingRes();
+      }
+    }
+  },
+
+  submitAuditRes(resId) {
+    const r = MockData.biddingResources.find(x => x.id === resId);
+    if (r) {
+      r.status = '待审核';
+      UI.toast(`资源 ${resId} 已成功重新提交平台审核！`, 'success');
+      this.renderBiddingRes();
+    }
+  },
+
+  simulateUploadResImg() {
+    const sampleImgs = [
+      'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80',
+      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=400&q=80',
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80',
+      'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=400&q=80'
+    ];
+    const picked = sampleImgs[Math.floor(Math.random() * sampleImgs.length)];
+    document.getElementById('add-res-img-preview').src = picked;
+    UI.toast('主图更换/上传成功！(单图限制)', 'success');
+  },
+
   openAddAnnModal() {
     this.editingAnnId = null;
     const titleEl = document.getElementById('add-ann-modal-title');
@@ -1422,7 +1672,7 @@ const MerchantApp = {
       return;
     }
 
-    selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">${r.id} - ${r.name}</option>`).join('');
+    selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">📷 编号: ${r.id} | 货品: ${r.name} (${r.specs || '规格标准'})</option>`).join('');
     
     // Prefill title
     this.onAnnResourceChanged(selectEl);
@@ -1439,7 +1689,6 @@ const MerchantApp = {
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     };
 
-    document.getElementById('add-ann-view-end').value = formatDate(threeDaysLater);
     document.getElementById('add-ann-bid-end').value = formatDate(sevenDaysLater);
     document.getElementById('add-ann-start-price').value = '';
 
@@ -1458,7 +1707,7 @@ const MerchantApp = {
     const myApproved = MockData.biddingResources.filter(r => r.status === '已通过');
     const selectEl = document.getElementById('add-ann-resource-select');
     if (selectEl) {
-      selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">${r.id} - ${r.name}</option>`).join('');
+      selectEl.innerHTML = myApproved.map(r => `<option value="${r.id}">📷 编号: ${r.id} | 货品: ${r.name} (${r.specs || '规格标准'})</option>`).join('');
       selectEl.value = a.resId;
     }
 
@@ -1473,7 +1722,6 @@ const MerchantApp = {
       return str.replace(' ', 'T');
     };
 
-    document.getElementById('add-ann-view-end').value = formatDateForInput(a.viewEndTime || '');
     document.getElementById('add-ann-bid-end').value = formatDateForInput(a.bidEndTime || '');
 
     UI.showModal('modal-add-ann');
@@ -1491,11 +1739,12 @@ const MerchantApp = {
   },
 
   withdrawBiddingAnn(annId) {
-    if (confirm(`确认要撤回竞价公告 ${annId} 吗？`)) {
+    if (confirm(`确认要下架竞价公告 ${annId} 吗？`)) {
       const a = MockData.biddingAnnouncements.find(x => x.id === annId);
       if (a) {
-        a.auditStatus = '已撤回';
-        UI.toast(`公告 ${annId} 已成功撤回`, 'success');
+        a.auditStatus = '已下架';
+        a.rejectReason = '';
+        UI.toast(`竞价公告 ${annId} 已成功下架！`, 'success');
         this.renderBiddingAnn();
       }
     }
@@ -1505,30 +1754,32 @@ const MerchantApp = {
     const resId = selectEl.value;
     const res = MockData.biddingResources.find(r => r.id === resId);
     const titleEl = document.getElementById('add-ann-title');
-    if (res && titleEl) {
-      titleEl.value = res.name;
+    const imgPreview = document.getElementById('add-ann-res-img-preview');
+    if (res) {
+      if (titleEl && !this.editingAnnId) titleEl.value = res.name;
+      if (imgPreview) {
+        imgPreview.src = res.image;
+        imgPreview.style.display = 'block';
+      }
+    } else {
+      if (imgPreview) imgPreview.style.display = 'none';
     }
   },
 
-  submitBiddingAnnouncement() {
+  submitBiddingAnnouncement(submitAudit = true) {
     const resId = document.getElementById('add-ann-resource-select').value;
     const title = document.getElementById('add-ann-title').value.trim();
     const priceVal = parseFloat(document.getElementById('add-ann-start-price').value);
-    const viewEnd = document.getElementById('add-ann-view-end').value;
     const bidEnd = document.getElementById('add-ann-bid-end').value;
 
-    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !viewEnd || !bidEnd) {
+    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !bidEnd) {
       UI.toast('请填写完整且合法的竞价公告信息！', 'error');
-      return;
-    }
-
-    if (new Date(viewEnd) >= new Date(bidEnd)) {
-      UI.toast('竞拍截止时间必须晚于看货报名截止时间！', 'error');
       return;
     }
 
     const res = MockData.biddingResources.find(r => r.id === resId);
     const priceStr = '¥' + priceVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+    const targetAuditStatus = submitAudit ? '待审核' : '草稿';
 
     if (this.editingAnnId) {
       // Edit mode
@@ -1536,13 +1787,12 @@ const MerchantApp = {
       if (a) {
         a.resId = resId;
         a.image = res ? res.image : a.image;
-        a.title = `【看货报名阶段】${title}`;
+        a.title = title;
         a.startPrice = priceStr;
-        a.viewEndTime = viewEnd.replace('T', ' ');
         a.bidEndTime = bidEnd.replace('T', ' ');
-        a.status = 0; // Reset status to phase 0 (报名阶段)
-        a.auditStatus = '待审核'; // Needs re-audit
-        UI.toast(`竞价公告 ${this.editingAnnId} 修改成功，已重新提交审核！`, 'success');
+        a.status = 0;
+        a.auditStatus = targetAuditStatus;
+        UI.toast(`竞价公告 ${this.editingAnnId} 保存成功（状态：${targetAuditStatus}）！`, 'success');
       }
       this.editingAnnId = null;
     } else {
@@ -1553,18 +1803,17 @@ const MerchantApp = {
         image: res ? res.image : 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=400&q=80',
         shopId: 'S001',
         shopName: '远大钢铁官方直营店',
-        title: `【看货报名阶段】${title}`,
+        title: title,
         startPrice: priceStr,
         bidEndTime: bidEnd.replace('T', ' '),
-        viewEndTime: viewEnd.replace('T', ' '),
-        status: 0, // 看货报名阶段
+        status: 0,
         currentMaxOffer: '-',
         winner: '-',
-        auditStatus: '待审核'
+        auditStatus: targetAuditStatus
       };
 
       MockData.biddingAnnouncements.unshift(newAnn);
-      UI.toast(`竞价公告发布成功，已提交平台审核！公告编号: ${newAnn.id}`, 'success');
+      UI.toast(`竞价公告操作成功（状态：${targetAuditStatus}）！公告编号: ${newAnn.id}`, 'success');
     }
 
     UI.closeModal('modal-add-ann');
@@ -1595,7 +1844,7 @@ const MerchantApp = {
             <td class="p-2 text-secondary" style="font-weight:bold;">${o.buyerName}</td>
             <td class="p-2 text-danger font-bold">${o.amount}</td>
             <td class="p-2">${statusTag}</td>
-            <td class="p-2 text-slate-500 font-mono">${o.time || '2026-07-20'}</td>
+            <td class="p-2 text-slate-500 font-mono">${formatTimeSec(o.time)}</td>
           </tr>
         `;
       });
@@ -1935,7 +2184,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   typeTag.innerText = o.type;
   typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
 
-  document.getElementById('merchant-detail-create-time').innerText = o.time || '2026-07-07 10:15';
+  document.getElementById('merchant-detail-create-time').innerText = o.time || '2026-07-07 10:15:00';
   document.getElementById('merchant-detail-pay-method').innerText = o.payMethod || '线上担保支付 (托管账户)';
 
   // Action buttons
@@ -1966,11 +2215,11 @@ MerchantApp.showOrderDetailPage = function(orderId) {
 
   const steps = [
     { name: '1. 提交买单', time: o.time },
-    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20' : '' },
-    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00' : '' },
-    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30' : '' },
-    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30' : '' },
-    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00' : '' }
+    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
+    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
+    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
+    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
+    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00:00' : '' }
   ];
 
   stepsContainer.innerHTML = steps.map((st, index) => {
@@ -1984,7 +2233,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
           ${done ? '✓' : index + 1}
         </div>
         <div style="font-weight:bold; color:${active ? '#1e293b' : '#64748b'}; font-size:12px;">${st.name}</div>
-        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${st.time || '--'}</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${formatTimeSec(st.time)}</div>
       </div>
     `;
   }).join('') + `
@@ -2013,7 +2262,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   document.getElementById('merchant-detail-subtotal-price').innerText = o.amount;
   document.getElementById('merchant-detail-total-amount').innerText = o.amount;
 
-  // Contract
+  // Contract (最多支持10张合同附件)
   const contractWrapper = document.getElementById('merchant-detail-contract-wrapper');
   if (contractWrapper) {
     if (o.status === 0 || o.status === 5) {
@@ -2024,49 +2273,64 @@ MerchantApp.showOrderDetailPage = function(orderId) {
       `;
     } else {
       const contractNo = o.contractNo || ('HT-' + o.id);
+      const contractImages = (o.contractImages || [
+        { label: '1. 主交易合同 (买家盖章联)', name: '《大宗物资买卖交易主合同》- 买家CA签署联', type: 'contract' },
+        { label: '2. 主交易合同 (卖家盖章联)', name: '《大宗物资买卖交易主合同》- 卖家CA签署联', type: 'contract' },
+        { label: '3. 货品质量验收标准附件', name: '《大宗商品质量检验与交付验收约定表》', type: 'contract' },
+        { label: '4. CA数字证书签署存证', name: '《国家CA中心数字证书签署存证证明》', type: 'contract' }
+      ]).slice(0, 10);
+
       contractWrapper.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-            <span style="font-weight:bold; color:#1e293b; font-size:13px;">买家合同</span>
-            <button class="btn btn-outline btn-sm" id="merchant-detail-preview-contract-btn-buyer" style="border-radius:6px; padding:4px 12px;">【预览】</button>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-            <span style="font-weight:bold; color:#1e293b; font-size:13px;">卖家合同</span>
-            <button class="btn btn-outline btn-sm" id="merchant-detail-preview-contract-btn-seller" style="border-radius:6px; padding:4px 12px;">【预览】</button>
-          </div>
+        <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">📄 已存档电子合同附件 (${contractImages.length}/10 份)：</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          ${contractImages.map((img, i) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+              <span style="font-weight:bold; color:#1e293b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${img.label}">${img.label}</span>
+              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-contract-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; flex-shrink:0;">【预览】</button>
+            </div>
+          `).join('')}
         </div>
       `;
-      document.getElementById('merchant-detail-preview-contract-btn-buyer').onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 买家签署联', 'contract', contractNo, o.amount, o.buyerName, '远大钢铁官方直营店');
-      };
-      document.getElementById('merchant-detail-preview-contract-btn-seller').onclick = () => {
-        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 卖家签署联', 'contract', contractNo, o.amount, o.buyerName, '远大钢铁官方直营店');
-      };
+      contractImages.forEach((img, i) => {
+        const btn = document.getElementById(`merchant-detail-preview-contract-btn-${i}`);
+        if (btn) btn.onclick = () => UI.previewDocument(img.name, img.type, contractNo, o.amount, o.buyerName, '远大钢铁官方直营店');
+      });
     }
   }
 
-  // Payment voucher
+  // Payment voucher (最多支持5张凭证附件)
   const voucherCard = document.getElementById('merchant-detail-payment-voucher-card');
   if (voucherCard) {
-    const voucherTitle = `<h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+    const voucherTitle = `<h3 class="text-base font-bold mb-3" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
       <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
-      支付凭证
+      支付凭证与资金托管存证
     </h3>`;
     if (o.status === 0 || o.status === 5 || o.status === 4) {
       voucherCard.style.display = 'none';
     } else {
       voucherCard.style.display = 'block';
       const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
-      const isOnline = !o.paymentVoucher;
+      const voucherImages = (o.voucherImages || [
+        { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
+        { label: '2. 平台托管账户资金划转凭单', name: '《平台合规托管账户资金划转确认函》', type: 'voucher' },
+        { label: '3. 财务对账清算划转凭据', name: '《交易货款清算划划拨款凭单》', type: 'voucher' }
+      ]).slice(0, 5);
+
       voucherCard.innerHTML = voucherTitle + `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-          <span style="font-weight:bold; color:#334155; font-size:13px;">支付凭证</span>
-          <button class="btn btn-outline btn-sm" id="merchant-detail-preview-voucher-btn" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+        <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">💳 已上传支付凭证附件 (${voucherImages.length}/5 份)：</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${voucherImages.map((vImg, i) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+              <span style="font-weight:bold; color:#166534; font-size:12px;">${vImg.label}</span>
+              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
+            </div>
+          `).join('')}
         </div>
       `;
-      document.getElementById('merchant-detail-preview-voucher-btn').onclick = () => {
-        UI.previewDocument(isOnline ? '在线支付电子回单' : '线下对公转账凭证', 'voucher', voucherNo, o.amount, o.buyerName, '远大钢铁官方直营店');
-      };
+      voucherImages.forEach((vImg, i) => {
+        const btn = document.getElementById(`merchant-detail-preview-voucher-btn-${i}`);
+        if (btn) btn.onclick = () => UI.previewDocument(vImg.name, vImg.type, voucherNo, o.amount, o.buyerName, '远大钢铁官方直营店');
+      });
     }
   }
 

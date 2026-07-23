@@ -29,7 +29,7 @@
     <!-- === 1. 首页 === -->
     <div id="view-home" class="h5-view active">
       <!-- Blue Premium Header -->
-      <div style="background: #1677ff; padding: 14px 16px 20px; border-radius: 0 0 16px 16px;">
+      <div style="background: linear-gradient(135deg, #9a66e4 0%, #7e22ce 100%); padding: 14px 16px 20px; border-radius: 0 0 16px 16px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: white;">
           <div style="font-size: 18px; font-weight: 800; font-family: sans-serif; display: flex; align-items: center; gap: 4px;">
             <span>咖喱粑粑商城</span>
@@ -50,12 +50,12 @@
             <span style="margin-right: 6px; color:#9ca3af;">🔍</span>
             <input type="text" id="h5-search-keyword" placeholder="搜索产地货源、一手价格..." style="width: 100%; height: 28px; border: none; background: transparent; font-size: 12px; outline: none; padding: 0;">
           </div>
-          <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 4px 14px; font-size: 12px; background: #1677ff; border: none; color: #fff;" onclick="window.H5App && window.H5App.doSearch()">搜索</button>
+          <button class="btn btn-primary btn-sm" style="border-radius: 16px; padding: 4px 14px; font-size: 12px; background: linear-gradient(135deg, #9a66e4 0%, #7e22ce 100%); border: none; color: #fff;" onclick="window.H5App && window.H5App.doSearch()">搜索</button>
         </div>
       </div>
 
       <!-- Banner -->
-      <div class="h5-banner" style="margin: 12px 16px; border-radius: 8px; overflow: hidden; height: 90px; background: linear-gradient(135deg, #3b82f6, #1677ff); color: white; display: flex; flex-direction: column; justify-content: center; padding: 0 16px; box-shadow: 0 4px 12px rgba(22,119,255,0.12); margin-top: 12px;">
+      <div class="h5-banner" style="margin: 12px 16px; border-radius: 8px; overflow: hidden; height: 90px; background: linear-gradient(135deg, #9a66e4 0%, #7e22ce 100%); color: white; display: flex; flex-direction: column; justify-content: center; padding: 0 16px; box-shadow: 0 4px 12px rgba(126,34,206,0.12); margin-top: 12px;">
         <span style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">夏季现货特惠大促</span>
         <span style="font-size: 11px; opacity: 0.9; margin-top: 4px;">源头直发 · 大宗保障 · 安全交付</span>
       </div>
@@ -92,7 +92,7 @@
     <!-- === 2. 找货源/现货市场 === -->
     <div id="view-demand" class="h5-view">
       <div style="padding: 16px; padding-bottom: 140px;">
-        <button class="btn btn-primary" style="width: 100%; height: 44px; border-radius: 22px; margin-bottom: 16px;" onclick="window.MainApp && MainApp.checkAuth('personal', () => UI.openModal('sheet-h5-publish-demand'))">发布采购意向 (寻源)</button>
+        <button class="btn btn-primary" style="width: 100%; height: 44px; border-radius: 22px; margin-bottom: 16px; font-weight: bold;" onclick="H5App.openPublishDemandModal()">发布采购意向 (寻源)</button>
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
           <input type="text" id="h5-demand-search-keyword" class="form-control" placeholder="搜索标题或买家" style="flex: 1; border-radius: 20px; padding-left: 16px;">
           <button class="btn btn-primary" style="border-radius: 20px; padding: 0 16px;" onclick="H5App.doDemandSearch()">搜索</button>
@@ -119,8 +119,8 @@
         <!-- 竞价状态过滤 -->
         <div class="flex gap-2" id="h5-bid-status-filters" style="display: flex; gap: 8px; margin-bottom: 16px;">
           <span class="tag tag-primary cursor-pointer" data-status="all" onclick="H5App.setBidStatusFilter('all', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold;">全部</span>
-          <span class="tag tag-secondary cursor-pointer" data-status="active" onclick="H5App.setBidStatusFilter('active', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold;">竞价中</span>
-          <span class="tag tag-secondary cursor-pointer" data-status="ended" onclick="H5App.setBidStatusFilter('ended', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold;">已结束</span>
+          <span class="tag tag-secondary cursor-pointer" data-status="bidding" onclick="H5App.setBidStatusFilter('bidding', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold;">竞价中</span>
+          <span class="tag tag-secondary cursor-pointer" data-status="wait" onclick="H5App.setBidStatusFilter('wait', this)" style="border-radius: 12px; padding: 4px 12px; font-size: 11px; font-weight: bold;">等待公布</span>
         </div>
         <div id="h5-bid-list"></div>
       </div>
@@ -331,6 +331,10 @@
             <span>货品总价</span>
             <span id="h5-detail-subtotal" style="color:#1e293b; font-weight:bold; font-family:monospace;">--</span>
           </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-top: 6px;">
+            <span>平台佣金 <span style="font-size:10px; color:#94a3b8;">(1.5%)</span></span>
+            <span id="h5-detail-commission" style="color:#f59e0b; font-family:monospace; font-weight:bold;">--</span>
+          </div>
           <div style="display: flex; justify-content: space-between; font-size: 14px; color: #1e293b; font-weight: bold; margin-top: 10px; border-top: 1px solid #f8fafc; padding-top: 10px;">
             <span>订单实付金额</span>
             <span id="h5-detail-total" style="color:#ef4444; font-family:monospace; font-size:16px;">--</span>
@@ -356,12 +360,6 @@
           </div>
         </div>
 
-        <!-- 垂直履约节点 timeline -->
-        <div style="background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #f1f5f9;">
-          <h3 style="font-weight: bold; font-size: 14px; color: #0f172a; margin: 0 0 12px 0;">⏳ 订单节点记录</h3>
-          <div id="h5-detail-timeline" style="display:flex; flex-direction:column; gap:16px; position:relative; padding-left:14px; border-left: 2px solid #e2e8f0; margin-left: 8px;">
-            <!-- JS 动态渲染 -->
-          </div>
         </div>
       </div>
     </div>
@@ -598,112 +596,6 @@
   </div>
 </div>
 
-<!-- H5 发布求购弹窗 (Bottom Sheet) -->
-<div class="modal-overlay" id="sheet-h5-publish-demand" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.6); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-publish-demand')">
-  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; height: 80vh; background: var(--surface-color); border-radius: 20px 20px 0 0; animation: slideUp 0.3s ease-out; overflow: hidden;">
-    
-    <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-light" style="background: #fff;">
-      <h3 class="font-bold text-lg">发布采购意向</h3>
-      <button class="btn btn-text text-secondary p-1" onclick="UI.closeModal('sheet-h5-publish-demand')">✕</button>
-    </div>
-
-    <!-- 表单区域 -->
-    <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4">
-      <div>
-        <label class="block text-sm text-secondary mb-1">求购货品 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-pd-goods-name" class="form-control w-full" placeholder="例如：HRB400E 抗震螺纹钢 / 樟子松原木" style="height: 40px; font-size: 14px;">
-      </div>
-      <div style="display:grid; grid-template-columns: 1fr 110px; gap:10px;">
-        <div>
-          <label class="block text-sm text-secondary mb-1">需求数量 <span class="text-danger">*</span></label>
-          <input type="number" id="h5-pd-quantity" class="form-control w-full" placeholder="例如：50" value="50" style="height: 40px; font-size: 14px;">
-        </div>
-        <div>
-          <label class="block text-sm text-secondary mb-1">计量单位 <span class="text-danger">*</span></label>
-          <select id="h5-pd-unit" class="form-control w-full" style="height: 40px; font-size: 14px;">
-            <option value="吨">吨</option>
-            <option value="袋">袋</option>
-            <option value="箱">箱</option>
-            <option value="斤">斤</option>
-            <option value="立方">立方</option>
-            <option value="件">件</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm text-secondary mb-1">交期时间范围 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-pd-delivery-period" class="form-control w-full" placeholder="例如：2026-08-01 至 2026-08-15" style="height: 40px; font-size: 14px;">
-      </div>
-
-    </div>
-
-    <!-- 底部按钮 -->
-    <div class="p-3 border-t border-light flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-3" style="border-radius: 24px;" onclick="event.stopPropagation(); H5App.submitPublishDemand();">确认发布</button>
-    </div>
-  </div>
-</div>
-
-<!-- H5 竞价详情弹窗 (Bottom Sheet) -->
-<div class="modal-overlay" id="sheet-h5-bid-detail" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-bid-detail')">
-  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; height: 80vh; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px 24px 0 0; animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);">
-    
-    <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-light" style="background: #fff;">
-      <h3 class="font-bold text-lg">竞价项目详情</h3>
-      <button class="btn btn-text text-secondary p-1" onclick="UI.closeModal('sheet-h5-bid-detail')">✕</button>
-    </div>
-
-    <!-- 内容区域 -->
-    <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4" id="h5-bid-detail-content">
-      <!-- 动态填充 -->
-    </div>
-
-    <!-- 底部操作按钮 -->
-    <div class="p-3 border-t border-light bg-white pb-safe flex gap-2" id="h5-bid-detail-footer">
-      <!-- 动态填充 -->
-    </div>
-  </div>
-</div>
-
-<!-- H5 立即报价弹窗 (Bottom Sheet) -->
-<div class="modal-overlay" id="sheet-h5-quote" style="display:none; align-items:flex-end; justify-content:center; z-index: 10000; background: rgba(0,0,0,0.35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-quote')">
-  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; height: 75vh; background: #ffffff; border-radius: 24px 24px 0 0; animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);">
-    <!-- Header -->
-    <div class="flex justify-between items-center p-4 border-b border-slate-100" style="background: #ffffff;">
-      <div class="flex flex-col">
-        <h3 class="font-black text-base text-slate-800 m-0" style="margin: 0; line-height: 1.2;">提交货源报价</h3>
-        <div style="width: 32px; height: 3px; background: var(--primary-color); border-radius: 2px; margin-top: 4px;"></div>
-      </div>
-      <button class="btn btn-text text-slate-400 hover:text-slate-700" style="font-size: 18px; padding: 0; min-width: 24px; background: none; border: none; cursor: pointer;" onclick="UI.closeModal('sheet-h5-quote')">✕</button>
-    </div>
-    <!-- 表单区域 -->
-    <div class="flex-1 p-4 overflow-y-auto bg-white flex flex-col gap-4">
-      <div class="p-3.5 bg-slate-50 border border-slate-100" style="border-radius: 16px;">
-        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">采购需求项目</div>
-        <div class="text-sm font-bold text-slate-700 mt-1.5" id="h5-quote-prod-name">--</div>
-        <div class="text-xs text-danger font-bold mt-1" id="h5-quote-prod-expected">期望价: --</div>
-      </div>
-      
-      <!-- 提示语 -->
-      <div class="p-3 text-xs flex gap-2 items-start" style="background: rgba(0, 82, 217, 0.03); color: var(--primary-color); border: 1px solid rgba(0, 82, 217, 0.08); border-radius: 12px;">
-        <span style="font-size: 14px; line-height: 1;">💡</span>
-        <span style="line-height: 1.4; color: #475569;">报价提交后，采购方可直接通过【消息中心】与您发起线上沟通。</span>
-      </div>
-
-      <div>
-        <label class="block text-xs text-slate-600 mb-1.5 font-bold">我的报价金额 <span class="text-danger">*</span></label>
-        <input type="text" id="h5-quote-price" class="form-control w-full" placeholder="例如：4150元/吨" style="height: 40px; font-size: 13px; border-radius: 10px; border: 1px solid #e2e8f0; padding: 0 12px; font-weight: bold;">
-      </div>
-    </div>
-    <!-- 底部按钮 -->
-    <div class="p-4 border-t border-slate-100 flex gap-2 bg-white pb-safe">
-      <button class="btn btn-primary w-full py-2.5 text-xs font-bold" style="border-radius: 12px; background: var(--primary-color); border: none;" onclick="event.stopPropagation(); H5App.submitQuote();">确认提交报价</button>
-    </div>
-  </div>
-</div>
-
 <style>
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -737,6 +629,122 @@
     </div>
   </div>
 </div>
+
+<!-- ================= 顶层全局 Modal 弹窗集合 ================= -->
+
+<!-- H5 发布求购意向弹窗 (居中 Modal) -->
+<div class="modal-overlay" id="sheet-h5-publish-demand" style="display:none; align-items:center; justify-content:center; z-index: 110000; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; box-sizing: border-box; padding: 20px;" onclick="if(event.target===this) UI.closeModal('sheet-h5-publish-demand')">
+  <div class="modal-content flex flex-col" style="width: 100%; max-width: 340px; background: #ffffff; border-radius: 16px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.8);">
+    
+    <!-- Modal Header -->
+    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 4px; height: 16px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border-radius: 2px;"></div>
+        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #0f172a;">发布采购意向</h3>
+      </div>
+      <button style="background: #ffffff; border: 1px solid #cbd5e1; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #64748b; cursor: pointer;" onclick="UI.closeModal('sheet-h5-publish-demand')">✕</button>
+    </div>
+
+    <!-- 表单区域 -->
+    <div style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; background: #fff;">
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">求购货品 <span style="color: #ef4444;">*</span></label>
+        <input type="text" id="h5-pd-goods-name" class="form-control w-full" placeholder="例如：HRB400E 抗震螺纹钢" style="height: 40px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; box-sizing: border-box;">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 100px; gap:10px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">需求数量 <span style="color: #ef4444;">*</span></label>
+          <input type="number" id="h5-pd-quantity" class="form-control w-full" placeholder="例如：50" value="50" style="height: 40px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">计量单位 <span style="color: #ef4444;">*</span></label>
+          <select id="h5-pd-unit" class="form-control w-full" style="height: 40px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 8px;">
+            <option value="吨">吨</option>
+            <option value="袋">袋</option>
+            <option value="箱">箱</option>
+            <option value="斤">斤</option>
+            <option value="立方">立方</option>
+            <option value="件">件</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">交期时间范围 <span style="color: #ef4444;">*</span></label>
+        <input type="text" id="h5-pd-delivery-period" class="form-control w-full" placeholder="例如：2026-08-01 至 2026-08-15" style="height: 40px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; box-sizing: border-box;">
+      </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div style="padding: 14px 20px; border-top: 1px solid #f1f5f9; background: #fafafa; display: flex; gap: 10px; justify-content: flex-end;">
+      <button class="btn btn-outline" style="border-radius: 8px; font-size: 12px; font-weight: 600; padding: 7px 16px; border: 1px solid #cbd5e1; color: #475569; background: #fff;" onclick="UI.closeModal('sheet-h5-publish-demand')">取消</button>
+      <button class="btn btn-primary" style="border-radius: 8px; background: linear-gradient(135deg, #9a66e4 0%, #7e22ce 100%); border: none; font-size: 12px; font-weight: bold; padding: 7px 20px; color: #fff; box-shadow: 0 4px 12px rgba(154, 102, 228, 0.3);" onclick="event.stopPropagation(); H5App.submitPublishDemand();">确认发布</button>
+    </div>
+  </div>
+</div>
+
+<!-- H5 竞价详情与加价出价 Bottom Sheet -->
+<div class="modal-overlay" id="sheet-h5-bid-detail" style="display:none; align-items:flex-end; justify-content:center; z-index: 110000; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;" onclick="if(event.target===this) UI.closeModal('sheet-h5-bid-detail')">
+  <div class="modal-content flex flex-col" style="width: 100%; max-width: 480px; margin: 0 auto; left: 0; right: 0; max-height: 88vh; min-height: 50vh; background: #f8fafc; border-radius: 28px 28px 0 0; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 -12px 48px rgba(0,0,0,0.2);">
+    
+    <!-- 移动端顶部下拉手柄 Handle -->
+    <div style="background:#fff; padding-top: 10px; display:flex; flex-direction:column; align-items:center; border-bottom: 1px solid #f1f5f9;">
+      <div style="width: 36px; height: 4px; background: #cbd5e1; border-radius: 2px; margin-bottom: 8px;"></div>
+      <div style="width: 100%; padding: 4px 16px 12px 16px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        <h3 class="font-bold text-base" style="margin: 0; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+          <span>⚖️</span>
+          <span>竞价大厅 & 实时出价</span>
+        </h3>
+        <button style="background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #64748b; cursor: pointer;" onclick="UI.closeModal('sheet-h5-bid-detail')">✕</button>
+      </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="flex-1 p-4 overflow-y-auto flex flex-col gap-4" id="h5-bid-detail-content" style="box-sizing: border-box;">
+      <!-- 动态填充 -->
+    </div>
+
+    <!-- 底部操作按钮 -->
+    <div class="p-3 bg-white border-t border-light pb-safe flex gap-2" id="h5-bid-detail-footer" style="box-shadow: 0 -4px 12px rgba(0,0,0,0.03);">
+      <!-- 动态填充 -->
+    </div>
+  </div>
+</div>
+
+<!-- H5 立即报价弹窗 (居中 Modal) -->
+<div class="modal-overlay" id="sheet-h5-quote" style="display:none; align-items:center; justify-content:center; z-index: 110000; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; box-sizing: border-box; padding: 20px;" onclick="if(event.target===this) UI.closeModal('sheet-h5-quote')">
+  <div class="modal-content flex flex-col" style="width: 100%; max-width: 340px; background: #ffffff; border-radius: 16px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.8);">
+    
+    <!-- Modal Header -->
+    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 4px; height: 16px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border-radius: 2px;"></div>
+        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #0f172a;">提交货源报价</h3>
+      </div>
+      <button style="background: #ffffff; border: 1px solid #cbd5e1; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #64748b; cursor: pointer;" onclick="UI.closeModal('sheet-h5-quote')">✕</button>
+    </div>
+
+    <!-- 表单区域 -->
+    <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; background: #fff;">
+      <div style="padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <div style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">采购需求项目</div>
+        <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 3px;" id="h5-quote-prod-name">--</div>
+      </div>
+
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">我的报价金额 <span style="color: #ef4444;">*</span></label>
+        <input type="text" id="h5-quote-price" class="form-control w-full" placeholder="例如：4150元/吨" style="height: 40px; font-size: 14px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; font-weight: bold; box-sizing: border-box;">
+      </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div style="padding: 14px 20px; border-top: 1px solid #f1f5f9; background: #fafafa; display: flex; gap: 10px; justify-content: flex-end;">
+      <button class="btn btn-outline" style="border-radius: 8px; font-size: 12px; font-weight: 600; padding: 7px 16px; border: 1px solid #cbd5e1; color: #475569; background: #fff;" onclick="UI.closeModal('sheet-h5-quote')">取消</button>
+      <button class="btn btn-primary" style="border-radius: 8px; background: linear-gradient(135deg, #9a66e4 0%, #7e22ce 100%); border: none; font-size: 12px; font-weight: bold; padding: 7px 20px; color: #fff; box-shadow: 0 4px 12px rgba(154, 102, 228, 0.3);" onclick="event.stopPropagation(); H5App.submitQuote();">确认提交报价</button>
+    </div>
+  </div>
+</div>
+
+
 
 <script src="./assets/js/mock-data.js"></script>
 <script src="./assets/js/components.js"></script>

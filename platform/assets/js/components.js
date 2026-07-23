@@ -174,11 +174,10 @@ window.UI = {
   openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
-      modal.style.setProperty('display', 'flex', 'important');
-      modal.style.setProperty('opacity', '1', 'important');
-      modal.style.setProperty('pointer-events', 'auto', 'important');
-      modal.style.setProperty('z-index', '110000', 'important');
       modal.classList.add('active');
+      modal.style.cssText = 'display: flex !important; opacity: 1 !important; pointer-events: auto !important; z-index: 110000 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important;';
+    } else {
+      console.warn('Modal not found:', id);
     }
   },
 
@@ -186,9 +185,7 @@ window.UI = {
     const modal = document.getElementById(id);
     if (modal) {
       modal.classList.remove('active');
-      modal.style.setProperty('display', 'none', 'important');
-      modal.style.setProperty('opacity', '0', 'important');
-      modal.style.setProperty('pointer-events', 'none', 'important');
+      modal.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important;';
     }
   },
 
@@ -1228,10 +1225,7 @@ Object.assign(window.UI, {
         } else {
           actionBtn = q.status === 1 
             ? `<span style="color:#52c41a; font-weight:bold; font-size:12px;">已采纳成单</span>` 
-            : `<div style="display:flex; gap:8px;">
-                 <button class="btn btn-outline btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.chatWithQuoteSeller('${q.shopName}', '${q.shopId}', '${demandTitle}', '${q.price}')">💬 沟通</button>
-                 <button class="btn btn-primary btn-sm" style="border-radius:4px; padding:4px 8px;" onclick="UI.acceptDemandQuote('${q.id}', ${isMobile})">确认采纳</button>
-               </div>`;
+            : `<button class="btn btn-primary btn-sm" style="border-radius:6px; padding:6px 14px; font-weight:bold;" onclick="UI.acceptDemandQuote('${q.id}', ${isMobile})">确认采纳</button>`;
         }
         quotesHtml += `
           <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:10px;">
