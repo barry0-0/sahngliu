@@ -727,39 +727,6 @@ Object.assign(window.UI, {
 
         <div style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:16px; font-size:13px; line-height:1.5; color:#334155; box-sizing:border-box;">
           
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; box-sizing:border-box;">
-            <div style="text-align:center; font-size:14px; font-weight:bold; color:#0f172a; margin-bottom:10px;">工业品买卖电子合同</div>
-            <p style="margin:4px 0;"><strong>合同编号：</strong>HT-${order.id}</p>
-            <p style="margin:4px 0;"><strong>买方 (采购)：</strong>${order.buyerName}</p>
-            <p style="margin:4px 0;"><strong>卖方 (供应)：</strong>${order.shopName}</p>
-            <hr style="margin:8px 0; border:none; border-top:1px dashed #cbd5e1;">
-            <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:6px;">
-              <thead>
-                <tr style="background:#f1f5f9; text-align:left;">
-                  <th style="border:1px solid #e2e8f0; padding:6px;">货物名称规格</th>
-                  <th style="border:1px solid #e2e8f0; padding:6px; text-align:right;">总价金额</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${goodsRows}
-              </tbody>
-            </table>
-            
-            <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;">
-              <div>
-                <div>买方盖章：</div>
-                <div style="margin-top:4px;">
-                  ${order.status !== 0 ? `<span style="border:1.5px dashed #22c55e; color:#22c55e; padding:2px 6px; border-radius:4px; font-weight:bold; display:inline-block;">✔ 已盖章</span>` : `<span style="color:#94a3b8; font-style:italic;">(未签章)</span>`}
-                </div>
-              </div>
-              <div>
-                <div>卖方盖章：</div>
-                <div style="margin-top:4px;">
-                  ${(order.status !== 0 && order.status !== 5) ? `<span style="border:1.5px dashed #22c55e; color:#22c55e; padding:2px 6px; border-radius:4px; font-weight:bold; display:inline-block;">✔ 已盖章</span>` : `<span style="color:#94a3b8; font-style:italic;">(未签章)</span>`}
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div>
             <div style="font-weight:bold; color:#1e293b; margin-bottom:8px;">请选择签署方式：</div>

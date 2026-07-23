@@ -304,24 +304,50 @@
         <div class="card-body table-wrapper" style="background:#fff; padding: 24px; border-radius: 8px;">
           <div class="font-bold text-lg mb-4" style="border-left: 4px solid var(--primary-color); padding-left: 10px;">📦 商品总表</div>
           <div class="flex gap-4 mb-4 flex-wrap" style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
-            <input type="text" id="filter-all-prod-kw" class="form-control" placeholder="搜索商品名称/ID..." style="width: 200px; padding:6px 12px;">
-            <select id="filter-all-prod-cat" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部分类</option>
-              <option value="钢材">钢材</option>
-              <option value="木材">木材</option>
-              <option value="水泥">水泥</option>
-            </select>
-            <select id="filter-all-prod-status" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部状态</option>
-              <option value="1">已上架</option>
-              <option value="0">待审核</option>
-            </select>
-            <button class="btn btn-primary" onclick="MerchantApp.renderAllProducts()">查询</button>
-            <button class="btn btn-outline" onclick="document.getElementById('filter-all-prod-kw').value=''; document.getElementById('filter-all-prod-cat').value=''; document.getElementById('filter-all-prod-status').value=''; MerchantApp.renderAllProducts();">重置</button>
-            <button class="btn btn-primary" style="margin-left:auto;" onclick="window.openAddProductModal()">发布新商品</button>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">商品名称</label>
+              <input type="text" id="filter-all-prod-kw" class="form-control" placeholder="输入名称模糊匹配" style="width: 180px; padding:6px 12px;">
+            </div>
+            <div class="form-group mb-0" style="position:relative;">
+              <label class="text-xs text-secondary mb-1 block">商品分类</label>
+              <div id="filter-cat-cascader-trigger" class="form-control" style="width: 220px; padding: 6px 12px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; min-height: 38px; user-select: none;" onclick="MerchantApp.toggleCatCascaderPanel(event)">
+                <span id="filter-cat-cascader-text" style="color: #94a3b8; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">请选择商品分类</span>
+                <span style="font-size: 10px; color: #94a3b8;">▼</span>
+              </div>
+
+              <!-- 下拉级联多选面板 (包含三列复选框: 一级、二级、三级) -->
+              <div id="filter-cat-cascader-panel" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; padding: 12px; width: 540px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; max-height: 240px; overflow-y: auto;">
+                  <div style="border-right: 1px solid #f1f5f9; padding-right: 8px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">一级分类</div>
+                    <div id="cascader-col-cat1" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                  <div style="border-right: 1px solid #f1f5f9; padding-right: 8px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">二级分类</div>
+                    <div id="cascader-col-cat2" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                  <div>
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">三级品类 (可多选)</div>
+                    <div id="cascader-col-cat3" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9;">
+                  <span style="font-size: 11px; color: #94a3b8;">已勾选多个品类将进行联合筛选</span>
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="MerchantApp.clearCatCascaderSelection(event)" style="padding: 2px 10px; font-size: 12px;">清空</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="MerchantApp.confirmCatCascaderSelection(event)" style="padding: 2px 12px; font-size: 12px;">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2" style="margin-top: 18px;">
+              <button class="btn btn-primary h-[38px]" onclick="MerchantApp.renderAllProducts()">查询</button>
+              <button class="btn btn-outline h-[38px]" onclick="MerchantApp.resetAllProductsFilter()">重置</button>
+            </div>
+            <button class="btn btn-primary" style="margin-left:auto; margin-top: 18px;" onclick="window.openAddProductModal()">发布新商品</button>
           </div>
           <table class="table" id="table-all-products" style="width: 100%;">
-            <thead><tr><th>序号</th><th>主图</th><th>商品名称</th><th>类型</th><th>分类</th><th>状态</th><th>操作</th></tr></thead>
+            <thead><tr><th>序号</th><th>商品代码</th><th>主图</th><th>商品名称</th><th>商品分类</th><th>创建时间</th><th>更新时间</th><th>操作</th></tr></thead>
             <tbody><!-- JS 渲染 --></tbody>
           </table>
         </div>
@@ -331,20 +357,86 @@
       <div id="page-prod-listed" class="page-view" style="display: none;">
         <div class="card-body table-wrapper" style="background:#fff; padding: 24px; border-radius: 8px;">
           <div class="font-bold text-lg mb-4" style="border-left: 4px solid var(--primary-color); padding-left: 10px;">🏷️ 已上架商品清单</div>
-          <div class="flex gap-4 mb-4" style="display:flex; gap:16px; margin-bottom:16px; align-items:center;">
-            <input type="text" id="filter-listed-prod-kw" class="form-control" placeholder="搜索已上架商品..." style="width: 200px; padding:6px 12px;">
-            <select id="filter-listed-prod-cat" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部分类</option>
-              <option value="钢材">钢材</option>
-              <option value="木材">木材</option>
-              <option value="水泥">水泥</option>
-            </select>
-            <button class="btn btn-primary" onclick="MerchantApp.renderListedProducts()">查询</button>
-            <button class="btn btn-outline" onclick="document.getElementById('filter-listed-prod-kw').value=''; document.getElementById('filter-listed-prod-cat').value=''; MerchantApp.renderListedProducts();">重置</button>
-            <button class="btn btn-primary" style="margin-left:auto;" onclick="MerchantApp.populateAddListedProductModal(); UI.showModal('modal-add-listed-product')">新增上架</button>
+          <div class="flex gap-4 mb-4 flex-wrap" style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">上架单号</label>
+              <input type="text" id="filter-listed-prod-no" class="form-control" placeholder="输入框全匹配" style="width: 150px; padding:6px 12px;">
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">商品名称</label>
+              <input type="text" id="filter-listed-prod-kw" class="form-control" placeholder="输入模糊匹配" style="width: 160px; padding:6px 12px;">
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">类别</label>
+              <select id="filter-listed-prod-type" class="form-control" style="width: 110px; padding:6px 12px;">
+                <option value="">全部类别</option>
+                <option value="现货">现货</option>
+                <option value="预售">预售</option>
+              </select>
+            </div>
+
+            <!-- 货品类别 三级分类下拉多选面板 -->
+            <div class="form-group mb-0" style="position:relative;">
+              <label class="text-xs text-secondary mb-1 block">货品类别</label>
+              <div id="filter-listed-cat-cascader-trigger" class="form-control" style="width: 180px; padding: 6px 12px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; min-height: 38px; user-select: none;" onclick="MerchantApp.toggleListedCatCascaderPanel(event)">
+                <span id="filter-listed-cat-cascader-text" style="color: #94a3b8; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">三级分类下拉多选</span>
+                <span style="font-size: 10px; color: #94a3b8;">▼</span>
+              </div>
+
+              <div id="filter-listed-cat-cascader-panel" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; padding: 12px; width: 540px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; max-height: 240px; overflow-y: auto;">
+                  <div style="border-right: 1px solid #f1f5f9; padding-right: 8px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">一级分类</div>
+                    <div id="listed-cascader-col-cat1" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                  <div style="border-right: 1px solid #f1f5f9; padding-right: 8px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">二级分类</div>
+                    <div id="listed-cascader-col-cat2" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                  <div>
+                    <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 8px;">三级品类 (多选)</div>
+                    <div id="listed-cascader-col-cat3" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9;">
+                  <span style="font-size: 11px; color: #94a3b8;">已勾选多个品类将进行联合筛选</span>
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="MerchantApp.clearListedCatCascaderSelection(event)" style="padding: 2px 10px; font-size: 12px;">清空</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="MerchantApp.confirmListedCatCascaderSelection(event)" style="padding: 2px 12px; font-size: 12px;">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">上架时间范围</label>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <input type="date" id="filter-listed-prod-start-date" class="form-control" style="width: 130px; padding:6px 8px; font-size:12px;">
+                <span class="text-secondary">-</span>
+                <input type="date" id="filter-listed-prod-end-date" class="form-control" style="width: 130px; padding:6px 8px; font-size:12px;">
+              </div>
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">当前状态</label>
+              <select id="filter-listed-prod-status" class="form-control" style="width: 110px; padding:6px 12px;">
+                <option value="">全部状态</option>
+                <option value="0">待审核</option>
+                <option value="1">已上架</option>
+                <option value="2">已下架</option>
+                <option value="3">已售罄</option>
+                <option value="未上架">未上架</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2" style="margin-top: 18px;">
+              <button class="btn btn-primary h-[38px]" onclick="MerchantApp.renderListedProducts()">查询</button>
+              <button class="btn btn-outline h-[38px]" onclick="MerchantApp.resetListedProductsFilter()">重置</button>
+            </div>
+            <button class="btn btn-primary" style="margin-left:auto; margin-top: 18px;" onclick="MerchantApp.populateAddListedProductModal(); UI.showModal('modal-add-listed-product')">新增上架</button>
           </div>
           <table class="table" id="table-listed-products" style="width: 100%;">
-            <thead><tr><th>序号</th><th>主图</th><th>商品名称</th><th>类型</th><th>分类</th><th>单价</th><th>起售数量</th><th>库存量</th><th>累计销量</th><th>上架时间</th><th>展示状态</th><th>操作</th></tr></thead>
+            <thead><tr><th>序号</th><th>上架单号</th><th>主图</th><th>商品名称</th><th>类别</th><th>货品类别</th><th>单价</th><th>销量</th><th>上架时间</th><th>创建时间</th><th>更新时间</th><th>当前状态</th><th>操作</th></tr></thead>
             <tbody><!-- JS 渲染 --></tbody>
           </table>
         </div>
@@ -447,7 +539,7 @@
               <div style="font-size:13px; color:#64748b; display:flex; gap:20px;">
                 <span>下单时间: <strong id="merchant-detail-create-time" style="color:#334155;">--</strong></span>
                 <span>交易买方: <strong id="merchant-detail-buyer-name" style="color:#334155;">--</strong></span>
-                <span>付款方式: <strong id="merchant-detail-pay-method" style="color:#334155;">线上担保支付 (托管账户)</strong></span>
+                <span>付款方式: <strong id="merchant-detail-pay-method" style="color:#334155;">线下支付</strong></span>
               </div>
             </div>
             <!-- 右上角快捷操作 -->
@@ -740,43 +832,39 @@
 <div class="modal-overlay" id="modal-add-listed-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-add-listed-product')">
   <div class="modal" style="width: 500px; border-radius: 12px; background: #fff; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden;">
     <div class="modal-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
-      <div class="modal-title font-bold text-main" style="font-size:16px;">新增上架 (关联货品)</div>
+      <div class="modal-title font-bold text-main" style="font-size:16px;">新增上架 </div>
       <button class="modal-close text-secondary" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-add-listed-product')">&times;</button>
     </div>
     <div class="modal-body" style="padding: 24px; font-size: 14px; display:flex; flex-direction:column; gap:16px;">
       <div class="form-group mb-0">
         <label class="form-label font-bold mb-1 block">选择关联货品 <span class="text-danger">*</span></label>
-        <select id="add-listed-prod-id" class="form-control" style="width:100%; padding:8px;">
-          <!-- JS 动态渲染 -->
-        </select>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <img id="add-listed-prod-img-preview" src="" style="width:42px; height:42px; border-radius:6px; border:1px solid #cbd5e1; object-fit:cover; display:none; flex-shrink:0;">
+          <select id="add-listed-prod-id" class="form-control" style="width:100%; padding:8px;" onchange="MerchantApp.onAddListedProdSelectChange()">
+            <!-- JS 动态渲染 -->
+          </select>
+        </div>
       </div>
       <div class="form-group mb-0">
         <label class="form-label font-bold mb-1 block">上架类型 <span class="text-danger">*</span></label>
         <select id="add-listed-prod-type" class="form-control" style="width:100%; padding:8px;" onchange="MerchantApp.toggleListedProductType()">
-          <option value="现货">现货 (需填写库存量)</option>
-          <option value="预售">预售 (无需库存量)</option>
+          <option value="现货">现货</option>
+          <option value="预售">预售</option>
         </select>
       </div>
       <div class="form-group mb-0" style="display:grid; grid-template-columns: 1fr 130px; gap:12px;">
         <div>
           <label class="form-label font-bold mb-1 block">售卖单价 (数值) <span class="text-danger">*</span></label>
-          <input type="text" id="add-listed-prod-price-num" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 280.00">
+          <input type="number" step="0.01" id="add-listed-prod-price-num" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 280.00">
         </div>
         <div>
           <label class="form-label font-bold mb-1 block">计价单位 <span class="text-danger">*</span></label>
-          <select id="add-listed-prod-unit" class="form-control" style="width:100%; padding:8px;">
-            <option value="/ 吨">/ 吨</option>
-            <option value="/ 袋">/ 袋</option>
-            <option value="/ 箱">/ 箱</option>
-            <option value="/ 斤">/ 斤</option>
-            <option value="/ 立方">/ 立方</option>
-            <option value="/ 件">/ 件</option>
-          </select>
+          <input type="text" id="add-listed-prod-unit" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 吨 / 袋 / 箱" value="吨">
         </div>
       </div>
       <div class="form-group mb-0">
-        <label class="form-label font-bold mb-1 block">起售数量 (如: 10袋 / 1吨)</label>
-        <input type="text" id="add-listed-prod-min-qty" class="form-control" style="width:100%; padding:8px;" placeholder="请输入起售最小数量" value="1吨">
+        <label class="form-label font-bold mb-1 block">起售数量 <span class="text-danger">*</span></label>
+        <input type="number" id="add-listed-prod-min-qty" class="form-control" style="width:100%; padding:8px;" placeholder="请输入起售数量 (只能填数字)" value="1">
       </div>
       <div class="form-group mb-0" id="add-listed-prod-stock-group">
         <label class="form-label font-bold mb-1 block">库存量 (现货必填) <span class="text-danger">*</span></label>
@@ -785,7 +873,8 @@
     </div>
     <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid var(--border-light); background: #f9fafb; display: flex; justify-content: flex-end; gap: 12px;">
       <button class="btn btn-outline" style="border-radius: 6px;" onclick="UI.closeModal('modal-add-listed-product')">取消</button>
-      <button class="btn btn-primary" style="border-radius: 6px;" onclick="MerchantApp.submitNewListedProduct()">确认上架</button>
+      <button class="btn btn-outline" style="border-radius: 6px; border-color: var(--primary-color); color: var(--primary-color);" onclick="MerchantApp.submitNewListedProduct(true)">保存为草稿</button>
+      <button class="btn btn-primary" style="border-radius: 6px;" onclick="MerchantApp.submitNewListedProduct(false)">提交上架审核</button>
     </div>
   </div>
 </div>
@@ -794,40 +883,48 @@
 <div class="modal-overlay" id="modal-add-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1500;" onclick="if(event.target===this) UI.closeModal('modal-add-product')">
   <div class="modal" style="width: 500px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
     <div class="modal-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
-      <div class="modal-title font-bold text-main" style="font-size:16px;">发布新商品 (录入商品库)</div>
+      <div class="modal-title font-bold text-main" style="font-size:16px;">发布新商品 </div>
       <button class="modal-close text-secondary" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-add-product')">&times;</button>
     </div>
     <div class="modal-body" style="padding: 24px; font-size: 14px; display:flex; flex-direction:column; gap:16px;">
       <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品图片 (支持选择/上传本地文件) <span class="text-danger">*</span></label>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <img id="add-prod-img-preview" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80" style="width:50px; height:50px; border-radius:6px; border:1px solid #ddd; object-fit:cover;">
-          <input type="text" id="add-prod-image" class="form-control" style="flex:1; padding:8px;" placeholder="请输入图片网络链接" value="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80">
+        <label class="form-label font-bold mb-1 block">商品图片 (仅限本地上传 1 张图片) <span class="text-danger">*</span></label>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <img id="add-prod-img-preview" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80" style="width:60px; height:60px; border-radius:6px; border:1px solid #cbd5e1; object-fit:cover;">
+          <input type="hidden" id="add-prod-image" value="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80">
           <input type="file" id="add-prod-file-input" accept="image/*" style="display:none;" onchange="MerchantApp.handleProductFileSelect(this)">
-          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('add-prod-file-input').click()">选择上传</button>
+          <button type="button" class="btn btn-outline" style="border-radius:6px;" onclick="document.getElementById('add-prod-file-input').click()">点击选择本地图片上传</button>
         </div>
       </div>
       <div class="form-group mb-4">
         <label class="form-label font-bold mb-1 block">商品名称 <span class="text-danger">*</span></label>
         <input type="text" id="add-prod-name" class="form-control" style="width:100%; padding:8px;" placeholder="例如：Q235 精密无缝钢管">
       </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品类型 <span class="text-danger">*</span></label>
-        <select id="add-prod-type" class="form-control" style="width:100%; padding:8px;">
-          <option value="现货">现货</option>
-          <option value="预售">预售</option>
-        </select>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品分类 <span class="text-danger">*</span></label>
-        <select id="add-prod-cat" class="form-control" style="width:100%; padding:8px;">
-          <option value="大米">粮油-谷物-大米</option>
-          <option value="面粉">粮油-谷物-面粉</option>
-          <option value="食用油">粮油-油类-食用油</option>
-          <option value="钢材">建材-金属-钢材</option>
-          <option value="木材">建材-板材-木材</option>
-          <option value="水泥">建材-粉材-水泥</option>
-        </select>
+      <div class="form-group mb-4" style="position:relative;">
+        <label class="form-label font-bold mb-1 block">商品品类  <span class="text-danger">*</span></label>
+        <div id="add-prod-cat-cascader-trigger" class="form-control" style="width: 100%; padding: 8px 12px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;" onclick="MerchantApp.toggleAddCatCascaderPanel(event)">
+          <span id="add-prod-cat-cascader-text" style="color: #94a3b8;">请选择商品品类 </span>
+          <span style="font-size: 10px; color: #94a3b8;">▼</span>
+        </div>
+        <input type="hidden" id="add-prod-cat3-val" value="">
+
+        <!-- 新增商品分类单选级联面板 -->
+        <div id="add-prod-cat-cascader-panel" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1600; padding: 12px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; max-height: 220px; overflow-y: auto;">
+            <div style="border-right: 1px solid #f1f5f9; padding-right: 4px;">
+              <div style="font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 6px;">一级分类</div>
+              <div id="add-cascader-col-cat1" style="display: flex; flex-direction: column; gap: 4px;"></div>
+            </div>
+            <div style="border-right: 1px solid #f1f5f9; padding-right: 4px;">
+              <div style="font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 6px;">二级分类</div>
+              <div id="add-cascader-col-cat2" style="display: flex; flex-direction: column; gap: 4px;"></div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 6px;">三级品类 (点击单选)</div>
+              <div id="add-cascader-col-cat3" style="display: flex; flex-direction: column; gap: 4px;"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid var(--border-light); background: #f9fafb; display: flex; justify-content: flex-end; gap: 12px;">

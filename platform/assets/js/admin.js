@@ -475,8 +475,9 @@ const AdminApp = {
       list = list.filter(p => {
         // Map mock status to enum numbers: 0=待审核, 1=已上架, 2=已下架, 3=已售罄
         let mappedStatus = p.status;
-        if (p.status === '未上架') mappedStatus = 2;
-        if (p.status === '已下架') mappedStatus = 2;
+        if (p.status === '待审核') mappedStatus = 0;
+        if (p.status === '已上架') mappedStatus = 1;
+        if (p.status === '已下架' || p.status === '未上架') mappedStatus = 2;
         if (p.status === '已售罄') mappedStatus = 3;
         return String(mappedStatus) === String(statusKw);
       });
@@ -523,7 +524,7 @@ const AdminApp = {
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       } else if (currentStatus === 3) {
-        statusTag = `<span class="tag tag-secondary">已售罄</span>`;
+        statusTag = `<span class="tag tag-danger" style="background:#fee2e2; color:#991b1b;">已售罄</span>`;
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       }
 

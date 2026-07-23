@@ -51,12 +51,8 @@
       <div class="menu-item" data-page="page-demands">
         <div class="menu-title">供求信息</div>
       </div>
-      <div class="menu-item has-submenu">
-        <div class="menu-title" onclick="toggleSubmenu(this)">交易中心 <span class="arrow">▼</span></div>
-        <div class="sub-menu" style="display:none;">
-          <div class="sub-menu-item" data-page="tab-trades-order">订单透视</div>
-          <div class="sub-menu-item" data-page="tab-trades-chat">IM监控</div>
-        </div>
+      <div class="menu-item" data-page="tab-trades-order">
+        <div class="menu-title">订单透视</div>
       </div>
       <div class="menu-item has-submenu">
         <div class="menu-title" onclick="toggleSubmenu(this)">竞价中心 <span class="arrow">▼</span></div>
@@ -316,6 +312,7 @@
                     <option value="0">待审核</option>
                     <option value="1">已上架</option>
                     <option value="2">已下架</option>
+                    <option value="3">已售罄</option>
                   </select>
                 </div>
                 <div class="flex gap-2">

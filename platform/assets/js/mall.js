@@ -1322,15 +1322,12 @@ const MallApp = {
       goodsTbody.innerHTML = `
         <tr>
           <td style="padding:14px 12px;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <img src="${imgUrl}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;">
-              <div>
-                <div style="font-weight:bold; color:#0f172a; font-size:14px;">${o.productName}</div>
-                <div style="font-size:11px; color:#64748b; margin-top:2px;">标准大宗批次规格 | 提供材质质保书</div>
-              </div>
-            </div>
+            <img src="${imgUrl}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;">
           </td>
-          <td style="padding:14px 12px; text-align:center; color:#475569;">${o.category || '大宗物资'}</td>
+          <td style="padding:14px 12px;">
+            <div style="font-weight:bold; color:#0f172a; font-size:14px;">${o.productName}</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">标准大宗批次规格 | 提供材质质保书</div>
+          </td>
           <td style="padding:14px 12px; text-align:right; font-weight:bold; color:#334155;">${o.priceStr || '¥4,150.00 / 吨'}</td>
           <td style="padding:14px 12px; text-align:center; font-weight:bold; color:#0f172a;">${o.qty || '50 吨'}</td>
           <td style="padding:14px 12px; text-align:right; font-weight:bold; color:#ef4444; font-size:14px;">${o.amount}</td>

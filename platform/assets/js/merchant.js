@@ -9,6 +9,7 @@ const MerchantApp = {
     UI.initSidebarSpa();
     
     this.renderShopInfo();
+    this.initCatFilters();
     this.renderAllProducts();
     this.renderListedProducts();
     this.renderOrders();
@@ -178,146 +179,863 @@ const MerchantApp = {
     
     // Apply filters
     const kwEl = document.getElementById('filter-all-prod-kw');
-    const catEl = document.getElementById('filter-all-prod-cat');
-    const statusEl = document.getElementById('filter-all-prod-status');
     if (kwEl && kwEl.value.trim() !== '') {
       const kw = kwEl.value.trim().toLowerCase();
-      myProducts = myProducts.filter(p => p.name.toLowerCase().includes(kw) || String(p.id).toLowerCase().includes(kw));
+      myProducts = myProducts.filter(p => p.name.toLowerCase().includes(kw));
     }
-    if (catEl && catEl.value !== '') {
-      myProducts = myProducts.filter(p => p.category === catEl.value);
-    }
-    if (statusEl && statusEl.value !== '') {
-      myProducts = myProducts.filter(p => String(p.status) === statusEl.value);
+    
+    // Cascader filter
+    if (this._selectedCategoryNames && this._selectedCategoryNames.length > 0) {
+      myProducts = myProducts.filter(p => this._selectedCategoryNames.includes(p.category));
     }
 
-    const catMap = {
-      '大米': '粮油-谷物-大米',
-      '面粉': '粮油-谷物-面粉',
-      '食用油': '粮油-油类-食用油',
-      '钢材': '建材-金属-钢材',
-      '木材': '建材-板材-木材',
-      '水泥': '建材-粉材-水泥'
+    // Sort newest first
+    myProducts.sort((a, b) => {
+      const tA = new Date((a.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      const tB = new Date((b.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      return tB - tA;
+    });
+
+    const getCategoryFullPath = (catName) => {
+      if (!MockData.productCategories) return catName;
+      for (const c1 of MockData.productCategories) {
+        if (c1.children) {
+          for (const c2 of c1.children) {
+            if (c2.children) {
+              for (const c3 of c2.children) {
+                if (c3.name === catName || c3.id === catName) {
+                  const l1 = c1.name.replace('米面类', '').replace('与杂粮', '').replace('制品', '').replace('类', '').replace('大宗', '').replace('禽畜', '').replace('加工', '');
+                  const l2 = c2.name.replace('米面类', '').replace('与杂粮', '').replace('制品', '').replace('类', '').replace('大宗', '').replace('禽畜', '').replace('加工', '');
+                  const l3 = c3.name;
+                  return `${l1}-${l2}-${l3}`;
+                }
+              }
+            }
+          }
+        }
+      }
+      return catName;
+    };
+
+    const getProductCode = (p, idx) => {
+      if (p.code) return p.code;
+      const codeNum = p.id.replace(/[^0-9]/g, '');
+      return 'GD' + (codeNum ? codeNum.padStart(5, '0').slice(-5) : String(idx + 1).padStart(5, '0'));
+    };
+
+    const formatDateTime = (dtStr) => {
+      if (!dtStr) return '--';
+      return dtStr.length === 16 ? dtStr + ':00' : dtStr;
     };
 
     myProducts.forEach((p, idx) => {
-      let statusTag = '';
-      let acts = '';
-      let dispStatus = String(p.status);
-      
-      if (dispStatus === '1') {
-        statusTag = '<span class="tag tag-success">已上架</span>';
-        acts = '<span class="text-xs text-secondary">--</span>';
-      } else if (dispStatus === '0') {
-        statusTag = '<span class="tag tag-warning">待审核</span>';
-        acts = '<span class="text-xs text-secondary">--</span>';
-      } else if (dispStatus === '2') {
-        statusTag = '<span class="tag tag-danger">已下架</span>';
-        acts = '<button class="btn btn-text btn-sm text-primary">编辑</button><button class="btn btn-text btn-sm text-danger" onclick="UI.toast(\'删除成功\', \'success\');">删除</button>';
-      } else {
-        // 未上架 or 审核未通过
-        statusTag = '<span class="tag" style="background:#f1f5f9; color:#475569;">未上架</span>';
-        acts = '<button class="btn btn-text btn-sm text-primary">编辑</button><button class="btn btn-text btn-sm text-danger" onclick="UI.toast(\'删除成功\', \'success\');">删除</button>';
-      }
+      // Edit & Delete buttons are ALWAYS present for every row
+      const acts = `
+        <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editProduct('${p.id}')">编辑</button>
+        <button class="btn btn-text btn-sm text-danger" onclick="MerchantApp.deleteProduct('${p.id}')">删除</button>
+      `;
 
-      let typeTag = p.type === '预售' ? '<span class="tag" style="background:#e0e7ff; color:#4f46e5; border-color:#c7d2fe;">预售</span>' : '<span class="tag" style="background:#dcfce7; color:#16a34a; border-color:#bbf7d0;">现货</span>';
-      let catFull = catMap[p.category] || p.category;
+      const pCode = getProductCode(p, idx);
+      const catFull = getCategoryFullPath(p.category);
+      const cTime = formatDateTime(p.createTime || '2026-07-01 10:00');
+      const uTime = formatDateTime(p.opTime || p.createTime || '2026-07-01 10:00');
 
       html += `
         <tr>
           <td>${idx + 1}</td>
+          <td style="font-family:monospace; font-weight:bold;">${pCode}</td>
           <td><img src="${p.image}" width="40" height="40" style="border-radius:4px; object-fit:cover;"></td>
-          <td>${p.name}</td>
-          <td>${typeTag}</td>
-          <td>${catFull}</td>
-          <td>${statusTag}</td>
+          <td style="font-weight:bold; color:#0f172a;">${p.name}</td>
+          <td><span class="text-xs text-secondary bg-slate-100 px-2 py-1 rounded" style="font-weight:500;">${catFull}</span></td>
+          <td style="font-size:12px; color:#64748b; font-family:monospace;">${cTime}</td>
+          <td style="font-size:12px; color:#64748b; font-family:monospace;">${uTime}</td>
           <td><div class="flex gap-2">${acts}</div></td>
         </tr>
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center py-8 text-secondary">暂无商品数据</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" class="text-center py-8 text-secondary">暂无商品数据</td></tr>';
       this._appendPagination(tbody, myProducts.length);
     }
   },
 
+  _selectedCategoryNames: [],
+
+  initCatFilters() {
+    this.renderCatCascaderCols();
+    const cat1Add = document.getElementById('add-prod-cat1');
+    if (!MockData.productCategories) return;
+    
+    let optionsAddHtml = '<option value="">请选择一级分类</option>';
+    MockData.productCategories.forEach(c => {
+      optionsAddHtml += `<option value="${c.id}">${c.name}</option>`;
+    });
+    if (cat1Add) cat1Add.innerHTML = optionsAddHtml;
+
+    // Global click listener to close cascader panel when clicking outside
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('filter-cat-cascader-panel');
+      const trigger = document.getElementById('filter-cat-cascader-trigger');
+      if (panel && trigger && !panel.contains(e.target) && !trigger.contains(e.target)) {
+        panel.style.display = 'none';
+      }
+    });
+  },
+
+  toggleCatCascaderPanel(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('filter-cat-cascader-panel');
+    if (panel) {
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+  },
+
+  renderCatCascaderCols(selectedCat1Id = null, selectedCat2Id = null) {
+    const col1 = document.getElementById('cascader-col-cat1');
+    const col2 = document.getElementById('cascader-col-cat2');
+    const col3 = document.getElementById('cascader-col-cat3');
+    if (!col1 || !col2 || !col3 || !MockData.productCategories) return;
+
+    // Helper: get all level 3 names under c1 or c2
+    const getAllSubCat3Names = (cObj) => {
+      let names = [];
+      if (cObj.children) {
+        cObj.children.forEach(c2 => {
+          if (c2.children) {
+            c2.children.forEach(c3 => names.push(c3.name));
+          } else if (c2.name) {
+            names.push(c2.name);
+          }
+        });
+      }
+      return names;
+    };
+
+    const getC2SubCat3Names = (c2Obj) => {
+      let names = [];
+      if (c2Obj.children) {
+        c2Obj.children.forEach(c3 => names.push(c3.name));
+      }
+      return names;
+    };
+
+    // Render Level 1
+    col1.innerHTML = MockData.productCategories.map(c1 => {
+      const allSub = getAllSubCat3Names(c1);
+      const isAllChecked = allSub.length > 0 && allSub.every(name => this._selectedCategoryNames.includes(name));
+      const isSomeChecked = !isAllChecked && allSub.some(name => this._selectedCategoryNames.includes(name));
+      return `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; background: ${c1.id === selectedCat1Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c1.id === selectedCat1Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c1.id === selectedCat1Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectCascaderCat1('${c1.id}')">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${isAllChecked ? 'checked' : ''} ${isSomeChecked ? 'style="opacity:0.7;"' : ''} onchange="MerchantApp.toggleCascaderCat1Check(this, '${c1.id}')">
+            <span>${c1.name}</span>
+          </label>
+          <span style="font-size: 10px; color: #cbd5e1;">›</span>
+        </div>
+      `;
+    }).join('');
+
+    // Render Level 2
+    if (selectedCat1Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      if (c1Obj && c1Obj.children) {
+        col2.innerHTML = c1Obj.children.map(c2 => {
+          const sub = getC2SubCat3Names(c2);
+          const isAllChecked = sub.length > 0 && sub.every(name => this._selectedCategoryNames.includes(name));
+          const isSomeChecked = !isAllChecked && sub.some(name => this._selectedCategoryNames.includes(name));
+          return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; background: ${c2.id === selectedCat2Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c2.id === selectedCat2Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c2.id === selectedCat2Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectCascaderCat2('${selectedCat1Id}', '${c2.id}')">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;" onclick="event.stopPropagation()">
+                <input type="checkbox" ${isAllChecked ? 'checked' : ''} ${isSomeChecked ? 'style="opacity:0.7;"' : ''} onchange="MerchantApp.toggleCascaderCat2Check(this, '${selectedCat1Id}', '${c2.id}')">
+                <span>${c2.name}</span>
+              </label>
+              <span style="font-size: 10px; color: #cbd5e1;">›</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        col2.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">无二级分类</div>';
+      }
+    } else {
+      col2.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">请先选择一级分类</div>';
+    }
+
+    // Render Level 3 Checkboxes
+    if (selectedCat1Id && selectedCat2Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      const c2Obj = c1Obj?.children?.find(c => c.id === selectedCat2Id);
+      if (c2Obj && c2Obj.children) {
+        col3.innerHTML = c2Obj.children.map(c3 => {
+          const isChecked = this._selectedCategoryNames.includes(c3.name);
+          return `
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; user-select: none;">
+              <input type="checkbox" value="${c3.name}" ${isChecked ? 'checked' : ''} onchange="MerchantApp.toggleCascaderCat3Check(this, '${c3.name}', '${selectedCat1Id}', '${selectedCat2Id}')">
+              <span>${c3.name}</span>
+            </label>
+          `;
+        }).join('');
+      } else {
+        col3.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">无三级品类</div>';
+      }
+    } else {
+      col3.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">请选择二/三级</div>';
+    }
+  },
+
+  selectCascaderCat1(c1Id) {
+    this.renderCatCascaderCols(c1Id, null);
+  },
+
+  selectCascaderCat2(c1Id, c2Id) {
+    this.renderCatCascaderCols(c1Id, c2Id);
+  },
+
+  toggleCascaderCat1Check(inputEl, c1Id) {
+    const c1Obj = MockData.productCategories.find(c => c.id === c1Id);
+    if (!c1Obj) return;
+    let names = [];
+    c1Obj.children?.forEach(c2 => {
+      c2.children?.forEach(c3 => names.push(c3.name));
+    });
+
+    if (inputEl.checked) {
+      names.forEach(name => {
+        if (!this._selectedCategoryNames.includes(name)) {
+          this._selectedCategoryNames.push(name);
+        }
+      });
+    } else {
+      this._selectedCategoryNames = this._selectedCategoryNames.filter(name => !names.includes(name));
+    }
+    this.updateCatCascaderText();
+    this.renderCatCascaderCols(c1Id, null);
+  },
+
+  toggleCascaderCat2Check(inputEl, c1Id, c2Id) {
+    const c1Obj = MockData.productCategories.find(c => c.id === c1Id);
+    const c2Obj = c1Obj?.children?.find(c => c.id === c2Id);
+    if (!c2Obj) return;
+    let names = c2Obj.children?.map(c3 => c3.name) || [];
+
+    if (inputEl.checked) {
+      names.forEach(name => {
+        if (!this._selectedCategoryNames.includes(name)) {
+          this._selectedCategoryNames.push(name);
+        }
+      });
+    } else {
+      this._selectedCategoryNames = this._selectedCategoryNames.filter(name => !names.includes(name));
+    }
+    this.updateCatCascaderText();
+    this.renderCatCascaderCols(c1Id, c2Id);
+  },
+
+  toggleCascaderCat3Check(inputEl, cat3Name, c1Id, c2Id) {
+    if (inputEl.checked) {
+      if (!this._selectedCategoryNames.includes(cat3Name)) {
+        this._selectedCategoryNames.push(cat3Name);
+      }
+    } else {
+      this._selectedCategoryNames = this._selectedCategoryNames.filter(name => name !== cat3Name);
+    }
+    this.updateCatCascaderText();
+    this.renderCatCascaderCols(c1Id, c2Id);
+  },
+
+  updateCatCascaderText() {
+    const textEl = document.getElementById('filter-cat-cascader-text');
+    if (!textEl) return;
+    if (this._selectedCategoryNames.length === 0) {
+      textEl.innerText = '请选择商品分类';
+      textEl.style.color = '#94a3b8';
+    } else {
+      textEl.innerText = `已选 (${this._selectedCategoryNames.length}): ` + this._selectedCategoryNames.join(', ');
+      textEl.style.color = '#0f172a';
+    }
+  },
+
+  clearCatCascaderSelection(e) {
+    if (e) e.stopPropagation();
+    this._selectedCategoryNames = [];
+    this.updateCatCascaderText();
+    this.renderCatCascaderCols();
+  },
+
+  confirmCatCascaderSelection(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('filter-cat-cascader-panel');
+    if (panel) panel.style.display = 'none';
+    this.renderAllProducts();
+  },
+
+  resetAllProductsFilter() {
+    const kwEl = document.getElementById('filter-all-prod-kw');
+    if (kwEl) kwEl.value = '';
+    this.clearCatCascaderSelection();
+    this.renderAllProducts();
+  },
+
+  toggleAddCatCascaderPanel(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('add-prod-cat-cascader-panel');
+    if (panel) {
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      if (panel.style.display === 'block') {
+        const val = document.getElementById('add-prod-cat3-val')?.value;
+        const parents = this.findCategoryParents(val);
+        this.renderAddCatCascaderCols(parents?.cat1Id || null, parents?.cat2Id || null);
+      }
+    }
+  },
+
+  renderAddCatCascaderCols(selectedCat1Id = null, selectedCat2Id = null) {
+    const col1 = document.getElementById('add-cascader-col-cat1');
+    const col2 = document.getElementById('add-cascader-col-cat2');
+    const col3 = document.getElementById('add-cascader-col-cat3');
+    if (!col1 || !col2 || !col3 || !MockData.productCategories) return;
+
+    const currentVal = document.getElementById('add-prod-cat3-val')?.value;
+
+    // Render Level 1
+    col1.innerHTML = MockData.productCategories.map(c1 => `
+      <div style="padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 12px; background: ${c1.id === selectedCat1Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c1.id === selectedCat1Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c1.id === selectedCat1Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectAddCascaderCat1('${c1.id}')">
+        ${c1.name}
+      </div>
+    `).join('');
+
+    // Render Level 2
+    if (selectedCat1Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      if (c1Obj && c1Obj.children) {
+        col2.innerHTML = c1Obj.children.map(c2 => `
+          <div style="padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 12px; background: ${c2.id === selectedCat2Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c2.id === selectedCat2Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c2.id === selectedCat2Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectAddCascaderCat2('${selectedCat1Id}', '${c2.id}')">
+            ${c2.name}
+          </div>
+        `).join('');
+      } else {
+        col2.innerHTML = '<div style="font-size:11px; color:#cbd5e1;">无二级分类</div>';
+      }
+    } else {
+      col2.innerHTML = '<div style="font-size:11px; color:#cbd5e1;">选择一级分类</div>';
+    }
+
+    // Render Level 3 Single Selection
+    if (selectedCat1Id && selectedCat2Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      const c2Obj = c1Obj?.children?.find(c => c.id === selectedCat2Id);
+      if (c2Obj && c2Obj.children) {
+        col3.innerHTML = c2Obj.children.map(c3 => `
+          <div style="padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 12px; background: ${c3.name === currentVal ? '#dcfce7' : '#f8fafc'}; color: ${c3.name === currentVal ? '#15803d' : '#334155'}; font-weight: ${c3.name === currentVal ? 'bold' : 'normal'}; border: 1px solid ${c3.name === currentVal ? '#86efac' : '#e2e8f0'};" onclick="MerchantApp.pickAddCascaderCat3('${c3.name}')">
+            ${c3.name} ${c3.name === currentVal ? '✓' : ''}
+          </div>
+        `).join('');
+      } else {
+        col3.innerHTML = '<div style="font-size:11px; color:#cbd5e1;">无三级品类</div>';
+      }
+    } else {
+      col3.innerHTML = '<div style="font-size:11px; color:#cbd5e1;">选择二/三级</div>';
+    }
+  },
+
+  selectAddCascaderCat1(c1Id) {
+    this.renderAddCatCascaderCols(c1Id, null);
+  },
+
+  selectAddCascaderCat2(c1Id, c2Id) {
+    this.renderAddCatCascaderCols(c1Id, c2Id);
+  },
+
+  pickAddCascaderCat3(cat3Name) {
+    const valInput = document.getElementById('add-prod-cat3-val');
+    const textEl = document.getElementById('add-prod-cat-cascader-text');
+    const panel = document.getElementById('add-prod-cat-cascader-panel');
+
+    if (valInput) valInput.value = cat3Name;
+    if (textEl) {
+      const parents = this.findCategoryParents(cat3Name);
+      if (parents) {
+        const c1Obj = MockData.productCategories.find(c => c.id === parents.cat1Id);
+        const c2Obj = c1Obj?.children?.find(c => c.id === parents.cat2Id);
+        textEl.innerText = `${c1Obj?.name} / ${c2Obj?.name} / ${cat3Name}`;
+      } else {
+        textEl.innerText = cat3Name;
+      }
+      textEl.style.color = '#0f172a';
+    }
+
+    if (panel) panel.style.display = 'none';
+  },
+
+  findCategoryParents(categoryName) {
+    if (!MockData.productCategories) return null;
+    for (const c1 of MockData.productCategories) {
+      if (c1.children) {
+        for (const c2 of c1.children) {
+          if (c2.children) {
+            for (const c3 of c2.children) {
+              if (c3.name === categoryName) {
+                return { cat1Id: c1.id, cat2Id: c2.id, cat3Name: c3.name };
+              }
+            }
+          }
+        }
+      }
+    }
+    return null;
+  },
+
   // 3. 商品中心 - 已上架列表
+  _selectedListedCatNames: [],
+
   renderListedProducts() {
     const tbody = document.querySelector('#table-listed-products tbody');
     let html = '';
     let myProducts = MockData.products.filter(p => p.shopId === this.currentShopId);
     
-    // Filters...
+    // Filters according to Excel screenshot:
+    // 上架单号: 全匹配
+    // 商品名称: 模糊匹配
+    // 类别: 现货 / 预售
+    // 货品类别: 三级分类下拉多选
+    // 上架时间范围: 日期范围筛选
+    // 当前状态: 下拉单选 (待审核/已上架/已下架/已售罄/未上架)
+
+    const noEl = document.getElementById('filter-listed-prod-no');
     const kwEl = document.getElementById('filter-listed-prod-kw');
-    const catEl = document.getElementById('filter-listed-prod-cat');
-    if (kwEl && kwEl.value.trim() !== '') {
-      const kw = kwEl.value.trim().toLowerCase();
-      myProducts = myProducts.filter(p => p.name.toLowerCase().includes(kw) || String(p.id).toLowerCase().includes(kw));
-    }
-    if (catEl && catEl.value !== '') {
-      myProducts = myProducts.filter(p => p.category === catEl.value);
+    const typeEl = document.getElementById('filter-listed-prod-type');
+    const startDateEl = document.getElementById('filter-listed-prod-start-date');
+    const endDateEl = document.getElementById('filter-listed-prod-end-date');
+    const statusEl = document.getElementById('filter-listed-prod-status');
+
+    const getListNo = (p, idx) => {
+      if (p.listNo) return p.listNo;
+      const numStr = p.id ? p.id.replace(/[^0-9]/g, '') : '';
+      return 'LST' + (numStr ? numStr.padStart(4, '0').slice(-4) : String(idx + 1).padStart(4, '0'));
+    };
+
+    if (noEl && noEl.value.trim() !== '') {
+      const targetNo = noEl.value.trim().toLowerCase();
+      myProducts = myProducts.filter((p, idx) => getListNo(p, idx).toLowerCase() === targetNo);
     }
 
-    const catMap = {
-      '大米': '粮油-谷物-大米',
-      '面粉': '粮油-谷物-面粉',
-      '食用油': '粮油-油类-食用油',
-      '钢材': '建材-金属-钢材',
-      '木材': '建材-板材-木材',
-      '水泥': '建材-粉材-水泥'
+    if (kwEl && kwEl.value.trim() !== '') {
+      const kw = kwEl.value.trim().toLowerCase();
+      myProducts = myProducts.filter(p => p.name.toLowerCase().includes(kw));
+    }
+
+    if (typeEl && typeEl.value !== '') {
+      const typeVal = typeEl.value;
+      myProducts = myProducts.filter(p => (p.type === typeVal || p.shelfType === typeVal));
+    }
+
+    // 货品类别 (三级分类下拉多选)
+    if (this._selectedListedCatNames && this._selectedListedCatNames.length > 0) {
+      myProducts = myProducts.filter(p => this._selectedListedCatNames.includes(p.category));
+    }
+
+    if (startDateEl && startDateEl.value) {
+      const startMs = new Date(startDateEl.value + ' 00:00:00').getTime();
+      myProducts = myProducts.filter(p => {
+        const t = new Date((p.listTime || p.createTime || '2026-07-01').replace(/-/g, '/')).getTime();
+        return t >= startMs;
+      });
+    }
+
+    if (endDateEl && endDateEl.value) {
+      const endMs = new Date(endDateEl.value + ' 23:59:59').getTime();
+      myProducts = myProducts.filter(p => {
+        const t = new Date((p.listTime || p.createTime || '2026-07-01').replace(/-/g, '/')).getTime();
+        return t <= endMs;
+      });
+    }
+
+    if (statusEl && statusEl.value !== '') {
+      const statusVal = statusEl.value;
+      myProducts = myProducts.filter(p => String(p.status) === statusVal || (statusVal === '未上架' && String(p.status) === '未上架'));
+    }
+
+    // Sort by listTime/createTime descending (newest first)
+    myProducts.sort((a, b) => {
+      const tA = new Date((a.listTime || a.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      const tB = new Date((b.listTime || b.createTime || '2026-01-01').replace(/-/g, '/')).getTime();
+      return tB - tA;
+    });
+
+    const getCategoryFullPath = (catName) => {
+      if (!MockData.productCategories) return catName;
+      for (const c1 of MockData.productCategories) {
+        if (c1.children) {
+          for (const c2 of c1.children) {
+            if (c2.children) {
+              for (const c3 of c2.children) {
+                if (c3.name === catName || c3.id === catName) {
+                  const l1 = c1.name.replace('米面类', '').replace('与杂粮', '').replace('制品', '').replace('类', '').replace('大宗', '').replace('禽畜', '').replace('加工', '');
+                  const l2 = c2.name.replace('米面类', '').replace('与杂粮', '').replace('制品', '').replace('类', '').replace('大宗', '').replace('禽畜', '').replace('加工', '');
+                  const l3 = c3.name;
+                  return `${l1}-${l2}-${l3}`;
+                }
+              }
+            }
+          }
+        }
+      }
+      return catName;
+    };
+
+    const formatDateTime = (dtStr) => {
+      if (!dtStr) return '--';
+      return dtStr.length === 16 ? dtStr + ':00' : dtStr;
+    };
+
+    const formatPriceStr = (p) => {
+      let priceVal = p.priceStr || '¥0.00';
+      const numMatch = priceVal.match(/[\d,.]+/);
+      if (numMatch) {
+        const num = parseFloat(numMatch[0].replace(/,/g, ''));
+        const formattedNum = isNaN(num) ? '0.00' : num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const unitPart = priceVal.replace(/^[¥￥]/, '').replace(/[\d,.]+/, '').trim();
+        return `¥${formattedNum} ${unitPart}`.trim();
+      }
+      return priceVal;
     };
 
     myProducts.forEach((p, idx) => {
+      const listNo = getListNo(p, idx);
       let statusDisplay = '';
       let acts = '';
       let dispStatus = String(p.status);
 
-      if (dispStatus === '0') {
+      // Status & Sub-reasons & Actions according to flowchart logic
+      if (dispStatus === '0' || dispStatus === '待审核') {
         statusDisplay = '<span class="tag tag-warning">待审核</span>';
         acts = '<span class="text-xs text-secondary">审核中...</span>';
-      } else if (dispStatus === '1') {
+      } else if (dispStatus === '1' || dispStatus === '已上架') {
         statusDisplay = '<span class="tag tag-success">已上架</span>';
-        acts = `<button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已下架该商品', 'info'); MockData.products.find(x => x.id == '${p.id}').status = 2; MockData.products.find(x => x.id == '${p.id}').downReason = '自主下架'; MerchantApp.renderListedProducts(); MerchantApp.renderAllProducts();">下架</button>`;
-      } else if (dispStatus === '2') {
-        let reasonStr = p.downReason ? `<div style="font-size:10px; color:#ef4444; margin-top:2px;">原因: ${p.downReason}</div>` : '';
+        acts = `<button class="btn btn-text btn-sm text-danger" onclick="MerchantApp.confirmOfflineProduct('${p.id}')">下架</button>`;
+      } else if (dispStatus === '2' || dispStatus === '已下架') {
+        let subReason = p.downReason || p.rejectReason || '自主下架';
+        let reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(原因: ${subReason})</div>`;
         statusDisplay = `<span class="tag tag-danger">已下架</span>${reasonStr}`;
         acts = `
-          <button class="btn btn-text btn-sm text-primary">编辑</button>
-          <button class="btn btn-primary btn-sm" onclick="UI.toast('提交审核成功', 'success'); MockData.products.find(x => x.id == '${p.id}').status = 0; MerchantApp.renderListedProducts(); MerchantApp.renderAllProducts();">提交上架</button>
+          <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
+          <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
+        `;
+      } else if (dispStatus === '3' || dispStatus === '已售罄') {
+        statusDisplay = '<span class="tag tag-danger" style="background:#fee2e2; color:#991b1b;">已售罄</span>';
+        acts = `
+          <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
+          <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
         `;
       } else {
-        // 未上架 (审核未通过)
-        let reasonStr = p.rejectReason ? `<div style="font-size:10px; color:#ef4444; margin-top:2px;">原因: ${p.rejectReason}</div>` : '';
-        statusDisplay = `<span class="tag" style="background:#f1f5f9; color:#475569;">未上架</span>${reasonStr}`;
+        // 未上架
+        statusDisplay = '<span class="tag" style="background:#f1f5f9; color:#475569;">未上架</span>';
         acts = `
-          <button class="btn btn-text btn-sm text-primary">编辑</button>
-          <button class="btn btn-primary btn-sm" onclick="UI.toast('提交审核成功', 'success'); MockData.products.find(x => x.id == '${p.id}').status = 0; MerchantApp.renderListedProducts(); MerchantApp.renderAllProducts();">提交上架</button>
+          <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
+          <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
         `;
       }
 
-      let typeTag = p.type === '预售' ? '<span class="tag" style="background:#e0e7ff; color:#4f46e5; border-color:#c7d2fe;">预售</span>' : '<span class="tag" style="background:#dcfce7; color:#16a34a; border-color:#bbf7d0;">现货</span>';
-      let catFull = catMap[p.category] || p.category;
+      let typeTag = p.type === '预售' || p.shelfType === '预售'
+        ? '<span class="tag" style="background:#e0e7ff; color:#4f46e5; border-color:#c7d2fe;">预售</span>'
+        : '<span class="tag" style="background:#dcfce7; color:#16a34a; border-color:#bbf7d0;">现货</span>';
+      
+      let catFull = getCategoryFullPath(p.category);
+      let salesStr = (p.sales || 0).toLocaleString('zh-CN');
+      let priceDisplay = formatPriceStr(p);
+      let lTime = formatDateTime(p.listTime || p.createTime || '2026-07-01 10:00');
+      let cTime = formatDateTime(p.createTime || '2026-07-01 10:00');
+      let uTime = formatDateTime(p.opTime || p.listTime || p.createTime || '2026-07-01 10:00');
 
       html += `
         <tr>
           <td>${idx + 1}</td>
-          <td><img src="${p.image}" width="40" height="40" style="border-radius:4px; object-fit:cover;"></td>
-          <td>${p.name}</td>
+          <td style="font-family:monospace; font-weight:bold;">${listNo}</td>
+          <td><img src="${p.image}" width="40" height="40" style="border-radius:4px; object-fit:cover; cursor:pointer;" onclick="UI.showModalImage('${p.image}')"></td>
+          <td style="font-weight:bold; color:#0f172a;">${p.name}</td>
           <td>${typeTag}</td>
-          <td>${catFull}</td>
-          <td class="font-bold text-danger">${p.priceStr || '¥0.00'}</td>
-          <td>${p.minQty || '1'}</td>
-          <td>${p.stock || '999'}</td>
-          <td>${p.sales || 0}</td>
-          <td class="text-xs text-secondary">${p.listTime || '--'}</td>
+          <td><span class="text-xs text-secondary bg-slate-100 px-2 py-1 rounded" style="font-weight:500;">${catFull}</span></td>
+          <td class="font-bold" style="color:#ef4444;">${priceDisplay}</td>
+          <td style="font-weight:500;">${salesStr}</td>
+          <td style="font-size:12px; color:#64748b; font-family:monospace;">${lTime}</td>
+          <td style="font-size:12px; color:#64748b; font-family:monospace;">${cTime}</td>
+          <td style="font-size:12px; color:#64748b; font-family:monospace;">${uTime}</td>
           <td>${statusDisplay}</td>
-          <td><div class="flex gap-2">${acts}</div></td>
+          <td><div class="flex gap-2" style="align-items:center;">${acts}</div></td>
         </tr>
       `;
     });
-    if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="12" class="text-center py-8 text-secondary">暂无上架商品数据</td></tr>';
+
+    if (tbody) {
+      tbody.innerHTML = html || '<tr><td colspan="13" class="text-center py-8 text-secondary">暂无上架商品数据</td></tr>';
       this._appendPagination(tbody, myProducts.length);
+    }
+  },
+
+  toggleListedCatCascaderPanel(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('filter-listed-cat-cascader-panel');
+    if (panel) {
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      if (panel.style.display === 'block') {
+        this.renderListedCatCascaderCols();
+      }
+    }
+  },
+
+  renderListedCatCascaderCols(selectedCat1Id = null, selectedCat2Id = null) {
+    const col1 = document.getElementById('listed-cascader-col-cat1');
+    const col2 = document.getElementById('listed-cascader-col-cat2');
+    const col3 = document.getElementById('listed-cascader-col-cat3');
+    if (!col1 || !col2 || !col3 || !MockData.productCategories) return;
+
+    const getAllSubCat3Names = (cObj) => {
+      let names = [];
+      if (cObj.children) {
+        cObj.children.forEach(c2 => {
+          if (c2.children) {
+            c2.children.forEach(c3 => names.push(c3.name));
+          } else if (c2.name) {
+            names.push(c2.name);
+          }
+        });
+      }
+      return names;
+    };
+
+    const getC2SubCat3Names = (c2Obj) => {
+      let names = [];
+      if (c2Obj.children) {
+        c2Obj.children.forEach(c3 => names.push(c3.name));
+      }
+      return names;
+    };
+
+    // Render Level 1
+    col1.innerHTML = MockData.productCategories.map(c1 => {
+      const allSub = getAllSubCat3Names(c1);
+      const isAllChecked = allSub.length > 0 && allSub.every(name => this._selectedListedCatNames.includes(name));
+      const isSomeChecked = !isAllChecked && allSub.some(name => this._selectedListedCatNames.includes(name));
+      return `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; background: ${c1.id === selectedCat1Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c1.id === selectedCat1Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c1.id === selectedCat1Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectListedCascaderCat1('${c1.id}')">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${isAllChecked ? 'checked' : ''} ${isSomeChecked ? 'style="opacity:0.7;"' : ''} onchange="MerchantApp.toggleListedCascaderCat1Check(this, '${c1.id}')">
+            <span>${c1.name}</span>
+          </label>
+          <span style="font-size: 10px; color: #cbd5e1;">›</span>
+        </div>
+      `;
+    }).join('');
+
+    // Render Level 2
+    if (selectedCat1Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      if (c1Obj && c1Obj.children) {
+        col2.innerHTML = c1Obj.children.map(c2 => {
+          const sub = getC2SubCat3Names(c2);
+          const isAllChecked = sub.length > 0 && sub.every(name => this._selectedListedCatNames.includes(name));
+          const isSomeChecked = !isAllChecked && sub.some(name => this._selectedListedCatNames.includes(name));
+          return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; background: ${c2.id === selectedCat2Id ? 'var(--primary-bg)' : 'transparent'}; color: ${c2.id === selectedCat2Id ? 'var(--primary-color)' : '#334155'}; font-weight: ${c2.id === selectedCat2Id ? 'bold' : 'normal'};" onclick="MerchantApp.selectListedCascaderCat2('${selectedCat1Id}', '${c2.id}')">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;" onclick="event.stopPropagation()">
+                <input type="checkbox" ${isAllChecked ? 'checked' : ''} ${isSomeChecked ? 'style="opacity:0.7;"' : ''} onchange="MerchantApp.toggleListedCascaderCat2Check(this, '${selectedCat1Id}', '${c2.id}')">
+                <span>${c2.name}</span>
+              </label>
+              <span style="font-size: 10px; color: #cbd5e1;">›</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        col2.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">无二级分类</div>';
+      }
+    } else {
+      col2.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">请先选择一级分类</div>';
+    }
+
+    // Render Level 3 Checkboxes
+    if (selectedCat1Id && selectedCat2Id) {
+      const c1Obj = MockData.productCategories.find(c => c.id === selectedCat1Id);
+      const c2Obj = c1Obj?.children?.find(c => c.id === selectedCat2Id);
+      if (c2Obj && c2Obj.children) {
+        col3.innerHTML = c2Obj.children.map(c3 => {
+          const isChecked = this._selectedListedCatNames.includes(c3.name);
+          return `
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; user-select: none;">
+              <input type="checkbox" value="${c3.name}" ${isChecked ? 'checked' : ''} onchange="MerchantApp.toggleListedCascaderCat3Check(this, '${c3.name}', '${selectedCat1Id}', '${selectedCat2Id}')">
+              <span>${c3.name}</span>
+            </label>
+          `;
+        }).join('');
+      } else {
+        col3.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">无三级品类</div>';
+      }
+    } else {
+      col3.innerHTML = '<div style="font-size:12px; color:#cbd5e1;">请选择二/三级</div>';
+    }
+  },
+
+  selectListedCascaderCat1(c1Id) {
+    this.renderListedCatCascaderCols(c1Id, null);
+  },
+
+  selectListedCascaderCat2(c1Id, c2Id) {
+    this.renderListedCatCascaderCols(c1Id, c2Id);
+  },
+
+  toggleListedCascaderCat1Check(inputEl, c1Id) {
+    const c1Obj = MockData.productCategories.find(c => c.id === c1Id);
+    if (!c1Obj) return;
+    let names = [];
+    c1Obj.children?.forEach(c2 => {
+      c2.children?.forEach(c3 => names.push(c3.name));
+    });
+
+    if (inputEl.checked) {
+      names.forEach(name => {
+        if (!this._selectedListedCatNames.includes(name)) {
+          this._selectedListedCatNames.push(name);
+        }
+      });
+    } else {
+      this._selectedListedCatNames = this._selectedListedCatNames.filter(name => !names.includes(name));
+    }
+    this.updateListedCatCascaderText();
+    this.renderListedCatCascaderCols(c1Id, null);
+  },
+
+  toggleListedCascaderCat2Check(inputEl, c1Id, c2Id) {
+    const c1Obj = MockData.productCategories.find(c => c.id === c1Id);
+    const c2Obj = c1Obj?.children?.find(c => c.id === c2Id);
+    if (!c2Obj) return;
+    let names = c2Obj.children?.map(c3 => c3.name) || [];
+
+    if (inputEl.checked) {
+      names.forEach(name => {
+        if (!this._selectedListedCatNames.includes(name)) {
+          this._selectedListedCatNames.push(name);
+        }
+      });
+    } else {
+      this._selectedListedCatNames = this._selectedListedCatNames.filter(name => !names.includes(name));
+    }
+    this.updateListedCatCascaderText();
+    this.renderListedCatCascaderCols(c1Id, c2Id);
+  },
+
+  toggleListedCascaderCat3Check(inputEl, cat3Name, c1Id, c2Id) {
+    if (inputEl.checked) {
+      if (!this._selectedListedCatNames.includes(cat3Name)) {
+        this._selectedListedCatNames.push(cat3Name);
+      }
+    } else {
+      this._selectedListedCatNames = this._selectedListedCatNames.filter(name => name !== cat3Name);
+    }
+    this.updateListedCatCascaderText();
+    this.renderListedCatCascaderCols(c1Id, c2Id);
+  },
+
+  updateListedCatCascaderText() {
+    const textEl = document.getElementById('filter-listed-cat-cascader-text');
+    if (!textEl) return;
+    if (this._selectedListedCatNames.length === 0) {
+      textEl.innerText = '三级分类下拉多选';
+      textEl.style.color = '#94a3b8';
+    } else {
+      textEl.innerText = `已选 (${this._selectedListedCatNames.length}): ` + this._selectedListedCatNames.join(', ');
+      textEl.style.color = '#0f172a';
+    }
+  },
+
+  clearListedCatCascaderSelection(e) {
+    if (e) e.stopPropagation();
+    this._selectedListedCatNames = [];
+    this.updateListedCatCascaderText();
+    this.renderListedCatCascaderCols();
+  },
+
+  confirmListedCatCascaderSelection(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('filter-listed-cat-cascader-panel');
+    if (panel) panel.style.display = 'none';
+    this.renderListedProducts();
+  },
+
+  resetListedProductsFilter() {
+    const noEl = document.getElementById('filter-listed-prod-no');
+    const kwEl = document.getElementById('filter-listed-prod-kw');
+    const typeEl = document.getElementById('filter-listed-prod-type');
+    const startEl = document.getElementById('filter-listed-prod-start-date');
+    const endEl = document.getElementById('filter-listed-prod-end-date');
+    const statusEl = document.getElementById('filter-listed-prod-status');
+
+    if (noEl) noEl.value = '';
+    if (kwEl) kwEl.value = '';
+    if (typeEl) typeEl.value = '';
+    if (startEl) startEl.value = '';
+    if (endEl) endEl.value = '';
+    if (statusEl) statusEl.value = '';
+
+    this.clearListedCatCascaderSelection();
+    this.renderListedProducts();
+  },
+
+  confirmOfflineProduct(prodId) {
+    if (confirm('确认要下架该商品条目吗？下架后前台将无法查看或购买。')) {
+      const prod = MockData.products.find(x => x.id == prodId);
+      if (prod) {
+        prod.status = 2; // 已下架
+        prod.downReason = '自主下架';
+        UI.toast('商品下架成功', 'info');
+        this.renderListedProducts();
+        this.renderAllProducts();
+      }
+    }
+  },
+
+  editListedProduct(prodId) {
+    const prod = MockData.products.find(p => p.id == prodId);
+    if (!prod) return;
+    this.populateAddListedProductModal();
+    const select = document.getElementById('add-listed-prod-id');
+    const typeSelect = document.getElementById('add-listed-prod-type');
+    const priceInput = document.getElementById('add-listed-prod-price-num');
+    const unitInput = document.getElementById('add-listed-prod-unit');
+    const minQtyInput = document.getElementById('add-listed-prod-min-qty');
+    const stockInput = document.getElementById('add-listed-prod-stock');
+
+    if (select) {
+      select.value = prod.id;
+      this.onAddListedProdSelectChange();
+    }
+    if (typeSelect) typeSelect.value = prod.shelfType || prod.type || '现货';
+    this.toggleListedProductType();
+
+    if (priceInput && prod.priceStr) {
+      const numMatch = prod.priceStr.match(/[\d,.]+/);
+      if (numMatch) priceInput.value = numMatch[0].replace(/,/g, '');
+    }
+    if (unitInput && prod.priceStr) {
+      const unitStr = prod.priceStr.replace(/^[¥￥]\s*[\d,.]+\s*\/?\s*/, '').trim();
+      unitInput.value = unitStr || '吨';
+    }
+    if (minQtyInput) {
+      const minNum = parseInt(String(prod.minQty || '1').replace(/[^0-9]/g, '')) || 1;
+      minQtyInput.value = minNum;
+    }
+    if (stockInput) stockInput.value = prod.stock || 500;
+
+    window._editingListedProdId = prodId;
+    UI.showModal('modal-add-listed-product');
+  },
+
+  submitListedProductForAudit(prodId) {
+    const prod = MockData.products.find(x => x.id == prodId);
+    if (prod) {
+      prod.status = 0; // 待审核
+      delete prod.downReason;
+      delete prod.rejectReason;
+      UI.toast('提交审核成功，请等待管理员审核', 'success');
+      this.renderListedProducts();
+      this.renderAllProducts();
     }
   },
 
@@ -912,7 +1630,25 @@ const MerchantApp = {
     const select = document.getElementById('add-listed-prod-id');
     if (!select) return;
     let myProducts = MockData.products.filter(p => p.shopId === this.currentShopId);
-    select.innerHTML = myProducts.map(p => `<option value="${p.id}">${p.name} (当前单价: ${p.priceStr})</option>`).join('');
+    select.innerHTML = myProducts.map((p, idx) => {
+      const code = p.prodCode || ('GD' + String(p.id ? p.id.replace(/[^0-9]/g, '') : (idx + 1)).padStart(5, '0'));
+      const cat = p.category || '未分类';
+      return `<option value="${p.id}" data-img="${p.image || ''}">【${code}】${p.name} | 分类: ${cat}</option>`;
+    }).join('');
+    this.onAddListedProdSelectChange();
+  },
+
+  onAddListedProdSelectChange() {
+    const select = document.getElementById('add-listed-prod-id');
+    const imgEl = document.getElementById('add-listed-prod-img-preview');
+    if (!select || !imgEl) return;
+    const selectedOpt = select.options[select.selectedIndex];
+    if (selectedOpt && selectedOpt.dataset.img) {
+      imgEl.src = selectedOpt.dataset.img;
+      imgEl.style.display = 'block';
+    } else {
+      imgEl.style.display = 'none';
+    }
   },
 
   deleteProduct(prodId) {
@@ -952,44 +1688,99 @@ const MerchantApp = {
     const imgPrev = document.getElementById('add-prod-img-preview');
     if (imgPrev) imgPrev.src = prod.image || '';
     document.getElementById('add-prod-name').value = prod.name || '';
-    document.getElementById('add-prod-type').value = prod.type || prod.shelfType || '现货';
-    document.getElementById('add-prod-cat').value = prod.category || '大米';
+    
+    // Set category cascader
+    if (prod.category) {
+      this.pickAddCascaderCat3(prod.category);
+    } else {
+      document.getElementById('add-prod-cat3-val').value = '';
+      document.getElementById('add-prod-cat-cascader-text').innerText = '请选择商品品类 (三级单选)';
+      document.getElementById('add-prod-cat-cascader-text').style.color = '#94a3b8';
+    }
+    
     UI.showModal('modal-add-product');
   },
 
-  submitNewListedProduct() {
+  submitNewListedProduct(isDraft = false) {
     const prodId = document.getElementById('add-listed-prod-id').value;
     const type = document.getElementById('add-listed-prod-type').value;
-    const priceNum = document.getElementById('add-listed-prod-price-num')?.value.trim();
+    const priceNumStr = document.getElementById('add-listed-prod-price-num')?.value.trim();
     const unit = document.getElementById('add-listed-prod-unit')?.value || '/ 吨';
-    const minQty = document.getElementById('add-listed-prod-min-qty')?.value.trim() || '1吨';
-    const stock = type === '现货' ? (parseInt(document.getElementById('add-listed-prod-stock')?.value) || 500) : 0;
+    const minQtyStr = document.getElementById('add-listed-prod-min-qty')?.value.trim() || '1';
+    const stockVal = type === '现货' ? parseInt(document.getElementById('add-listed-prod-stock')?.value) : 0;
     
-    if (!prodId || !priceNum) {
+    if (!prodId || !priceNumStr) {
       UI.toast('请填写完整的售卖单价与关联货品', 'warning');
       return;
+    }
+
+    const priceNum = parseFloat(priceNumStr);
+    if (isNaN(priceNum) || priceNum <= 0) {
+      UI.toast('售卖单价必须为有效的正数', 'warning');
+      return;
+    }
+
+    const minQtyNum = parseInt(minQtyStr.replace(/[^0-9]/g, '')) || 1;
+
+    // Rule: Stock must be strictly greater than minQty when type is 现货
+    if (type === '现货') {
+      if (isNaN(stockVal) || stockVal <= 0) {
+        UI.toast('现货模式下库存量必须大于 0', 'warning');
+        return;
+      }
+      if (stockVal < minQtyNum) {
+        UI.toast(`现货库存量 (${stockVal}) 必须大于等于起售数量 (${minQtyNum})`, 'warning');
+        return;
+      }
     }
 
     const baseProd = MockData.products.find(p => p.id == prodId);
     if (!baseProd) return;
 
-    const newProd = {
-      ...baseProd,
-      id: 'P' + Math.floor(Math.random() * 10000),
-      listNo: 'LST-' + new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, '0') + '-P' + Math.floor(Math.random() * 10000),
-      shelfType: type,
-      priceStr: `¥${priceNum} ${unit}`,
-      minQty: minQty,
-      stock: stock,
-      status: 0, // 待审核
-      sales: 0,
-      listTime: new Date().toISOString().replace('T', ' ').substring(0, 16)
-    };
+    const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    const targetStatus = isDraft ? '未上架' : 0; // 0 is 待审核
 
-    MockData.products.unshift(newProd);
+    const formattedUnit = unit.startsWith('/') ? unit : `/ ${unit}`;
+
+    if (window._editingListedProdId) {
+      const prod = MockData.products.find(p => p.id == window._editingListedProdId);
+      if (prod) {
+        prod.shelfType = type;
+        prod.type = type;
+        prod.priceStr = `¥${priceNum.toFixed(2)} ${formattedUnit}`;
+        prod.minQty = minQtyStr;
+        prod.stock = stockVal;
+        if (!isDraft) {
+          prod.status = 0; // 提交审核
+          delete prod.downReason;
+          delete prod.rejectReason;
+        }
+        prod.opTime = nowStr;
+        UI.toast(isDraft ? '修改成功并已保存草稿' : '修改成功并已提交审核', 'success');
+      }
+      delete window._editingListedProdId;
+    } else {
+      const newProd = {
+        ...baseProd,
+        id: 'P' + Math.floor(Math.random() * 100000),
+        listNo: 'LST' + new Date().getFullYear().toString().slice(-2) + String(new Date().getMonth() + 1).padStart(2, '0') + String(new Date().getDate()).padStart(2, '0') + Math.floor(1000 + Math.random() * 9000),
+        shelfType: type,
+        type: type,
+        priceStr: `¥${priceNum.toFixed(2)} ${formattedUnit}`,
+        minQty: minQtyStr,
+        stock: stockVal,
+        status: targetStatus,
+        sales: 0,
+        createTime: nowStr,
+        listTime: nowStr,
+        opTime: nowStr
+      };
+
+      MockData.products.unshift(newProd);
+      UI.toast(isDraft ? '已保存为草稿 (未上架状态)' : '新商品已提交上架审核', 'success');
+    }
     
     UI.closeModal('modal-add-listed-product');
-    UI.toast('商品已提交上架审核', 'success');
     this.renderListedProducts();
     this.renderAllProducts();
   }
@@ -1048,31 +1839,45 @@ window.cycleMerchantShopStatus = () => {
   window.openAddProductModal = () => {
     delete window._editingProdId;
     document.getElementById('add-prod-image').value = '';
+    const imgPrev = document.getElementById('add-prod-img-preview');
+    if (imgPrev) imgPrev.src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80';
     document.getElementById('add-prod-name').value = '';
-    document.getElementById('add-prod-type').value = '现货';
-    document.getElementById('add-prod-cat').value = '大米';
+    
+    // Reset category cascader
+    document.getElementById('add-prod-cat3-val').value = '';
+    const textEl = document.getElementById('add-prod-cat-cascader-text');
+    if (textEl) {
+      textEl.innerText = '请选择商品品类 (三级单选)';
+      textEl.style.color = '#94a3b8';
+    }
+
     UI.showModal('modal-add-product');
   };
 
   window.submitNewProduct = () => {
     const img = document.getElementById('add-prod-image').value.trim();
     const name = document.getElementById('add-prod-name').value.trim();
-    const type = document.getElementById('add-prod-type').value;
-    const cat = document.getElementById('add-prod-cat').value;
+    const cat = document.getElementById('add-prod-cat3-val').value;
 
     if (!img || !name) {
       UI.toast('请填写完整的商品信息', 'warning');
       return;
     }
 
+    if (!cat) {
+      UI.toast('请选择具体的三级商品品类', 'warning');
+      return;
+    }
+
+    const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
     if (window._editingProdId) {
       const prod = MockData.products.find(p => p.id == window._editingProdId);
       if (prod) {
         prod.image = img;
         prod.name = name;
-        prod.type = type;
-        prod.shelfType = type;
         prod.category = cat;
+        prod.opTime = nowStr;
         UI.toast('商品信息更新成功', 'success');
       }
       delete window._editingProdId;
@@ -1083,10 +1888,12 @@ window.cycleMerchantShopStatus = () => {
         image: img,
         name: name,
         category: cat,
-        type: type,
-        shelfType: type,
+        type: '现货',
+        shelfType: '现货',
         status: '未上架',
-        sales: 0
+        sales: 0,
+        createTime: nowStr,
+        opTime: nowStr
       };
       MockData.products.unshift(newProd);
       UI.toast('新商品发布成功（当前为未上架状态）', 'success');

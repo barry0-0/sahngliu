@@ -503,8 +503,8 @@
                   <table class="table" style="width:100%; font-size:13px;">
                     <thead style="background:#f8fafc;">
                       <tr>
-                        <th style="padding:10px 12px; text-align:left;">商品名称</th>
-                        <th style="padding:10px 12px; text-align:center;">货品品类</th>
+                        <th style="padding:10px 12px; text-align:left;">货品主图</th>
+                        <th style="padding:10px 12px; text-align:left;">货品名称</th>
                         <th style="padding:10px 12px; text-align:right;">单价</th>
                         <th style="padding:10px 12px; text-align:center;">数量</th>
                         <th style="padding:10px 12px; text-align:right;">小计</th>
@@ -572,8 +572,47 @@
                 </div>
               </div>
 
+              <!-- 右侧：物流发运与收货信息、卖家店铺信息 -->
+              <div style="display:flex; flex-direction:column; gap:20px;">
+                <!-- 物流与收货人 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">📦 物流发运与收货信息</h4>
+                  <div style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货人:</span>
+                      <strong id="pc-detail-receiver-name" style="color:#334155;">--</strong>
+                    </div>
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">联系电话:</span>
+                      <strong id="pc-detail-receiver-phone" style="color:#334155; font-family:monospace;">--</strong>
+                    </div>
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货地址:</span>
+                      <span id="pc-detail-receiver-addr" style="color:#475569;">--</span>
+                    </div>
+                    <hr style="border:0; border-top:1px dashed #e2e8f0; margin:4px 0;">
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">配送方式:</span>
+                      <span id="pc-detail-logistics-comp" style="color:#334155;">--</span>
+                    </div>
+                    <div>
+                      <span style="color:#94a3b8; width:70px; display:inline-block;">物流单号:</span>
+                      <span id="pc-detail-logistics-no" style="font-family:monospace; color:#0284c7; font-weight:bold;">--</span>
+                    </div>
+                  </div>
+                </div>
 
-
+                <!-- 卖家店铺信息 -->
+                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">👤 供应商家信息</h4>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="pc-detail-shop-avatar" style="width:40px; height:40px; border-radius:50%; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">商</div>
+                    <div>
+                      <div id="pc-detail-shop-name" style="font-weight:bold; color:#0f172a; font-size:14px;">--</div>
+                      <div style="font-size:11px; color:#16a34a; margin-top:2px;">✓ 平台认证核验企业商家</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
