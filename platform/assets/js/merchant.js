@@ -16,9 +16,26 @@ const MerchantApp = {
     this.renderBiddingAnn();
     this.renderMerchantDashboard();
 
+    const orderMenu = document.querySelector('.sub-menu-item[data-page="page-orders"]');
+    if (orderMenu) {
+      orderMenu.addEventListener('click', () => {
+        MerchantApp.hideOrderDetailPage();
+      });
+    }
+
     // 默认激活第一个子菜单（数据中心）
     const defaultTab = document.querySelector('.sub-menu-item[data-page="page-merchant-dashboard"]');
     if (defaultTab) defaultTab.click();
+  },
+
+  switchPage(pageId) {
+    if (pageId === 'page-orders') {
+      MerchantApp.hideOrderDetailPage();
+    }
+    const item = document.querySelector(`.sub-menu-item[data-page="${pageId}"], .menu-item[data-page="${pageId}"]`);
+    if (item) {
+      item.click();
+    }
   },
 
   _appendPagination(tbody, totalItems) {
@@ -311,38 +328,51 @@ const MerchantApp = {
     let myOrders = MockData.orders.filter(o => o.shopId === this.currentShopId);
     
     // Apply filters
-    const kwEl = document.getElementById('filter-order-kw');
-    const statusEl = document.getElementById('filter-order-status');
+    const idEl = document.getElementById('filter-order-id');
     const typeEl = document.getElementById('filter-order-type');
+    const buyerEl = document.getElementById('filter-order-buyer');
+    const statusEl = document.getElementById('filter-order-status');
     const startEl = document.getElementById('filter-order-start');
     const endEl = document.getElementById('filter-order-end');
 
-    if (kwEl && kwEl.value.trim() !== '') {
-      const kw = kwEl.value.trim().toLowerCase();
-      myOrders = myOrders.filter(o => o.buyerName.toLowerCase().includes(kw) || o.productName.toLowerCase().includes(kw) || o.id.toLowerCase().includes(kw));
-    }
-    if (statusEl && statusEl.value !== '') {
-      myOrders = myOrders.filter(o => String(o.status) === statusEl.value);
+    if (idEl && idEl.value.trim() !== '') {
+      const oid = idEl.value.trim().toLowerCase();
+      myOrders = myOrders.filter(o => o.id.toLowerCase() === oid);
     }
     if (typeEl && typeEl.value !== '') {
-      myOrders = myOrders.filter(o => o.type === typeEl.value);
+      myOrders = myOrders.filter(o => (o.type || '现货交易订单') === typeEl.value);
     }
-    // Handle date filtering (assuming format YYYY-MM-DD or standard parseable ISO)
-    if (startEl && startEl.value !== '') {
-      const startTime = new Date(startEl.value).getTime();
+    if (buyerEl && buyerEl.value.trim() !== '') {
+      const buyerKw = buyerEl.value.trim().toLowerCase();
+      myOrders = myOrders.filter(o => o.buyerName.toLowerCase().includes(buyerKw));
+    }
+    if (statusEl && statusEl.value !== '') {
       myOrders = myOrders.filter(o => {
-        const orderTime = new Date(o.date || '2026-07-07 09:00:00').getTime();
-        return orderTime >= startTime;
+        let statusText = '';
+        if (o.status === 0 || o.status === 5) statusText = '待签约';
+        else if (o.status === 4) statusText = '待付款';
+        else if (o.status === 1) statusText = '待发运';
+        else if (o.status === 2) statusText = '待收货';
+        else if (o.status === 3) statusText = '已结单';
+        else if (o.status === -1) statusText = '已取消';
+        return statusText === statusEl.value;
       });
+    }
+    if (startEl && startEl.value !== '') {
+      const startTime = new Date(startEl.value + ' 00:00:00').getTime();
+      myOrders = myOrders.filter(o => new Date(o.time || '2026-07-20').getTime() >= startTime);
     }
     if (endEl && endEl.value !== '') {
-      // Add a full day (86400000ms) to include the end date fully
-      const endTime = new Date(endEl.value).getTime() + 86400000;
-      myOrders = myOrders.filter(o => {
-        const orderTime = new Date(o.date || '2026-07-07 09:00:00').getTime();
-        return orderTime <= endTime;
-      });
+      const endTime = new Date(endEl.value + ' 23:59:59').getTime();
+      myOrders = myOrders.filter(o => new Date(o.time || '2026-07-20').getTime() <= endTime);
     }
+
+    // Default Sort: newest first
+    myOrders.sort((a, b) => {
+      const tA = new Date(a.time || '2026-07-20').getTime();
+      const tB = new Date(b.time || '2026-07-20').getTime();
+      return tB - tA;
+    });
 
     myOrders.forEach((o, idx) => {
       let statusTag = '';
@@ -378,38 +408,72 @@ const MerchantApp = {
         actBtn = '';
       }
 
+      // Generate desensitized buyer phone number
+      const user = MockData.users.find(u => u.name === o.buyerName) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
+      let buyerPhone = '--';
+      if (user && user.mobile) {
+        buyerPhone = user.mobile.slice(0, 3) + '****' + user.mobile.slice(7);
+      } else {
+        let hash = 0;
+        for (let i = 0; i < o.buyerName.length; i++) {
+          hash = o.buyerName.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const middle = String(Math.abs(hash) % 9000 + 1000);
+        buyerPhone = `138****${middle}`;
+      }
+
       html += `
         <tr>
           <td>${idx + 1}</td>
-          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
-          <td>${o.productName}</td>
-          <td>${o.buyerName}</td>
+          <td><a href="javascript:void(0)" onclick="MerchantApp.showOrderDetailPage('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
+          <td><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
+          <td style="font-weight:bold; color:#334155;">${o.buyerName}</td>
+          <td class="font-mono text-secondary">${buyerPhone}</td>
           <td class="font-bold text-danger">${o.amount}</td>
-          <td>${o.type}</td>
           <td>${statusTag}</td>
+          <td class="text-xs text-secondary font-mono">${o.time || '2026-07-20'}</td>
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
               ${actBtn}
-              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+              <button class="btn btn-text btn-sm" onclick="MerchantApp.showOrderDetailPage('${o.id}')">详情</button>
             </div>
           </td>
         </tr>
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的订单数据</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="9" class="text-center p-4 text-secondary">没有找到符合条件的订单数据</td></tr>';
       this._appendPagination(tbody, myOrders.length);
     }
   },
 
   openShipModal(orderId) {
+    window._shippingOrderId = orderId;
     document.getElementById('ship-order-id').innerText = orderId;
+    document.getElementById('ship-tracking-no').value = '';
     UI.showModal('modal-ship');
   },
 
   submitShip() {
-    UI.closeModal('modal-ship');
-    UI.toast('发货成功！订单状态已更新', 'success');
+    const orderId = window._shippingOrderId;
+    const carrier = document.getElementById('ship-logistics-company').value;
+    const trackingNo = document.getElementById('ship-tracking-no').value.trim();
+    if (!trackingNo) {
+      UI.toast('请填写物流单号！', 'warning');
+      return;
+    }
+    const o = MockData.orders.find(item => item.id === orderId);
+    if (o) {
+      o.status = 2; // 已发货
+      o.logisticsCarrier = carrier;
+      o.logisticsNo = trackingNo;
+      UI.closeModal('modal-ship');
+      UI.toast('发货成功！订单状态已更新', 'success');
+      MerchantApp.renderOrders();
+      if (document.getElementById('merchant-order-detail-section').style.display === 'block') {
+        MerchantApp.showOrderDetailPage(orderId);
+      }
+    }
   },
 
   renderBiddingRes() {
@@ -808,15 +872,16 @@ const MerchantApp = {
         html += `
           <tr>
             <td class="p-2">${idx + 1}</td>
-            <td class="p-2 font-bold"><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="color:var(--primary-color);">${o.id}</a></td>
-            <td class="p-2">${o.productName}</td>
-            <td class="p-2 text-secondary">${o.buyerName}</td>
+            <td class="p-2 font-bold"><a href="javascript:void(0)" onclick="MerchantApp.showOrderDetailPage('${o.id}')" style="color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
+            <td class="p-2"><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
+            <td class="p-2 text-secondary" style="font-weight:bold;">${o.buyerName}</td>
             <td class="p-2 text-danger font-bold">${o.amount}</td>
             <td class="p-2">${statusTag}</td>
+            <td class="p-2 text-slate-500 font-mono">${o.time || '2026-07-20'}</td>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="5" class="text-center p-4 text-secondary">暂无大宗交易数据</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">暂无大宗交易数据</td></tr>';
     }
 
     // 2. Render bidding activity (up to 3 items)
@@ -1031,3 +1096,194 @@ window.cycleMerchantShopStatus = () => {
     MerchantApp.renderAllProducts();
     MerchantApp.renderListedProducts();
   };
+
+MerchantApp.showOrderDetailPage = function(orderId) {
+  const listSec = document.getElementById('merchant-order-list-section');
+  const detailSec = document.getElementById('merchant-order-detail-section');
+  if (!listSec || !detailSec) return;
+
+  const o = MockData.orders.find(item => item.id === orderId);
+  if (!o) return;
+
+  listSec.style.display = 'none';
+  detailSec.style.display = 'block';
+
+  document.getElementById('merchant-detail-order-id').innerText = o.id;
+
+  // Render Status Banner
+  const bannerMap = {
+    0: { title: '订单待签约', desc: '等待买方签署大宗买卖交易合同及保证资金协议。' },
+    5: { title: '订单待卖家签约', desc: '买方已电子签名，请您点击上方“立即签署”盖章确认。' },
+    4: { title: '订单待付款', desc: '买卖双方已签署合同，等待买方托管支付货款。' },
+    1: { title: '订单待发货', desc: '买方已托管支付，请您安排专车直达运送货品并录入快递单号发货。' },
+    2: { title: '卖家已发货', desc: '您已完成发货，大宗专车正在配送中，等待买方确认收货。' },
+    3: { title: '交易履约已完成', desc: '买方已核验货品并确认收货，结算货款已划拨至您的商户余额。' },
+    '-1': { title: '订单已关闭', desc: o.closeReason || '交易关闭。' }
+  };
+  const bData = bannerMap[o.status] || { title: '订单处理中', desc: '请耐心等待处理...' };
+  document.getElementById('merchant-detail-status-title').innerText = bData.title;
+  document.getElementById('merchant-detail-status-desc').innerText = bData.desc;
+
+  const typeTag = document.getElementById('merchant-detail-type-tag');
+  typeTag.innerText = o.type;
+  typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
+
+  document.getElementById('merchant-detail-create-time').innerText = o.time || '2026-07-07 10:15';
+  document.getElementById('merchant-detail-pay-method').innerText = o.payMethod || '线上担保支付 (托管账户)';
+
+  // Action buttons
+  const actContainer = document.getElementById('merchant-detail-top-actions');
+  let actHtml = '';
+  if (o.status === 0) {
+    actHtml = `<button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>`;
+  } else if (o.status === 5) {
+    actHtml = `
+      <button class="btn btn-primary btn-sm" onclick="UI.showContractSigningModal('${o.id}', true, () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">立即签署</button>
+      <button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>
+    `;
+  } else if (o.status === 4) {
+    actHtml = `<button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>`;
+  } else if (o.status === 1) {
+    actHtml = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipDetailPage('${o.id}')">立即发货</button>`;
+  }
+  actContainer.innerHTML = actHtml;
+
+  // Render Steps
+  const stepsContainer = document.getElementById('merchant-detail-steps');
+  let currentStep = 0;
+  if (o.status === 0 || o.status === 5) currentStep = 1;
+  else if (o.status === 4) currentStep = 2;
+  else if (o.status === 1) currentStep = 3;
+  else if (o.status === 2) currentStep = 4;
+  else if (o.status === 3) currentStep = 5;
+
+  const steps = [
+    { name: '1. 提交买单', time: o.time },
+    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20' : '' },
+    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00' : '' },
+    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30' : '' },
+    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30' : '' },
+    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00' : '' }
+  ];
+
+  stepsContainer.innerHTML = steps.map((st, index) => {
+    const active = o.status !== -1 && index <= currentStep;
+    const done = o.status !== -1 && index < currentStep;
+    const numColor = active ? 'var(--primary-color)' : '#94a3b8';
+    const numBg = active ? 'var(--primary-bg)' : '#f1f5f9';
+    return `
+      <div style="flex:1; text-align:center; position:relative; z-index:1;">
+        <div style="width:32px; height:32px; border-radius:50%; background:${numBg}; color:${numColor}; border:2px solid ${active ? 'var(--primary-color)' : '#cbd5e1'}; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:bold; font-size:14px;">
+          ${done ? '✓' : index + 1}
+        </div>
+        <div style="font-weight:bold; color:${active ? '#1e293b' : '#64748b'}; font-size:12px;">${st.name}</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${st.time || '--'}</div>
+      </div>
+    `;
+  }).join('') + `
+    <!-- Line background -->
+    <div style="position:absolute; top:16px; left:40px; right:40px; height:2px; background:#cbd5e1; z-index:0;"></div>
+    <div style="position:absolute; top:16px; left:40px; width:calc(${o.status === -1 ? 0 : Math.min(100, (currentStep / 5) * 100)}% - 80px); height:2px; background:var(--primary-color); z-index:0; transition: width 0.3s ease;"></div>
+  `;
+
+  // Goods
+  const goodsTbody = document.getElementById('merchant-detail-goods-tbody');
+  const imgUrl = 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=120&q=80';
+  goodsTbody.innerHTML = `
+    <tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:12px;">
+        <img src="${imgUrl}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" />
+      </td>
+      <td style="padding:12px;">
+        <span style="font-weight:bold; color:#0f172a;">${o.productName}</span>
+      </td>
+      <td style="padding:12px; text-align:right; font-weight:bold; color:#475569;">${o.amount}</td>
+      <td style="padding:12px; text-align:center; color:#475569;">1 批次</td>
+      <td style="padding:12px; text-align:right; font-weight:bold; color:#0f172a;">${o.amount}</td>
+    </tr>
+  `;
+
+  document.getElementById('merchant-detail-subtotal-price').innerText = o.amount;
+  document.getElementById('merchant-detail-total-amount').innerText = o.amount;
+
+  // Contract
+  const contractWrapper = document.getElementById('merchant-detail-contract-wrapper');
+  if (contractWrapper) {
+    if (o.status === 0 || o.status === 5) {
+      contractWrapper.innerHTML = `
+        <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+          ⏳ 双方电子签约尚未完成，暂无可预览合同。
+        </div>
+      `;
+    } else {
+      const contractNo = o.contractNo || ('HT-' + o.id);
+      contractWrapper.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+            <span style="font-weight:bold; color:#1e293b; font-size:13px;">买家合同</span>
+            <button class="btn btn-outline btn-sm" id="merchant-detail-preview-contract-btn-buyer" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+            <span style="font-weight:bold; color:#1e293b; font-size:13px;">卖家合同</span>
+            <button class="btn btn-outline btn-sm" id="merchant-detail-preview-contract-btn-seller" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('merchant-detail-preview-contract-btn-buyer').onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 买家签署联', 'contract', contractNo, o.amount, o.buyerName, '远大钢铁官方直营店');
+      };
+      document.getElementById('merchant-detail-preview-contract-btn-seller').onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 卖家签署联', 'contract', contractNo, o.amount, o.buyerName, '远大钢铁官方直营店');
+      };
+    }
+  }
+
+  // Payment voucher
+  const voucherCard = document.getElementById('merchant-detail-payment-voucher-card');
+  if (voucherCard) {
+    const voucherTitle = `<h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+      <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+      支付凭证
+    </h3>`;
+    if (o.status === 0 || o.status === 5 || o.status === 4) {
+      voucherCard.style.display = 'none';
+    } else {
+      voucherCard.style.display = 'block';
+      const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
+      const isOnline = !o.paymentVoucher;
+      voucherCard.innerHTML = voucherTitle + `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+          <span style="font-weight:bold; color:#334155; font-size:13px;">支付凭证</span>
+          <button class="btn btn-outline btn-sm" id="merchant-detail-preview-voucher-btn" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+        </div>
+      `;
+      document.getElementById('merchant-detail-preview-voucher-btn').onclick = () => {
+        UI.previewDocument(isOnline ? '在线支付电子回单' : '线下对公转账凭证', 'voucher', voucherNo, o.amount, o.buyerName, '远大钢铁官方直营店');
+      };
+    }
+  }
+
+  // Logistics
+  document.getElementById('merchant-detail-logistics-no').innerText = (o.status >= 2 || o.status === 3) ? `${o.logisticsCarrier || '顺丰速运'} ${o.logisticsNo || 'SF1480928120'}` : '--';
+
+  // Buyer
+  document.getElementById('merchant-detail-buyer-name').innerText = o.buyerName || '--';
+
+
+};
+
+MerchantApp.hideOrderDetailPage = function() {
+  document.getElementById('merchant-order-list-section').style.display = 'block';
+  document.getElementById('merchant-order-detail-section').style.display = 'none';
+};
+
+MerchantApp.openShipDetailPage = function(orderId) {
+  MerchantApp.openShipModal(orderId);
+  // Add a callback to refresh detail page after ship submission
+  const oldSubmit = MerchantApp.submitShip;
+  MerchantApp.submitShip = function() {
+    oldSubmit();
+    MerchantApp.showOrderDetailPage(orderId);
+    MerchantApp.renderOrders();
+  };
+};

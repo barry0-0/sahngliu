@@ -170,7 +170,6 @@ const MallApp = {
             if (v.id === 'uc-cart') MallApp.renderCart();
             if (v.id === 'uc-bids') MallApp.renderUCBids();
             if (v.id === 'uc-orders') MallApp.renderUCOrders();
-            if (v.id === 'uc-messages') MallApp.renderUCMessages();
           }
         });
       });
@@ -200,9 +199,8 @@ const MallApp = {
                 <input type="text" id="qty-cat-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
                 <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-cat-${p.id}'); val.value=parseInt(val.value)+1">+</button>
               </div>
-              <div class="flex gap-1">
-                <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
-                <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-cat-${p.id}').value))">加入采购</button>
+              <div class="flex gap-1 w-full">
+                <button class="btn btn-primary btn-sm w-full" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-cat-${p.id}').value))">加入采购</button>
               </div>
             </div>
           </div>
@@ -238,9 +236,8 @@ const MallApp = {
                   <input type="text" id="qty-home-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
                   <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-home-${p.id}'); val.value=parseInt(val.value)+1">+</button>
                 </div>
-                <div class="flex gap-1">
-                  <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
-                  <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-home-${p.id}').value))">加入采购</button>
+                <div class="flex gap-1 w-full">
+                  <button class="btn btn-primary btn-sm w-full" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-home-${p.id}').value))">加入采购</button>
                 </div>
               </div>
             </div>
@@ -275,9 +272,8 @@ const MallApp = {
                   <input type="text" id="qty-spot-${p.id}" value="1" style="width: 24px; height:100%; border:none; border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0; text-align:center; font-size:11px; outline:none; padding:0;">
                   <button style="border:none; background:none; width: 18px; height: 100%; cursor:pointer; font-weight:bold; font-size:12px; display:flex; align-items:center; justify-content:center;" onclick="let val=document.getElementById('qty-spot-${p.id}'); val.value=parseInt(val.value)+1">+</button>
                 </div>
-                <div class="flex gap-1">
-                  <button class="btn btn-outline btn-sm" style="color:var(--primary-color); border-color:var(--primary-color); border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px;" onclick="UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">💬 询价</button>
-                  <button class="btn btn-primary btn-sm" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-spot-${p.id}').value))">加入采购</button>
+                <div class="flex gap-1 w-full">
+                  <button class="btn btn-primary btn-sm w-full" style="border-radius: 4px; padding: 0 6px; height: 26px; font-size:11px; background: var(--primary-color); border-color: var(--primary-color); color: #fff;" onclick="MallApp.addToCart('${p.id}', parseInt(document.getElementById('qty-spot-${p.id}').value))">加入采购</button>
                 </div>
               </div>
             </div>
@@ -369,9 +365,6 @@ const MallApp = {
             <div class="product-title">${p.name}</div>
             <div class="flex justify-between items-center">
               <div class="product-price">${p.priceStr}</div>
-              <button class="btn btn-outline text-xs px-2 py-1 flex items-center gap-1" style="color:var(--primary-color); border-color:var(--primary-color);" onclick="event.stopPropagation(); UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${p.name}'; document.getElementById('chat-prod-price').innerText='${p.priceStr}'; document.getElementById('chat-prod-img').src='${p.image}';">
-                💬 询价
-              </button>
             </div>
             <div class="product-shop text-sm text-secondary mt-2 flex justify-between items-center">
               <span>(店内) ${p.shopName}</span>
@@ -531,13 +524,12 @@ const MallApp = {
         if (myQuote.status === 1) {
           statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已采纳</span>`;
           btn = `<div style="display:flex; gap:10px; margin-top:12px;">
-                   <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${demandTitle}'; document.getElementById('chat-prod-price').innerText='${expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                   <span class="tag tag-success flex-1 text-center" style="font-size:12px; padding:6px 8px;">已采纳，请在线下执行订单合同</span>
                  </div>`;
         } else {
           statusTag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border:1px solid #91d5ff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">已报价</span>`;
           btn = `<div style="display:flex; gap:10px; margin-top:12px;">
-                   <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${demandTitle}'; document.getElementById('chat-prod-price').innerText='${expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-                   <button class="btn btn-primary btn-sm flex-1" onclick="MallApp.editMyQuote('${myQuote.id}')">修改报价</button>
+                   <button class="btn btn-primary btn-sm flex-1 w-full" onclick="MallApp.editMyQuote('${myQuote.id}')">修改报价</button>
                  </div>`;
         }
         quotePriceHtml = `<div><span class="inline-block w-20" style="color:var(--primary-color); font-weight:bold;">我的报价:</span> <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
@@ -564,8 +556,7 @@ const MallApp = {
         }
       } else {
         btn = `<div class="flex gap-2" style="margin-top: 12px;">
-                 <button class="btn btn-outline btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('modal-chat'); document.getElementById('chat-prod-title').innerText='${demandTitle}'; document.getElementById('chat-prod-price').innerText='${expectedPrice}'; document.getElementById('chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-                 <button class="btn btn-primary btn-sm flex-1" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.id}', '${demandTitle}', '${expectedPrice}'))">立即报价</button>
+                 <button class="btn btn-primary btn-sm flex-1 w-full" onclick="window.MainApp && MainApp.checkAuth('merchant', () => MallApp.openQuoteModal('${d.id}', '${demandTitle}', '${expectedPrice}'))">立即报价</button>
                </div>`;
       }
  
@@ -1140,7 +1131,7 @@ const MallApp = {
       }
       html += `
         <tr>
-          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
+          <td><a href="javascript:void(0)" onclick="MallApp.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
           <td>${o.productName}</td>
           <td>
             <div>${o.shopName}</div>
@@ -1151,7 +1142,7 @@ const MallApp = {
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
               ${actBtn}
-              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+              <button class="btn btn-text btn-sm" onclick="MallApp.showOrderDetail('${o.id}')">详情</button>
             </div>
           </td>
         </tr>
@@ -1233,6 +1224,19 @@ const MallApp = {
     const contractEl = document.getElementById('pc-detail-contract-no');
     if (contractEl) contractEl.innerText = o.contractNo || ('HT-' + o.id);
 
+    const prevContractBtnBuyer = document.getElementById('pc-detail-preview-contract-btn-buyer');
+    if (prevContractBtnBuyer) {
+      prevContractBtnBuyer.onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量保证金协议》- 买家签署联', 'contract', o.contractNo || ('HT-' + o.id), o.amount, o.buyerName, o.shopName);
+      };
+    }
+    const prevContractBtnSeller = document.getElementById('pc-detail-preview-contract-btn-seller');
+    if (prevContractBtnSeller) {
+      prevContractBtnSeller.onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量保证金协议》- 卖家签署联', 'contract', o.contractNo || ('HT-' + o.id), o.amount, o.buyerName, o.shopName);
+      };
+    }
+
     // 5. 填充买家与收货物流
     const rName = document.getElementById('pc-detail-receiver-name');
     if (rName) rName.innerText = o.buyerName || '张三';
@@ -1275,9 +1279,9 @@ const MallApp = {
       if (o.status === 2) {
         actionHtml += `<button class="btn btn-primary" onclick="MallApp.confirmBuyerReceipt('${o.id}')" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认收货</button>`;
       } else if (o.status === 4) {
-        actionHtml += `<button class="btn btn-primary" onclick="UI.toast('已拉起聚合支付结算', 'success')" style="border-radius:20px; padding:8px 24px; font-weight:bold;">去付款</button>`;
+        actionHtml += `<button class="btn btn-primary" onclick="UI.showPaymentModal('${o.id}', () => MallApp.switchOrderDetailStatus('${o.id}', 1))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">去付款</button>`;
       } else if (o.status === 0) {
-        actionHtml += `<button class="btn btn-primary" onclick="UI.toast('已签署交易合同', 'success'); MallApp.switchOrderDetailStatus('${o.id}', 4);" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认签约合同</button>`;
+        actionHtml += `<button class="btn btn-primary" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.switchOrderDetailStatus('${o.id}', 4))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认签约合同</button>`;
       }
       actionHtml += `<button class="btn btn-outline" onclick="UI.toast('电子合同已调起下载', 'info')" style="border-radius:20px; padding:8px 16px;">下载电子合同</button>`;
       topActionsEl.innerHTML = actionHtml;
@@ -1351,51 +1355,29 @@ const MallApp = {
           voucherCard.innerHTML = `
             <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 16px 0;">
               <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
-              大宗货款支付凭证
+              支付凭证
             </h3>
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="font-size:24px;">🏦</div>
-                <div>
-                  <div style="font-weight:bold; color:#166534; font-size:14px;">线下对公转账凭证 (${o.paymentVoucher})</div>
-                  <div style="font-size:12px; color:#64748b; margin-top:2px;">凭证已上传 | 汇款金额: ${o.amount} | 平台财务已核销入账</div>
-                </div>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="alert('正在预览付款凭证：' + '${o.paymentVoucher}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer;">查看付款凭证</button>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+              <span style="font-weight:bold; color:#166534; font-size:13px;">支付凭证</span>
+              <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('线下对公转账凭证', 'voucher', '${o.paymentVoucher}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer; padding:4px 12px;">【预览】</button>
             </div>
           `;
         } else {
           voucherCard.innerHTML = `
             <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 16px 0;">
               <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
-              大宗货款支付凭证
+              支付凭证
             </h3>
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="font-size:24px;">⚡</div>
-                <div>
-                  <div style="font-weight:bold; color:#166534; font-size:14px;">在线快捷担保支付</div>
-                  <div style="font-size:12px; color:#64748b; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 托管资金入账成功 (免服务费)</div>
-                </div>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="alert('正在预览在线支付电子回单：TXN-PAY-' + '${o.id}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer;">查看电子回单</button>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+              <span style="font-weight:bold; color:#166534; font-size:13px;">支付凭证</span>
+              <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; color:#166534; border-color:#bbf7d0; background:#fff; cursor:pointer; padding:4px 12px;">【预览】</button>
             </div>
           `;
         }
       }
     }
 
-    // 履约日志
-    const logsContainer = document.getElementById('pc-detail-logs');
-    if (logsContainer) {
-      logsContainer.innerHTML = `
-        <div>• 2026-07-07 10:15 买家提交订单成功</div>
-        <div>• 2026-07-07 10:30 双方在线签署交易合同</div>
-        <div>• 2026-07-07 11:00 托管资金入账成功</div>
-        <div>• 2026-07-08 09:00 商家已安排专车发货出库</div>
-        ${o.status === 3 ? '<div>• 2026-07-09 14:00 买家确认收货，交易完结</div>' : ''}
-      `;
-    }
+
 
     // 状态调试切换器
     const switchersContainer = document.getElementById('pc-detail-status-switchers');
@@ -1889,3 +1871,26 @@ window.MallApp = MallApp;
 document.addEventListener('DOMContentLoaded', () => {
   MallApp.init();
 });
+
+window.openPlatformCustomerService = () => {
+  UI.openModal('modal-chat');
+  document.getElementById('chat-shop-name').innerText = '平台官方客服';
+  document.getElementById('chat-prod-title').innerText = '大宗交易安全与履约保障客服';
+  document.getElementById('chat-prod-price').innerText = '官方客服在线在线';
+  document.getElementById('chat-prod-img').src = 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=120&q=80';
+  
+  const msgContainer = document.getElementById('chat-messages');
+  if (msgContainer) {
+    msgContainer.innerHTML = `
+      <div class="message system" style="text-align: center; color: #94a3b8; font-size: 11px; margin: 4px 0;">
+        平台官方客服已接入，由智能助理为您提供保障服务
+      </div>
+      <div class="message seller" style="display: flex; gap: 10px; align-items: flex-start; justify-content: flex-start; margin-bottom: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">客</div>
+        <div style="background: #f1f5f9; border-radius: 0 12px 12px 12px; padding: 10px 14px; max-width: 70%; font-size: 12px; color: #1e293b; line-height: 1.4;">
+          您好！我是大宗物资交易平台官方客服。请问您在签约合同、支付货款、物流配送或发票开具过程中遇到了什么问题？我会安全为您解决！
+        </div>
+      </div>
+    `;
+  }
+};

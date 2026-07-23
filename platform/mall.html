@@ -369,7 +369,7 @@
             <div class="uc-menu-item" data-target="uc-cart">我的购物车 <span class="tag tag-danger" id="cart-badge-uc" style="border-radius:10px; padding:2px 6px; font-size:10px; margin-left:4px; display:none; background:#ff4d4f; color:#fff; font-weight:bold;">0</span></div>
             <div class="uc-menu-item" data-target="uc-invoices">发票申请</div>
             <div class="uc-menu-item" data-target="uc-bids">我参与的竞价</div>
-            <div class="uc-menu-item" data-target="uc-messages">消息中心</div>
+
 
           </div>
         </aside>
@@ -523,10 +523,6 @@
                         <span id="pc-detail-subtotal-price" style="font-weight:bold; color:#334155;">¥ 0.00</span>
                       </div>
                       <div style="display:flex; justify-content:space-between; color:#64748b;">
-                        <span>运费/专车配送费:</span>
-                        <span style="color:#16a34a; font-weight:bold;">包含在包厢单价中 (免运费)</span>
-                      </div>
-                      <div style="display:flex; justify-content:space-between; color:#64748b;">
                         <span>平台综合服务费:</span>
                         <span style="color:#64748b;">¥ 0.00 (免服务费)</span>
                       </div>
@@ -544,15 +540,17 @@
                     <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
                     电子合同与法务存证
                   </h3>
-                  <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                      <div style="font-size:24px;">📄</div>
-                      <div>
-                        <div style="font-weight:bold; color:#1e293b; font-size:14px;" id="pc-detail-contract-name">《大宗物资买卖交易合同及质量保证金协议》</div>
-                        <div style="font-size:12px; color:#64748b; margin-top:2px;">合同编号: <span id="pc-detail-contract-no">HT-20260707-8891</span> | 双方已完成数字签章 (司法区块链存证)</div>
-                      </div>
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- 买家合同 -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+                      <span style="font-weight:bold; color:#1e293b; font-size:13px;">买家合同</span>
+                      <button class="btn btn-outline btn-sm" id="pc-detail-preview-contract-btn-buyer" style="border-radius:6px; padding:4px 12px;">【预览】</button>
                     </div>
-                    <button class="btn btn-outline btn-sm" onclick="UI.toast('已成功调起电子合同查看', 'info')" style="border-radius:6px;">预览存证合同</button>
+                    <!-- 卖家合同 -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+                      <span style="font-weight:bold; color:#1e293b; font-size:13px;">卖家合同</span>
+                      <button class="btn btn-outline btn-sm" id="pc-detail-preview-contract-btn-seller" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+                    </div>
                   </div>
                 </div>
 
@@ -574,52 +572,8 @@
                 </div>
               </div>
 
-              <!-- 右侧：收货地址与物流、商家店铺卡片、履约日志 -->
-              <div style="display:flex; flex-direction:column; gap:20px;">
-                <!-- 物流与收货人 -->
-                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
-                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">📦 收货信息与物流跟踪</h4>
-                  <div style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
-                    <div>
-                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货人:</span>
-                      <strong id="pc-detail-receiver-name" style="color:#1e293b;">张三</strong>
-                      <span id="pc-detail-receiver-phone" style="color:#64748b; margin-left:8px;">138****8818</span>
-                    </div>
-                    <div>
-                      <span style="color:#94a3b8; width:70px; display:inline-block;">收货地址:</span>
-                      <span id="pc-detail-receiver-addr" style="color:#334155;">浙江省杭州市萧山区大宗仓储物流园区5号仓库</span>
-                    </div>
-                    <div style="margin-top:4px; padding-top:8px; border-top:1px dashed #f1f5f9;">
-                      <span style="color:#94a3b8; width:70px; display:inline-block;">承运物流:</span>
-                      <span id="pc-detail-logistics-comp" style="color:#1e293b; font-weight:bold;">顺丰专车大宗运输</span>
-                    </div>
-                    <div>
-                      <span style="color:#94a3b8; width:70px; display:inline-block;">运单单号:</span>
-                      <span id="pc-detail-logistics-no" style="font-family:monospace; color:#0284c7; font-weight:bold;">SF1480928120</span>
-                    </div>
-                  </div>
-                </div>
 
-                <!-- 卖家/商户信息 -->
-                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
-                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">🏪 卖家商户信息</h4>
-                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                    <div id="pc-detail-shop-avatar" style="width:40px; height:40px; border-radius:50%; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">商</div>
-                    <div>
-                      <div id="pc-detail-shop-name" style="font-weight:bold; color:#0f172a; font-size:14px;">远大钢铁官方直营店</div>
-                      <div style="font-size:11px; color:#16a34a; margin-top:2px;">✓ 平台认证真实企业商户</div>
-                    </div>
-                  </div>
-                  <button class="btn btn-outline btn-sm w-full" onclick="UI.toast('已拉起IM客服会话', 'info')" style="width:100%; border-radius:6px;">💬 联系卖家在线客服</button>
-                </div>
 
-                <!-- 关键履约日志 -->
-                <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
-                  <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">⏱️ 履约存证日志</h4>
-                  <div id="pc-detail-logs" style="font-size:12px; display:flex; flex-direction:column; gap:10px; color:#64748b;">
-                    <!-- JS 动态渲染日志 -->
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -629,7 +583,7 @@
             <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px;">
               <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold">增值税发票中心</h3>
-                <button class="btn btn-primary" onclick="UI.toast('已提交开票申请', 'success')">发起新发票申请</button>
+                <button class="btn btn-primary" onclick="UI.toast('已提交开票申请', 'success')"></button>
               </div>
               <table class="table" id="table-uc-invoices">
                 <thead style="background:#f8f9fa;"><tr><th>发票流水号</th><th>类型</th><th>申请金额</th><th>申请时间</th><th>状态</th></tr></thead>
@@ -638,21 +592,7 @@
             </div>
           </div>
 
-          <!-- 3. 消息中心 -->
-          <div id="uc-messages" class="uc-view" style="display:none;">
-            <div class="card-body shadow-sm border-0" style="background:#fff; border-radius:8px; padding: 20px;">
-              <div class="flex justify-between items-center mb-6" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
-                <h3 class="text-xl font-bold" style="margin:0; color:#1e293b;">💬 消息沟通中心</h3>
-              </div>
-              <div class="flex gap-4 mb-6">
-                <button class="btn btn-primary" id="btn-msg-tab-spot" onclick="MallApp.switchMsgTab('spot')" style="border-radius:18px; padding: 6px 16px; font-size:12px;">现货沟通</button>
-                <button class="btn btn-outline" id="btn-msg-tab-demand" onclick="MallApp.switchMsgTab('demand')" style="border-radius:18px; padding: 6px 16px; font-size:12px;">求购需求沟通</button>
-              </div>
-              <div id="uc-messages-list" style="display:flex; flex-direction:column; gap:10px;">
-                <!-- JS 动态渲染消息列表 -->
-              </div>
-            </div>
-          </div>
+
           
           <!-- 我参与的竞价 -->
           <div id="uc-bids" class="uc-view">
@@ -682,16 +622,7 @@
             </div>
           </div>
 
-          <!-- 5. 消息中心 -->
-          <div id="uc-messages" class="uc-view">
-             <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
-              <h3 class="text-xl font-bold mb-6">系统消息通知</h3>
-              <table class="table" id="table-uc-messages">
-                <thead style="background:#f8f9fa;"><tr><th>时间</th><th>标题</th><th>内容</th></tr></thead>
-                <tbody><!-- JS 渲染 --></tbody>
-              </table>
-            </div>
-          </div>
+
 
           <div id="uc-cart" class="uc-view">
             <div class="card-body table-wrapper shadow-sm border-0" style="background:#fff; border-radius:8px;">
@@ -732,13 +663,16 @@
     <div class="mall-container">
       <div class="flex justify-center gap-8 mb-4">
         <span class="cursor-pointer hover:text-white">关于平台</span>
-        <span class="cursor-pointer hover:text-white">联系客服</span>
+        <span class="cursor-pointer hover:text-white" onclick="openPlatformCustomerService()">联系客服</span>
         <span class="cursor-pointer hover:text-white">入驻指南</span>
         <span class="cursor-pointer hover:text-white">隐私政策</span>
       </div>
       <div>&copy; 2026 咖喱粑粑 S2B2C 供应链交易平台 All Rights Reserved.</div>
     </div>
   </footer>
+  <!-- Floating Customer Service Button -->
+  <div id="float-customer-service" onclick="openPlatformCustomerService()" style="position: fixed; right: 24px; bottom: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: var(--shadow-md); cursor: pointer; z-index: 1000; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="联系平台官方客服">💬</div>
+
 
   <!-- 竞价详情弹窗 (包含6步流程) -->
   <div class="modal-overlay" id="modal-bidding-detail" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 1050;">

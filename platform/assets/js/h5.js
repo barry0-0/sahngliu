@@ -44,9 +44,6 @@ const H5App = {
         if (targetId === 'view-uc-orders') {
           H5App.renderUserOrders();
         }
-        if (targetId === 'view-uc-messages') {
-          H5App.renderUserMessages();
-        }
         if (targetId === 'view-uc-demands') {
           H5App.renderUserDemands();
         }
@@ -116,118 +113,7 @@ const H5App = {
 
   _msgTab: 'spot',
 
-  switchMsgTab(tab) {
-    this._msgTab = tab;
-    this.renderUserMessages();
-  },
 
-  renderUserMessages() {
-    const container = document.querySelector('#view-uc-messages');
-    if (!container) return;
-    
-    const tabsHtml = `
-      <header class="h5-header flex items-center justify-center bg-white" style="padding: 0 16px; font-weight: bold; border-bottom: 1px solid #f1f5f9; flex-shrink:0; height:60px;">
-        <div>消息中心</div>
-      </header>
-      <div class="flex border-b border-slate-100 bg-white" style="flex-shrink:0;">
-        <div class="flex-1 text-center py-3 font-bold text-sm ${this._msgTab === 'spot' ? 'text-primary' : 'text-slate-500'}" 
-             style="${this._msgTab === 'spot' ? 'border-bottom: 2px solid var(--primary-color);' : ''}" 
-             onclick="H5App.switchMsgTab('spot')">
-          现货沟通
-        </div>
-        <div class="flex-1 text-center py-3 font-bold text-sm ${this._msgTab === 'demand' ? 'text-primary' : 'text-slate-500'}" 
-             style="${this._msgTab === 'demand' ? 'border-bottom: 2px solid var(--primary-color);' : ''}" 
-             onclick="H5App.switchMsgTab('demand')">
-          求购沟通
-        </div>
-      </div>
-    `;
-    
-    let listHtml = '<div class="flex-1 overflow-y-auto" style="padding-bottom:80px; background:#fff;">';
-    if (this._msgTab === 'spot') {
-      const mockChats = [
-        {
-          shopName: '特钢新材料厂直营店',
-          prodTitle: 'HRB400E 螺纹钢 12mm',
-          prodPrice: '¥3950/吨',
-          prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
-          time: '10:35'
-        },
-        {
-          shopName: '中铁物流建材城',
-          prodTitle: 'Q345B 槽钢 10#',
-          prodPrice: '¥4150/吨',
-          prodImg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=150&q=80',
-          time: '昨天'
-        },
-        {
-          shopName: '宏源工程管业制造',
-          prodTitle: '大宗工程镀锌管 100mm',
-          prodPrice: '¥4280/吨',
-          prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
-          time: '星期三'
-        }
-      ];
-
-      mockChats.forEach(chat => {
-        listHtml += `
-          <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
-            <div style="width: 40px; height: 40px; border-radius: 6px; background: #e0e7ff; color: #1677ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
-              店
-            </div>
-            <div class="flex-1 overflow-hidden">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
-                <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
-              </div>
-              <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-                📦 现货沟通: ${chat.prodTitle} | ${chat.prodPrice}
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    } else {
-      const mockChats = [
-        {
-          shopName: '远大钢铁官方直营店',
-          prodTitle: '急求 50吨 Q345B 槽钢，交期7天内',
-          prodPrice: '¥4,150.00/吨',
-          prodImg: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=150&q=80',
-          time: '12:00'
-        },
-        {
-          shopName: '海螺水泥华东总代',
-          prodTitle: '采购 P.O 42.5 散装水泥 500吨 需送达杭州工地',
-          prodPrice: '¥298.00/吨',
-          prodImg: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80',
-          time: '昨天'
-        }
-      ];
-
-      mockChats.forEach(chat => {
-        listHtml += `
-          <div class="flex items-center gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="H5App.openChat('${chat.shopName}', '${chat.prodTitle}', '${chat.prodPrice}', '${chat.prodImg}')">
-            <div style="width: 40px; height: 40px; border-radius: 6px; background: #ffe8d6; color: #fa8c16; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size:16px; flex-shrink:0;">
-              求
-            </div>
-            <div class="flex-1 overflow-hidden">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-slate-800 text-sm truncate" style="max-width:70%;">${chat.shopName}</span>
-                <span class="text-[10px] text-slate-400 font-semibold">${chat.time}</span>
-              </div>
-              <div style="font-size: 11px; color:#64748b; background:#f1f5f9; padding:4px 8px; border-radius:4px; display:inline-block; max-width:95%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-                📢 求购沟通: ${chat.prodTitle} | ${chat.prodPrice}
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    }
-    listHtml += '</div>';
-    
-    container.innerHTML = tabsHtml + listHtml;
-  },
 
   renderQuickCategories() {
     const container = document.getElementById('h5-quick-categories');
@@ -329,12 +215,9 @@ const H5App = {
               </div>
             </div>
             
-            <div class="action-bar mt-4 flex items-center justify-between" onclick="event.stopPropagation()">
-              <button class="btn btn-outline flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; color: var(--primary-color); border-color: rgba(0, 82, 217, 0.2); background: rgba(0, 82, 217, 0.05); border-radius: 50%; flex-shrink: 0; cursor: pointer;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
-                <svg class="icon-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              </button>
+            <div class="action-bar mt-4 flex items-center justify-end" onclick="event.stopPropagation()">
               
-              <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
+              <div class="flex items-center gap-1" style="justify-content: flex-end;">
                 <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center; margin-right: 4px;">
                   <button class="stepper-btn minus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
                   <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 12px; width: 32px; height: 24px;" onclick="event.stopPropagation()">
@@ -438,7 +321,7 @@ const H5App = {
     }
 
     if (keyword) {
-      filtered = filtered.filter(d => d.title.includes(keyword) || d.buyerName.includes(keyword));
+      filtered = filtered.filter(d => (d.title || d.goodsName || '').includes(keyword) || d.buyerName.includes(keyword));
     }
 
     if (filtered.length === 0) {
@@ -458,13 +341,12 @@ const H5App = {
         if (myQuote.status === 1) {
           statusTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已采纳</span>`;
           btn = `<div class="flex gap-2 mt-2">
-                   <button class="btn btn-outline flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
+                   <span class="tag tag-success flex-1 text-center" style="font-size:12px; padding:6px 8px; border-radius:18px;">已采纳，请在线下执行订单合同</span>
                  </div>`;
         } else {
           statusTag = `<span class="tag tag-warning" style="background:#e6f7ff; color:#1890ff; border:1px solid #91d5ff; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:10px;">已报价</span>`;
           btn = `<div class="flex gap-2 mt-2">
-                   <button class="btn btn-outline flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-                   <button class="btn btn-primary flex-1" style="height:36px; border-radius:18px; font-size:13px;" onclick="H5App.editMyQuote('${myQuote.id}')">修改报价</button>
+                   <button class="btn btn-primary flex-1 w-full" style="height:36px; border-radius:18px; font-size:13px;" onclick="H5App.editMyQuote('${myQuote.id}')">修改报价</button>
                  </div>`;
         }
         quotePriceHtml = `<div style="font-size:12px; color:#475569; margin-top:4px;">我的报价: <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
@@ -491,8 +373,7 @@ const H5App = {
         }
       } else {
         btn = `<div class="flex gap-2 mt-2">
-                 <button class="btn btn-outline flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => { UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${d.title.replace(/'/g, "\\'")}'; document.getElementById('h5-chat-prod-price').innerText='${d.expectedPrice}'; document.getElementById('h5-chat-prod-img').src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80'; })">💬 沟通</button>
-                 <button class="btn btn-primary flex-1" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => H5App.openQuoteModal('${d.id}', '${d.title.replace(/'/g, "\\'")}', '${d.expectedPrice}'))">立即报价</button>
+                 <button class="btn btn-primary flex-1 w-full" style="height: 36px; border-radius: 18px;" onclick="window.MainApp && MainApp.checkAuth('merchant', () => H5App.openQuoteModal('${d.id}', '${(d.goodsName || d.title || '').replace(/'/g, "\\'")}', '${d.expectedPrice || '面议'}'))">立即报价</button>
                </div>`;
       }
 
@@ -1181,11 +1062,8 @@ const H5App = {
             <div style="font-weight: bold; font-size: 13px; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.name}</div>
             <div style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${p.priceStr}</div>
             <div class="text-xs text-gray-400 mt-1">(店内) ${p.shopName}</div>
-            <div class="mt-2 flex items-center justify-between" onclick="event.stopPropagation()">
-              <button class="btn btn-outline flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; color: var(--primary-color); border-color: rgba(0, 82, 217, 0.2); background: rgba(0, 82, 217, 0.05); border-radius: 50%; flex-shrink: 0; cursor: pointer;" onclick="event.stopPropagation(); UI.openModal('sheet-h5-chat'); document.getElementById('h5-chat-prod-title').innerText='${p.name}'; document.getElementById('h5-chat-prod-price').innerText='${p.priceStr}'; document.getElementById('h5-chat-prod-img').src='${p.image}';">
-                <svg class="icon-svg" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              </button>
-              <div class="flex items-center gap-1" style="flex: 1; justify-content: flex-end;">
+            <div class="mt-2 flex items-center justify-end" onclick="event.stopPropagation()">
+              <div class="flex items-center gap-1" style="justify-content: flex-end;">
                 <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center; margin-right: 4px;">
                   <button class="stepper-btn minus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
                   <input type="number" id="qty-in-${p.id}" value="1" min="1" class="stepper-input" style="font-size: 12px; width: 32px; height: 24px;" onclick="event.stopPropagation()">
@@ -1514,7 +1392,7 @@ const H5App = {
         }
 
         html += `
-          <div onclick="UI.showOrderDetail('${o.id}')" style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+          <div onclick="H5App.showH5OrderDetail('${o.id}')" style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
             <div class="flex justify-between items-center mb-3 pb-3" style="border-bottom: 1px solid #f8fafc; display:flex; justify-content:space-between; align-items:center;">
               <div style="font-family: monospace; font-size: 12px; color: #64748b;">${o.id}</div>
               ${statusTag}
@@ -1539,6 +1417,125 @@ const H5App = {
       UI.toast(`订单 ${orderId} 确认收货成功！交易已完成`, 'success');
       this.renderUserOrders();
     }
+  },
+
+  showH5OrderDetail(orderId) {
+    const o = MockData.orders.find(item => item.id === orderId);
+    if (!o) return;
+
+    this.switchH5View('view-uc-order-detail');
+
+    // Fill order detail elements
+    document.getElementById('h5-detail-order-id').innerText = o.id;
+    
+    const typeTag = document.getElementById('h5-detail-type-tag');
+    typeTag.innerText = o.type || '现货交易订单';
+
+    // Status mapping
+    const statusMap = {
+      0: { title: '等待双方签约', desc: '买卖双方正在进行CA数字签名，签署合同协议。' },
+      5: { title: '待卖家签约', desc: '买家已签名，等待供应商家签署确认。' },
+      4: { title: '等待买方付款', desc: '请及时在钱包或通过线下对公向平台监管账户汇款。' },
+      1: { title: '等待卖家发货', desc: '资金托管入账已确认，等待卖家安排专车大宗运输发货。' },
+      2: { title: '卖家已发货', desc: '专车已在途运输，请在收到货品后核对质量并确认收货。' },
+      3: { title: '交易已完成', desc: '双方均已确认收货，货款已划拨至卖家商户余额。' },
+      '-1': { title: '订单已关闭', desc: o.closeReason || '交易异常已关闭。' }
+    };
+    const s = statusMap[o.status] || { title: '订单处理中', desc: '请耐心等待平台处理...' };
+    document.getElementById('h5-detail-status-text').innerText = s.title;
+    document.getElementById('h5-detail-status-desc').innerText = s.desc;
+
+    // Goods info
+    const imgUrl = 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=120&q=80';
+    document.getElementById('h5-detail-goods-img').src = imgUrl;
+    document.getElementById('h5-detail-goods-name').innerText = o.productName;
+    document.getElementById('h5-detail-goods-price').innerText = o.amount;
+    document.getElementById('h5-detail-subtotal').innerText = o.amount;
+    document.getElementById('h5-detail-total').innerText = o.amount;
+
+    // Delivery info
+    const logisticsNoEl = document.getElementById('h5-detail-logistics-no');
+    if (logisticsNoEl) {
+      logisticsNoEl.innerText = (o.status >= 2 || o.status === 3) ? 'SF1480928120' : '--';
+    }
+
+    // Contract
+    const contractWrapper = document.getElementById('h5-detail-contract-wrapper');
+    if (contractWrapper) {
+      if (o.status === 0 || o.status === 5) {
+        contractWrapper.innerHTML = `
+          <div style="padding:10px; text-align:center; color:#94a3b8; font-size:12px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+            ⏳ 电子签约尚未完成，暂无可预览合同。
+          </div>
+        `;
+      } else {
+        const contractNo = o.contractNo || ('HT-' + o.id);
+        contractWrapper.innerHTML = `
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:12px; color:#1e293b;">买家合同</span>
+            <button class="btn btn-outline btn-xs" id="h5-detail-preview-contract-btn-buyer" style="border-radius:4px; padding:4px 8px; font-size:11px;">【预览】</button>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:12px; color:#1e293b;">卖家合同</span>
+            <button class="btn btn-outline btn-xs" id="h5-detail-preview-contract-btn-seller" style="border-radius:4px; padding:4px 8px; font-size:11px;">【预览】</button>
+          </div>
+        `;
+        document.getElementById('h5-detail-preview-contract-btn-buyer').onclick = () => {
+          UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 买家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
+        };
+        document.getElementById('h5-detail-preview-contract-btn-seller').onclick = () => {
+          UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 卖家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
+        };
+      }
+    }
+
+    // Payment Voucher Section
+    const voucherSection = document.getElementById('h5-detail-payment-voucher-section');
+    if (o.status === 0 || o.status === 5 || o.status === 4) {
+      voucherSection.style.display = 'none';
+    } else {
+      voucherSection.style.display = 'flex';
+      const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
+      const isOnline = !o.paymentVoucher;
+      voucherSection.innerHTML = `
+        <span style="font-weight:bold; font-size:12px; color:#166534;">支付凭证</span>
+        <button class="btn btn-outline btn-xs" id="h5-detail-preview-voucher-btn" style="border-radius:4px; padding:4px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
+      `;
+      document.getElementById('h5-detail-preview-voucher-btn').onclick = () => {
+        UI.previewDocument(isOnline ? '在线支付电子回单' : '线下对公转账凭证', 'voucher', voucherNo, o.amount, o.buyerName, o.shopName);
+      };
+    }
+
+    // Timeline nodes (Vertical)
+    const timeline = document.getElementById('h5-detail-timeline');
+    let currentStep = 0;
+    if (o.status === 0 || o.status === 5) currentStep = 1; // 签约中
+    else if (o.status === 4) currentStep = 2; // 待付款
+    else if (o.status === 1) currentStep = 3; // 待发货
+    else if (o.status === 2) currentStep = 4; // 待签收
+    else if (o.status === 3) currentStep = 5; // 已完成
+
+    const steps = [
+      { name: '提交订单', time: o.time },
+      { name: '双边 CA 电子签约完成', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20' : '' },
+      { name: '货款资金平台托管入账', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00' : '' },
+      { name: '卖家安排专车发货配送', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30' : '' },
+      { name: '买方现场核验签字确认收货', time: (o.status === 3) ? '2026-07-09 08:30' : '' },
+      { name: '财务清算划拨，订单履约完结', time: (o.status === 3) ? '2026-07-09 10:00' : '' }
+    ];
+
+    timeline.innerHTML = steps.map((st, index) => {
+      const active = o.status !== -1 && index <= currentStep;
+      const dotColor = active ? 'var(--primary-color)' : '#cbd5e1';
+      return `
+        <div style="position:relative; display:flex; flex-direction:column; gap:2px; text-align: left;">
+          <!-- Node Dot -->
+          <div style="position:absolute; left:-19px; top:4px; width:10px; height:10px; border-radius:50%; background:${dotColor}; border:2px solid #fff; box-shadow:0 0 0 2px ${active ? 'rgba(126,34,206,0.2)' : 'transparent'};"></div>
+          <div style="font-weight:bold; font-size:13px; color:${active ? '#1e293b' : '#94a3b8'};">${st.name}</div>
+          <div style="font-size:11px; color:#94a3b8;">${st.time || '等待前置环节完成...'}</div>
+        </div>
+      `;
+    }).join('');
   },
 
   openUserContractModal(orderId) {

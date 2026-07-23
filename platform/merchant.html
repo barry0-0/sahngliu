@@ -124,34 +124,34 @@
             <!-- Mock Bar Chart using CSS Flex -->
             <div style="display:flex; justify-content:space-between; align-items:flex-end; height: 160px; padding: 10px 20px 0; border-bottom: 1px solid #e2e8f0;">
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#64748b; font-family:monospace;">¥32.5</span>
+                <span style="font-size:10px; color:#64748b; font-family:monospace;">32.50</span>
                 <div style="width: 20px; height: 65px; background: #cbd5e1; border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#94a3b8;">1月</span>
               </div>
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#64748b; font-family:monospace;">¥41.0</span>
+                <span style="font-size:10px; color:#64748b; font-family:monospace;">41.00</span>
                 <div style="width: 20px; height: 82px; background: #cbd5e1; border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#94a3b8;">2月</span>
               </div>
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#64748b; font-family:monospace;">¥55.2</span>
+                <span style="font-size:10px; color:#64748b; font-family:monospace;">55.20</span>
                 <div style="width: 20px; height: 110px; background: #cbd5e1; border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#94a3b8;">3月</span>
               </div>
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#64748b; font-family:monospace;">¥68.0</span>
+                <span style="font-size:10px; color:#64748b; font-family:monospace;">68.00</span>
                 <div style="width: 20px; height: 136px; background: #cbd5e1; border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#94a3b8;">4月</span>
               </div>
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:var(--primary-color); font-family:monospace; font-weight:bold;">¥86.5</span>
+                <span style="font-size:10px; color:var(--primary-color); font-family:monospace; font-weight:bold;">86.50</span>
                 <div style="width: 20px; height: 160px; background: var(--primary-color); border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#1e293b; font-weight:bold;">5月</span>
               </div>
               <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#94a3b8; font-family:monospace;">预测</span>
+                <span style="font-size:10px; color:#94a3b8; font-family:monospace;">75.00</span>
                 <div style="width: 20px; height: 145px; background: #e2e8f0; border-radius: 4px 4px 0 0; border: 1px dashed #cbd5e1;"></div>
-                <span style="font-size:11px; color:#94a3b8;">6月</span>
+                <span style="font-size:11px; color:#94a3b8;">6月(预测)</span>
               </div>
             </div>
           </div>
@@ -204,11 +204,12 @@
               <thead>
                 <tr style="background: #f8fafc; text-align: left;">
                   <th class="p-2">序号</th>
-                  <th class="p-2">订单号</th>
-                  <th class="p-2">货物名称</th>
-                  <th class="p-2">采购商</th>
-                  <th class="p-2">金额</th>
-                  <th class="p-2">状态</th>
+                  <th class="p-2">订单编号</th>
+                  <th class="p-2">订单类型</th>
+                  <th class="p-2">买家</th>
+                  <th class="p-2">订单金额</th>
+                  <th class="p-2">履约状态</th>
+                  <th class="p-2">创建时间</th>
                 </tr>
               </thead>
               <tbody id="merchant-db-order-tbody">
@@ -351,44 +352,67 @@
 
       <!-- ================== 3. 订单管理 ================== -->
       <div id="page-orders" class="page-view" style="display: none;">
-        <div class="card-body table-wrapper" style="background:#fff; padding: 20px;">
+        <!-- 订单列表视图 -->
+        <div id="merchant-order-list-section" class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+          <div class="card-header flex justify-between items-center" style="background:#fff; border-bottom: 1px solid var(--border-light); padding:16px 20px;">
+             <h3 class="card-title text-slate-800 font-bold m-0" style="font-size:16px; margin:0;">📋 订单履约中心</h3>
+          </div>
+          <div class="card-body table-wrapper" style="background:#fff; padding: 20px;">
           <!-- 丰富筛选条件 -->
-          <div class="flex gap-4 mb-4 flex-wrap" style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
-            <input type="text" id="filter-order-kw" class="form-control" placeholder="输入买家/商品/单号..." style="width: 180px; padding:6px 12px;">
-            <select id="filter-order-status" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部履约状态</option>
-              <option value="4">待付款</option>
-              <option value="0">待买家签约</option>
-              <option value="5">待卖家签约</option>
-              <option value="1">待发货</option>
-              <option value="2">已发货</option>
-              <option value="3">已完结</option>
-            </select>
-            <select id="filter-order-type" class="form-control" style="width: 130px; padding:6px 12px;">
-              <option value="">全部交易类型</option>
-              <option value="现货交易">现货交易</option>
-              <option value="竞价交易">竞价交易</option>
-            </select>
-            <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#555;">
-              <span>下单日期:</span>
-              <input type="date" id="filter-order-start" class="form-control" style="width:130px; padding:4px 8px;">
-              <span>至</span>
-              <input type="date" id="filter-order-end" class="form-control" style="width:130px; padding:4px 8px;">
+          <div class="flex gap-4 mb-4 flex-wrap" style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; align-items:center; font-size:13px;">
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">订单编号</label>
+              <input type="text" id="filter-order-id" class="form-control" placeholder="精确匹配订单编号" style="width: 140px; padding:6px 12px;">
             </div>
-            <button class="btn btn-primary" onclick="MerchantApp.renderOrders()">查询</button>
-            <button class="btn btn-outline" onclick="document.getElementById('filter-order-kw').value=''; document.getElementById('filter-order-status').value=''; document.getElementById('filter-order-type').value=''; document.getElementById('filter-order-start').value=''; document.getElementById('filter-order-end').value=''; MerchantApp.renderOrders();">重置</button>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">订单类型</label>
+              <select id="filter-order-type" class="form-control" style="width: 130px; padding:6px 12px;">
+                <option value="">全部类型</option>
+                <option value="现货交易订单">现货交易订单</option>
+                <option value="专车配送订单">专车配送订单</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">买家</label>
+              <input type="text" id="filter-order-buyer" class="form-control" placeholder="模糊搜索买家" style="width: 130px; padding:6px 12px;">
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">履约状态</label>
+              <select id="filter-order-status" class="form-control" style="width: 130px; padding:6px 12px;">
+                <option value="">全部履约状态</option>
+                <option value="待签约">待签约</option>
+                <option value="待付款">待付款</option>
+                <option value="待发运">待发运</option>
+                <option value="待收货">待收货</option>
+                <option value="已结单">已结单</option>
+                <option value="已取消">已取消</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">创建开始时间</label>
+              <input type="date" id="filter-order-start" class="form-control" style="width:130px; padding:6px 12px;">
+            </div>
+            <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">创建结束时间</label>
+              <input type="date" id="filter-order-end" class="form-control" style="width:130px; padding:6px 12px;">
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary h-[38px]" onclick="MerchantApp.renderOrders()">查询</button>
+              <button class="btn btn-outline h-[38px]" onclick="document.getElementById('filter-order-id').value=''; document.getElementById('filter-order-type').value=''; document.getElementById('filter-order-buyer').value=''; document.getElementById('filter-order-status').value=''; document.getElementById('filter-order-start').value=''; document.getElementById('filter-order-end').value=''; MerchantApp.renderOrders();">重置</button>
+            </div>
           </div>
           <table class="table" id="table-orders">
             <thead>
-              <tr>
+              <tr style="background: #f4f6f8;">
                 <th>序号</th>
-                <th>订单号</th>
-                <th>商品信息</th>
-                <th>买家名称</th>
+                <th>订单编号</th>
+                <th>订单类型</th>
+                <th>买家</th>
+                <th>买家手机号</th>
                 <th>订单金额</th>
-                <th>订单来源</th>
                 <th>履约状态</th>
-                <th>操作菜单</th>
+                <th>创建时间</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody><!-- JS 渲染 --></tbody>
@@ -396,6 +420,147 @@
           <div class="pagination-container"></div>
         </div>
       </div>
+
+      <!-- 订单详情视图 (和运营端一样) -->
+            <!-- 订单详情视图 (和Mall类似的排版) -->
+      <div id="merchant-order-detail-section" style="display: none; font-size: 13px;">
+        <!-- 面包屑 / 返回导航 -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:#64748b;">
+            <span style="cursor:pointer; color:#1e293b;" onclick="MerchantApp.hideOrderDetailPage()">订单履约中心</span>
+            <span>/</span>
+            <span style="color:var(--primary-color); font-weight:bold;">订单详情</span>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="MerchantApp.hideOrderDetailPage()" style="border-radius:20px; padding:6px 16px;">
+            ← 返回订单列表
+          </button>
+        </div>
+
+        <!-- 1. 状态大卡片 & 6步流程进度条 -->
+        <div class="card shadow-sm border-0 mb-6" style="background:#fff; border-radius:12px; padding:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #f1f5f9;">
+            <div>
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                <h2 class="text-2xl font-bold" id="merchant-detail-order-id" style="margin:0; color:#0f172a; font-family:monospace;">ORD...</h2>
+                <span id="merchant-detail-type-tag" class="tag tag-primary">现货交易订单</span>
+              </div>
+              <div style="font-size:13px; color:#64748b; display:flex; gap:20px;">
+                <span>下单时间: <strong id="merchant-detail-create-time" style="color:#334155;">--</strong></span>
+                <span>交易买方: <strong id="merchant-detail-buyer-name" style="color:#334155;">--</strong></span>
+                <span>付款方式: <strong id="merchant-detail-pay-method" style="color:#334155;">线上担保支付 (托管账户)</strong></span>
+              </div>
+            </div>
+            <!-- 右上角快捷操作 -->
+            <div id="merchant-detail-top-actions" style="display:flex; gap:12px; align-items:center;">
+              <!-- JS 动态渲染按钮 -->
+            </div>
+          </div>
+
+          <!-- 状态 banner 提示 -->
+          <div id="merchant-detail-status-banner" style="background: linear-gradient(135deg, rgba(174,134,231,0.1) 0%, rgba(154,102,228,0.05) 100%); border:1px solid rgba(174,134,231,0.3); border-radius:10px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:50%; background:var(--primary-color); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">✓</div>
+              <div>
+                <div id="merchant-detail-status-title" style="font-size:16px; font-weight:bold; color:#1e1b4b;">--</div>
+                <div id="merchant-detail-status-desc" style="font-size:12px; color:#64748b; margin-top:2px;">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6步可视化流程 -->
+          <div>
+            <div style="font-size:13px; font-weight:bold; color:#475569; margin-bottom:14px;">交易履约节点进度:</div>
+            <div id="merchant-detail-steps" style="display:flex; justify-content:space-between; position:relative; padding:0 10px;">
+              <!-- JS 动态渲染进度节点 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 两栏主要内容布局 (和Mall一样的 1fr 340px) -->
+        <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px;">
+          <!-- 左侧：商品列表、费用汇总、合同与附件 -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <!-- 商品清单明细 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+              <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+                <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+                订购货品与计价明细
+              </h3>
+              <table class="table" style="width:100%; font-size:13px;">
+                <thead style="background:#f8fafc;">
+                  <tr>
+                    <th style="padding:10px 12px; text-align:left;">货品主图</th>
+                    <th style="padding:10px 12px; text-align:left;">货品名称</th>
+                    <th style="padding:10px 12px; text-align:right;">单价</th>
+                    <th style="padding:10px 12px; text-align:center;">数量</th>
+                    <th style="padding:10px 12px; text-align:right;">小计</th>
+                  </tr>
+                </thead>
+                <tbody id="merchant-detail-goods-tbody">
+                  <!-- JS 动态渲染 -->
+                </tbody>
+              </table>
+
+              <!-- 费用计算单 -->
+              <div style="display:flex; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px dashed #e2e8f0;">
+                <div style="width:280px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+                  <div style="display:flex; justify-content:space-between; color:#64748b;">
+                    <span>商品总额:</span>
+                    <span id="merchant-detail-subtotal-price" style="font-weight:bold; color:#334155;">¥ 0.00</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:10px; border-top:1px solid #e2e8f0; font-size:15px;">
+                    <span class="font-bold" style="color:#0f172a;">订单实付金额:</span>
+                    <span id="merchant-detail-total-amount" class="text-xl font-bold" style="color:#ef4444;">¥ 0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 电子合同与签署凭证 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+              <h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+                <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+                电子合同与法务存证
+              </h3>
+              <div id="merchant-detail-contract-wrapper">
+                <!-- JS 动态渲染 -->
+              </div>
+            </div>
+
+            <!-- 货款付款凭证 -->
+            <div class="card shadow-sm border-0" id="merchant-detail-payment-voucher-card" style="background:#fff; border-radius:12px; padding:20px;">
+              <!-- JS 动态渲染 -->
+            </div>
+          </div>
+
+          <!-- 右侧：物流、买家信息 -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <!-- 物流与收货人 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+              <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">📦 物流发运信息</h4>
+              <div style="font-size:13px; display:flex; flex-direction:column; gap:10px;">
+                <div>
+                  <span style="color:#94a3b8; width:70px; display:inline-block;">快递单号:</span>
+                  <span id="merchant-detail-logistics-no" style="font-family:monospace; color:#0284c7; font-weight:bold;">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 买家信息 -->
+            <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+              <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">👤 交易买家信息</h4>
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                <div style="width:40px; height:40px; border-radius:50%; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">买</div>
+                <div>
+                  <div id="merchant-detail-buyer-name" style="font-weight:bold; color:#0f172a; font-size:14px;">--</div>
+                  <div style="font-size:11px; color:#16a34a; margin-top:2px;">✓ 平台认证真实采购方</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
       <!-- ================== 4. 竞价资源管理 ================== -->
       <div id="page-bidding-res" class="page-view" style="display:none;">
         <div class="card-body table-wrapper" style="background:#fff; padding: 20px; border-radius: 8px;">
@@ -523,11 +688,11 @@
       <div class="mb-4 text-secondary">正在为订单 <span id="ship-order-id" class="font-bold text-main"></span> 发货</div>
       <div class="form-group">
         <label class="form-label">第三方物流公司</label>
-        <select class="form-control"><option>顺丰速运</option><option>安能物流</option><option>德邦物流</option><option>专线自建</option></select>
+        <select id="ship-logistics-company" class="form-control"><option>顺丰速运</option><option>安能物流</option><option>德邦物流</option><option>专线自建</option></select>
       </div>
       <div class="form-group">
         <label class="form-label">纯文本物流单号 (必填)</label>
-        <input type="text" class="form-control" placeholder="请输入运单号">
+        <input type="text" id="ship-tracking-no" class="form-control" placeholder="请输入运单号">
       </div>
     </div>
     <div class="modal-footer">

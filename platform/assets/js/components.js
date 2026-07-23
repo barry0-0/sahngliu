@@ -48,6 +48,129 @@ window.UI = {
     }, 3000);
   },
 
+  previewDocument(title, type, docNo, amount = '¥0.00', buyer = '买方', seller = '卖方') {
+    let modal = document.getElementById('modal-doc-preview');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal-doc-preview';
+    modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.6) !important; backdrop-filter:blur(10px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:120000 !important; padding:20px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
+
+    let contentHtml = '';
+    if (type === 'contract') {
+      contentHtml = `
+        <div style="background:#fff5eb; border: 2px solid #e78c45; padding: 40px; font-family: serif; color: #2c1a0c; max-width: 680px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; font-size:14px; line-height:1.6; text-align: left;">
+          <div style="position: absolute; bottom: 80px; right: 180px; width: 120px; height: 120px; border: 3px solid rgba(239, 68, 68, 0.7); border-radius: 50%; color: rgba(239, 68, 68, 0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; transform: rotate(-15deg); pointer-events: none; text-align: center; line-height: 1.2;">
+            <div style="font-size:10px;">★</div>
+            <div>${buyer.substring(0, 8)}</div>
+            <div style="border-top:1px solid rgba(239, 68, 68, 0.7); margin-top:2px; padding-top:2px;">CA 电子签章</div>
+          </div>
+          <div style="position: absolute; bottom: 60px; right: 60px; width: 120px; height: 120px; border: 3px solid rgba(239, 68, 68, 0.7); border-radius: 50%; color: rgba(239, 68, 68, 0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; transform: rotate(15deg); pointer-events: none; text-align: center; line-height: 1.2;">
+            <div style="font-size:10px;">★</div>
+            <div>${seller.substring(0, 8)}</div>
+            <div style="border-top:1px solid rgba(239, 68, 68, 0.7); margin-top:2px; padding-top:2px;">CA 电子签章</div>
+          </div>
+
+          <h2 style="text-align: center; font-size: 22px; color: #1a0f05; margin-bottom: 24px; border-bottom: 2px double #e78c45; padding-bottom: 12px; font-weight: bold;">大宗商品买卖交易及履约合同</h2>
+          <div style="margin-bottom: 20px;"><strong>合同编号：</strong>${docNo || 'HT-ORD-202607'}</div>
+          
+          <div style="margin-bottom: 16px;">
+            <div><strong>甲方（买方）：</strong>${buyer}</div>
+            <div><strong>乙方（卖方）：</strong>${seller}</div>
+          </div>
+
+          <p>根据《中华人民共和国民法典》及相关法律法规，甲乙双方本着自愿、平等、互惠互利的原则，就大宗商品采销交易达成如下协议：</p>
+          
+          <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px;">
+            <thead>
+              <tr style="border-bottom: 1px solid #e78c45; text-align: left;">
+                <th style="padding: 6px 0;">货品名称</th>
+                <th style="padding: 6px 0; text-align: right;">单价</th>
+                <th style="padding: 6px 0; text-align: center;">交割方式</th>
+                <th style="padding: 6px 0; text-align: right;">结算总价</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold;">合同约定履约货品（按批结算）</td>
+                <td style="padding: 8px 0; text-align: right;">市场公允价</td>
+                <td style="padding: 8px 0; text-align: center;">专车包干配送</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ef4444;">${amount}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top: 24px;">
+            <strong>主要条款说明：</strong>
+            <ol style="margin-top: 6px; padding-left: 20px;">
+              <li><strong>交货期限：</strong>自订单合同生效且买方支付担保金入托管账户起3个工作日内发货。</li>
+              <li><strong>质量保证：</strong>货到目的地后，买方应在24小时内完成质量验收，如有异议需提供国家承认的第三方检测报告。</li>
+              <li><strong>结算路径：</strong>货款由平台监管托管，买方收到货并确认无异议后，由平台全额拨付至卖方。</li>
+            </ol>
+          </div>
+
+          <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+            <div>
+              <div>甲方代表签章：</div>
+              <div style="margin-top: 40px; font-family: monospace; color: #64748b;">[已数字签章已存证]</div>
+            </div>
+            <div style="text-align: right; margin-right: 40px;">
+              <div>乙方代表签章：</div>
+              <div style="margin-top: 40px; font-family: monospace; color: #64748b;">[已数字签章已存证]</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      contentHtml = `
+        <div style="background:#fff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 30px; max-width: 580px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.05); font-size:13px; text-align: left;">
+          <h2 style="text-align: center; font-size: 18px; color: #0f172a; margin-top:0; margin-bottom: 20px; font-weight:bold; letter-spacing:1px;">中国建设银行记账凭证 (线下汇款回执)</h2>
+          <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+            <div style="background: #f8fafc; padding: 12px; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; font-weight:bold; color:#475569;">
+              <span>回单编号: ${docNo || 'CCB-TRF-20260720'}</span>
+              <span style="color:#16a34a;">交易成功</span>
+            </div>
+            <div style="padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; line-height: 1.5;">
+              <div><span style="color:#64748b;">付款方：</span><strong style="color:#1e293b;">${buyer}</strong></div>
+              <div><span style="color:#64748b;">收款方：</span><strong style="color:#1e293b;">${seller}</strong></div>
+              <div><span style="color:#64748b;">付款账号：</span><span style="font-family:monospace; color:#334155;">6217 **** **** 8812</span></div>
+              <div><span style="color:#64748b;">收款账号：</span><span style="font-family:monospace; color:#334155;">6222 **** **** 9931</span></div>
+              <div><span style="color:#64748b;">付款开户行：</span><span>中国建设银行杭州萧山支行</span></div>
+              <div><span style="color:#64748b;">收款开户行：</span><span>招商银行深圳湾分行</span></div>
+              <div style="grid-column: span 2; border-top:1px dashed #e2e8f0; margin-top:8px; padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#64748b;">转账金额：</span>
+                <strong style="color:#ef4444; font-size: 18px;">${amount}</strong>
+              </div>
+              <div style="grid-column: span 2;"><span style="color:#64748b;">交易时间：</span><span>2026-07-20 14:00:23</span></div>
+              <div style="grid-column: span 2;"><span style="color:#64748b;">交易附言：</span><span>大宗交易订单货款结清 - 存证转账</span></div>
+            </div>
+          </div>
+          <div style="text-align: center; color: #94a3b8; font-size: 11px;">
+            提示：本凭证仅供平台交易查阅核对使用，盖有建行电子专用章。
+          </div>
+        </div>
+      `;
+    }
+
+    modal.innerHTML = `
+      <div style="background:#fff; border-radius:16px; width:740px; max-width:96vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div style="background:#1e293b; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-weight:bold; font-size:15px;">🔍 资料文件在线实时预览 - ${title}</div>
+          <button onclick="document.getElementById('modal-doc-preview').remove()" style="background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer; line-height:1; hover:color:#fff;">&times;</button>
+        </div>
+        <div style="padding:24px; overflow-y:auto; flex:1; background:#f1f5f9; box-sizing:border-box;">
+          ${contentHtml}
+        </div>
+        <div style="background:#f8fafc; padding:12px 20px; display:flex; justify-content:flex-end; border-top:1px solid #cbd5e1;">
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-doc-preview').remove()" style="border-radius:6px; padding:6px 16px;">关闭预览</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  },
+
   openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
@@ -192,7 +315,7 @@ window.UI = {
           <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:18px; background:rgba(255,255,255,0.1); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">📄</span>
             <div>
-              <div style="font-weight:bold; font-size:16px;">大宗交易 PC 桌面级订单透视详情</div>
+              <div style="font-weight:bold; font-size:16px;">大宗履约订单详情</div>
               <div style="font-size:11px; color:#94a3b8; margin-top:2px;">订单编号: <span style="font-family:monospace; color:#38bdf8;">${o.id}</span> | 交易模式: ${o.type || '现货交易'}</div>
             </div>
           </div>
@@ -269,7 +392,7 @@ window.UI = {
           <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:12px; padding:16px;">
             <div style="font-weight:bold; font-size:13px; color:#6b21a8; margin-bottom:8px; display:flex; items-center; justify-content:space-between;">
               <span>📜 电子合同与双边 CA 签章状态存证</span>
-              <span style="font-size:11px; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:4px;">防篡改区块链加密存证</span>
+              <span style="font-size:11px; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:4px;">CA 电子签章存证</span>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px; margin-top:8px;">
               <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #f3e8ff;">
@@ -301,14 +424,14 @@ window.UI = {
                          <div style="font-weight:bold; color:#0f172a;">线下汇款回执：${o.paymentVoucher}</div>
                          <div style="color:#64748b; font-size:11px; margin-top:2px;">付款金额: ${o.amount} | 汇款方式: 银行公对公转账</div>
                        </div>
-                       <button class="btn btn-outline btn-sm" onclick="alert('正在预览付款凭证：' + '${o.paymentVoucher}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看凭证</button>
+                       <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('线下对公转账凭证', 'voucher', '${o.paymentVoucher}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看凭证</button>
                      </div>`
                   : `<div style="display:flex; justify-content:space-between; align-items:center;">
                        <div>
                          <div style="font-weight:bold; color:#15803d;">在线支付：担保结算已结清</div>
                          <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 托管状态: 平台监管中</div>
                        </div>
-                       <button class="btn btn-outline btn-sm" onclick="alert('正在预览在线支付电子回单：TXN-PAY-' + '${o.id}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
+                       <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
                      </div>`
               }
             </div>
@@ -670,7 +793,7 @@ Object.assign(window.UI, {
           </div>
         </div>
 
-        <div style="padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px; background:#f8fafc; flex-shrink:0;">
+        <div style="padding:${isMobile ? '16px 20px 32px' : '16px 20px'}; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px; background:#f8fafc; flex-shrink:0;">
           <button style="background:#fff; border:1px solid #cbd5e1; color:#475569; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">关闭</button>
           <button id="prd-contract-confirm-btn" style="background:#cbd5e1; color:#fff; border:none; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:bold; cursor:not-allowed;" disabled onclick="UI.submitContractSigning('${orderId}', ${isSeller})">确认签署</button>
         </div>
@@ -871,11 +994,7 @@ Object.assign(window.UI, {
 
             <div id="prd-pay-pane-offline" style="display:none; flex-direction:column; gap:12px;">
               <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11px; color:#475569; line-height:1.6; box-sizing:border-box;">
-                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">🏦 平台对公收款账户：</div>
-                <div><strong>开户银行：</strong>中国建设银行股份有限公司园区支行</div>
-                <div><strong>银行账号：</strong>6217 0000 1234 5678 901</div>
-                <div><strong>账户名称：</strong>咖喱粑粑（园区）商流技术服务有限公司</div>
-                <div style="color:#f59e0b; margin-top:4px;">* 请在线下完成公对公转账后，在此上传转账回执单/银行底单凭证。</div>
+                <div style="color:#f59e0b;">* 请在线下完成公对公转账后，在此上传转账回执单/银行底单凭证以供平台审核入账。</div>
               </div>
 
               <div style="position:relative; border:2px dashed #cbd5e1; border-radius:12px; background:#f8fafc; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='#1677ff';this.style.background='#f0f7ff'" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#f8fafc'" onclick="document.getElementById('prd-voucher-file-picker').click()">
@@ -891,7 +1010,7 @@ Object.assign(window.UI, {
           </div>
         </div>
 
-        <div style="padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px; background:#f8fafc; flex-shrink:0;">
+        <div style="padding:${isMobile ? '16px 20px 32px' : '16px 20px'}; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px; background:#f8fafc; flex-shrink:0;">
           <button style="background:#fff; border:1px solid #cbd5e1; color:#475569; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">取消</button>
           <button id="prd-pay-confirm-btn" style="background:#cbd5e1; color:#fff; border:none; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:bold; cursor:not-allowed;" disabled onclick="UI.submitPayment('${orderId}')">确认付款</button>
         </div>

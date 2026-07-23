@@ -14,7 +14,6 @@ const AdminApp = {
     this.renderMerchantProducts();
     this.renderDemands();
     this.renderOrders();
-    this.renderChats();
     this.renderBidding();
     this.renderConfig();
     this.renderDecorationConfig();
@@ -23,6 +22,13 @@ const AdminApp = {
     // 默认激活第一个菜单
     const defaultPage = document.querySelector('[data-page="page-data"]') || document.querySelector('.menu-item');
     if (defaultPage) defaultPage.click();
+
+    const orderMenu = document.querySelector('[data-page="tab-trades-order"]');
+    if (orderMenu) {
+      orderMenu.addEventListener('click', () => {
+        AdminApp.hideOrderDetailPage();
+      });
+    }
   },
 
   openAuditShopModal(shopId) { if (window.openAuditShopModal) window.openAuditShopModal(shopId); },
@@ -140,23 +146,41 @@ const AdminApp = {
     if (!tbody) return;
 
     const shopIdKw = document.getElementById('admin-search-shop-id')?.value.trim().toLowerCase() || '';
-    const kw = document.getElementById('admin-search-shop-keyword')?.value.trim().toLowerCase() || '';
+    const shopNameKw = document.getElementById('admin-search-shop-name')?.value.trim().toLowerCase() || '';
+    const companyNameKw = document.getElementById('admin-search-company-name')?.value.trim().toLowerCase() || '';
     const statusKw = document.getElementById('admin-search-shop-status')?.value || '';
 
     let filtered = (MockData.shops || []).filter(s => s.status !== '未开店');
+    
+    // Exact match for Merchant ID
     if (shopIdKw) {
-      filtered = filtered.filter(s => s.id.toLowerCase().includes(shopIdKw));
+      filtered = filtered.filter(s => s.id.toLowerCase() === shopIdKw);
     }
-    if (kw) {
-      filtered = filtered.filter(s => s.shopName.toLowerCase().includes(kw) || (s.companyName && s.companyName.toLowerCase().includes(kw)));
+    // Fuzzy match for Shop Name
+    if (shopNameKw) {
+      filtered = filtered.filter(s => s.shopName.toLowerCase().includes(shopNameKw));
     }
+    // Fuzzy match for Company Name
+    if (companyNameKw) {
+      filtered = filtered.filter(s => s.companyName && s.companyName.toLowerCase().includes(companyNameKw));
+    }
+    // Status match
     if (statusKw) {
-      if (statusKw === '闭店中') {
-        filtered = filtered.filter(s => s.status === '闭店中' || s.status === '已关停' || s.status === '已禁用' || s.status === '审核未通过');
-      } else {
-        filtered = filtered.filter(s => s.status === statusKw);
+      if (statusKw === '审核中') {
+        filtered = filtered.filter(s => s.status === '待审核');
+      } else if (statusKw === '正常营业') {
+        filtered = filtered.filter(s => s.status === '正常' || s.status === '正常营业');
+      } else if (statusKw === '闭店中') {
+        filtered = filtered.filter(s => s.status === '已关停' || s.status === '已禁用' || s.status === '审核未通过');
       }
     }
+
+    // Sort: updated time new-to-old, default
+    filtered.sort((a, b) => {
+      const tA = new Date(a.updateTime || '2026-07-20 12:00').getTime();
+      const tB = new Date(b.updateTime || '2026-07-20 12:00').getTime();
+      return tB - tA;
+    });
 
     const countEl = document.getElementById('shop-management-count');
     if (countEl) countEl.innerText = `共 ${filtered.length} 个商家店铺`;
@@ -169,16 +193,16 @@ const AdminApp = {
       if (s.status === '正常营业' || s.status === '正常') {
         statusTag = '<span class="tag tag-success">正常营业</span>';
       } else if (s.status === '待审核') {
-        statusTag = '<span class="tag tag-warning">待审核</span>';
+        statusTag = '<span class="tag tag-warning">审核中</span>';
       } else {
-        statusTag = s.suspendReason ? '<span class="tag tag-danger">闭店中 (已下架)</span>' : '<span class="tag tag-secondary">闭店中</span>';
+        statusTag = s.suspendReason ? '<span class="tag tag-danger">闭店中</span>' : '<span class="tag tag-secondary">闭店中</span>';
       }
 
       let reasonTip = '';
       if (s.suspendReason) {
-        reasonTip = `<div class="text-[10px] text-danger mt-1">理由: ${s.suspendReason}</div>`;
+        reasonTip = `<div class="text-[10px] text-danger mt-1">已下架理由: ${s.suspendReason}</div>`;
       } else if (s.rejectReason) {
-        reasonTip = `<div class="text-[10px] text-danger mt-1" style="font-size:11px; color:#ef4444;">原因: ${s.rejectReason}</div>`;
+        reasonTip = `<div class="text-[10px] text-danger mt-1" style="font-size:11px; color:#ef4444;">拒审原因: ${s.rejectReason}</div>`;
       }
 
       let actionBtn = '';
@@ -203,7 +227,7 @@ const AdminApp = {
           <td style="padding:12px; font-weight:bold; color:var(--text-main);">${s.shopName}</td>
           <td style="padding:12px;">${s.companyName || '--'}</td>
           <td style="padding:12px; text-align:center;">${statusTag} ${reasonTip}</td>
-          <td style="padding:12px; text-align:center; font-weight:bold; color:var(--primary-color);">${prodCount}</td>
+          <td style="padding:12px; text-align:center; font-weight:bold; color:var(--primary-color);">${prodCount.toLocaleString('zh-CN')}</td>
           <td style="padding:12px; font-family:monospace; font-size:12px;">${s.creditCode || '--'}</td>
           <td style="padding:12px; text-align:center; font-family:monospace; font-size:12px;">${s.updateTime || '2026-07-20 12:00'}</td>
           <td style="padding:12px; text-align:center;">${actionBtn}</td>
@@ -216,7 +240,8 @@ const AdminApp = {
 
   resetMerchantShopsFilter() {
     if (document.getElementById('admin-search-shop-id')) document.getElementById('admin-search-shop-id').value = '';
-    if (document.getElementById('admin-search-shop-keyword')) document.getElementById('admin-search-shop-keyword').value = '';
+    if (document.getElementById('admin-search-shop-name')) document.getElementById('admin-search-shop-name').value = '';
+    if (document.getElementById('admin-search-company-name')) document.getElementById('admin-search-company-name').value = '';
     if (document.getElementById('admin-search-shop-status')) document.getElementById('admin-search-shop-status').value = '';
     this.renderMerchantShops();
   },
@@ -312,7 +337,7 @@ const AdminApp = {
     const tbody = document.querySelector('#table-base-category tbody');
     if (!tbody || !MockData.productCategories) return;
 
-    const levelVal = document.getElementById('filter-cat-level')?.value;
+    const levelVal = document.getElementById('filter-cat-level')?.value || '1';
     const nameKw = document.getElementById('filter-cat-name')?.value.trim().toLowerCase();
 
     const flattenCategories = (cats, parentName = '-', parentId = '', result = []) => {
@@ -334,6 +359,13 @@ const AdminApp = {
       flatList = flatList.filter(c => c.name.toLowerCase().includes(nameKw));
     }
 
+    // Default sorting by createTime (new-to-old)
+    flatList.sort((a, b) => {
+      const tA = new Date(a.createTime || '2026-07-01 00:00').getTime();
+      const tB = new Date(b.createTime || '2026-07-01 00:00').getTime();
+      return tB - tA;
+    });
+
     let html = '';
     flatList.forEach((c, idx) => {
       let levelBadge = '';
@@ -353,6 +385,7 @@ const AdminApp = {
           <td>${levelBadge}</td>
           <td>${c.status === 1 ? '<span class="tag tag-success">启用</span>' : '<span class="tag tag-error">禁用</span>'}</td>
           <td style="font-family:monospace; font-size:12px;">${c.updateTime || '2026-07-20 12:00'}</td>
+          <td style="font-family:monospace; font-size:12px;">${c.createTime || '2026-07-01 10:00'}</td>
           <td>
             <button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.parentId}', '${c.id}', '${c.name}', '${c.id}', true)">编辑</button>
             ${c.level < 3 ? `<button class="btn btn-text btn-sm text-primary" onclick="window.openAddCategoryModal('${c.id}', '', '', '', false)">新增下级</button>` : ''}
@@ -361,12 +394,13 @@ const AdminApp = {
         </tr>
       `;
     });
-    tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">没有找到符合条件的分类数据</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="8" class="text-center p-4 text-secondary">没有找到符合条件的分类数据</td></tr>';
     this._appendPagination(tbody, flatList.length);
   },
 
   resetBaseProductsFilter() {
-    if (document.getElementById('filter-cat-level')) document.getElementById('filter-cat-level').value = '';
+    const levelSelect = document.getElementById('filter-cat-level');
+    if (levelSelect) levelSelect.value = '1';
     if (document.getElementById('filter-cat-name')) document.getElementById('filter-cat-name').value = '';
     this.renderBaseProducts();
   },
@@ -403,24 +437,59 @@ const AdminApp = {
       '水泥': '建材-粉材-水泥'
     };
     const tbody = document.querySelector('#table-merchant-products tbody');
-    let html = '';
-    let list = MockData.products || [];
-    const kw = document.getElementById('filter-merchant-prod-kw')?.value.trim().toLowerCase();
+    if (!tbody) return;
+
     const shopKw = document.getElementById('filter-merchant-prod-shop')?.value.trim().toLowerCase();
-    const companyKw = document.getElementById('filter-merchant-prod-company')?.value.trim().toLowerCase();
+    const listNoKw = document.getElementById('filter-merchant-prod-listno')?.value.trim().toLowerCase();
+    const startDateKw = document.getElementById('filter-merchant-prod-start')?.value;
+    const endDateKw = document.getElementById('filter-merchant-prod-end')?.value;
     const statusKw = document.getElementById('filter-merchant-prod-status')?.value;
 
-    if (kw) list = list.filter(p => p.name.toLowerCase().includes(kw));
-    if (shopKw) list = list.filter(p => (p.shopName && p.shopName.toLowerCase().includes(shopKw)));
-    if (companyKw) {
+    let list = MockData.products || [];
+
+    // Filter by Shop Name (Fuzzy)
+    if (shopKw) {
+      list = list.filter(p => p.shopName && p.shopName.toLowerCase().includes(shopKw));
+    }
+
+    // Filter by List No (Exact)
+    if (listNoKw) {
       list = list.filter(p => {
-        const shop = MockData.shops.find(s => s.id === p.shopId || s.shopName === p.shopName);
-        return shop && shop.companyName && shop.companyName.toLowerCase().includes(companyKw);
+        const listNoStr = (p.listNo || ('LST260701' + String(p.id).padStart(4, '0'))).toLowerCase();
+        return listNoStr === listNoKw;
       });
     }
-    if (statusKw !== '' && statusKw !== undefined) {
-      list = list.filter(p => String(p.status) === String(statusKw));
+
+    // Filter by Date Range (listTime)
+    if (startDateKw) {
+      const startMs = new Date(startDateKw + ' 00:00:00').getTime();
+      list = list.filter(p => new Date(p.listTime || '2026-06-01').getTime() >= startMs);
     }
+    if (endDateKw) {
+      const endMs = new Date(endDateKw + ' 23:59:59').getTime();
+      list = list.filter(p => new Date(p.listTime || '2026-06-01').getTime() <= endMs);
+    }
+
+    // Filter by Status
+    if (statusKw !== '' && statusKw !== undefined) {
+      list = list.filter(p => {
+        // Map mock status to enum numbers: 0=待审核, 1=已上架, 2=已下架, 3=已售罄
+        let mappedStatus = p.status;
+        if (p.status === '未上架') mappedStatus = 2;
+        if (p.status === '已下架') mappedStatus = 2;
+        if (p.status === '已售罄') mappedStatus = 3;
+        return String(mappedStatus) === String(statusKw);
+      });
+    }
+
+    // Sort: default new-to-old by createTime
+    list.sort((a, b) => {
+      const tA = new Date(a.createTime || '2026-05-20').getTime();
+      const tB = new Date(b.createTime || '2026-05-20').getTime();
+      return tB - tA;
+    });
+
+    let html = '';
     list.forEach((p, idx) => {
       const shop = MockData.shops.find(s => s.id === p.shopId || s.shopName === p.shopName);
       const companyName = shop ? shop.companyName : (p.companyName || '华东物资贸易有限公司');
@@ -428,16 +497,22 @@ const AdminApp = {
       let statusTag = '';
       let actBtn = '';
 
-      if (p.status === 0) {
+      // Mock status normalization
+      let currentStatus = p.status;
+      if (p.status === '未上架') currentStatus = 2;
+      if (p.status === '已下架') currentStatus = 2;
+      if (p.status === '已售罄') currentStatus = 3;
+
+      if (currentStatus === 0) {
         statusTag = `<span class="tag tag-warning">待审核</span>`;
         actBtn = `
           <button class="btn btn-text btn-sm text-primary" onclick="AdminApp.editProduct('${p.id}')">编辑</button>
           <button class="btn btn-primary btn-sm" onclick="window.openAuditProductModal('${p.id}')" style="margin-left:4px;">审核</button>
         `;
-      } else if (p.status === 1) {
+      } else if (currentStatus === 1) {
         statusTag = `<span class="tag tag-success">已上架</span>`;
         actBtn = `<button class="btn btn-text btn-sm text-danger" onclick="window.forceOfflineProduct('${p.id}')">强制下架</button>`;
-      } else if (p.status === 2 || p.status === '已下架' || p.status === '未上架') {
+      } else if (currentStatus === 2) {
         statusTag = `<span class="tag tag-danger">已下架</span>`;
         if (p.rejectReason) {
           statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2; white-space:nowrap;">(拒审原因：${p.rejectReason})</div>`;
@@ -447,11 +522,8 @@ const AdminApp = {
           statusTag += `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2; white-space:nowrap;">(自主下架)</div>`;
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
-      } else if (p.status === 3 || p.status === '已售罄') {
+      } else if (currentStatus === 3) {
         statusTag = `<span class="tag tag-secondary">已售罄</span>`;
-        actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
-      } else {
-        statusTag = `<span class="tag tag-secondary">${p.status}</span>`;
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       }
 
@@ -459,24 +531,22 @@ const AdminApp = {
         ? `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591; padding:2px 6px; font-size:11px;">预售</span>`
         : `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f; padding:2px 6px; font-size:11px;">现货</span>`;
 
+      const listNoStr = p.listNo || ('LST260701' + String(p.id).replace(/[^\d]/g, '').padStart(4, '0'));
+
       html += `
         <tr>
           <td>${idx + 1}</td>
-          <td style="font-family:monospace; font-weight:bold; color:var(--primary-color);">${p.listNo || ('LST-202607-' + p.id)}</td>
+          <td style="font-family:monospace; font-weight:bold; color:var(--primary-color);">${listNoStr}</td>
           <td><img src="${p.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"></td>
           <td style="font-weight:bold; color:#0f172a;">${p.shopName}</td>
           <td style="font-size:12px; color:#475569;">${companyName}</td>
-          <td>
-            <div style="font-weight:bold; display:flex; align-items:center;">
-              ${p.name}
-            </div>
-          </td>
-          <td>${shelfTypeTag}</td>
+          <td><div style="font-weight:bold;">${p.name}</div></td>
           <td>${catMap[p.category] || p.category}</td>
+          <td>${shelfTypeTag}</td>
           <td class="text-danger font-bold">${p.priceStr}</td>
           <td class="font-bold" style="color:#0f172a;">${(p.sales || 0).toLocaleString()}</td>
-          <td class="text-xs text-secondary">${p.createTime || '2026-05-20 14:30'}</td>
           <td class="text-xs text-secondary">${p.listTime || '2026-06-01 10:00'}</td>
+          <td class="text-xs text-secondary">${p.createTime || '2026-05-20 14:30'}</td>
           <td class="text-xs text-secondary">${p.opTime || '2026-06-01 10:00'}</td>
           <td>${statusTag}</td>
           <td>
@@ -487,16 +557,16 @@ const AdminApp = {
         </tr>
       `;
     });
-    if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="15" class="text-center p-4 text-secondary">没有找到符合条件的商品</td></tr>';
-      this._appendPagination(tbody, list.length);
-    }
+
+    tbody.innerHTML = html || '<tr><td colspan="15" class="text-center p-4 text-secondary">没有找到符合条件的商品</td></tr>';
+    this._appendPagination(tbody, list.length);
   },
 
   resetMerchantProductsFilter() {
-    if (document.getElementById('filter-merchant-prod-kw')) document.getElementById('filter-merchant-prod-kw').value = '';
     if (document.getElementById('filter-merchant-prod-shop')) document.getElementById('filter-merchant-prod-shop').value = '';
-    if (document.getElementById('filter-merchant-prod-company')) document.getElementById('filter-merchant-prod-company').value = '';
+    if (document.getElementById('filter-merchant-prod-listno')) document.getElementById('filter-merchant-prod-listno').value = '';
+    if (document.getElementById('filter-merchant-prod-start')) document.getElementById('filter-merchant-prod-start').value = '';
+    if (document.getElementById('filter-merchant-prod-end')) document.getElementById('filter-merchant-prod-end').value = '';
     if (document.getElementById('filter-merchant-prod-status')) document.getElementById('filter-merchant-prod-status').value = '';
     this.renderMerchantProducts();
   },
@@ -606,19 +676,31 @@ const AdminApp = {
   // === 4. 供求信息审核 ===
   renderDemands() {
     const tbody = document.querySelector('#table-demands tbody');
-    let html = '';
+    if (!tbody) return;
+
+    const demandIdKw = (document.getElementById('filter-demand-id')?.value || '').trim();
+    const goodsKw = (document.getElementById('filter-demand-goods')?.value || '').trim().toLowerCase();
+
     let list = MockData.demands || [];
-    const kw = document.getElementById('filter-demand-kw')?.value.trim().toLowerCase();
-    if (kw) {
-      list = list.filter(d => 
-        (d.goodsName && d.goodsName.toLowerCase().includes(kw)) ||
-        (d.buyerPhone && d.buyerPhone.includes(kw)) ||
-        (d.buyerName && d.buyerName.toLowerCase().includes(kw)) ||
-        (d.username && d.username.toLowerCase().includes(kw)) ||
-        d.id.toLowerCase().includes(kw)
-      );
+
+    // Filter by Demand ID (Exact)
+    if (demandIdKw) {
+      list = list.filter(d => d.id === demandIdKw);
     }
 
+    // Filter by goods name (fuzzy)
+    if (goodsKw) {
+      list = list.filter(d => (d.goodsName || d.title || '').toLowerCase().includes(goodsKw));
+    }
+
+    // Sort: default by publishTime (createTime) descending
+    list.sort((a, b) => {
+      const tA = new Date(a.publishTime || '2026-07-20').getTime();
+      const tB = new Date(b.publishTime || '2026-07-20').getTime();
+      return tB - tA;
+    });
+
+    let html = '';
     list.forEach((d, idx) => {
       let statusTag = '';
       let actBtn = '';
@@ -650,18 +732,23 @@ const AdminApp = {
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       }
 
-      const qtyUnitStr = `${d.quantity || '50'}${d.unit || '吨'}`;
+      // Parse quantity with unit display
+      const goodsText = d.goodsName || d.title || '--';
+      const qtyMatch = goodsText.match(/(\d[\d,]*\.?\d*)\s*(吨|立方|包|张|件|个|千克|kg)/i);
+      const qtyStr = qtyMatch ? `${qtyMatch[1]} ${qtyMatch[2]}` : `${d.quantity || '--'}`;
+      const deliveryPeriod = d.deliveryPeriod || d.deliveryTime || '--';
 
       html += `
         <tr>
           <td>${idx + 1}</td>
           <td style="font-family:monospace; font-weight:bold;">${d.id}</td>
           <td style="font-weight:bold; color:#0f172a;">${d.buyerName}</td>
-          <td style="font-family:monospace; font-weight:bold; color:#0284c7;">${d.buyerPhone || '138****8818'}</td>
-          <td style="font-weight:bold; color:#0f172a;">${d.goodsName || d.title}</td>
-          <td style="font-weight:bold; color:#1e293b;">${qtyUnitStr}</td>
-          <td style="font-size:12px; color:#64748b;">${d.publishTime || '2026-07-20'}</td>
-          <td style="font-size:12px; color:#64748b;">${d.updateTime || d.publishTime || '2026-07-20 15:00'}</td>
+          <td style="font-family:monospace; color:#0284c7;">${d.buyerPhone || '--'}</td>
+          <td style="font-weight:bold; color:#0f172a;">${goodsText}</td>
+          <td style="font-weight:bold; color:#1e293b;">${qtyStr}</td>
+          <td>${deliveryPeriod}</td>
+          <td style="font-size:12px; color:#64748b;">${d.publishTime || '--'}</td>
+          <td style="font-size:12px; color:#64748b;">${d.updateTime || d.publishTime || '--'}</td>
           <td style="vertical-align:middle;">${statusTag}</td>
           <td>
             <div style="display:flex; gap:6px; align-items:center;">
@@ -671,44 +758,97 @@ const AdminApp = {
         </tr>
       `;
     });
-    if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="10" class="text-center p-4 text-secondary">暂无供求数据</td></tr>';
-      this._appendPagination(tbody, list.length);
-    }
+    tbody.innerHTML = html || '<tr><td colspan="11" class="text-center p-4 text-secondary">暂无供求数据</td></tr>';
+    this._appendPagination(tbody, list.length);
   },
 
   resetDemandsFilter() {
-    if (document.getElementById('filter-demand-kw')) document.getElementById('filter-demand-kw').value = '';
+    if (document.getElementById('filter-demand-id')) document.getElementById('filter-demand-id').value = '';
+    if (document.getElementById('filter-demand-goods')) document.getElementById('filter-demand-goods').value = '';
     this.renderDemands();
   },
 
   // === 5. 交易中心 (订单透视) ===
   renderOrders() {
     const tbody = document.querySelector('#table-orders tbody');
-    let html = '';
+    if (!tbody) return;
+
+    const orderIdKw = document.getElementById('filter-admin-order-id')?.value.trim().toLowerCase() || '';
+    const typeKw = document.getElementById('filter-admin-order-type')?.value || '';
+    const buyerKw = document.getElementById('filter-admin-order-buyer')?.value.trim().toLowerCase() || '';
+    const sellerShopKw = document.getElementById('filter-admin-order-seller-shop')?.value.trim().toLowerCase() || '';
+    const sellerCompanyKw = document.getElementById('filter-admin-order-seller-company')?.value.trim().toLowerCase() || '';
+    const statusKw = document.getElementById('filter-admin-order-status')?.value || '';
+    const startDateKw = document.getElementById('filter-admin-order-start')?.value || '';
+    const endDateKw = document.getElementById('filter-admin-order-end')?.value || '';
+
     let list = MockData.orders || [];
-    const kw = document.getElementById('filter-admin-order-kw')?.value.trim().toLowerCase();
-    if (kw) {
-      list = list.filter(o => 
-        o.id.toLowerCase().includes(kw) || 
-        o.buyerName.toLowerCase().includes(kw) || 
-        (o.buyerPhone && o.buyerPhone.includes(kw)) ||
-        o.shopName.toLowerCase().includes(kw) || 
-        (o.companyName && o.companyName.toLowerCase().includes(kw)) ||
-        o.productName.toLowerCase().includes(kw)
-      );
+
+    // Filter by Order ID (Exact)
+    if (orderIdKw) {
+      list = list.filter(o => o.id.toLowerCase() === orderIdKw);
+    }
+    // Filter by Order Type
+    if (typeKw) {
+      list = list.filter(o => (o.type || '现货交易订单') === typeKw);
+    }
+    // Filter by Buyer
+    if (buyerKw) {
+      list = list.filter(o => o.buyerName && o.buyerName.toLowerCase().includes(buyerKw));
+    }
+    // Filter by Seller Shop
+    if (sellerShopKw) {
+      list = list.filter(o => o.shopName && o.shopName.toLowerCase().includes(sellerShopKw));
+    }
+    // Filter by Seller Company
+    if (sellerCompanyKw) {
+      list = list.filter(o => {
+        const shop = MockData.shops.find(s => s.id === o.shopId || s.shopName === o.shopName);
+        const comp = shop ? shop.companyName : (o.sellerCompany || '');
+        return comp.toLowerCase().includes(sellerCompanyKw);
+      });
+    }
+    // Filter by Status
+    if (statusKw) {
+      list = list.filter(o => {
+        let statusText = '';
+        if (o.status === 0 || o.status === 5) statusText = '待签约';
+        else if (o.status === 4) statusText = '待支付';
+        else if (o.status === 1) statusText = '待发运';
+        else if (o.status === 2) statusText = '待收货';
+        else if (o.status === 3) statusText = '已结单';
+        else if (o.status === -1) statusText = '已取消';
+        return statusText === statusKw;
+      });
+    }
+    // Filter by Date Range
+    if (startDateKw) {
+      const startMs = new Date(startDateKw + ' 00:00:00').getTime();
+      list = list.filter(o => new Date(o.time || '2026-07-20').getTime() >= startMs);
+    }
+    if (endDateKw) {
+      const endMs = new Date(endDateKw + ' 23:59:59').getTime();
+      list = list.filter(o => new Date(o.time || '2026-07-20').getTime() <= endMs);
     }
 
+    // Default sorting: createTime (o.time) new-to-old
+    list.sort((a, b) => {
+      const tA = new Date(a.time || '2026-07-20').getTime();
+      const tB = new Date(b.time || '2026-07-20').getTime();
+      return tB - tA;
+    });
+
+    let html = '';
     list.forEach((o, idx) => {
       let statusText = '';
       let statusColor = '';
       if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
       else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
       else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
-      else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
-      else if (o.status === 2) { statusText = '待签收(已发货)'; statusColor = '#0958d9'; }
-      else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
-      else if (o.status === -1) { statusText = '已关闭'; statusColor = '#ff4d4f'; }
+      else if (o.status === 1) { statusText = '待发运'; statusColor = '#1677ff'; }
+      else if (o.status === 2) { statusText = '待收货'; statusColor = '#0958d9'; }
+      else if (o.status === 3) { statusText = '已结单'; statusColor = '#52c41a'; }
+      else if (o.status === -1) { statusText = '已取消'; statusColor = '#ff4d4f'; }
       
       let statusTag = `<span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">${statusText}</span>`;
       
@@ -731,7 +871,7 @@ const AdminApp = {
       html += `
         <tr>
           <td>${idx + 1}</td>
-          <td><a href="javascript:void(0)" onclick="UI.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
+          <td><a href="javascript:void(0)" onclick="AdminApp.showOrderDetailPage('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
           <td><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
           <td style="font-weight:bold;">${o.buyerName}</td>
           <td style="font-family:monospace; color:#0284c7;">${buyerPhone}</td>
@@ -745,20 +885,25 @@ const AdminApp = {
             <div style="display:flex; align-items:center; gap:6px;">
               ${confirmReceiptBtn}
               ${closeBtn}
-              <button class="btn btn-text btn-sm" onclick="UI.showOrderDetail('${o.id}')">详情</button>
+              <button class="btn btn-text btn-sm" onclick="AdminApp.showOrderDetailPage('${o.id}')">详情</button>
             </div>
           </td>
         </tr>
       `;
     });
-    if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="12" class="text-center p-4 text-secondary">暂无符合条件的订单记录</td></tr>';
-      this._appendPagination(tbody, list.length);
-    }
+    tbody.innerHTML = html || '<tr><td colspan="12" class="text-center p-4 text-secondary">暂无符合条件的订单记录</td></tr>';
+    this._appendPagination(tbody, list.length);
   },
 
   resetOrdersFilter() {
-    if (document.getElementById('filter-admin-order-kw')) document.getElementById('filter-admin-order-kw').value = '';
+    if (document.getElementById('filter-admin-order-id')) document.getElementById('filter-admin-order-id').value = '';
+    if (document.getElementById('filter-admin-order-type')) document.getElementById('filter-admin-order-type').value = '';
+    if (document.getElementById('filter-admin-order-buyer')) document.getElementById('filter-admin-order-buyer').value = '';
+    if (document.getElementById('filter-admin-order-seller-shop')) document.getElementById('filter-admin-order-seller-shop').value = '';
+    if (document.getElementById('filter-admin-order-seller-company')) document.getElementById('filter-admin-order-seller-company').value = '';
+    if (document.getElementById('filter-admin-order-status')) document.getElementById('filter-admin-order-status').value = '';
+    if (document.getElementById('filter-admin-order-start')) document.getElementById('filter-admin-order-start').value = '';
+    if (document.getElementById('filter-admin-order-end')) document.getElementById('filter-admin-order-end').value = '';
     this.renderOrders();
   },
 
@@ -781,89 +926,133 @@ const AdminApp = {
     }
   },
 
-  renderChats() {
-    const tbody = document.querySelector('#table-chats tbody');
-    let html = '';
-    MockData.chats.forEach((c, idx) => {
-      html += `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${c.demandId}</td>
-          <td>${c.buyer}</td>
-          <td>${c.seller}</td>
-          <td>${c.time}</td>
-          <td><button class="btn btn-primary btn-sm" onclick="UI.showModal('modal-chat')">查看聊天记录</button></td>
-        </tr>
-      `;
-    });
-    if(tbody) {
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, MockData.chats.length);
-    }
-  },
+
 
   // === 8. 竞价中心 (审核监控) ===
   renderBidding() {
     const resBody = document.querySelector('#table-admin-bidding-res tbody');
     if (resBody) {
+      // 读取筛选条件
+      const fId = (document.getElementById('filter-bidres-id')?.value || '').trim();
+      const fShop = (document.getElementById('filter-bidres-shop')?.value || '').trim().toLowerCase();
+      const fCompany = (document.getElementById('filter-bidres-company')?.value || '').trim().toLowerCase();
+      const fName = (document.getElementById('filter-bidres-name')?.value || '').trim().toLowerCase();
+      const fStatus = (document.getElementById('filter-bidres-status')?.value || '');
+
+      let filtered = MockData.biddingResources.filter(r => {
+        if (fId && r.id !== fId) return false;
+        if (fShop && !r.shopName.toLowerCase().includes(fShop)) return false;
+        if (fCompany && !(r.companyName || '').toLowerCase().includes(fCompany)) return false;
+        if (fName && !r.name.toLowerCase().includes(fName)) return false;
+        if (fStatus && r.status !== fStatus) return false;
+        return true;
+      });
+
+      // Sort newest first
+      filtered.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
       let resHtml = '';
-      MockData.biddingResources.forEach((r, idx) => {
-        let tag = r.status === '已通过' ? `<span class="tag tag-success">已通过</span>` : `<span class="tag tag-warning">待审核</span>`;
-        let btn = r.status === '待审核' 
-          ? `<button class="btn btn-primary btn-sm" onclick="MockData.biddingResources.find(x => x.id === '${r.id}').status = '已通过'; AdminApp.renderBidding(); UI.toast('资源审核通过', 'success')">审核</button>`
-          : ``;
+      filtered.forEach((r, idx) => {
+        let tag;
+        if (r.status === '已通过') tag = `<span class="tag tag-success">已通过</span>`;
+        else if (r.status === '已撤销' || r.status === '未通过') tag = `<span class="tag tag-danger">未通过</span><div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">拒审原因：${r.rejectReason || '提报规格材料不全'}</div>`;
+        else tag = `<span class="tag tag-warning">待审核</span>`;
+
+        let btn = '';
+        if (r.status === '待审核') {
+          btn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditBiddingResModal('${r.id}')">审核</button>`;
+        }
         resHtml += `
           <tr>
             <td>${idx + 1}</td>
-            <td>${r.id}</td>
+            <td style="font-family:monospace; font-size:12px;">${r.id}</td>
             <td>${r.shopName}</td>
-            <td><div class="font-bold">${r.name}</div><div class="text-xs text-secondary">${r.specs}</div></td>
-            <td><img src="${r.image}" style="width:60px;height:40px;border-radius:4px;object-fit:cover;"></td>
+            <td>${r.companyName || '--'}</td>
+            <td>${r.name}</td>
+            <td><img src="${r.image}" style="width:60px;height:40px;border-radius:4px;object-fit:cover;cursor:pointer;" onclick="UI.previewDocument('资源图片', '${r.image}')"></td>
             <td>${tag}</td>
-            <td>${btn}</td>
+            <td>${r.createdAt || '--'}</td>
+            <td>${r.updatedAt || '--'}</td>
+            <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
       });
       resBody.innerHTML = resHtml;
-      this._appendPagination(resBody, MockData.biddingResources.length);
+      this._appendPagination(resBody, filtered.length);
     }
 
+    // 竞价公告部分
     const annBody = document.querySelector('#table-admin-bidding-ann tbody');
     if (annBody) {
-      let annHtml = '';
-      MockData.biddingAnnouncements.forEach((a, idx) => {
+      // 读取公告筛选条件
+      const fAnnId = (document.getElementById('filter-bidann-id')?.value || '').trim();
+      const fAnnShop = (document.getElementById('filter-bidann-shop')?.value || '').trim().toLowerCase();
+      const fAnnCompany = (document.getElementById('filter-bidann-company')?.value || '').trim().toLowerCase();
+      const fAnnStatus = (document.getElementById('filter-bidann-status')?.value || '');
+
+      // Helper: compute display status for an announcement
+      const getDisplayStatus = (a) => {
         const aStatus = a.auditStatus || '已通过';
+        if (aStatus === '待审核') return '待审核';
+        if (aStatus === '已拒绝' || aStatus === '已撤回') return '已下架';
+        // 已通过 → based on stage
+        if (a.status === 4) return '已结束';
+        if (a.status === 0) return '看货报名';
+        if (a.status === 2) return '参加竞价';
+        if (a.status === 3) return '等待公布';
+        return '看货报名';
+      };
+
+      let filteredAnn = MockData.biddingAnnouncements.filter(a => {
+        const shop = MockData.shops.find(s => s.id === a.shopId);
+        const companyName = shop ? (shop.companyName || '') : '';
+
+        if (fAnnId && a.id !== fAnnId) return false;
+        if (fAnnShop && !a.shopName.toLowerCase().includes(fAnnShop)) return false;
+        if (fAnnCompany && !companyName.toLowerCase().includes(fAnnCompany)) return false;
+        if (fAnnStatus && getDisplayStatus(a) !== fAnnStatus) return false;
+        return true;
+      });
+
+      // Sort newest first
+      filteredAnn.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+      let annHtml = '';
+      filteredAnn.forEach((a, idx) => {
+        const aStatus = a.auditStatus || '已通过';
+        const shop = MockData.shops.find(s => s.id === a.shopId);
+        const companyName = shop ? (shop.companyName || '--') : '--';
+
         let combinedTag = '';
+        let btn = '';
+        
         if (aStatus === '待审核') {
           combinedTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待审核</span>`;
+          btn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditBiddingAnnModal('${a.id}')">审核</button>`;
         } else if (aStatus === '已拒绝') {
-          combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已拒绝</span>`;
+          combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span>
+                         <div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">拒审原因：${a.rejectReason || '起拍底价设置过低'}</div>`;
+          btn = '';
         } else if (aStatus === '已撤回') {
-          combinedTag = `<span class="tag tag-secondary">已撤回</span>`;
+          combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已下架</span>
+                         <div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
+          btn = '';
         } else {
-          let stageName = '';
-          if (a.status === 0) stageName = '看货报名';
-          else if (a.status === 1) stageName = '现场看货';
-          else if (a.status === 2) stageName = '参加竞价';
-          else if (a.status === 3) stageName = '等待公布';
-          else if (a.status === 4) stageName = '竞价已结束';
-          
-          let tagClass = a.status === 4 ? 'tag-secondary' : 'tag-success';
-          let borderStyle = a.status === 4 
-            ? 'background:#f5f5f5; color:#555; border:1px solid #d9d9d9;' 
-            : 'background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f;';
-          
-          combinedTag = `<span class="tag ${tagClass}" style="${borderStyle}">${stageName}</span>`;
-        }
-
-        let btn = `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.showBiddingDetail('${a.id}')">查看详情</button>`;
-        
-        if (aStatus === '待审核') {
-          btn += `<button class="btn btn-primary btn-sm" onclick="window.openAuditBiddingAnnModal('${a.id}')">审核</button>`;
-        }
-        
-        if (aStatus === '已通过' && a.status !== 4) {
-          btn += `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.forceOfflineBiddingAnn('${a.id}')">下架</button>`;
+          // 已通过
+          if (a.status === 4) {
+            combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已结束</span>`;
+            btn = '';
+          } else {
+            let stageName = '';
+            if (a.status === 0) stageName = '看货报名';
+            else if (a.status === 2) stageName = '参加竞价';
+            else if (a.status === 3) stageName = '等待公布';
+            else stageName = '看货报名';
+            
+            combinedTag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border:1px solid #b7eb8f;">${stageName}</span>`;
+            btn = `<button class="btn btn-text btn-sm text-danger" onclick="AdminApp.forceOfflineBiddingAnn('${a.id}')">强制下架</button>
+                   <button class="btn btn-text btn-sm text-primary" style="margin-left:4px;" onclick="AdminApp.showBiddingDetail('${a.id}')">查看详情</button>`;
+          }
         }
 
         annHtml += `
@@ -871,52 +1060,98 @@ const AdminApp = {
             <td>${idx + 1}</td>
             <td>${a.id}</td>
             <td>${a.shopName}</td>
-            <td>${a.title}</td>
+            <td>${companyName}</td>
             <td>${a.resId}</td>
             <td style="font-weight:bold; color:#ef4444;">${a.currentMaxOffer || a.startPrice}</td>
             <td>${combinedTag}</td>
+            <td>${a.createdAt || '--'}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>
         `;
       });
       annBody.innerHTML = annHtml;
-      this._appendPagination(annBody, MockData.biddingAnnouncements.length);
+      this._appendPagination(annBody, filteredAnn.length);
     }
   },
 
-  // === 9. 配置中心 (抽佣规则: 支持 global, merchant, category 三种) ===
-  renderConfig() {
-    const tbody = document.querySelector('#table-admin-commission tbody');
-    if (tbody) {
-      let html = '';
-      MockData.commissionRules.forEach((c, idx) => {
-        let tag = c.status === 1 ? `<span class="tag tag-success">生效中</span>` : `<span class="tag tag-secondary">已停用</span>`;
-        let btn = c.type === 'global'
-          ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑全局默认规则', 'info')">修改</button>`
-          : `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑抽佣规则', 'info')">编辑</button>
-             <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('规则已删除', 'info')">删除</button>`;
-        
-        let typeBadge = '';
-        if (c.type === 'global') typeBadge = `<span class="tag" style="background:#e6f7ff;color:#1890ff;border-color:#91d5ff;">全局模式</span>`;
-        if (c.type === 'merchant') typeBadge = `<span class="tag" style="background:#f6ffed;color:#52c41a;border-color:#b7eb8f;">按特定商家</span>`;
-        if (c.type === 'category') typeBadge = `<span class="tag" style="background:#fff0f6;color:#eb2f96;border-color:#ffadd2;">按特定商品类别</span>`;
+  resetBidResFilter() {
+    ['filter-bidres-id', 'filter-bidres-shop', 'filter-bidres-company', 'filter-bidres-name'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const statusEl = document.getElementById('filter-bidres-status');
+    if (statusEl) statusEl.value = '';
+    this.renderBidding();
+  },
 
-        html += `
-          <tr>
-            <td>${idx + 1}</td>
-            <td>${c.id}</td>
-            <td style="font-weight:bold;">${c.name}</td>
-            <td>${typeBadge}</td>
-            <td style="color:#0f172a; font-weight:500;">${c.target}</td>
-            <td class="font-bold text-danger">${c.rate}</td>
-            <td>${tag}</td>
-            <td><div class="flex gap-2">${btn}</div></td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
-      this._appendPagination(tbody, MockData.commissionRules.length);
+  resetBidAnnFilter() {
+    ['filter-bidann-id', 'filter-bidann-shop', 'filter-bidann-company'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const statusEl = document.getElementById('filter-bidann-status');
+    if (statusEl) statusEl.value = '';
+    this.renderBidding();
+  },
+
+  // === 9. 配置中心 (抽佣规则: 支持 global, merchant, category 三种) ===
+  renderConfig(isSubmit = false) {
+    const tbody = document.querySelector('#table-admin-commission tbody');
+    if (!tbody) return;
+
+    const fType = document.getElementById('filter-comm-type')?.value;
+    const fName = (document.getElementById('filter-comm-name')?.value || '').trim().toLowerCase();
+    const fTarget = (document.getElementById('filter-comm-target')?.value || '').trim().toLowerCase();
+
+    // Check mandatory filter only on explicit query action
+    if (isSubmit && !fType) {
+      UI.toast('筛选时必须选择“抽佣模式”！', 'warning');
+      return;
     }
+
+    let filtered = MockData.commissionRules.filter(c => {
+      if (fType && c.type !== fType) return false;
+      if (fName && !c.name.toLowerCase().includes(fName)) return false;
+      if (fTarget && !c.target.toLowerCase().includes(fTarget)) return false;
+      return true;
+    });
+
+    let html = '';
+    filtered.forEach((c, idx) => {
+      let btn = c.type === 'global'
+        ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑全局默认规则', 'info')">修改</button>`
+        : `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑抽佣规则', 'info')">编辑</button>
+           <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('规则已删除', 'info')">删除</button>`;
+      
+      let typeBadge = '';
+      if (c.type === 'global') typeBadge = `<span class="tag" style="background:#e6f7ff;color:#1890ff;border-color:#91d5ff;">全局模式</span>`;
+      if (c.type === 'merchant') typeBadge = `<span class="tag" style="background:#f6ffed;color:#52c41a;border-color:#b7eb8f;">按特定商家</span>`;
+      if (c.type === 'category') typeBadge = `<span class="tag" style="background:#fff0f6;color:#eb2f96;border-color:#ffadd2;">按特定商品类别</span>`;
+
+      html += `
+        <tr>
+          <td>${idx + 1}</td>
+          <td style="font-weight:bold; color:#0f172a;">${c.name}</td>
+          <td>${typeBadge}</td>
+          <td style="color:#475569; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${c.target}">${c.target}</td>
+          <td class="font-bold text-danger">${c.rate}</td>
+          <td>${c.createdAt || '2026-07-01'}</td>
+          <td><div class="flex gap-2">${btn}</div></td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+    this._appendPagination(tbody, filtered.length);
+  },
+
+  resetCommFilter() {
+    const typeEl = document.getElementById('filter-comm-type');
+    const nameEl = document.getElementById('filter-comm-name');
+    const targetEl = document.getElementById('filter-comm-target');
+    if (typeEl) typeEl.value = '';
+    if (nameEl) nameEl.value = '';
+    if (targetEl) targetEl.value = '';
+    this.renderConfig();
   },
 
   toggleCommissionRuleType() {
@@ -1012,20 +1247,21 @@ const AdminApp = {
       };
     }
 
-    const renderBanners = (banners, tbodyId) => {
+    const renderBanners = (banners, tbodyId, type) => {
       const tbody = document.querySelector(tbodyId);
       if (!tbody) return;
       let html = '';
       banners.forEach(b => {
-        let tag = b.active ? `<span class="tag tag-success">展示中</span>` : `<span class="tag tag-secondary">已隐藏</span>`;
+        let tag = b.active ? `<span class="tag tag-success">展示中</span>` : `<span class="tag tag-secondary" style="background:#f5f5f5; color:#8c8c8c; border:1px solid #d9d9d9;">隐藏中</span>`;
+        let toggleText = b.active ? '隐藏' : '显示';
         html += `
           <tr>
             <td><img src="${b.url}" style="width:120px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #eee;"></td>
             <td class="text-gray-500 text-sm">#/pages/mall/index</td>
             <td>${tag}</td>
             <td>
-              <button class="btn btn-text btn-sm text-primary" onclick="UI.toast('已切换状态', 'success')">${b.active ? '隐藏' : '展示'}</button>
-              <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('已删除', 'success')">删除</button>
+              <button class="btn btn-text btn-sm text-primary" onclick="AdminApp.toggleBannerActive('${type}', '${b.id}')">${toggleText}</button>
+              <button class="btn btn-text btn-sm text-danger" onclick="AdminApp.deleteBanner('${type}', '${b.id}')">删除</button>
             </td>
           </tr>
         `;
@@ -1034,9 +1270,55 @@ const AdminApp = {
     };
     
     if (MockData.decorationConfig) {
-      renderBanners(MockData.decorationConfig.pcBanners, '#table-banner-pc tbody');
-      renderBanners(MockData.decorationConfig.h5Banners, '#table-banner-h5 tbody');
+      renderBanners(MockData.decorationConfig.pcBanners, '#table-banner-pc tbody', 'pc');
+      renderBanners(MockData.decorationConfig.h5Banners, '#table-banner-h5 tbody', 'h5');
     }
+  },
+
+  toggleBannerActive(type, id) {
+    const config = MockData.decorationConfig;
+    const list = type === 'pc' ? config.pcBanners : config.h5Banners;
+    const b = list.find(x => x.id === id);
+    if (!b) return;
+
+    if (b.active) {
+      const activeCount = list.filter(x => x.active).length;
+      if (activeCount <= 1) {
+        UI.toast('至少要有一个 Banner 处于展示状态！', 'warning');
+        return;
+      }
+      b.active = false;
+      UI.toast('Banner 已隐藏', 'success');
+    } else {
+      b.active = true;
+      UI.toast('Banner 已展示', 'success');
+    }
+    this.renderDecorationConfig();
+  },
+
+  deleteBanner(type, id) {
+    const config = MockData.decorationConfig;
+    const list = type === 'pc' ? config.pcBanners : config.h5Banners;
+    const idx = list.findIndex(x => x.id === id);
+    if (idx === -1) return;
+
+    const b = list[idx];
+    if (list.length <= 1) {
+      UI.toast('至少要保留一个 Banner！', 'warning');
+      return;
+    }
+
+    if (b.active) {
+      const activeCount = list.filter(x => x.active).length;
+      if (activeCount <= 1) {
+        UI.toast('无法删除唯一的展示中 Banner，请先将其他 Banner 设置为展示中！', 'warning');
+        return;
+      }
+    }
+
+    list.splice(idx, 1);
+    UI.toast('Banner 已删除', 'success');
+    this.renderDecorationConfig();
   },
 
   editingAnnId: null,
@@ -1147,7 +1429,7 @@ const AdminApp = {
     let html = '';
     
     if (offers.length === 0) {
-      html = `<tr><td colspan="5" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
+      html = `<tr><td colspan="7" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
     } else {
       // Sort offers desc by price
       offers.sort((x, y) => {
@@ -1165,13 +1447,42 @@ const AdminApp = {
             tag = `<span class="tag tag-secondary">未中标</span>`;
           }
         } else {
-          tag = `<span class="tag tag-primary">出价有效</span>`;
+          tag = `<span class="tag tag-primary">出价中</span>`;
+        }
+
+        // Look up buyer phone from MockData.users or synthesize
+        const user = MockData.users.find(u => u.name && u.name.includes(o.buyerName)) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
+        let phone = '--';
+        if (user && user.mobile) {
+          phone = user.mobile.slice(0, 3) + '****' + user.mobile.slice(7);
+        } else {
+          let hash = 0;
+          for (let i = 0; i < o.buyerName.length; i++) {
+            hash = o.buyerName.charCodeAt(i) + ((hash << 5) - hash);
+          }
+          const middle = String(Math.abs(hash) % 9000 + 1000);
+          phone = `137****${middle}`;
+        }
+
+        // Synthesize registration time (1 day before bid time)
+        let regTime = '2026-07-18 09:00';
+        if (o.time) {
+          const d = new Date(o.time.replace(/-/g, '/'));
+          if (!isNaN(d.getTime())) {
+            d.setDate(d.getDate() - 1);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const dateStr = String(d.getDate()).padStart(2, '0');
+            regTime = `${y}-${m}-${dateStr} 09:00`;
+          }
         }
         
         html += `
           <tr>
             <td>${idx + 1}</td>
             <td>${o.buyerName}</td>
+            <td>${phone}</td>
+            <td>${regTime}</td>
             <td>${o.time}</td>
             <td class="font-bold text-danger">${o.offerPrice}</td>
             <td>${tag}</td>
@@ -1683,3 +1994,256 @@ if (!UI.openImagePreview) {
     modal.style.display = 'flex';
   };
 }
+
+AdminApp.showOrderDetailPage = function(orderId) {
+  const listSec = document.getElementById('admin-order-list-section');
+  const detailSec = document.getElementById('admin-order-detail-section');
+  if (!listSec || !detailSec) return;
+
+  const o = MockData.orders.find(item => item.id === orderId);
+  if (!o) return;
+
+  listSec.style.display = 'none';
+  detailSec.style.display = 'block';
+
+  document.getElementById('admin-detail-order-id').innerText = o.id;
+
+  // Render Status Banner
+  const bannerMap = {
+    0: { title: '订单待签约', desc: '买卖双方正在进行 CA 电子签名签署大宗买卖交易合同及保证金协议。' },
+    5: { title: '订单待卖家签约', desc: '买方已电子签名，等待供应商家代表签名并盖合同章。' },
+    4: { title: '订单待付款', desc: '买方已电子签约，请及时在钱包或通过线下对公向平台监管账户汇款大宗货款。' },
+    1: { title: '订单待发货', desc: '资金托管入账已由平台确认，等待卖家安排专车发运大宗货品。' },
+    2: { title: '卖家已发货', desc: '卖家已安排大宗直达物流专车发运送达中，请在到货后仔细核对并确认收货。' },
+    3: { title: '交易履约已完成', desc: '买卖双方均已确认收货，财务清算完成，托管资金已划拨至卖家商户余额。' },
+    '-1': { title: '订单已关闭', desc: o.closeReason || '交易异常，订单已关闭。' }
+  };
+  const bData = bannerMap[o.status] || { title: '订单处理中', desc: '请耐心等待平台处理...' };
+  const statusTitleEl = document.getElementById('admin-detail-status-title');
+  const statusDescEl = document.getElementById('admin-detail-status-desc');
+  if (statusTitleEl) statusTitleEl.innerText = bData.title;
+  if (statusDescEl) statusDescEl.innerText = bData.desc;
+  
+  const typeTag = document.getElementById('admin-detail-type-tag');
+  typeTag.innerText = o.type;
+  typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
+
+  document.getElementById('admin-detail-create-time').innerText = o.time || '2026-07-07 10:15';
+  document.getElementById('admin-detail-buyer-name').innerText = o.buyerName || '--';
+  document.getElementById('admin-detail-shop-name').innerText = o.shopName || '--';
+
+  const statusBadge = document.getElementById('admin-detail-status-badge');
+  const statusMap = {
+    0: { text: '待签约', class: 'badge-primary' },
+    5: { text: '待卖家签约', class: 'badge-primary' },
+    4: { text: '待付款', class: 'badge-warning' },
+    1: { text: '待发货', class: 'badge-info' },
+    2: { text: '待签收', class: 'badge-secondary' },
+    3: { text: '已完成', class: 'badge-success' },
+    '-1': { text: '已关闭', class: 'badge-danger' }
+  };
+  const s = statusMap[o.status] || { text: '未知状态', class: 'badge-secondary' };
+  statusBadge.innerHTML = `<span class="badge ${s.class}" style="font-size:14px; padding:6px 12px; border-radius:6px; font-weight:bold;">${s.text}</span>`;
+
+  const stepsContainer = document.getElementById('admin-detail-steps');
+  let currentStep = 0;
+  if (o.status === 0 || o.status === 5) currentStep = 1;
+  else if (o.status === 4) currentStep = 2;
+  else if (o.status === 1) currentStep = 3;
+  else if (o.status === 2) currentStep = 4;
+  else if (o.status === 3) currentStep = 5;
+
+  const steps = [
+    { name: '1. 提交买单', time: o.time },
+    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20' : '' },
+    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00' : '' },
+    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30' : '' },
+    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30' : '' },
+    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00' : '' }
+  ];
+
+  stepsContainer.innerHTML = steps.map((st, index) => {
+    const active = o.status !== -1 && index <= currentStep;
+    const done = o.status !== -1 && index < currentStep;
+    const numColor = active ? 'var(--primary-color)' : '#94a3b8';
+    const numBg = active ? 'var(--primary-bg)' : '#f1f5f9';
+    return `
+      <div style="flex:1; text-align:center; position:relative; z-index:1;">
+        <div style="width:32px; height:32px; border-radius:50%; background:${numBg}; color:${numColor}; border:2px solid ${active ? 'var(--primary-color)' : '#cbd5e1'}; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:bold; font-size:14px;">
+          ${done ? '✓' : index + 1}
+        </div>
+        <div style="font-weight:bold; color:${active ? '#1e293b' : '#64748b'}; font-size:12px;">${st.name}</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${st.time || '--'}</div>
+      </div>
+    `;
+  }).join('') + `
+    <!-- Line background -->
+    <div style="position:absolute; top:16px; left:40px; right:40px; height:2px; background:#cbd5e1; z-index:0;"></div>
+    <div style="position:absolute; top:16px; left:40px; width:calc(${o.status === -1 ? 0 : Math.min(100, (currentStep / 5) * 100)}% - 80px); height:2px; background:var(--primary-color); z-index:0; transition: width 0.3s ease;"></div>
+  `;
+
+  const goodsTbody = document.getElementById('admin-detail-goods-tbody');
+  const imgUrl = 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=120&q=80';
+  goodsTbody.innerHTML = `
+    <tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:12px;"><img src="${imgUrl}" style="width:50px; height:50px; border-radius:6px; object-fit:cover;" /></td>
+      <td style="padding:12px; font-weight:bold; color:#334155;">
+        <div>${o.productName}</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:2px;">规格属性: 工业标准一级 | 包装: 散装/专车直达</div>
+      </td>
+      <td style="padding:12px; text-align:right; font-weight:bold; color:#475569;">${o.amount}</td>
+      <td style="padding:12px; text-align:center; color:#475569;">1 批次</td>
+      <td style="padding:12px; text-align:right; font-weight:bold; color:#0f172a;">${o.amount}</td>
+    </tr>
+  `;
+
+  document.getElementById('admin-detail-subtotal-price').innerText = o.amount;
+  document.getElementById('admin-detail-total-amount').innerText = o.amount;
+
+  // 渲染合同模块
+  const contractWrapper = document.getElementById('admin-detail-contract-wrapper');
+  if (contractWrapper) {
+    if (o.status === 0 || o.status === 5) {
+      contractWrapper.innerHTML = `
+        <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+          ⏳ 双方电子签约尚未完成，暂无可预览合同。
+        </div>
+      `;
+    } else {
+      const contractNo = o.contractNo || ('HT-' + o.id);
+      contractWrapper.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+            <span style="font-weight:bold; color:#1e293b; font-size:13px;">买家合同</span>
+            <button class="btn btn-outline btn-sm" id="admin-detail-preview-contract-btn-buyer" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+            <span style="font-weight:bold; color:#1e293b; font-size:13px;">卖家合同</span>
+            <button class="btn btn-outline btn-sm" id="admin-detail-preview-contract-btn-seller" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('admin-detail-preview-contract-btn-buyer').onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 买家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
+      };
+      document.getElementById('admin-detail-preview-contract-btn-seller').onclick = () => {
+        UI.previewDocument('《大宗物资买卖交易合同及质量协议》- 卖家签署联', 'contract', contractNo, o.amount, o.buyerName, o.shopName);
+      };
+    }
+  }
+
+  // 渲染支付凭证模块
+  const voucherCard = document.getElementById('admin-detail-payment-voucher-card');
+  if (voucherCard) {
+    const voucherTitle = `<h3 class="text-base font-bold mb-4" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
+      <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
+      支付凭证
+    </h3>`;
+    if (o.status === 0 || o.status === 5 || o.status === 4) {
+      voucherCard.innerHTML = voucherTitle + `
+        <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+          ⏳ 等待买方资金托管支付后，可查阅凭证回执。
+        </div>
+      `;
+    } else {
+      const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
+      const isOnline = !o.paymentVoucher;
+      voucherCard.innerHTML = voucherTitle + `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 18px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+          <span style="font-weight:bold; color:#334155; font-size:13px;">支付凭证</span>
+          <button class="btn btn-outline btn-sm" id="admin-detail-preview-voucher-btn" style="border-radius:6px; padding:4px 12px;">【预览】</button>
+        </div>
+      `;
+      document.getElementById('admin-detail-preview-voucher-btn').onclick = () => {
+        UI.previewDocument(isOnline ? '在线支付电子回单' : '线下对公转账凭证', 'voucher', voucherNo, o.amount, o.buyerName, o.shopName);
+      };
+    }
+  }
+
+  const logisticsNoEl = document.getElementById('admin-detail-logistics-no');
+  if (logisticsNoEl) {
+    logisticsNoEl.innerText = (o.status >= 2 || o.status === 3) ? 'SF1480928120' : '--';
+  }
+
+  document.getElementById('admin-detail-commission-amount').innerText = o.amount;
+  const numericAmount = parseFloat(o.amount.replace(/[^\d.]/g, ''));
+  if (!isNaN(numericAmount)) {
+    const fee = numericAmount * 0.006;
+    document.getElementById('admin-detail-commission-fee').innerText = '¥' + fee.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  } else {
+    document.getElementById('admin-detail-commission-fee').innerText = '¥0.00';
+  }
+
+
+};
+
+AdminApp.hideOrderDetailPage = function() {
+  document.getElementById('admin-order-list-section').style.display = 'block';
+  document.getElementById('admin-order-detail-section').style.display = 'none';
+};
+
+AdminApp.resetBiddingResFilter = function() {
+  ['filter-bidres-id', 'filter-bidres-shop', 'filter-bidres-company', 'filter-bidres-name'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const sel = document.getElementById('filter-bidres-status');
+  if (sel) sel.value = '';
+  AdminApp.renderBidding();
+};
+
+window.openAuditBiddingResModal = function(id) {
+  const r = MockData.biddingResources.find(x => x.id === id);
+  if (!r) return;
+
+  // 填充资源信息摘要
+  const infoEl = document.getElementById('audit-bidres-info');
+  if (infoEl) {
+    infoEl.innerHTML = `
+      <div><strong>资源编号：</strong>${r.id}</div>
+      <div><strong>提报店铺：</strong>${r.shopName}</div>
+      <div><strong>公司名称：</strong>${r.companyName || '--'}</div>
+      <div><strong>资源货品名：</strong>${r.name}</div>
+    `;
+  }
+
+  // 重置表单
+  document.getElementById('audit-bidres-target-id').value = id;
+  const passRadio = document.querySelector('input[name="audit-bidres-radio"][value="pass"]');
+  if (passRadio) passRadio.checked = true;
+  document.getElementById('audit-bidres-reject-box').style.display = 'none';
+  const reasonEl = document.getElementById('audit-bidres-reject-reason');
+  if (reasonEl) {
+    reasonEl.value = '';
+    const counter = reasonEl.parentElement.querySelector('.char-counter');
+    if (counter) counter.innerText = '0/50';
+  }
+
+  UI.showModal('modal-audit-bidres');
+};
+
+window.confirmSubmitAuditBidRes = function() {
+  const id = document.getElementById('audit-bidres-target-id').value;
+  const r = MockData.biddingResources.find(x => x.id === id);
+  if (!r) return;
+
+  const result = document.querySelector('input[name="audit-bidres-radio"]:checked')?.value;
+
+  if (result === 'pass') {
+    r.status = '已通过';
+    UI.closeModal('modal-audit-bidres');
+    AdminApp.renderBidding();
+    UI.toast('资源审核已通过', 'success');
+  } else {
+    const reason = (document.getElementById('audit-bidres-reject-reason')?.value || '').trim();
+    if (!reason) {
+      UI.toast('请填写驳回理由', 'warning');
+      return;
+    }
+    r.status = '未通过';
+    r.rejectReason = reason;
+    UI.closeModal('modal-audit-bidres');
+    AdminApp.renderBidding();
+    UI.toast('资源审核已驳回', 'warning');
+  }
+};
