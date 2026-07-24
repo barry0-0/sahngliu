@@ -27,6 +27,9 @@ const H5App = {
     this.renderDemands();
     this.renderBids();
     this.renderCart();
+    this.renderUserOrders();
+    this.renderUserBids();
+    this.renderUserInvoices();
     
     // 首次打开同步视图并确保首页隐藏返回键
     this.switchH5View('view-home');
@@ -61,33 +64,50 @@ const H5App = {
         if (targetId === 'view-uc-invoices') {
           H5App.renderUserInvoices();
         }
-        if (targetId === 'view-shop' || targetId === 'view-shops' || targetId.startsWith('view-uc-')) {
+        if (targetId === 'view-shop' || targetId === 'view-uc-order-detail') {
           if (mainHeader) mainHeader.style.display = 'none';
         } else {
           if (mainHeader) mainHeader.style.display = 'flex';
-          
-          const headerTitle = document.getElementById('h5-header-title');
-          const backBtn = document.getElementById('h5-header-back-btn');
-          
-          // Set Title
-          if (headerTitle) {
-            if (targetId === 'view-home') headerTitle.innerText = '咖喱粑粑商城';
-            if (targetId === 'view-demand') headerTitle.innerText = '找货源 (寻源大厅)';
-            if (targetId === 'view-bid') headerTitle.innerText = '大宗竞价大厅';
-            if (targetId === 'view-cart') headerTitle.innerText = '购物车';
-            if (targetId === 'view-my') headerTitle.innerText = '我的中心';
+        }
+
+        // 店铺详情页隐藏顶部全局搜索栏
+        const globalSearchBar = document.getElementById('h5-search-bar');
+        if (globalSearchBar) {
+          if (targetId === 'view-shop') {
+            globalSearchBar.style.display = 'none';
+          } else {
+            globalSearchBar.style.display = 'flex';
           }
+        }
           
-          if (backBtn) {
-            if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-my') {
-              backBtn.style.display = 'none';
-            } else if (targetId === 'view-cart') {
-              backBtn.style.display = 'flex';
-              backBtn.setAttribute('onclick', "H5App.switchH5View('view-my')");
-            } else {
-              backBtn.style.display = 'flex';
-              backBtn.setAttribute('onclick', "H5App.switchH5View('view-home')");
-            }
+        const headerTitle = document.getElementById('h5-header-title');
+        const backBtn = document.getElementById('h5-header-back-btn');
+        
+        // Set Title
+        if (headerTitle) {
+          if (targetId === 'view-home') headerTitle.innerText = '咖喱粑粑商城';
+          if (targetId === 'view-demand') headerTitle.innerText = '找货源 (寻源大厅)';
+          if (targetId === 'view-bid') headerTitle.innerText = '大宗竞价大厅';
+          if (targetId === 'view-cart') headerTitle.innerText = '购物车';
+          if (targetId === 'view-my') headerTitle.innerText = '我的中心';
+          if (targetId === 'view-uc-orders') headerTitle.innerText = '我的订单';
+          if (targetId === 'view-uc-bids') headerTitle.innerText = '我的竞价记录';
+          if (targetId === 'view-uc-invoices') headerTitle.innerText = '财税与发票中心';
+          if (targetId === 'view-shops') headerTitle.innerText = '搜索商户店铺';
+        }
+        
+        if (backBtn) {
+          if (targetId === 'view-home' || targetId === 'view-demand' || targetId === 'view-bid' || targetId === 'view-my') {
+            backBtn.style.display = 'none';
+          } else if (targetId === 'view-cart' || targetId === 'view-uc-orders' || targetId === 'view-uc-bids' || targetId === 'view-uc-invoices') {
+            backBtn.style.display = 'flex';
+            backBtn.setAttribute('onclick', "H5App.switchH5View('view-my')");
+          } else if (targetId === 'view-shops') {
+            backBtn.style.display = 'flex';
+            backBtn.setAttribute('onclick', "H5App.switchH5View('view-home')");
+          } else {
+            backBtn.style.display = 'flex';
+            backBtn.setAttribute('onclick', "H5App.switchH5View('view-home')");
           }
         }
       }
@@ -129,12 +149,13 @@ const H5App = {
     let html = '';
     
     const categories = MockData.productCategories || [];
-    const topLevels = categories.slice(0, 9); // Take first 9 to fit 2 rows of 5 alongside 'All'
+    // 包含【全部】在内总共只展示 6 个分类 (取前 5 个品类 + 1 个全部)
+    const topLevels = categories.slice(0, 5); 
     
     container.style.display = 'grid';
-    container.style.gridTemplateColumns = 'repeat(5, 1fr)';
-    container.style.padding = '14px 10px';
-    container.style.gap = '12px 2px';
+    container.style.gridTemplateColumns = 'repeat(6, 1fr)';
+    container.style.padding = '14px 6px';
+    container.style.gap = '8px 2px';
     container.style.margin = '10px 16px';
     container.style.background = '#ffffff';
     container.style.borderRadius = '12px';
@@ -196,6 +217,23 @@ const H5App = {
     container.innerHTML = html;
   },
 
+  currentSaleTypeFilter: '',
+
+  setSaleTypeFilter(type, btnEl) {
+    this.currentSaleTypeFilter = type;
+    if (btnEl) {
+      document.querySelectorAll('.h5-saletype-tab').forEach(b => {
+        b.style.background = '#fff';
+        b.style.color = '#64748b';
+        b.style.borderColor = '#e2e8f0';
+      });
+      btnEl.style.background = '#9a66e4';
+      btnEl.style.color = '#fff';
+      btnEl.style.borderColor = '#9a66e4';
+    }
+    this.renderHomeProducts();
+  },
+
   renderHomeProducts(keyword = '', shopId = null) {
     const grid = document.getElementById('h5-product-grid');
     let html = '';
@@ -207,24 +245,38 @@ const H5App = {
     if (shopId) {
       filtered = filtered.filter(p => p.shopId === shopId);
     }
+    if (this.currentSaleTypeFilter) {
+      filtered = filtered.filter(p => (p.shelfType || '现货') === this.currentSaleTypeFilter);
+    }
     
     filtered.forEach(p => {
+      const isSpot = (p.shelfType === '现货' || !p.shelfType);
+      const tagHtml = isSpot 
+        ? `<span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">现货</span>`
+        : `<span style="background:#f3e8ff; color:#7e22ce; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">预售</span>`;
+      const stockHtml = isSpot
+        ? `<span style="font-size:11px; color:#64748b; font-weight:500;">库存: ${p.stock !== undefined ? p.stock : 100}</span>`
+        : `<span style="font-size:11px; color:#7e22ce; font-weight:500;">按需定制</span>`;
+
       html += `
         <div class="h5-product-card card" onclick="H5App.showCartSheet('${p.id}')">
-          <div class="img-wrapper">
+          <div class="img-wrapper" style="position:relative;">
             <img src="${p.image}" alt="${p.name}">
+            <div style="position:absolute; top:6px; left:6px; z-index:2;">${tagHtml}</div>
           </div>
           <div class="info flex-col justify-between" style="flex: 1; padding: 12px; display: flex;">
             <div>
-              <h3 class="title font-serif" style="font-size: 15px; margin-bottom: 4px;">${p.name}</h3>
-              <div class="price" style="font-size: 18px; color: var(--danger-color); font-weight: bold;">${p.priceStr.split(' ')[0]}</div>
+              <h3 class="title font-serif" style="font-size: 14px; margin-bottom: 4px; font-weight:bold; color:#0f172a;">${p.name}</h3>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                <div class="price" style="font-size: 16px; color: var(--danger-color); font-weight: bold;">${p.priceStr.split(' ')[0]}</div>
+                ${stockHtml}
+              </div>
               <div class="shop-info mt-2" onclick="event.stopPropagation(); window.H5App && H5App.goToShop('${p.shopId}', '${p.shopName}')">
                 <span class="shop-name truncate text-secondary text-sm">${p.shopName}</span>
               </div>
             </div>
             
             <div class="action-bar mt-4 flex items-center justify-end" onclick="event.stopPropagation()">
-              
               <div class="flex items-center gap-1" style="justify-content: flex-end;">
                 <div class="quantity-stepper" style="transform: scale(0.9); transform-origin: right center; margin-right: 4px;">
                   <button class="stepper-btn minus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.nextElementSibling; inp.value=Math.max(1, parseInt(inp.value||1)-1)">-</button>
@@ -656,7 +708,7 @@ const H5App = {
     let html = '';
     let filtered = (MockData.biddingAnnouncements || []).filter(b => b.auditStatus === '已通过' || !b.auditStatus);
     
-    // 状态筛选 - bidding=竞价中(0/1/2), wait=等待公布(3), ended=已结束(4)
+    // 状态筛选 - bidding=竞价中(0/1/2), wait=等待公布(3), ended=已结束(4), my=我参与的
     const statusFilter = this.currentBidFilter || 'all';
     if (statusFilter === 'bidding') {
       filtered = filtered.filter(b => b.status === 0 || b.status === 1 || b.status === 2);
@@ -664,6 +716,8 @@ const H5App = {
       filtered = filtered.filter(b => b.status === 3);
     } else if (statusFilter === 'ended') {
       filtered = filtered.filter(b => b.status === 4);
+    } else if (statusFilter === 'my') {
+      filtered = filtered.filter(b => b.userApplied || b.userInspected || b.userOffered || (b.offers || []).some(o => o.merchantName === 'H5买家用户' || o.merchantName === '万通建材采购部' || o.shopName === '万通建材采购部'));
     }
 
     // 关键词筛选
@@ -681,17 +735,31 @@ const H5App = {
         tag = `<span style="color:#94a3b8; font-size:11px; font-weight:500;">已结束</span>`;
       }
 
+      const rawTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
+      const parts = rawTitle.split(' - ');
+      const mainTitle = parts[0] || rawTitle;
+      const subSpec = parts.slice(1).join(' · ').replace(/规格:\s*/g, '').trim();
+      const createTimeStr = b.createdAt ? b.createdAt.split(' ')[0] : '2026-07-01';
+
       html += `
-        <div style="background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 12px; display: flex; gap: 12px; cursor: pointer;" onclick="H5App.showBidDetail('${b.id}')">
-          <img src="${b.image}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
-          <div style="flex:1;">
-            <div style="font-weight: bold; font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start;">
-              <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 120px;">${b.title}</span>
-              ${tag}
+        <div style="background: #fff; padding: 14px 16px; border-radius: 16px; margin-bottom: 12px; display: flex; gap: 12px; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,0.035);" onclick="H5App.showBidDetail('${b.id}')">
+          <img src="${b.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; background:#f8fafc;">
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-weight: bold; font-size: 13px; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: flex-start; line-height: 1.3;">
+                <span style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; color: #0f172a; font-weight:bold;">${mainTitle}</span>
+                ${tag}
+              </div>
+              ${subSpec ? `<div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${subSpec}</div>` : ''}
+              <div style="font-size: 11px; color: #64748b; display:flex; justify-content:space-between; align-items:center;">
+                <span>🏢 ${b.companyName || b.shopName}</span>
+                <span style="font-size:10px; color:#94a3b8;">📅 ${createTimeStr}</span>
+              </div>
             </div>
-            <div class="text-xs text-secondary flex items-center gap-1 mb-2"><span>${b.shopName}</span><span class="bg-gray-100 px-1 rounded">No.${b.shopId}</span></div>
-            <div style="font-size: 12px; color: #666; margin-bottom: 4px;">底价: ${b.startPrice}</div>
-            <div style="font-size: 12px; color: #666;">当前价: <span style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${b.currentMaxOffer || b.startPrice}</span></div>
+            <div style="font-size: 11px; color: #64748b; display:flex; justify-content:space-between; align-items:flex-end; margin-top:4px;">
+              <span>起拍底价: ${b.startPrice}</span>
+              <span style="font-size:11px; color:#ef4444; font-weight:bold;">最高: <span style="font-size:14px; font-family:monospace;">${b.currentMaxOffer || b.startPrice}</span></span>
+            </div>
           </div>
         </div>
       `;
@@ -725,207 +793,158 @@ const H5App = {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
 
-    // Generate steps (5 steps: 看货报名, 现场看货, 参加竞价, 等待公布, 中标付款)
+    // 清洗标题中的阶段前缀，展现标准：公告标题 + 货品名称 + 规格
+    const cleanedTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
+
+    // 5步流程节点 (横向高颜值进度条)
     const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
-    let stepsHtml = '<div style="position: relative; padding-left: 28px; margin-top: 16px;">';
-    stepsHtml += '<div style="position: absolute; left: 9px; top: 12px; bottom: 12px; width: 0; border-left: 2px dashed var(--border-color);"></div>';
+    let stepsHtml = '<div style="display:flex; justify-content:space-between; position:relative; padding:10px 4px; margin-bottom:12px;">';
+    stepsHtml += '<div style="position:absolute; top:21px; left:20px; right:20px; height:2px; background:#e2e8f0; z-index:1;"></div>';
     steps.forEach((name, index) => {
       let isActive = index === b.status;
       let isDone = index < b.status;
-      
-      let circleBg = '#ffffff';
-      let circleBorder = 'var(--border-strong)';
-      let textColor = 'var(--text-secondary)';
+      let dotBg = '#fff';
+      let dotBorder = '#cbd5e1';
+      let dotColor = '#94a3b8';
       let textWeight = 'normal';
-      let icon = index + 1;
-      
+      let dotContent = index + 1;
+
       if (isActive) {
-        circleBg = 'var(--primary-color)';
-        circleBorder = 'var(--primary-color)';
-        textColor = 'var(--text-main)';
+        dotBg = 'linear-gradient(135deg, #9a66e4, #7e22ce)';
+        dotBorder = '#7e22ce';
+        dotColor = '#fff';
         textWeight = 'bold';
-        icon = '<span style="color:#fff; font-size:8px;">●</span>';
+        dotContent = '●';
       } else if (isDone) {
-        circleBg = 'var(--success-bg)';
-        circleBorder = 'var(--success-color)';
-        textColor = 'var(--success-color)';
-        textWeight = '500';
-        icon = '<span style="font-size:10px;">✓</span>';
+        dotBg = '#f0fdf4';
+        dotBorder = '#16a34a';
+        dotColor = '#16a34a';
+        textWeight = 'bold';
+        dotContent = '✓';
       }
-      
+
       stepsHtml += `
-        <div style="position: relative; margin-bottom: 20px; display: flex; align-items: center; min-height: 20px;">
-          <div style="position: absolute; left: -28px; width: 20px; height: 20px; border-radius: 50%; background: ${circleBg}; border: 1.5px solid ${circleBorder}; display: flex; align-items: center; justify-content: center; font-size: 11px; color: ${isActive ? '#fff' : textColor}; font-weight: bold; box-shadow: var(--shadow-sm);">
-            ${icon}
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px; z-index:2; position:relative;">
+          <div style="width:24px; height:24px; border-radius:50%; background:${dotBg}; border:2px solid ${dotBorder}; display:flex; align-items:center; justify-content:center; font-size:11px; color:${dotColor}; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+            ${dotContent}
           </div>
-          <div style="font-size: 13px; color: ${textColor}; font-weight: ${textWeight};">${name}</div>
+          <span style="font-size:10px; color:${isActive ? '#7e22ce' : (isDone ? '#16a34a' : '#94a3b8')}; font-weight:${textWeight};">${name}</span>
         </div>
       `;
     });
     stepsHtml += '</div>';
 
-    // Interactive UI based on status
+    // 状态快捷引导卡片
     let actionCardHTML = '';
-    if (b.status === 0) {
+    if (b.status === 3) {
       actionCardHTML = `
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; box-sizing:border-box;">
-          <div style="font-weight:bold; font-size:13px; color:#1e293b; margin-bottom:6px;">📋 看货报名</div>
-          <p style="margin:0 0 10px 0; font-size:11px; color:#64748b;">该项目须先在线报名以获取线下实勘看货和出价资格。</p>
-          <button class="btn btn-primary w-full" style="height:36px; border-radius:18px; border:none; background:var(--primary-color); color:#fff; font-size:12px;" onclick="H5App.signUpForBidInspection('${b.id}')">立即报名看货</button>
-        </div>
-      `;
-    } else if (b.status === 1) {
-      actionCardHTML = `
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; box-sizing:border-box;">
-          <div style="font-weight:bold; font-size:13px; color:#1e293b; margin-bottom:6px;">📸 现场看货核验</div>
-          <p style="margin:0 0 10px 0; font-size:11px; color:#64748b;">请到达存放现场，点击下方区域上传自拍照片：</p>
-          <div style="border:1.5px dashed #cbd5e1; border-radius:8px; padding:12px; text-align:center; background:#fff; margin-bottom:10px;" onclick="document.getElementById('h5-bid-photo-picker').click()">
-            <span style="font-size:18px;">📁</span>
-            <div id="h5-bid-photo-text" style="font-size:11px; color:#475569; font-weight:bold; margin-top:4px;">选择现场照片 (PNG/JPG)</div>
-            <input type="file" id="h5-bid-photo-picker" accept="image/*" style="display:none;" onchange="H5App.handleBidPhotoSelected(this)">
-          </div>
-          <div id="h5-bid-photo-card" style="display:none; align-items:center; justify-content:space-between; padding:6px 10px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; font-size:11px; color:#15803d; margin-bottom:10px;">
-            <span id="h5-bid-photo-name" style="font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;"></span>
-            <span style="cursor:pointer; color:#ef4444; font-weight:bold;" onclick="event.stopPropagation(); H5App.clearBidPhoto()">删除</span>
-          </div>
-          <button id="h5-bid-photo-submit-btn" class="btn btn-primary w-full" style="height:36px; border-radius:18px; border:none; background:#cbd5e1; color:#fff; font-size:12px; cursor:not-allowed;" disabled onclick="H5App.submitBidPhoto('${b.id}')">确认提交现场照片</button>
-        </div>
-      `;
-    } else if (b.status === 2) {
-      const startVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, '')) || 0;
-      const currentMaxVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
-      const baseBidVal = Math.max(startVal, currentMaxVal);
-      const suggestedVal = baseBidVal + 1000;
-
-      actionCardHTML = `
-        <div style="background:#ffffff; border-radius:18px; padding:16px; border:1px solid #e2e8f0; box-shadow:0 4px 20px rgba(0,0,0,0.04); display:flex; flex-direction:column; gap:14px; box-sizing:border-box;">
-          
-          <!-- 1. 深色夜光标价黑卡 (当前最高价) -->
-          <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border-radius:14px; padding:16px; color:#fff; position:relative; overflow:hidden; box-shadow:0 8px 24px rgba(15,23,42,0.15);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-size:11px; color:#94a3b8; letter-spacing:0.5px; text-transform:uppercase;">🔥 当前最高出价标盘</span>
-              <span style="display:inline-flex; align-items:center; gap:4px; background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); font-size:10px; padding:2px 8px; border-radius:10px; font-weight:600;">
-                <span style="width:6px; height:6px; border-radius:50%; background:#4ade80; display:inline-block;"></span> 正在实时竞价中
-              </span>
-            </div>
-            <div style="font-size:26px; font-weight:900; font-family:monospace; color:#fbbf24; text-shadow:0 2px 10px rgba(251,191,36,0.3);">
-              ${b.currentMaxOffer !== '-' ? b.currentMaxOffer : b.startPrice}
-            </div>
-            <div style="font-size:11px; color:#cbd5e1; margin-top:4px; display:flex; justify-content:space-between;">
-              <span>起拍底价: ${b.startPrice}</span>
-              <span>要求加价: > ¥${baseBidVal.toLocaleString()}</span>
-            </div>
-          </div>
-
-          <!-- 2. 移动端专属快捷加价步进按钮组 (Chips) -->
-          <div>
-            <div style="font-size:12px; font-weight:bold; color:#475569; margin-bottom:8px; display:flex; justify-content:space-between;">
-              <span>⚡ 快捷选择加价幅度</span>
-              <span style="font-size:11px; color:#94a3b8; font-weight:normal;">点击自动打卡填入</span>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
-              <button type="button" class="btn" style="padding:6px 0; background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:bold; font-family:monospace;" onclick="H5App.quickAddBidAmount(${baseBidVal}, 1000)">+1,000</button>
-              <button type="button" class="btn" style="padding:6px 0; background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:bold; font-family:monospace;" onclick="H5App.quickAddBidAmount(${baseBidVal}, 5000)">+5,000</button>
-              <button type="button" class="btn" style="padding:6px 0; background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:bold; font-family:monospace;" onclick="H5App.quickAddBidAmount(${baseBidVal}, 10000)">+1万</button>
-              <button type="button" class="btn" style="padding:6px 0; background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:bold; font-family:monospace;" onclick="H5App.quickAddBidAmount(${baseBidVal}, 50000)">+5万</button>
-            </div>
-          </div>
-
-          <!-- 3. 出价数额输入框与全宽移动端手感出价大按钮 -->
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <div style="position:relative; display:flex; align-items:center;">
-              <span style="position:absolute; left:14px; font-weight:bold; font-size:16px; color:#7c3aed; font-family:monospace;">¥</span>
-              <input type="number" id="h5-bid-price-input" value="${suggestedVal}" placeholder="请输入竞拍出价金额" class="form-control" style="width:100%; height:46px; border-radius:14px; font-family:monospace; font-weight:bold; font-size:16px; padding-left:32px; padding-right:12px; border:2px solid #ddd6fe; background:#faf5ff; box-sizing:border-box; color:#5b21b6;">
-            </div>
-            <button class="btn w-full" style="height:48px; border-radius:24px; background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color:#fff; font-weight:bold; font-size:15px; border:none; box-shadow:0 6px 20px rgba(124,58,237,0.35); cursor:pointer;" onclick="H5App.submitBidPrice('${b.id}')">
-              ⚡ 确认提交竞拍出价
-            </button>
-          </div>
-          <div style="font-size:10px; color:#94a3b8; text-align:center;">* 出价经数字证书加签加密上报，提交后即视为生效约束。</div>
-        </div>
-      `;
-    } else if (b.status === 3) {
-      const myOffersForBid = MockData.biddingOffers.filter(o => o.bidId === b.id && o.buyerName === 'H5买家用户');
-      let myLastOfferHtml = '';
-      if (myOffersForBid.length > 0) {
-        myLastOfferHtml = `<div style="font-weight:bold; color:#15803d; margin-bottom:4px;">您的已登记报价：${myOffersForBid[0].offerPrice}</div>`;
-      }
-      actionCardHTML = `
-        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px; color:#15803d; box-sizing:border-box; font-size:11px;">
-          ${myLastOfferHtml}
-          <div style="font-weight:bold; margin-bottom:4px;">⏳ 等待定标公布中</div>
-          <p style="margin:0 0 8px 0; color:#64748b;">商户正在评审出价，即将公布中标结果。</p>
-          <div style="background:#dcfce7; border-radius:6px; padding:6px 10px; font-size:10px; color:#15803d;">
-            ⚠️ 该阶段已无法再次加价，请等待官方公布定标结果。
-          </div>
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:bold; font-size:13px; color:#d97706; display:flex; align-items:center; gap:6px;">⏳ 等待公布结果</div>
+          <div style="font-size:12px; color:#64748b; line-height:1.4;">报价已截止，商家正在评审定标中。该阶段无法继续提交价格，请关注公布结果。</div>
         </div>
       `;
     } else if (b.status === 4) {
-      if (b.winner === 'H5买家用户') {
-        actionCardHTML = `
-          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px; color:#15803d; box-sizing:border-box; font-size:12px;">
-            <div style="font-weight:bold; margin-bottom:4px;">🏆 恭喜您中标该项目！</div>
-            <div style="margin-bottom:8px;">成交金额：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong>。请前往“我的 - 我的订单”进行电子合同签署及打款付款履约流程。</div>
-            <button class="btn btn-primary w-full" style="height:34px; border-radius:17px; font-size:11px; border:none; background:var(--primary-color); color:#fff;" onclick="UI.closeModal('sheet-h5-bid-detail'); H5App.showView('view-uc-orders');">去订单中心处理</button>
+      actionCardHTML = `
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:bold; font-size:13px; color:#0f172a; display:flex; align-items:center; gap:6px;">🏁 竞拍已结束</div>
+          <div style="font-size:12px; color:#64748b; line-height:1.4;">中标买家：<strong style="color:#0f172a;">${b.winner || '买家用户'}</strong> | 最终成交价：<strong style="color:#ef4444; font-family:monospace;">${b.currentMaxOffer}</strong></div>
+        </div>
+      `;
+    } else if (!b.userApplied) {
+      actionCardHTML = `
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
+          <div style="font-weight:bold; font-size:13px; color:#0f172a;">📋 看货报名说明</div>
+          <div style="font-size:12px; color:#64748b; line-height:1.4;">本项目需先完成现场看货报名，看货后解锁正式竞拍报价权。</div>
+          <button class="btn btn-primary w-full" style="height:40px; border-radius:20px; background:#1677ff; border:none; color:#fff; font-weight:bold; font-size:13px;" onclick="H5App.signUpForBidInspection('${b.id}')">立即看货报名</button>
+        </div>
+      `;
+    } else if (b.status === 1 || (b.userApplied && !b.userInspected)) {
+      actionCardHTML = `
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
+          <div style="font-weight:bold; font-size:13px; color:#0f172a;">🔍 现场看货拍照</div>
+          <div style="font-size:11px; color:#64748b;">请前往现场看货拍照，并上传看货现场照片以激活报价。</div>
+          <div style="display:flex; gap:10px;">
+            <input type="file" id="h5-bid-photo-picker" accept="image/*" style="display:none;" onchange="H5App.handleBidPhotoSelected(this)">
+            <button class="btn btn-outline" style="border-radius:20px; font-size:12px; padding:6px 14px;" onclick="document.getElementById('h5-bid-photo-picker').click()">📷 拍照/选择文件</button>
           </div>
-        `;
-      } else {
-        actionCardHTML = `
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; color:#64748b; box-sizing:border-box; font-size:12px;">
-            <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">竞价已结束</div>
-            <div>中标人：<strong>${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong></div>
-          </div>
-        `;
-      }
-    }
+          <button class="btn btn-primary w-full" style="height:38px; border-radius:20px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-size:12px; font-weight:bold;" onclick="H5App.completeBidInspection('${b.id}')">完成看货 (解锁报价)</button>
+        </div>
+      `;
+    } else if (b.status === 2) {
+      const isReoffer = b.userOffered;
+      const startVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, '')) || 0;
+      const currentMaxVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
+      const minRecommendPrice = (currentMaxVal > 0 ? currentMaxVal : startVal) + 5000;
 
-    const contentEl = document.getElementById('h5-bid-detail-content');
-    if (contentEl) {
-      contentEl.innerHTML = `
-        <div class="flex flex-col gap-4">
-          <div style="position: relative; overflow: hidden; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
-            <img src="${b.image}" style="width: 100%; height: 140px; object-fit: cover; display: block;">
-            <span class="tag" style="position: absolute; top: 12px; right: 12px; font-size: 10px; padding: 4px 8px; border-radius: 12px; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px);">
-              ${b.status === 4 ? '已结束' : '竞拍中'}
-            </span>
+      actionCardHTML = `
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:13px; color:#0f172a; display:flex; align-items:center; gap:6px;">⚡ ${isReoffer ? '加价竞拍出价' : '首次竞拍报价'}</span>
+            <span style="font-size:10px; background:#fff7ed; color:#ea580c; padding:2px 8px; border-radius:10px; font-weight:bold;">竞拍火热中</span>
           </div>
+
+          <div style="display:flex; justify-content:space-between; background:#f8fafc; padding:12px; border-radius:12px;">
+            <div>
+              <div style="font-size:10px; color:#94a3b8;">起拍底价</div>
+              <div style="font-size:13px; font-weight:bold; color:#475569; font-family:monospace; margin-top:2px;">${b.startPrice}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:#94a3b8;">当前最高报价</div>
+              <div style="font-size:16px; font-weight:800; color:#ef4444; font-family:monospace; margin-top:2px;">${b.currentMaxOffer === '-' ? b.startPrice : b.currentMaxOffer}</div>
+            </div>
+          </div>
+
           <div>
-            <h2 class="text-base font-bold text-main mb-1" style="line-height: 1.4;">${b.title}</h2>
-            <div class="text-xs text-secondary flex items-center gap-1.5 mb-3">
-              <span>🏢 处置商户: ${b.shopName}</span>
-              <span style="color: #ddd;">|</span>
-              <span class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">No.${b.id}</span>
+            <label style="font-size:11px; font-weight:bold; color:#475569; margin-bottom:6px; display:block;">${isReoffer ? '加价出价金额 (元)' : '首次报价金额 (元)'}</label>
+            <div style="display:flex; gap:8px;">
+              <input type="number" id="h5-bid-offer-price-input" placeholder="建议不低于 ¥${minRecommendPrice}" value="${minRecommendPrice}" style="flex:1; height:40px; border-radius:20px; border:1px solid #cbd5e1; background:#f8fafc; padding:0 16px; font-size:13px; font-weight:bold; color:#0f172a; outline:none;">
+              <button class="btn btn-primary" style="height:40px; border-radius:20px; padding:0 18px; border:none; background:linear-gradient(135deg, #9a66e4, #7e22ce); font-size:12px; font-weight:bold; color:#fff;" onclick="H5App.submitBidOffer('${b.id}')">${isReoffer ? '提交加价' : '提交报价'}</button>
             </div>
-            
-            <div class="p-3 bg-gray-50 rounded-2xl flex flex-col gap-2" style="border: 1px solid var(--border-light); margin-bottom:12px;">
-              <div class="flex justify-between items-center text-xs text-regular">
-                <span>💰 起拍底价</span>
-                <span class="text-main font-bold">${b.startPrice}</span>
-              </div>
-              <div class="flex justify-between items-center text-xs text-regular">
-                <span>🔥 当前最高出价</span>
-                <span class="text-danger font-bold text-base">${b.currentMaxOffer}</span>
-              </div>
-              <div class="flex justify-between items-center text-xs text-regular">
-                <span>⏰ 截止竞价时间</span>
-                <span class="text-main">${b.bidEndTime}</span>
-              </div>
-            </div>
-            
-            ${actionCardHTML}
-          </div>
-          <div class="mt-2 border-t pt-4">
-            <h3 class="font-bold text-sm text-main">🚀 竞价项目节点流转</h3>
-            ${stepsHtml}
           </div>
         </div>
       `;
     }
 
-    const footerEl = document.getElementById('h5-bid-detail-footer');
-    if (footerEl) {
-      footerEl.innerHTML = `
-        <button class="btn btn-outline w-full py-3" style="border-radius: 24px;" onclick="UI.closeModal('sheet-h5-bid-detail')">关闭</button>
+    let myOffersListHTML = '';
+    if (b.userOffered) {
+      const myOnlyOffers = (b.offers || []).filter(o => o.merchantName === 'H5买家用户' || o.shopName === '万通建材采购部' || o.merchantName === '万通建材采购部');
+      myOffersListHTML = `
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03);">
+          <div style="font-weight:bold; font-size:13px; color:#0f172a; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+            <span>📜 我的历史报价记录</span>
+            <span style="font-size:10px; color:#94a3b8;">共 ${myOnlyOffers.length} 笔</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto;">
+            ${myOnlyOffers.map(o => `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:10px; font-size:11px;">
+                <div>
+                  <div style="font-weight:bold; color:#334155;">我的出价记录</div>
+                  <div style="font-size:10px; color:#94a3b8; margin-top:2px;">出价时间: ${o.time || '--'}</div>
+                </div>
+                <div style="font-weight:bold; font-size:13px; color:#9a66e4; font-family:monospace;">${o.price || o.offerPrice}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    const content = document.getElementById('h5-bid-detail-content');
+    if (content) {
+      content.innerHTML = `
+        <!-- 头部货品全景卡片 -->
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; gap:12px; align-items:center;">
+          <img src="${b.image}" style="width:70px; height:70px; border-radius:12px; object-fit:cover; background:#f8fafc;">
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:bold; color:#0f172a; line-height:1.4;">${cleanedTitle}</div>
+            <div style="font-size:11px; color:#64748b; margin-top:4px;">发布企业: ${b.companyName || b.shopName}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:2px; font-family:monospace;">编号: ${b.id}</div>
+          </div>
+        </div>
+
+        ${stepsHtml}
+        ${actionCardHTML}
+        ${myOffersListHTML}
       `;
     }
 
@@ -935,10 +954,24 @@ const H5App = {
   signUpForBidInspection(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
+    b.userApplied = true;
     b.status = 1;
-    UI.toast('看货报名成功！已激活现场核验步骤。', 'success');
+    UI.toast('看货报名成功！请前往现场看货并上传照片。', 'success');
     this.showBidDetail(id);
     this.renderBids();
+    this.renderUserBids();
+  },
+
+  completeBidInspection(id) {
+    const b = MockData.biddingAnnouncements.find(x => x.id === id);
+    if (!b) return;
+    b.userApplied = true;
+    b.userInspected = true;
+    b.status = 2;
+    UI.toast('看货完成！已解锁【报价竞拍】入口。', 'success');
+    this.showBidDetail(id);
+    this.renderBids();
+    this.renderUserBids();
   },
 
   handleBidPhotoSelected(input) {
@@ -975,7 +1008,7 @@ const H5App = {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
     b.status = 2;
-    UI.toast('现场自拍核验通过！出价通道开启。', 'success');
+    UI.toast('看货照片上传成功！出价通道开启。', 'success');
     this.showBidDetail(id);
     this.renderBids();
   },
@@ -991,24 +1024,28 @@ const H5App = {
       inputEl.value = newVal;
       inputEl.style.transform = 'scale(1.02)';
       setTimeout(() => inputEl.style.transform = 'scale(1)', 150);
-      UI.toast(`已快捷打卡增加 ¥${addStep.toLocaleString()}，当前设定出价: ¥${newVal.toLocaleString()}`, 'info');
+      UI.toast('已快捷增加报价，当前设定出价: ¥' + newVal, 'info');
     }
+  },
+
+  submitBidOffer(id) {
+    this.submitBidPrice(id);
   },
 
   submitBidPrice(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
     
-    const inputEl = document.getElementById('h5-bid-price-input');
+    const inputEl = document.getElementById('h5-bid-offer-price-input') || document.getElementById('h5-bid-price-input');
     if (!inputEl) return;
     
     const offerPriceVal = parseFloat(inputEl.value);
-    const startPriceVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, ''));
-    const maxOfferVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
+    const startPriceVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, '')) || 0;
+    const maxOfferVal = b.currentMaxOffer === '-' ? 0 : (parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, '')) || 0);
     const minRequired = Math.max(startPriceVal, maxOfferVal);
 
     if (isNaN(offerPriceVal) || offerPriceVal <= minRequired) {
-      UI.toast(`加价必须高于当前最高价 (当前最小出价要求: ¥${minRequired.toLocaleString()})`, 'error');
+      UI.toast('加价必须高于当前最高报价', 'error');
       return;
     }
 
@@ -1024,9 +1061,18 @@ const H5App = {
     });
 
     b.currentMaxOffer = offerPriceStr;
-    b.status = 3;
+    b.userOffered = true;
+    b.status = 2;
 
-    UI.toast(`提交成功！金额 ${offerPriceStr} 已录入系统。`, 'success');
+    if (!b.offers) b.offers = [];
+    b.offers.unshift({
+      id: 'OFR' + Math.floor(1000 + Math.random() * 9000),
+      merchantName: 'H5买家用户',
+      price: offerPriceStr,
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    });
+
+    UI.toast(`提交出价成功！金额 ${offerPriceStr} 已录入系统。`, 'success');
     this.showBidDetail(id);
     this.renderBids();
     this.renderUserBids();
@@ -1036,39 +1082,56 @@ const H5App = {
   doSearch() {
     const type = document.getElementById('h5-search-type').value;
     const kw = document.getElementById('h5-search-keyword').value.trim();
-    if (!kw) {
-      UI.toast('请输入搜索关键词', 'warning');
-      return;
-    }
-    if (type === 'merchant') {
-      const filteredShops = MockData.shops.filter(s => s.shopName.includes(kw) || s.companyName.includes(kw));
-      if (filteredShops.length > 0) {
-        this.switchH5View('view-shops');
-        document.getElementById('h5-shops-count').innerText = `共找到 ${filteredShops.length} 个相关店铺`;
-        let html = '';
-        filteredShops.forEach(s => {
-          const avatarChar = s.avatar ? '' : s.shopName.charAt(0);
-          const avatarHtml = s.avatar ? `<img src="${s.avatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : `<div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">${avatarChar}</div>`;
-          html += `
-            <div class="card flex gap-3 items-center" onclick="H5App.goToShop('${s.id}', '${s.shopName}')" style="padding: 12px; border-radius: 16px; border: 1px solid #f1f5f9; background: #fff; cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                ${avatarHtml}
-                <div>
-                  <div class="font-bold text-sm text-slate-800">${s.shopName}</div>
-                  <div class="text-[10px] text-slate-400 mt-0.5">${s.companyName}</div>
-                </div>
-              </div>
-              <svg class="icon-svg text-slate-300" style="width:16px; height:16px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </div>
-          `;
-        });
-        document.getElementById('h5-grid-search-shops').innerHTML = html;
-      } else {
-        UI.toast('未找到相关商户', 'error');
-      }
+    if (type === 'merchant' || type === 'shop') {
+      this.switchH5View('view-shops');
+      const shopsInput = document.getElementById('h5-shops-search-input');
+      if (shopsInput) shopsInput.value = kw;
+      this.doShopsSearch();
     } else {
       this.renderHomeProducts(kw);
     }
+  },
+
+  doShopsSearch() {
+    const input = document.getElementById('h5-shops-search-input');
+    const kw = input ? input.value.trim() : '';
+    let filteredShops = MockData.shops || [];
+    if (kw) {
+      filteredShops = filteredShops.filter(s => (s.shopName || s.name || '').includes(kw) || (s.companyName || '').includes(kw));
+    }
+    const countEl = document.getElementById('h5-shops-count');
+    if (countEl) countEl.innerText = `共找到 ${filteredShops.length} 个相关店铺`;
+    const grid = document.getElementById('h5-grid-search-shops');
+    if (!grid) return;
+    let html = '';
+    filteredShops.forEach(s => {
+      const avatarChar = s.avatar ? '' : (s.shopName || s.name || '店').charAt(0);
+      const avatarHtml = s.avatar ? `<img src="${s.avatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : `<div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">${avatarChar}</div>`;
+      
+      let statusTagHtml = `<span style="font-size: 9px; padding: 2px 6px; background: #e0f2fe; color: #0369a1; border-radius: 4px; font-weight: bold; margin-left: 6px;">正在营业</span>`;
+      if (s.status === '闭店中' || s.status === '已关停' || s.status === '已禁用') {
+        statusTagHtml = `<span style="font-size: 9px; padding: 2px 6px; background: #f1f5f9; color: #64748b; border-radius: 4px; font-weight: bold; margin-left: 6px;">闭店中</span>`;
+      } else if (s.status === '审核未通过') {
+        statusTagHtml = `<span style="font-size: 9px; padding: 2px 6px; background: #fef2f2; color: #ef4444; border-radius: 4px; font-weight: bold; margin-left: 6px;">审核未通过</span>`;
+      }
+
+      html += `
+        <div class="card flex gap-3 items-center" onclick="H5App.goToShop('${s.id}', '${s.shopName || s.name}')" style="padding: 12px; border-radius: 16px; border: 1px solid #f1f5f9; background: #fff; cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            ${avatarHtml}
+            <div>
+              <div class="font-bold text-sm text-slate-800" style="display:flex; align-items:center;">
+                ${s.shopName || s.name}
+                ${statusTagHtml}
+              </div>
+              <div class="text-[10px] text-slate-400 mt-0.5">${s.companyName || '正品供货商户'}</div>
+            </div>
+          </div>
+          <svg class="icon-svg text-slate-300" style="width:16px; height:16px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      `;
+    });
+    grid.innerHTML = html || `<div style="text-align:center; padding:40px; color:#94a3b8; font-size:12px;">未找到匹配店铺</div>`;
   },
 
   goToShop(shopId, shopName = '未知店铺') {
@@ -1391,7 +1454,7 @@ const H5App = {
     UI.toast(`订单已生成，请在此进行签约！`, 'success');
 
     // 切换到“我的”订单列表
-    this.showView('view-uc-orders');
+    this.switchH5View('view-uc-orders');
   },
 
   currentUserOrderFilter: 'all',
@@ -1741,47 +1804,140 @@ const H5App = {
     `;
   },
 
+  currentUCBidStatusFilter: '',
+  currentUCInvoiceTab: 'apply',
+
+  setUCBidFilter(status, btnEl) {
+    this.currentUCBidStatusFilter = status;
+    if (btnEl) {
+      document.querySelectorAll('.h5-uc-bid-tab').forEach(b => {
+        b.style.background = '#fff';
+        b.style.color = '#64748b';
+        b.style.border = '1px solid #cbd5e1';
+      });
+      btnEl.style.background = 'linear-gradient(135deg, #9a66e4, #7e22ce)';
+      btnEl.style.color = '#fff';
+      btnEl.style.border = 'none';
+    }
+    this.renderUserBids();
+  },
+
   renderUserBids() {
     const list = document.getElementById('h5-uc-bids-list');
     if (!list) return;
+    let html = '';
 
-    // Filter offers for 'H5买家用户'
-    let myOffers = MockData.biddingOffers.filter(o => o.buyerName === 'H5买家用户');
-    let uniqueBidIds = [...new Set(myOffers.map(o => o.bidId))];
+    const allMyBids = (MockData.biddingAnnouncements || []).filter(b => {
+      return b.userApplied || b.userInspected || b.userOffered || (b.offers || []).some(o => o.merchantName === 'H5买家用户' || o.shopName === '万通建材采购部' || o.merchantName === '万通建材采购部');
+    });
 
-    // Fallback if no specific bids found
-    if (uniqueBidIds.length === 0 && MockData.biddingAnnouncements.length > 0) {
-      uniqueBidIds = [MockData.biddingAnnouncements[0].id, MockData.biddingAnnouncements[1].id];
+    // 计算各状态数量
+    const countAll = allMyBids.length;
+    const countIng = allMyBids.filter(b => b.status === 0 || b.status === 1 || b.status === 2).length;
+    const countWait = allMyBids.filter(b => b.status === 3).length;
+    const countEnd = allMyBids.filter(b => b.status === 4).length;
+
+    const elAll = document.getElementById('h5-bid-count-all');
+    const elIng = document.getElementById('h5-bid-count-ing');
+    const elWait = document.getElementById('h5-bid-count-wait');
+    const elEnd = document.getElementById('h5-bid-count-end');
+    if (elAll) elAll.innerText = `(${countAll})`;
+    if (elIng) elIng.innerText = `(${countIng})`;
+    if (elWait) elWait.innerText = `(${countWait})`;
+    if (elEnd) elEnd.innerText = `(${countEnd})`;
+
+    let bids = [...allMyBids];
+    if (this.currentUCBidStatusFilter !== '') {
+      const targetSt = parseInt(this.currentUCBidStatusFilter);
+      bids = bids.filter(b => {
+        if (targetSt === 1) return b.status === 0 || b.status === 1 || b.status === 2;
+        return b.status === targetSt;
+      });
     }
 
-    let html = '';
-    uniqueBidIds.forEach(bidId => {
-      const b = MockData.biddingAnnouncements.find(x => x.id === bidId);
-      if (!b) return;
+    if (bids.length === 0) {
+      list.innerHTML = `
+        <div style="text-align:center; padding:40px 20px; color:#94a3b8;">
+          <div style="font-size:36px; margin-bottom:8px;">⚖️</div>
+          <div style="font-size:13px; font-weight:bold; color:#64748b;">暂无对应出价与竞拍记录</div>
+          <div style="font-size:11px; margin-top:4px;">可以前往【竞价大厅】参与最新的物资公开竞拍交易</div>
+          <button class="btn btn-primary" style="margin-top:16px; border-radius:18px; padding:6px 20px; font-size:12px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none;" onclick="H5App.switchH5View('view-bid')">前往竞价大厅</button>
+        </div>
+      `;
+      return;
+    }
 
-      const myOffersForBid = myOffers.filter(o => o.bidId === bidId);
-      const myMaxOfferVal = myOffersForBid.length > 0 
-        ? Math.max(...myOffersForBid.map(o => parseFloat(o.offerPrice.replace(/[^\d\.]/g, '')) || 0))
-        : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, '')) || 2100000;
-      const myMaxOfferStr = '¥' + myMaxOfferVal.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+    bids.forEach(b => {
+      let myOffers = (b.offers || []).filter(o => o.merchantName === 'H5买家用户' || o.shopName === '万通建材采购部' || o.merchantName === '万通建材采购部');
+      let myMaxOfferStr = myOffers.length > 0 ? myOffers[myOffers.length - 1].price : '暂无报价';
+
+      // 提取标题与规格信息：重点突出标题和货品，规格弱化不带“规格:”前缀
+      const rawTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
+      const parts = rawTitle.split(' - ');
+      const mainTitle = parts[0] || rawTitle;
+      const subSpec = parts.slice(1).join(' · ').replace(/规格:\s*/g, '').trim();
+      const createTimeStr = b.createdAt ? b.createdAt.split(' ')[0] : '2026-07-01';
 
       let tag = '';
-      if (b.status === 0 || b.status === 1 || b.status === 2) tag = `<span class="tag tag-success" style="font-size: 11px; padding: 3px 8px; background:#f6ffed; color:#52c41a; border-color:#b7eb8f; border-radius:6px; font-weight:600;">竞价中</span>`;
-      else if (b.status === 3) tag = `<span class="tag tag-success" style="font-size: 11px; padding: 3px 8px; background:#fff0f6; color:#eb2f96; border-color:#ffadd2; border-radius:6px; font-weight:600;">等待公布</span>`;
-      else if (b.status === 4) tag = b.winner === 'H5买家用户'
-        ? `<span class="tag tag-success" style="font-size: 11px; padding: 3px 8px; background:#f6ffed; color:#52c41a; border-color:#b7eb8f; font-weight:bold; border-radius:6px;">🏆 中标</span>`
-        : `<span class="tag tag-secondary" style="font-size: 11px; padding: 3px 8px; border-radius:6px;">未中标</span>`;
+      if (b.status === 0 || b.status === 1 || b.status === 2) {
+        tag = `<span style="font-size: 11px; padding: 2px 8px; background: #e6f4ff; color: #0958d9; border-radius: 12px; font-weight: 600;">竞价中</span>`;
+      } else if (b.status === 3) {
+        tag = `<span style="font-size: 11px; padding: 2px 8px; background: #fff0f6; color: #c41d7f; border-radius: 12px; font-weight: 600;">等待公布</span>`;
+      } else if (b.status === 4) {
+        tag = (b.winner === 'H5买家用户' || b.winner === '万通建材采购部')
+          ? `<span style="font-size: 11px; padding: 2px 8px; background: #f6ffed; color: #389e0d; font-weight: bold; border-radius: 12px;">🏆 中标</span>`
+          : `<span style="font-size: 11px; padding: 2px 8px; background: #f5f5f5; color: #8c8c8c; border-radius: 12px;">已结束</span>`;
+      }
+
+      let btnText = '看货报名';
+      let btnBg = '#1677ff';
+      if (!b.userApplied) {
+        btnText = '看货报名';
+        btnBg = '#1677ff';
+      } else if (!b.userInspected) {
+        btnText = '查看详情';
+        btnBg = '#64748b';
+      } else if (!b.userOffered) {
+        btnText = '报价竞拍';
+        btnBg = 'linear-gradient(135deg, #10b981, #059669)';
+      } else if (b.status === 0 || b.status === 1 || b.status === 2) {
+        btnText = '加价竞拍';
+        btnBg = 'linear-gradient(135deg, #9a66e4, #7e22ce)';
+      } else {
+        btnText = '查看详情';
+        btnBg = '#64748b';
+      }
 
       html += `
-        <div class="card p-4 mb-4 bg-white" style="border:1px solid #e2e8f0; border-radius:14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; gap:8px;" onclick="H5App.showBidDetail('${b.id}')">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong class="text-slate-800 text-sm" style="font-size:15px; font-weight:bold; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; max-width: 65%; color:#0f172a;">${b.title}</strong>
+        <div style="background: #ffffff; border-radius: 16px; padding: 14px 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.035); display: flex; flex-direction: column; gap: 8px; cursor: pointer;" onclick="H5App.showBidDetail('${b.id}')">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${mainTitle}</div>
             ${tag}
           </div>
-          <div style="font-size:12px; color:#64748b;">项目编号: <span style="font-family:monospace; color:#334155; font-weight:bold;">${b.id}</span> | 起拍价: ${b.startPrice}</div>
-          <div style="font-size:12px; color:#64748b;">当前最高价: <span class="text-danger font-bold" style="font-family:monospace; font-size:14px;">${b.currentMaxOffer}</span></div>
-          <div style="font-size:13px; font-weight:bold; color:var(--primary-color);">我的最高出价: <span style="font-family:monospace;">${myMaxOfferStr}</span></div>
-          <div style="font-size:11px; color:#94a3b8; border-top:1px solid #f8fafc; padding-top:6px; margin-top:2px;">截止时间: ${formatTimeSec(b.bidEndTime)}</div>
+          ${subSpec ? `<div style="font-size: 10px; color: #94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${subSpec}</div>` : ''}
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
+            <span>🏢 ${b.companyName || b.shopName}</span>
+            <span style="font-size: 10px; color: #94a3b8;">📅 创建时间: ${createTimeStr}</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; background: #f8fafc; padding: 10px 12px; border-radius: 12px;">
+            <div>
+              <div style="font-size: 10px; color: #94a3b8;">我的最新报价</div>
+              <div style="font-size: 15px; font-weight: 800; color: #9a66e4; font-family: monospace; margin-top: 2px;">${myMaxOfferStr}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 10px; color: #94a3b8;">当前最高出价</div>
+              <div style="font-size: 14px; font-weight: 700; color: #ef4444; font-family: monospace; margin-top: 2px;">${b.currentMaxOffer || b.startPrice}</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; margin-top:2px;">
+            <span>截止: ${b.bidEndTime}</span>
+            <button class="btn btn-primary btn-sm" style="border-radius: 14px; font-size: 11px; padding: 4px 14px; background: ${btnBg}; border: none; font-weight: bold; color: #fff;" onclick="event.stopPropagation(); H5App.showBidDetail('${b.id}')">
+              ${btnText}
+            </button>
+          </div>
         </div>
       `;
     });
@@ -1789,37 +1945,109 @@ const H5App = {
     list.innerHTML = html;
   },
 
-  applyInvoice(orderId) {
-    UI.showInvoiceModal(orderId, () => {
-      this.renderUserOrders();
-    });
+  switchUCInvoiceTab(tabName, btnEl) {
+    this.currentUCInvoiceTab = tabName;
+    if (btnEl) {
+      document.querySelectorAll('.h5-uc-inv-tab').forEach(b => {
+        b.style.color = '#64748b';
+        b.style.borderBottom = '2px solid transparent';
+        b.style.fontWeight = '600';
+      });
+      btnEl.style.color = '#9a66e4';
+      btnEl.style.borderBottom = '2px solid #9a66e4';
+      btnEl.style.fontWeight = 'bold';
+    }
+    this.renderUserInvoices();
   },
 
   renderUserInvoices() {
     const list = document.getElementById('h5-uc-invoices-list');
     if (!list) return;
-    list.innerHTML = `
-      <div class="card p-4 mb-4 bg-white" style="border:1px solid #e2e8f0; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong class="text-slate-800 text-sm" style="font-size:14px; font-weight:bold; color:#0f172a;">增值税专用发票 (INV20260701)</strong>
-          <span class="tag tag-success" style="font-size:11px; padding:2px 8px; border-radius:6px;">已邮寄</span>
+    let html = '';
+
+    const invoices = window.MockData.invoices || [];
+
+    if (invoices.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding: 40px 0; color: #94a3b8; font-size: 14px;">暂无发票记录</div>`;
+      return;
+    }
+
+    invoices.forEach(inv => {
+      const isIssued = inv.status === '已开具' || inv.status === '已送达' || inv.status === '已完成';
+      const statusText = isIssued ? '已开具' : '待开具';
+      let tag = isIssued
+        ? `<span style="background:#f6ffed; color:#389e0d; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">${statusText}</span>`
+        : `<span style="background:#fff7e6; color:#d46b08; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">${statusText}</span>`;
+
+      const timeStr = inv.createTime || inv.applyTime || '—';
+      const orderRef = inv.orderId ? ` (${inv.orderId})` : '';
+
+      html += `
+        <div style="background: #ffffff; border-radius: 16px; padding: 14px 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.035); display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; font-weight: 700; color: #0f172a;">${inv.type}</span>
+            ${tag}
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 10px;">
+            <div>
+              <div style="font-size: 10px; color: #94a3b8;">发票编号${orderRef ? '/关联订单' : ''}</div>
+              <div style="font-size: 11px; font-weight: 700; color: #334155; font-family: monospace;">${inv.id}${orderRef}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 10px; color: #94a3b8;">发票金额</div>
+              <div style="font-size: 14px; font-weight: 800; color: #ef4444; font-family: monospace;">${inv.amount}</div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; margin-top: 2px;">
+            <span>申请/开具时间: ${timeStr}</span>
+            ${isIssued ? `<button class="btn btn-primary btn-sm" style="border-radius: 14px; font-size: 11px; padding: 4px 12px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none; color: #fff; font-weight: bold;" onclick="UI.toast('已拉取增值税电子发票PDF/图文可随时打印', 'info')">查看电子发票</button>` : `<span style="font-size:11px; color:#d46b08; font-weight:bold;">商家开具中...</span>`}
+          </div>
         </div>
-        <div style="font-size:12px; color:#64748b;">关联订单: <span style="font-family:monospace; color:#334155; font-weight:bold;">OD202607130002</span></div>
-        <div style="font-size:13px; color:#ef4444; font-weight:bold;">发票金额: <span style="font-family:monospace; font-size:15px;">¥18,500.00</span></div>
-        <div style="font-size:11px; color:#94a3b8; border-top:1px solid #f8fafc; padding-top:6px;">申请时间: 2026-07-13 14:30:00</div>
-      </div>
-      <div class="card p-4 mb-4 bg-white" style="border:1px solid #e2e8f0; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong class="text-slate-800 text-sm" style="font-size:14px; font-weight:bold; color:#0f172a;">增值税普通发票 (INV20260702)</strong>
-          <span class="tag tag-warning" style="font-size:11px; padding:2px 8px; border-radius:6px; background:#fff7e6; color:#d46b08;">开具中</span>
-        </div>
-        <div style="font-size:12px; color:#64748b;">关联订单: <span style="font-family:monospace; color:#334155; font-weight:bold;">OD202607130005</span></div>
-        <div style="font-size:13px; color:#ef4444; font-weight:bold;">发票金额: <span style="font-family:monospace; font-size:15px;">¥865,000.00</span></div>
-        <div style="font-size:11px; color:#94a3b8; border-top:1px solid #f8fafc; padding-top:6px;">申请时间: 2026-07-16 11:20:00</div>
-      </div>
-    `;
+      `;
+    });
+
+    list.innerHTML = html;
+  },
+
+  openApplyInvoiceModal(orderId, amountStr) {
+    document.getElementById('h5-inv-order-id').innerText = orderId;
+    document.getElementById('h5-inv-amount').innerText = amountStr || '¥ 0.00';
+    UI.openModal('sheet-h5-apply-invoice');
+  },
+
+  submitApplyInvoice() {
+    const orderId = document.getElementById('h5-inv-order-id').innerText;
+    const amountStr = document.getElementById('h5-inv-amount').innerText;
+    const invType = document.getElementById('h5-inv-type').value;
+    const title = document.getElementById('h5-inv-title').value.trim();
+    const taxNo = document.getElementById('h5-inv-taxno').value.trim();
+    const email = document.getElementById('h5-inv-email').value.trim();
+
+    if (!title || !taxNo || !email) {
+      UI.toast('请完整填写发票抬头、税号及受票邮箱', 'warning');
+      return;
+    }
+
+    const newInv = {
+      id: 'INV' + Date.now().toString().slice(-8),
+      orderId: orderId,
+      type: invType,
+      amount: amountStr,
+      title: title,
+      taxNo: taxNo,
+      email: email,
+      status: '待开具',
+      applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
+    };
+
+    if (!window.MockData.invoices) window.MockData.invoices = [];
+    window.MockData.invoices.unshift(newInv);
+
+    UI.closeModal('sheet-h5-apply-invoice');
+    UI.toast('发票申请已成功提交，等待卖家上传并开具！', 'success');
+    this.renderUserInvoices();
   }
-}
+};
 
 window.H5App = H5App;
 

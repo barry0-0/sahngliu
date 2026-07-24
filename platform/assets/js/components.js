@@ -175,7 +175,16 @@ window.UI = {
     const modal = document.getElementById(id);
     if (modal) {
       modal.classList.add('active');
-      modal.style.cssText = 'display: flex !important; opacity: 1 !important; pointer-events: auto !important; z-index: 110000 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important;';
+      const isH5Modal = id.startsWith('sheet-h5-');
+      if (isH5Modal) {
+        const h5Container = document.querySelector('.mobile-app-container');
+        if (h5Container && modal.parentElement !== h5Container) {
+          h5Container.appendChild(modal);
+        }
+        modal.style.cssText = 'display: flex !important; opacity: 1 !important; pointer-events: auto !important; z-index: 110000 !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; box-sizing: border-box !important;';
+      } else {
+        modal.style.cssText = 'display: flex !important; opacity: 1 !important; pointer-events: auto !important; z-index: 110000 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important;';
+      }
     } else {
       console.warn('Modal not found:', id);
     }
@@ -1183,8 +1192,23 @@ Object.assign(window.UI, {
 
       order.invoiceApplied = true;
       order.invoiceDetails = { isEnterprise, title, tax, email, time: new Date().toISOString() };
-      
-      UI.toast('发票申请已提交，电子发票开具后将发送至您的邮箱！', 'success');
+
+      const newInv = {
+        id: 'INV-' + new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 900) + 100),
+        orderId: order.id,
+        buyerName: order.buyerName || '万通建材采购部',
+        type: isEnterprise ? '增值税专用发票' : '增值税普通发票',
+        amount: order.amount,
+        applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        status: '待开具',
+        title: title,
+        taxNo: tax,
+        email: email
+      };
+      if (!MockData.invoices) MockData.invoices = [];
+      MockData.invoices.unshift(newInv);
+
+      UI.toast('发票申请已成功提交！状态为：待开具', 'success');
       overlay.remove();
 
       if (callback) callback();

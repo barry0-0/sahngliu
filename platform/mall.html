@@ -142,7 +142,13 @@
               </div>
             </div>
             <div class="flex gap-4 items-center">
-              <span class="font-bold text-secondary w-20">价格排序:</span>
+              <span class="font-bold text-secondary w-20">现货/预售:</span>
+              <select id="spot-filter-saletype" class="form-control" style="width: 130px; height: 32px; font-size: 12px;" onchange="MallApp.renderSpotProducts()">
+                <option value="">全部类型</option>
+                <option value="现货">现货模式</option>
+                <option value="预售">预售模式</option>
+              </select>
+              <span class="font-bold text-secondary w-20" style="margin-left: 20px;">价格排序:</span>
               <span class="text-secondary cursor-pointer hover:text-primary">默认</span>
               <span class="text-secondary cursor-pointer hover:text-primary flex items-center">价格 <svg class="icon-svg" style="width:14px" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
             </div>
@@ -243,6 +249,10 @@
                 <option value="ended">已结束</option>
               </select>
               <button class="btn btn-primary" style="height: 38px; padding: 0 20px;" onclick="MallApp.doBidSearch()">搜索</button>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; user-select: none; margin-left: 8px;">
+                <input type="checkbox" id="bid-search-my-only" onchange="MallApp.doBidSearch()" style="width: 16px; height: 16px; accent-color: var(--primary-color);">
+                <span style="font-weight: bold; color: #1e293b;">🙋‍♂️ 我参与的竞价</span>
+              </label>
             </div>
             <div class="text-xs text-secondary flex items-center gap-1.5">
               <span>🔨 公开大宗竞价中心</span>
@@ -284,7 +294,6 @@
                 <span class="tag tag-success">企业认证</span>
                 <span class="bg-gray-100 px-2 py-1 rounded text-sm text-gray-500 font-mono" id="shop-id-display">No.10001</span>
               </div>
-              <div class="text-secondary text-sm" id="shop-biz-display">主营业务：钢材、木材、建筑材料</div>
               <div class="text-secondary text-sm mt-1" id="shop-reg-display">入驻时间：2026-01-01</div>
             </div>
             <div class="mt-6" style="display:none;">
@@ -322,10 +331,16 @@
     <!-- ================== 5.6 搜索商户店铺列表 ================== -->
     <div id="mall-shops" class="mall-view">
       <div class="mall-container">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold flex items-center gap-2">🔍 搜索商户店铺</h2>
-          <span class="text-secondary text-sm" id="shops-count-display">共找到 0 个相关店铺</span>
+        <!-- 顶部搜索框栏 -->
+        <div style="background: #ffffff; border-radius: 16px; padding: 20px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; max-width: 540px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 30px; padding: 4px 8px 4px 18px;">
+            <span style="font-size: 16px; color: #94a3b8;">🔍</span>
+            <input type="text" id="shops-search-input" placeholder="输入店铺名称或主体公司全称搜索..." style="border: none; background: transparent; outline: none; flex: 1; font-size: 14px; color: #0f172a;" onkeyup="if(event.key==='Enter') MallApp.doShopsSearch()">
+            <button class="btn btn-primary" style="border-radius: 20px; padding: 6px 20px; font-size: 13px; font-weight: bold; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none;" onclick="MallApp.doShopsSearch()">搜索店铺</button>
+          </div>
+          <span class="text-secondary text-sm" id="shops-count-display" style="font-weight: bold; color: #64748b;">共找到 0 个相关店铺</span>
         </div>
+
         <div class="mall-grid" id="grid-search-shops" style="grid-template-columns: repeat(3, 1fr); gap: 24px;">
           <!-- JS 渲染 -->
         </div>
@@ -634,6 +649,9 @@
                   <tr>
                     <th>项目编号</th>
                     <th>竞价公告标题</th>
+                    <th>货品名称</th>
+                    <th>规格描述</th>
+                    <th>发布企业</th>
                     <th>起拍底价</th>
                     <th>当前最高价</th>
                     <th>我的最高出价</th>

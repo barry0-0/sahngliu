@@ -1101,6 +1101,14 @@ const MerchantApp = {
       });
     }
 
+    const invAppliedEl = document.getElementById('filter-order-invoice-applied');
+    if (invAppliedEl && invAppliedEl.value !== '') {
+      myOrders = myOrders.filter(o => {
+        const hasInvApp = o.invoiceApplied || (MockData.invoices || []).some(i => i.orderId === o.id || (i.buyerName === o.buyerName && i.amount === o.amount));
+        return invAppliedEl.value === '是' ? hasInvApp : !hasInvApp;
+      });
+    }
+
     // Default Sort: newest first
     myOrders.sort((a, b) => {
       const tA = new Date(a.time || '2026-07-20 09:00:00').getTime();
@@ -1136,7 +1144,14 @@ const MerchantApp = {
         actBtn = '';
       } else if(o.status === 3) {
         statusTag = `<span class="tag tag-success">已完成</span>`;
-        actBtn = '';
+        const invRec = (MockData.invoices || []).find(i => i.orderId === o.id || (i.buyerName === o.buyerName && i.amount === o.amount));
+        if (invRec && invRec.status === '已开具') {
+          actBtn = `<button class="btn btn-sm" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-weight:bold;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">✅ 已开发票 (查看)</button>`;
+        } else if (o.invoiceApplied || invRec) {
+          actBtn = `<button class="btn btn-sm" style="background:#fff7e6; color:#d46b08; border:1px solid #ffe58f; font-weight:bold; animation:pulse 2s infinite;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">🔔 待开票 (买家已申请)</button>`;
+        } else {
+          actBtn = `<button class="btn btn-outline btn-sm text-secondary" style="border-color:#cbd5e1; color:#64748b;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">📄 上传发票 (未申请)</button>`;
+        }
       } else if(o.status === -1) {
         statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#ef4444; border:1px solid #ffa39e;">已取消</span>`;
         actBtn = '';
@@ -2035,6 +2050,8 @@ const MerchantApp = {
   }
 };
 
+window.MerchantApp = MerchantApp;
+
 document.addEventListener('DOMContentLoaded', () => {
   MerchantApp.init();
 });
@@ -2201,6 +2218,15 @@ MerchantApp.showOrderDetailPage = function(orderId) {
     actHtml = `<button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>`;
   } else if (o.status === 1) {
     actHtml = `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openShipDetailPage('${o.id}')">立即发货</button>`;
+  } else if (o.status === 3) {
+    const invRec = (MockData.invoices || []).find(i => i.orderId === o.id || (i.buyerName === o.buyerName && i.amount === o.amount));
+    if (invRec && invRec.status === '已开具') {
+      actHtml = `<button class="btn btn-sm" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-weight:bold;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">✅ 已开发票 (管理)</button>`;
+    } else if (o.invoiceApplied || invRec) {
+      actHtml = `<button class="btn btn-sm" style="background:#fff7e6; color:#d46b08; border:1px solid #ffe58f; font-weight:bold;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">🔔 待开票 (买家已申请)</button>`;
+    } else {
+      actHtml = `<button class="btn btn-outline btn-sm text-secondary" style="border-color:#cbd5e1; color:#64748b;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">📄 上传发票 (买家未申请)</button>`;
+    }
   }
   actContainer.innerHTML = actHtml;
 
@@ -2358,3 +2384,175 @@ MerchantApp.openShipDetailPage = function(orderId) {
     MerchantApp.renderOrders();
   };
 };
+
+MerchantApp.openInvoiceUploadModal = function(orderId) {
+  const order = MockData.orders.find(o => o.id === orderId);
+  let inv = (MockData.invoices || []).find(i => i.orderId === orderId || (i.buyerName === order?.buyerName && i.amount === order?.amount));
+
+  const existingOverlay = document.getElementById('merchant-invoice-modal-overlay');
+  if (existingOverlay) existingOverlay.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'merchant-invoice-modal-overlay';
+  overlay.className = 'modal-overlay';
+  overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important;';
+
+  const buyerStatusBadge = inv
+    ? (inv.status === '已开具'
+      ? `<span class="tag tag-success" style="font-size:12px; padding:3px 10px; border-radius:12px;">已开具 (买家已可查看)</span>`
+      : `<span class="tag tag-warning" style="font-size:12px; padding:3px 10px; border-radius:12px; background:#fff7e6; color:#d46b08; border:1px solid #ffe58f;">待开具 (买家申请开票中)</span>`)
+    : `<span class="tag tag-secondary" style="font-size:12px; padding:3px 10px; border-radius:12px;">待开具 (买家未单独提交申请)</span>`;
+
+  const buyerApplyInfo = inv ? `
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:16px;">
+      <div style="font-weight:bold; color:#0f172a; margin-bottom:6px; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
+        <span>买家开票申请详情</span>
+        ${buyerStatusBadge}
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; color:#475569;">
+        <div>发票抬头：<strong style="color:#1e293b;">${inv.title || inv.buyerName || order?.buyerName || '--'}</strong></div>
+        <div>纳税人识别号：<span style="font-family:monospace; font-weight:bold;">${inv.taxNo || '91310115MA1K3***88'}</span></div>
+        <div>发票类型：<span>${inv.type || '增值税专用发票'}</span></div>
+        <div>受票邮箱：<span>${inv.email || 'finance@buyer.com'}</span></div>
+        <div>申请时间：<span>${inv.applyTime || inv.createTime || '--'}</span></div>
+        <div>开票金额：<strong style="color:#ef4444; font-family:monospace;">${inv.amount || order?.amount || '--'}</strong></div>
+      </div>
+    </div>
+  ` : `
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:bold; color:#0f172a; font-size:13px;">买家申请开票状态</div>
+          <div style="font-size:12px; color:#64748b; margin-top:2px;">订单 ${orderId} 尚未接收到专门的开票申请单，您可以直接为买家主公开具上传凭证。</div>
+        </div>
+        ${buyerStatusBadge}
+      </div>
+    </div>
+  `;
+
+  const currentFileHtml = inv && inv.fileName ? `
+    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:18px;">📄</span>
+        <div>
+          <div style="font-weight:bold; color:#166534; font-size:12px;">已上传发票图文/文档</div>
+          <div style="font-size:11px; color:#15803d; font-family:monospace;">${inv.fileName}</div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-xs" style="color:#166534; border-color:#bbf7d0; background:#fff;" onclick="UI.previewDocument('${inv.fileName}', 'contract', '${inv.id}', '${inv.amount}', '${inv.buyerName}', '商家')">【预览发票】</button>
+    </div>
+  ` : '';
+
+  overlay.innerHTML = `
+    <div style="width:520px; background:#ffffff; border-radius:16px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.15); display:flex; flex-direction:column; max-height:90vh; overflow:hidden; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #f1f5f9;">
+        <div>
+          <h3 style="margin:0; font-size:16px; font-weight:800; color:#1e293b;">🧾 订单发票上传与开具管理</h3>
+          <div style="font-size:12px; color:#64748b; margin-top:2px;">订单号：${orderId}</div>
+        </div>
+        <button style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;" onclick="this.closest('.modal-overlay').remove()">✕</button>
+      </div>
+
+      <div style="padding:20px; overflow-y:auto; flex:1; box-sizing:border-box;">
+        ${buyerApplyInfo}
+        ${currentFileHtml}
+
+        <div style="border:2px dashed #cbd5e1; border-radius:12px; padding:20px; text-align:center; background:#fafafa; cursor:pointer; transition:all 0.2s;" id="merchant-inv-dropzone" onclick="document.getElementById('merchant-inv-file-input').click()">
+          <input type="file" id="merchant-inv-file-input" accept=".pdf,.jpg,.jpeg,.png,.gif" style="display:none;" onchange="MerchantApp._handleInvoiceFileSelected(this)">
+          <div style="font-size:28px; margin-bottom:8px;">📤</div>
+          <div style="font-weight:bold; color:#1e293b; font-size:14px; margin-bottom:4px;">点击选择或拖拽发票文件上传</div>
+          <div style="font-size:12px; color:#64748b;">支持格式：PDF、JPG、JPEG、PNG (最大 15MB)</div>
+        </div>
+
+        <div id="merchant-inv-preview-area" style="display:none; margin-top:12px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">📎</span>
+            <span id="merchant-inv-preview-name" style="font-size:12px; font-weight:bold; color:#1e40af;"></span>
+          </div>
+          <button class="btn btn-text btn-xs text-danger" onclick="MerchantApp._clearInvoiceSelectedFile()">移除重新选</button>
+        </div>
+      </div>
+
+      <div style="background:#f9fafb; padding:12px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" style="border-radius:6px; padding:6px 16px; font-size:12px;" onclick="this.closest('.modal-overlay').remove()">取消</button>
+        <button class="btn btn-primary" style="border-radius:6px; padding:6px 16px; font-size:12px; background:#2563eb;" onclick="MerchantApp._submitUploadedInvoice('${orderId}')">确认上传并标记为已开具</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+};
+
+MerchantApp._selectedInvFile = null;
+
+MerchantApp._handleInvoiceFileSelected = function(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const validExts = ['.pdf', '.jpg', '.jpeg', '.png', '.gif'];
+    const fileName = file.name.toLowerCase();
+    const isValid = validExts.some(ext => fileName.endsWith(ext));
+
+    if (!isValid) {
+      UI.toast('请上传 PDF / JPG / PNG / JPEG 格式的发票图文或文档', 'warning');
+      input.value = '';
+      return;
+    }
+
+    MerchantApp._selectedInvFile = file;
+    document.getElementById('merchant-inv-preview-name').innerText = file.name + ` (${(file.size / 1024).toFixed(1)} KB)`;
+    document.getElementById('merchant-inv-preview-area').style.display = 'flex';
+    UI.toast('已选中发票文件: ' + file.name, 'info');
+  }
+};
+
+MerchantApp._clearInvoiceSelectedFile = function() {
+  MerchantApp._selectedInvFile = null;
+  const input = document.getElementById('merchant-inv-file-input');
+  if (input) input.value = '';
+  const area = document.getElementById('merchant-inv-preview-area');
+  if (area) area.style.display = 'none';
+};
+
+MerchantApp._submitUploadedInvoice = function(orderId) {
+  const order = MockData.orders.find(o => o.id === orderId);
+  let fileName = '电子发票_' + orderId + '.pdf';
+  if (MerchantApp._selectedInvFile) {
+    fileName = MerchantApp._selectedInvFile.name;
+  }
+
+  let inv = (MockData.invoices || []).find(i => i.orderId === orderId || (i.buyerName === order?.buyerName && i.amount === order?.amount));
+
+  if (inv) {
+    inv.status = '已开具';
+    inv.fileName = fileName;
+    inv.orderId = orderId;
+    inv.applyTime = inv.applyTime || new Date().toISOString().replace('T', ' ').slice(0, 19);
+  } else {
+    inv = {
+      id: 'INV-' + new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 900) + 100),
+      orderId: orderId,
+      buyerName: order ? order.buyerName : '万通建材采购部',
+      type: '增值税专用发票',
+      amount: order ? order.amount : '¥0.00',
+      applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      status: '已开具',
+      fileName: fileName
+    };
+    if (!MockData.invoices) MockData.invoices = [];
+    MockData.invoices.unshift(inv);
+  }
+
+  if (order) order.invoiceApplied = true;
+
+  const overlay = document.getElementById('merchant-invoice-modal-overlay');
+  if (overlay) overlay.remove();
+
+  UI.toast('🎉 发票文件 (' + fileName + ') 已成功上传，开票状态已同步更新为【已开具】！', 'success');
+
+  MerchantApp.renderOrders();
+  if (document.getElementById('merchant-order-detail-section')?.style.display === 'block') {
+    MerchantApp.showOrderDetailPage(orderId);
+  }
+};
+
+window.MerchantApp = MerchantApp;

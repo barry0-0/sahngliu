@@ -60,6 +60,8 @@ body {
 }
 .h5-view.active {
   display: block;
+  height: 100%;
+  overflow-y: auto;
 }
 
 /* 底部 TabBar */

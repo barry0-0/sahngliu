@@ -148,11 +148,6 @@
                 <div style="width: 20px; height: 160px; background: var(--primary-color); border-radius: 4px 4px 0 0;"></div>
                 <span style="font-size:11px; color:#1e293b; font-weight:bold;">5月</span>
               </div>
-              <div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:8px;">
-                <span style="font-size:10px; color:#94a3b8; font-family:monospace;">75.00</span>
-                <div style="width: 20px; height: 145px; background: #e2e8f0; border-radius: 4px 4px 0 0; border: 1px dashed #cbd5e1;"></div>
-                <span style="font-size:11px; color:#94a3b8;">6月(预测)</span>
-              </div>
             </div>
           </div>
 
@@ -482,12 +477,20 @@
               </select>
             </div>
             <div class="form-group mb-0">
+              <label class="text-xs text-secondary mb-1 block">申请开票</label>
+              <select id="filter-order-invoice-applied" class="form-control" style="width: 110px; padding:6px 12px;">
+                <option value="">全部</option>
+                <option value="是">是</option>
+                <option value="否">否</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
               <label class="text-xs text-secondary mb-1 block">创建时间范围</label>
-              <input type="text" id="filter-order-date-range" class="form-control" placeholder="创建时间范围 (如: 2026-07-01 ~ 2026-07-30)" style="width:260px; padding:6px 12px;">
+              <input type="text" id="filter-order-date-range" class="form-control" placeholder="创建时间范围 (如: 2026-07-01 ~ 2026-07-30)" style="width:230px; padding:6px 12px;">
             </div>
             <div class="flex gap-2">
               <button class="btn btn-primary h-[38px]" onclick="MerchantApp.renderOrders()">查询</button>
-              <button class="btn btn-outline h-[38px]" onclick="document.getElementById('filter-order-id').value=''; document.getElementById('filter-order-type').value=''; document.getElementById('filter-order-buyer').value=''; document.getElementById('filter-order-status').value=''; document.getElementById('filter-order-date-range').value=''; MerchantApp.renderOrders();">重置</button>
+              <button class="btn btn-outline h-[38px]" onclick="document.getElementById('filter-order-id').value=''; document.getElementById('filter-order-type').value=''; document.getElementById('filter-order-buyer').value=''; document.getElementById('filter-order-status').value=''; document.getElementById('filter-order-invoice-applied').value=''; document.getElementById('filter-order-date-range').value=''; MerchantApp.renderOrders();">重置</button>
             </div>
           </div>
           <table class="table" id="table-orders">
