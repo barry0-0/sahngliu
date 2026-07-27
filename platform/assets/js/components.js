@@ -738,30 +738,30 @@ Object.assign(window.UI, {
             <div style="font-weight:bold; color:#1e293b; margin-bottom:8px;">请选择签署方式：</div>
             
             <div style="display:flex; border-bottom:2px solid #e2e8f0; margin-bottom:12px; gap:16px;">
-              <div id="prd-sign-tab-online" style="padding:6px 4px; cursor:pointer; color:#1677ff; border-bottom:2px solid #1677ff; font-weight:bold;" onclick="UI.toggleContractSignTab(this, 'online')">💻 在线签章</div>
-              <div id="prd-sign-tab-offline" style="padding:6px 4px; cursor:pointer; color:#64748b; font-weight:500;" onclick="UI.toggleContractSignTab(this, 'offline')">📤 上传纸质已签署合同</div>
+              <div id="prd-sign-tab-offline" style="padding:6px 4px; cursor:pointer; color:#1677ff; border-bottom:2px solid #1677ff; font-weight:bold;" onclick="UI.toggleContractSignTab(this, 'offline')">📤 上传纸质已签署合同</div>
+              <div id="prd-sign-tab-online" style="padding:6px 4px; cursor:not-allowed; color:#94a3b8; font-weight:500; opacity:0.6; display:flex; align-items:center; gap:4px;" title="功能暂未开放（待对接）" onclick="UI.toggleContractSignTab(this, 'online')">
+                <span>💻 在线盖章</span>
+                <span style="font-size:10px; background:#f1f5f9; color:#94a3b8; padding:1px 6px; border-radius:4px; border:1px solid #cbd5e1;">待对接</span>
+              </div>
             </div>
 
-            <div id="prd-sign-pane-online" style="display:block; text-align:center; padding:12px 0;">
-              <p style="font-size:12px; color:#64748b; margin-top:0; margin-bottom:12px;">使用系统默认CA证书及电子签章即时在线锁定签约（免打印）</p>
-              <button id="prd-sign-online-btn" style="background:#1677ff; color:#fff; border:none; padding:10px 24px; border-radius:12px; font-weight:bold; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(22,119,255,0.2); transition:all 0.2s;" onclick="UI.performOnlineContractSign(this)">
-                <span>✍️ 立即签名盖章并确认</span>
-              </button>
-            </div>
-
-            <div id="prd-sign-pane-offline" style="display:none;">
-              <p style="font-size:12px; color:#64748b; margin-top:0; margin-bottom:12px;">不使用线上签章时，请下载合同打印并双方签字盖章后，拍照或扫描上传</p>
+            <div id="prd-sign-pane-offline" style="display:block;">
+              <p style="font-size:12px; color:#64748b; margin-top:0; margin-bottom:12px;">请上传双方签字盖章后的合同照片或扫描件 (支持图片或PDF/Word，单次最多10个文件，不可混传)</p>
               
               <div style="position:relative; border:2px dashed #cbd5e1; border-radius:12px; background:#f8fafc; padding:20px; text-align:center; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='#1677ff';this.style.background='#f0f7ff'" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#f8fafc'" onclick="document.getElementById('prd-contract-file-picker').click()">
                 <div style="font-size:24px; margin-bottom:6px;">📂</div>
-                <div id="prd-upload-text" style="font-size:12px; color:#475569; font-weight:bold;">点击选择或拖拽上传合同文件 (PDF/JPG/PNG)</div>
-                <div style="font-size:10px; color:#94a3b8; margin-top:4px;">建议大小不超过 10MB</div>
-                <input type="file" id="prd-contract-file-picker" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="UI.handleContractFileSelected(this)">
+                <div id="prd-upload-text" style="font-size:12px; color:#475569; font-weight:bold;">点击选择或拖拽上传合同文件 (支持最多10个图/文，不混传)</div>
+                <div style="font-size:10px; color:#94a3b8; margin-top:4px;">图片(JPG/PNG)或文档(PDF/Word)，不可混传</div>
+                <input type="file" id="prd-contract-file-picker" accept="image/*,.pdf,.doc,.docx" multiple style="display:none;" onchange="UI.handleContractFileSelected(this)">
               </div>
               <div id="prd-upload-card" style="display:none; align-items:center; justify-content:space-between; margin-top:10px; padding:10px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; font-size:12px; color:#15803d; box-sizing:border-box;">
                 <span id="prd-upload-file-name" style="font-weight:bold;"></span>
                 <span style="cursor:pointer; color:#ef4444; font-weight:bold;" onclick="UI.clearUploadedContract(event)">删除</span>
               </div>
+            </div>
+
+            <div id="prd-sign-pane-online" style="display:none; text-align:center; padding:12px 0;">
+              <p style="font-size:12px; color:#94a3b8; margin-top:0; margin-bottom:12px;">在线CA签章功能暂未开放（待对接）</p>
             </div>
           </div>
         </div>
@@ -776,64 +776,56 @@ Object.assign(window.UI, {
     document.body.appendChild(modal);
     
     this._signingState = {
-      method: 'online',
+      method: 'offline',
       onlineSigned: false,
-      offlineFile: null
+      offlineFiles: []
     };
   },
 
   toggleContractSignTab(tabEl, mode) {
-    const paneOnline = document.getElementById('prd-sign-pane-online');
-    const paneOffline = document.getElementById('prd-sign-pane-offline');
-    const tabOnline = document.getElementById('prd-sign-tab-online');
-    const tabOffline = document.getElementById('prd-sign-tab-offline');
-
-    tabOnline.style.color = '#64748b';
-    tabOnline.style.borderBottom = 'none';
-    tabOnline.style.fontWeight = '500';
-
-    tabOffline.style.color = '#64748b';
-    tabOffline.style.borderBottom = 'none';
-    tabOffline.style.fontWeight = '500';
-
-    tabEl.style.color = '#1677ff';
-    tabEl.style.borderBottom = '2px solid #1677ff';
-    tabEl.style.fontWeight = 'bold';
-
-    this._signingState.method = mode;
-
     if (mode === 'online') {
-      paneOnline.style.display = 'block';
-      paneOffline.style.display = 'none';
-    } else {
-      paneOnline.style.display = 'none';
-      paneOffline.style.display = 'block';
+      UI.toast('在线盖章功能暂未开放（待对接）', 'warning');
+      return;
     }
+    this._signingState.method = 'offline';
     UI.updateContractConfirmButtonState();
   },
 
-  performOnlineContractSign(btn) {
-    btn.style.background = '#22c55e';
-    btn.innerHTML = '<span>✔ 盖章及数字签名就绪</span>';
-    this._signingState.onlineSigned = true;
-    UI.updateContractConfirmButtonState();
-    UI.toast('电子印章和数字证书已就绪，请点击“确认签署”提交！', 'success');
-  },
+  performOnlineContractSign(btn) {},
 
   handleContractFileSelected(input) {
-    const file = input.files[0];
-    if (!file) return;
+    const files = Array.from(input.files || []);
+    if (files.length === 0) return;
 
-    this._signingState.offlineFile = file;
-    document.getElementById('prd-upload-file-name').innerText = `📄 ${file.name}`;
+    if (files.length > 10) {
+      UI.toast('合同文件最多只支持上传 10 个！', 'error');
+      input.value = '';
+      return;
+    }
+
+    const isImg = f => f.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name);
+    const isDoc = f => f.type.includes('pdf') || f.type.includes('word') || f.type.includes('document') || /\.(pdf|doc|docx)$/i.test(f.name);
+
+    const hasImg = files.some(isImg);
+    const hasDoc = files.some(isDoc);
+
+    if (hasImg && hasDoc) {
+      UI.toast('合同文件只支持全图片或全文档（PDF/Word），不允许图文混传！', 'error');
+      input.value = '';
+      return;
+    }
+
+    this._signingState.offlineFiles = files;
+    const fileNamesStr = files.map(f => f.name).join('、');
+    document.getElementById('prd-upload-file-name').innerText = `📄 已选择 (${files.length}/10 份): ${fileNamesStr}`;
     document.getElementById('prd-upload-card').style.display = 'flex';
     UI.updateContractConfirmButtonState();
-    UI.toast('合同扫描件选择成功！请点击“确认签署”上传。', 'success');
+    UI.toast(`已成功选择 ${files.length} 份合同文件！`, 'success');
   },
 
   clearUploadedContract(e) {
     e.stopPropagation();
-    this._signingState.offlineFile = null;
+    this._signingState.offlineFiles = [];
     document.getElementById('prd-contract-file-picker').value = '';
     document.getElementById('prd-upload-card').style.display = 'none';
     UI.updateContractConfirmButtonState();
@@ -843,12 +835,7 @@ Object.assign(window.UI, {
     const confirmBtn = document.getElementById('prd-contract-confirm-btn');
     if (!confirmBtn) return;
 
-    let eligible = false;
-    if (this._signingState.method === 'online') {
-      eligible = this._signingState.onlineSigned;
-    } else {
-      eligible = !!this._signingState.offlineFile;
-    }
+    const eligible = this._signingState.offlineFiles && this._signingState.offlineFiles.length > 0;
 
     if (eligible) {
       confirmBtn.style.background = '#1677ff';
@@ -865,27 +852,16 @@ Object.assign(window.UI, {
     const order = MockData.orders.find(o => o.id === orderId);
     if (!order) return;
 
-    const isOnline = this._signingState.method === 'online';
+    const files = this._signingState.offlineFiles || [];
+    const fileName = files.length > 0 ? files.map(f => f.name).join(', ') : 'offline_signed_contract.pdf';
+    order.contractFile = fileName;
     
-    if (isOnline) {
-      if (isSeller) {
-        order.status = 4; // Moved to pending payment
-        UI.toast('电子合同商家签章成功！合同已正式生效，等待买家付款。', 'success');
-      } else {
-        order.status = 5; // Moved to pending seller signature
-        UI.toast('您已签名并盖章成功！已向商家发出签约提醒。', 'success');
-      }
+    if (isSeller) {
+      order.status = 4;
+      UI.toast(`线下已签署合同文件 (${files.length}份) 上传成功！等待买家付款。`, 'success');
     } else {
-      const fileName = this._signingState.offlineFile ? this._signingState.offlineFile.name : 'offline_signed_contract.pdf';
-      order.contractFile = fileName;
-      
-      if (isSeller) {
-        order.status = 4;
-        UI.toast(`线下已签署合同 ${fileName} 上传成功！等待买家付款。`, 'success');
-      } else {
-        order.status = 5;
-        UI.toast(`已上传签字盖章的合同文件 ${fileName}，已向商家发出签约提醒。`, 'success');
-      }
+      order.status = 5;
+      UI.toast(`已成功上传签署好的合同文件 (${files.length}份)，已向商家发出签约提醒。`, 'success');
     }
 
     const overlay = document.querySelector('.modal-overlay[style*="z-index: 110000"]');
@@ -954,31 +930,31 @@ Object.assign(window.UI, {
             <div style="font-weight:bold; color:#1e293b; margin-bottom:8px;">请选择支付方式：</div>
             
             <div style="display:flex; border-bottom:2px solid #e2e8f0; margin-bottom:12px; gap:16px;">
-              <div id="prd-pay-tab-online" style="padding:6px 4px; cursor:pointer; color:#1677ff; border-bottom:2px solid #1677ff; font-weight:bold;" onclick="UI.togglePaymentTab(this, 'online')">⚡ 在线支付</div>
-              <div id="prd-pay-tab-offline" style="padding:6px 4px; cursor:pointer; color:#64748b; font-weight:500;" onclick="UI.togglePaymentTab(this, 'offline')">🏦 线下对公打款凭证</div>
+              <div id="prd-pay-tab-offline" style="padding:6px 4px; cursor:pointer; color:#1677ff; border-bottom:2px solid #1677ff; font-weight:bold;" onclick="UI.togglePaymentTab(this, 'offline')">🏦 上传对公转账凭证/底单</div>
+              <div id="prd-pay-tab-online" style="padding:6px 4px; cursor:not-allowed; color:#94a3b8; font-weight:500; opacity:0.6; display:flex; align-items:center; gap:4px;" title="功能暂未开放（待对接）" onclick="UI.togglePaymentTab(this, 'online')">
+                <span>⚡ 在线支付</span>
+                <span style="font-size:10px; background:#f1f5f9; color:#94a3b8; padding:1px 6px; border-radius:4px; border:1px solid #cbd5e1;">待对接</span>
+              </div>
             </div>
 
-            <div id="prd-pay-pane-online" style="display:block; text-align:center; padding:12px 0;">
-              <p style="font-size:12px; color:#64748b; margin-top:0; margin-bottom:12px;">直接使用关联的快捷资金账户进行在线转账支付</p>
-              <button id="prd-pay-online-btn" style="background:#1677ff; color:#fff; border:none; padding:10px 24px; border-radius:12px; font-weight:bold; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(22,119,255,0.2); transition:all 0.2s;" onclick="UI.performOnlinePayment(this)">
-                <span>⚡ 确认在线快捷支付</span>
-              </button>
-            </div>
-
-            <div id="prd-pay-pane-offline" style="display:none; flex-direction:column; gap:12px;">
+            <div id="prd-pay-pane-offline" style="display:flex; flex-direction:column; gap:12px;">
               <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11px; color:#475569; line-height:1.6; box-sizing:border-box;">
-                <div style="color:#f59e0b;">* 请在线下完成公对公转账后，在此上传转账回执单/银行底单凭证以供平台审核入账。</div>
+                <div style="color:#f59e0b;">* 请在线下完成公对公转账后，在此上传转账回执单/银行底单凭证以供平台审核入账。(支持图片或PDF，最多5个文件，不可混传)</div>
               </div>
 
               <div style="position:relative; border:2px dashed #cbd5e1; border-radius:12px; background:#f8fafc; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='#1677ff';this.style.background='#f0f7ff'" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#f8fafc'" onclick="document.getElementById('prd-voucher-file-picker').click()">
                 <div style="font-size:24px; margin-bottom:6px;">📎</div>
-                <div id="prd-voucher-upload-text" style="font-size:12px; color:#475569; font-weight:bold;">点击选择或拖拽上传汇款回执单/凭证 (图片/PDF)</div>
-                <input type="file" id="prd-voucher-file-picker" accept="image/*,.pdf" style="display:none;" onchange="UI.handleVoucherFileSelected(this)">
+                <div id="prd-voucher-upload-text" style="font-size:12px; color:#475569; font-weight:bold;">点击选择或拖拽上传汇款回执单/凭证 (支持最多5个图/文，不混传)</div>
+                <input type="file" id="prd-voucher-file-picker" accept="image/*,.pdf" multiple style="display:none;" onchange="UI.handleVoucherFileSelected(this)">
               </div>
               <div id="prd-voucher-upload-card" style="display:none; align-items:center; justify-content:space-between; padding:8px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; font-size:12px; color:#15803d; box-sizing:border-box;">
                 <span id="prd-voucher-upload-file-name" style="font-weight:bold;"></span>
                 <span style="cursor:pointer; color:#ef4444; font-weight:bold;" onclick="UI.clearUploadedVoucher(event)">删除</span>
               </div>
+            </div>
+
+            <div id="prd-pay-pane-online" style="display:none; text-align:center; padding:12px 0;">
+              <p style="font-size:12px; color:#94a3b8; margin-top:0; margin-bottom:12px;">快捷在线支付功能暂未开放（待对接）</p>
             </div>
           </div>
         </div>
@@ -993,64 +969,56 @@ Object.assign(window.UI, {
     document.body.appendChild(modal);
 
     this._paymentState = {
-      method: 'online',
+      method: 'offline',
       onlinePaid: false,
-      voucherFile: null
+      voucherFiles: []
     };
   },
 
   togglePaymentTab(tabEl, mode) {
-    const paneOnline = document.getElementById('prd-pay-pane-online');
-    const paneOffline = document.getElementById('prd-pay-pane-offline');
-    const tabOnline = document.getElementById('prd-pay-tab-online');
-    const tabOffline = document.getElementById('prd-pay-tab-offline');
-
-    tabOnline.style.color = '#64748b';
-    tabOnline.style.borderBottom = 'none';
-    tabOnline.style.fontWeight = '500';
-
-    tabOffline.style.color = '#64748b';
-    tabOffline.style.borderBottom = 'none';
-    tabOffline.style.fontWeight = '500';
-
-    tabEl.style.color = '#1677ff';
-    tabEl.style.borderBottom = '2px solid #1677ff';
-    tabEl.style.fontWeight = 'bold';
-
-    this._paymentState.method = mode;
-
     if (mode === 'online') {
-      paneOnline.style.display = 'block';
-      paneOffline.style.display = 'none';
-    } else {
-      paneOnline.style.display = 'none';
-      paneOffline.style.display = 'flex';
+      UI.toast('在线支付功能暂未开放（待对接）', 'warning');
+      return;
     }
+    this._paymentState.method = 'offline';
     UI.updatePaymentConfirmButtonState();
   },
 
-  performOnlinePayment(btn) {
-    btn.style.background = '#22c55e';
-    btn.innerHTML = '<span>✔ 付款就绪 (验证通过)</span>';
-    this._paymentState.onlinePaid = true;
-    UI.updatePaymentConfirmButtonState();
-    UI.toast('支付通道就绪，请点击“确认付款”提交支付！', 'success');
-  },
+  performOnlinePayment(btn) {},
 
   handleVoucherFileSelected(input) {
-    const file = input.files[0];
-    if (!file) return;
+    const files = Array.from(input.files || []);
+    if (files.length === 0) return;
 
-    this._paymentState.voucherFile = file;
-    document.getElementById('prd-voucher-upload-file-name').innerText = `📄 ${file.name}`;
+    if (files.length > 5) {
+      UI.toast('打款凭证最多只支持上传 5 个！', 'error');
+      input.value = '';
+      return;
+    }
+
+    const isImg = f => f.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name);
+    const isDoc = f => f.type.includes('pdf') || /\.(pdf)$/i.test(f.name);
+
+    const hasImg = files.some(isImg);
+    const hasDoc = files.some(isDoc);
+
+    if (hasImg && hasDoc) {
+      UI.toast('打款凭证只支持全图片或全文档（PDF），不允许图文混传！', 'error');
+      input.value = '';
+      return;
+    }
+
+    this._paymentState.voucherFiles = files;
+    const fileNamesStr = files.map(f => f.name).join('、');
+    document.getElementById('prd-voucher-upload-file-name').innerText = `📄 已选择 (${files.length}/5 份): ${fileNamesStr}`;
     document.getElementById('prd-voucher-upload-card').style.display = 'flex';
     UI.updatePaymentConfirmButtonState();
-    UI.toast('付款凭证选择成功！请点击“确认付款”提交。', 'success');
+    UI.toast(`已成功选择 ${files.length} 份打款凭证！`, 'success');
   },
 
   clearUploadedVoucher(e) {
     e.stopPropagation();
-    this._paymentState.voucherFile = null;
+    this._paymentState.voucherFiles = [];
     document.getElementById('prd-voucher-file-picker').value = '';
     document.getElementById('prd-voucher-upload-card').style.display = 'none';
     UI.updatePaymentConfirmButtonState();
@@ -1060,12 +1028,7 @@ Object.assign(window.UI, {
     const confirmBtn = document.getElementById('prd-pay-confirm-btn');
     if (!confirmBtn) return;
 
-    let eligible = false;
-    if (this._paymentState.method === 'online') {
-      eligible = this._paymentState.onlinePaid;
-    } else {
-      eligible = !!this._paymentState.voucherFile;
-    }
+    const eligible = this._paymentState.voucherFiles && this._paymentState.voucherFiles.length > 0;
 
     if (eligible) {
       confirmBtn.style.background = '#1677ff';
@@ -1082,17 +1045,11 @@ Object.assign(window.UI, {
     const order = MockData.orders.find(o => o.id === orderId);
     if (!order) return;
 
-    const isOnline = this._paymentState.method === 'online';
-
-    if (isOnline) {
-      order.status = 1;
-      UI.toast('货款在线支付成功！商家已收到到账通知，准备发货。', 'success');
-    } else {
-      const fileName = this._paymentState.voucherFile ? this._paymentState.voucherFile.name : 'offline_payment_voucher.jpg';
-      order.paymentVoucher = fileName;
-      order.status = 1;
-      UI.toast(`付款凭证 ${fileName} 上传成功！已通知卖家查验并准备发货。`, 'success');
-    }
+    const files = this._paymentState.voucherFiles || [];
+    const fileName = files.length > 0 ? files.map(f => f.name).join(', ') : 'offline_payment_voucher.jpg';
+    order.paymentVoucher = fileName;
+    order.status = 1;
+    UI.toast(`已成功提交 ${files.length} 份打款凭证！商家到账确认中。`, 'success');
 
     const overlay = document.querySelector('.modal-overlay[style*="z-index: 110000"]');
     if (overlay) overlay.remove();

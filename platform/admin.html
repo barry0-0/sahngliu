@@ -719,10 +719,26 @@
               </button>
             </div>
 
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px; margin-bottom:20px;">
               <div style="font-weight:bold; color:#334155; margin-bottom:14px; font-size:13px;">请勾选需要外显的货品大类：</div>
               <div id="decoration-categories" style="display:flex; flex-wrap:wrap; gap:16px;">
                 <!-- JS 动态渲染多选框 -->
+              </div>
+            </div>
+
+            <!-- 预览与拖拽排序区块 -->
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <div style="font-weight:bold; color:#0f172a; font-size:13px; display:flex; align-items:center; gap:6px;">
+                  <span>🎯 已选中大类预览与排序</span>
+                  <span style="font-size:12px; font-weight:normal; color:#64748b;">(按住 ⋮⋮ 抓手拖拉拽可灵活调整前端呈现顺序)</span>
+                </div>
+              </div>
+              <div id="dec-selected-empty-tip" style="color:#94a3b8; font-size:13px; text-align:center; padding:16px; display:none;">
+                尚无勾选的外显分类，请在上方勾选货品大类
+              </div>
+              <div id="dec-selected-preview-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+                <!-- JS 动态渲染拖拽项目 -->
               </div>
             </div>
           </div>
@@ -1033,7 +1049,7 @@
       <input type="hidden" id="edit-prod-id">
       <div class="form-group mb-4">
         <label class="form-label font-bold mb-1 block">商品名称 <span class="text-danger">*</span></label>
-        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" disabled>
+        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px;" placeholder="请输入商品名称">
       </div>
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 140px; gap:12px;">
         <div>
@@ -1054,7 +1070,7 @@
       </div>
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
         <div>
-          <label class="form-label font-bold mb-1 block">现货 / 预售 <span class="text-danger">*</span></label>
+          <label class="form-label font-bold mb-1 block">类别 (现货 / 预售) <span class="text-danger">*</span></label>
           <select id="edit-prod-shelf-type" class="form-control" style="width:100%; padding:8px;" onchange="AdminApp.toggleEditProductShelfType()">
             <option value="现货">现货</option>
             <option value="预售">预售</option>
@@ -1067,8 +1083,8 @@
       </div>
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
         <div>
-          <label class="form-label font-bold mb-1 block">货品品类</label>
-          <select id="edit-prod-cat" class="form-control" style="width:100%; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" disabled>
+          <label class="form-label font-bold mb-1 block">货品分类</label>
+          <select id="edit-prod-cat" class="form-control" style="width:100%; padding:8px;">
             <option value="钢材">建材-金属-钢材</option>
             <option value="木材">建材-板材-木材</option>
             <option value="水泥">建材-粉材-水泥</option>
@@ -1086,14 +1102,14 @@
         <label class="form-label font-bold mb-1 block">商品图片</label>
         <div style="display:flex; gap:12px; align-items:center;">
           <img id="edit-prod-img-preview" src="" style="width:60px; height:60px; border-radius:6px; border:1px solid #ddd; object-fit:cover;">
-          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px; background: #f1f5f9; color: #94a3b8; cursor: not-allowed;" placeholder="请输入网络图片或选择上传" disabled>
+          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px;" placeholder="请输入网络图片或选择上传" onchange="document.getElementById('edit-prod-img-preview').src=this.value">
         </div>
       </div>
     </div>
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
       <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-edit-product')">取消</button>
-      <button class="btn btn-outline" style="border-radius:8px; border-color: var(--primary-color); color: var(--primary-color);" onclick="AdminApp.saveProductInfo(0)">仅保存 (待审核)</button>
-      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveProductInfo(1)">审核通过并上架</button>
+      <button class="btn btn-outline" style="border-radius:8px; border-color: #fa8c16; color: #fa8c16;" onclick="AdminApp.saveProductInfo(0)">仅保存 (仍待审核)</button>
+      <button class="btn btn-primary" style="border-radius:8px;" onclick="AdminApp.saveProductInfo(1)">保存并审核通过</button>
     </div>
   </div>
 </div>

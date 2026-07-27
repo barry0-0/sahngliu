@@ -198,19 +198,19 @@ const AdminApp = {
       const prodCount = MockData.products.filter(p => p.shopId == s.id || p.shopName === s.shopName).length;
       
       let statusTag = '';
-      if (s.status === '正常营业' || s.status === '正常') {
+      if (s.status === '正常营业' || s.status === '正常' || s.status === '正在营业') {
         statusTag = '<span class="tag tag-success">正常营业</span>';
-      } else if (s.status === '待审核') {
-        statusTag = '<span class="tag tag-warning">审核中</span>';
+      } else if (s.status === '待审核' || s.status === '审核中') {
+        statusTag = '<span class="tag tag-warning">待审核</span>';
       } else {
-        statusTag = s.suspendReason ? '<span class="tag tag-danger">闭店中</span>' : '<span class="tag tag-secondary">闭店中</span>';
+        statusTag = '<span class="tag tag-danger">闭店中</span>';
       }
 
       let reasonTip = '';
       if (s.suspendReason) {
-        reasonTip = `<div class="text-[10px] text-danger mt-1">已下架理由: ${s.suspendReason}</div>`;
+        reasonTip = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">强制下架原因: ${s.suspendReason}</div>`;
       } else if (s.rejectReason) {
-        reasonTip = `<div class="text-[10px] text-danger mt-1" style="font-size:11px; color:#ef4444;">拒审原因: ${s.rejectReason}</div>`;
+        reasonTip = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">拒审原因: ${s.rejectReason}</div>`;
       }
 
       let actionBtn = '';
@@ -550,13 +550,13 @@ const AdminApp = {
           <td style="font-weight:bold; color:#0f172a;">${p.shopName}</td>
           <td style="font-size:12px; color:#475569;">${companyName}</td>
           <td><div style="font-weight:bold;">${p.name}</div></td>
-          <td>${catMap[p.category] || p.category}</td>
           <td>${shelfTypeTag}</td>
+          <td>${catMap[p.category] || p.category}</td>
           <td class="text-danger font-bold">${p.priceStr}</td>
           <td class="font-bold" style="color:#0f172a;">${(p.sales || 0).toLocaleString()}</td>
-          <td class="text-xs text-secondary">${formatTimeSec(p.listTime)}</td>
-          <td class="text-xs text-secondary">${formatTimeSec(p.createTime)}</td>
-          <td class="text-xs text-secondary">${p.opTime || '2026-06-01 10:00:00'}</td>
+          <td class="text-xs text-secondary">${formatTimeSec(p.createTime || '2026-05-20 14:30:00')}</td>
+          <td class="text-xs text-secondary">${formatTimeSec(p.listTime || '2026-06-01 10:00:00')}</td>
+          <td class="text-xs text-secondary">${formatTimeSec(p.opTime || p.updateTime || '2026-06-01 10:00:00')}</td>
           <td>${statusTag}</td>
           <td>
             <div style="display:flex; gap:8px; align-items:center;">
@@ -1364,30 +1364,36 @@ const AdminApp = {
     const catContainer = document.getElementById('decoration-categories');
     
     if (catContainer && MockData.productCategories) {
+      if (!this._selectedDecCategories || this._selectedDecCategories.length === 0) {
+        this._selectedDecCategories = [...(MockData.decorationConfig?.displayCategories || ['C01', 'C02', 'C03', 'C04', 'C05'])];
+      }
+
       let catHtml = '';
       MockData.productCategories.forEach(c => {
-        let isChecked = MockData.decorationConfig.displayCategories.includes(c.id) ? 'checked' : '';
+        let isChecked = this._selectedDecCategories.includes(c.id) ? 'checked' : '';
         catHtml += `
-          <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-2 rounded shadow-sm border border-gray-200">
-            <input type="checkbox" name="dec-category" value="${c.id}" ${isChecked}>
-            <span class="font-bold">${c.name}</span>
+          <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-2 rounded shadow-sm border border-gray-200 hover:border-primary transition-all select-none">
+            <input type="checkbox" name="dec-category" value="${c.id}" ${isChecked} onchange="AdminApp.handleDecCategoryToggle('${c.id}', this.checked)">
+            <span class="font-bold text-slate-700">${c.name}</span>
           </label>
         `;
       });
       catContainer.innerHTML = catHtml;
       
-      window.saveDecorationConfig = function() {
-        const checkboxes = document.querySelectorAll('input[name="dec-category"]:checked');
-        if (checkboxes.length > 5) {
+      this.renderDecCategoriesPreview();
+
+      window.saveDecorationConfig = () => {
+        if (!this._selectedDecCategories || this._selectedDecCategories.length === 0) {
+          UI.toast('请至少勾选一个外显货品大类！', 'warning');
+          return;
+        }
+        if (this._selectedDecCategories.length > 5) {
           UI.toast('最多只能选择5个外显分类！', 'error');
           return;
         }
-        
-        let selectedIds = [];
-        checkboxes.forEach(cb => selectedIds.push(cb.value));
-        
-        MockData.decorationConfig.displayCategories = selectedIds;
-        UI.toast('分类配置已保存生效', 'success');
+
+        MockData.decorationConfig.displayCategories = [...this._selectedDecCategories];
+        UI.toast('首页分类金刚区配置及展示顺序已保存生效！', 'success');
       };
     }
 
@@ -1417,6 +1423,109 @@ const AdminApp = {
       renderBanners(MockData.decorationConfig.pcBanners, '#table-banner-pc tbody', 'pc');
       renderBanners(MockData.decorationConfig.h5Banners, '#table-banner-h5 tbody', 'h5');
     }
+  },
+
+  handleDecCategoryToggle(catId, isChecked) {
+    if (!this._selectedDecCategories) this._selectedDecCategories = [];
+    if (isChecked) {
+      if (this._selectedDecCategories.length >= 5) {
+        UI.toast('最多只能外显 5 项核心大类！', 'error');
+        const cb = document.querySelector(`input[name="dec-category"][value="${catId}"]`);
+        if (cb) cb.checked = false;
+        return;
+      }
+      if (!this._selectedDecCategories.includes(catId)) {
+        this._selectedDecCategories.push(catId);
+      }
+    } else {
+      this._selectedDecCategories = this._selectedDecCategories.filter(id => id !== catId);
+    }
+    this.renderDecCategoriesPreview();
+  },
+
+  renderDecCategoriesPreview() {
+    const previewContainer = document.getElementById('dec-selected-preview-list');
+    const emptyTip = document.getElementById('dec-selected-empty-tip');
+    if (!previewContainer) return;
+
+    if (!this._selectedDecCategories || this._selectedDecCategories.length === 0) {
+      if (emptyTip) emptyTip.style.display = 'block';
+      previewContainer.innerHTML = '';
+      return;
+    }
+    if (emptyTip) emptyTip.style.display = 'none';
+
+    let html = '';
+    this._selectedDecCategories.forEach((catId, idx) => {
+      const catObj = (MockData.productCategories || []).find(c => c.id === catId);
+      const catName = catObj ? catObj.name : catId;
+      html += `
+        <div class="dec-drag-item" draggable="true" data-id="${catId}" data-index="${idx}"
+             style="display:flex; align-items:center; gap:8px; padding:10px 14px; background:#fff; border:1px dashed #cbd5e1; border-radius:8px; cursor:grab; transition:all 0.2s; user-select:none; box-shadow:0 1px 3px rgba(0,0,0,0.05);"
+             ondragstart="AdminApp.onDecDragStart(event, '${catId}')"
+             ondragover="AdminApp.onDecDragOver(event)"
+             ondragleave="AdminApp.onDecDragLeave(event)"
+             ondrop="AdminApp.onDecDrop(event, '${catId}')">
+          <span style="color:#94a3b8; font-size:16px; cursor:grab;" title="按住拖拽排序">⋮⋮</span>
+          <span style="background:var(--primary-color); color:#fff; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:bold;">第 ${idx + 1} 位</span>
+          <span style="font-weight:bold; color:#0f172a; font-size:13px;">${catName}</span>
+          <button style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; margin-left:auto; line-height:1;" 
+                  title="移除" onclick="AdminApp.removeDecCategory('${catId}')">&times;</button>
+        </div>
+      `;
+    });
+    previewContainer.innerHTML = html;
+  },
+
+  onDecDragStart(e, catId) {
+    this._draggedCatId = catId;
+    e.dataTransfer.setData('text/plain', catId);
+    e.dataTransfer.effectAllowed = 'move';
+    if (e.currentTarget) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  },
+
+  onDecDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.currentTarget;
+    if (target && target.classList.contains('dec-drag-item')) {
+      target.style.borderColor = 'var(--primary-color)';
+      target.style.background = '#f0f9ff';
+    }
+  },
+
+  onDecDragLeave(e) {
+    const target = e.currentTarget;
+    if (target && target.classList.contains('dec-drag-item')) {
+      target.style.borderColor = '#cbd5e1';
+      target.style.background = '#fff';
+    }
+  },
+
+  onDecDrop(e, targetCatId) {
+    e.preventDefault();
+    const draggedCatId = this._draggedCatId || e.dataTransfer.getData('text/plain');
+    if (!draggedCatId || draggedCatId === targetCatId) {
+      this.renderDecCategoriesPreview();
+      return;
+    }
+
+    const fromIdx = this._selectedDecCategories.indexOf(draggedCatId);
+    const toIdx = this._selectedDecCategories.indexOf(targetCatId);
+
+    if (fromIdx !== -1 && toIdx !== -1) {
+      this._selectedDecCategories.splice(fromIdx, 1);
+      this._selectedDecCategories.splice(toIdx, 0, draggedCatId);
+    }
+    this.renderDecCategoriesPreview();
+  },
+
+  removeDecCategory(catId) {
+    this.handleDecCategoryToggle(catId, false);
+    const cb = document.querySelector(`input[name="dec-category"][value="${catId}"]`);
+    if (cb) cb.checked = false;
   },
 
   toggleBannerActive(type, id) {
@@ -2230,7 +2339,6 @@ AdminApp.showOrderDetailPage = function(orderId) {
       <td style="padding:12px;"><img src="${imgUrl}" style="width:50px; height:50px; border-radius:6px; object-fit:cover;" /></td>
       <td style="padding:12px; font-weight:bold; color:#334155;">
         <div>${o.productName}</div>
-        <div style="font-size:11px; color:#94a3b8; margin-top:2px;">规格属性: 工业标准一级 | 包装: 散装/专车直达</div>
       </td>
       <td style="padding:12px; text-align:right; font-weight:bold; color:#475569;">${o.amount}</td>
       <td style="padding:12px; text-align:center; color:#475569;">1 批次</td>

@@ -110,12 +110,14 @@ window.MockData = {
 
   // --- 3. 商家店铺库 (merchant_shop) ---
   shops: [
-    { id: '10001', userId: '10001', shopName: '万通建材', companyName: '万通建材有限公司', creditCode: '91330100MA2B3C4D5E', status: '正在营业', avatar: '', banner: 'https://images.unsplash.com/photo-1541888081-30d890632a7e?w=1200&h=300&fit=crop' },
-    { id: '10002', userId: '10002', shopName: '星辉建筑五金专营', companyName: '星辉建筑五金材料有限公司', creditCode: '91330100MA2B3C4FGH', status: '闭店中', suspendReason: '资质过期', avatar: '', banner: '' },
-    { id: 'S001', userId: '10003', shopName: '远大钢铁官方直营店', companyName: '远大钢铁集团有限公司', creditCode: '91330100MA2B3C4D5E', status: '正在营业', avatar: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80' },
-    { id: 'S002', userId: '10005', shopName: '华东木材集散中心', companyName: '华东木业发展有限公司', creditCode: '91330200MA11223344', status: '审核未通过', rejectReason: '营业执照图片模糊不清', avatar: 'https://images.unsplash.com/photo-1598214156687-f823f6eb78c8?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1416879573087-210fe7e5b155?auto=format&fit=crop&w=1200&q=80' },
-    { id: 'S003', userId: '10004', shopName: '某某贸易商行', companyName: '某某贸易商行', creditCode: '91330300123456789X', status: '闭店中', avatar: '', banner: '' },
-    { id: 'S004', userId: '10007', shopName: '海螺水泥华东总代', companyName: '海螺水泥直销', creditCode: '91330400MA99887766', status: '闭店中', avatar: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=100&q=80', banner: '' }
+    { id: '10001', userId: '10001', shopName: '万通建材', companyName: '万通建材有限公司', creditCode: '91330100MA2B3C4D5E', status: '正常营业', avatar: '', banner: 'https://images.unsplash.com/photo-1541888081-30d890632a7e?w=1200&h=300&fit=crop' },
+    { id: '10002', userId: '10002', shopName: '星辉建筑五金专营', companyName: '星辉建筑五金材料有限公司', creditCode: '91330100MA2B3C4FGH', status: '闭店中', suspendReason: '企业资质年检过期且超期未补充凭证，平台强行关停下架', avatar: '', banner: '' },
+    { id: 'S001', userId: '10003', shopName: '远大钢铁官方直营店', companyName: '远大钢铁集团有限公司', creditCode: '91330100MA2B3C4D5E', status: '正常营业', avatar: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'S002', userId: '10005', shopName: '华东木材集散中心', companyName: '华东木业发展有限公司', creditCode: '91330200MA11223344', status: '闭店中', rejectReason: '营业执照主体公章模糊不清无法核验真实有效性（审核拒审）', avatar: 'https://images.unsplash.com/photo-1598214156687-f823f6eb78c8?auto=format&fit=crop&w=100&q=80', banner: 'https://images.unsplash.com/photo-1416879573087-210fe7e5b155?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'S003', userId: '10004', shopName: '某某贸易商行', companyName: '某某贸易商行', creditCode: '91330300123456789X', status: '待审核', avatar: '', banner: '' },
+    { id: 'S004', userId: '10007', shopName: '海螺水泥华东总代', companyName: '海螺水泥直销', creditCode: '91330400MA99887766', status: '闭店中', suspendReason: '涉嫌发布虚假大宗资源信息，引发多起履约投诉，平台违规强行关停', avatar: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=100&q=80', banner: '' },
+    { id: 'S005', userId: '10008', shopName: '绿源鲜蔬农副合作社', companyName: '绿源农副产品采购有限公司', creditCode: '91330500MA88776655', status: '正常营业', avatar: '', banner: '' },
+    { id: 'S006', userId: '10009', shopName: '浙商新材料直供部', companyName: '浙江智造新材料有限公司', creditCode: '91330600MA77665544', status: '待审核', avatar: '', banner: '' }
   ],
 
   // --- 4. 货品分类字典 ---

@@ -1531,7 +1531,6 @@ window.MallApp = {
       } else if (o.status === 0) {
         actionHtml += `<button class="btn btn-primary" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.switchOrderDetailStatus('${o.id}', 4))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认签约合同</button>`;
       }
-      actionHtml += `<button class="btn btn-outline" onclick="UI.toast('电子合同已调起下载', 'info')" style="border-radius:20px; padding:8px 16px;">下载电子合同</button>`;
       topActionsEl.innerHTML = actionHtml;
     }
 
@@ -1574,7 +1573,6 @@ window.MallApp = {
           </td>
           <td style="padding:14px 12px;">
             <div style="font-weight:bold; color:#0f172a; font-size:14px;">${o.productName}</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">标准大宗批次规格 | 提供材质质保书</div>
           </td>
           <td style="padding:14px 12px; text-align:right; font-weight:bold; color:#334155;">${o.priceStr || '¥4,150.00 / 吨'}</td>
           <td style="padding:14px 12px; text-align:center; font-weight:bold; color:#0f172a;">${o.qty || '50 吨'}</td>
