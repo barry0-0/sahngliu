@@ -1492,36 +1492,41 @@ const H5App = {
       html = '<div class="text-center py-12 text-secondary text-sm">暂无匹配的订单数据</div>';
     } else {
       myOrders.forEach(o => {
-        let statusTag = '';
+        let statusTag = UI.getOrderStatusBadge(o);
         let btn = '';
         
-        if (o.status === 4) {
-          statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959;">待付款</span>`;
+        const isBuyerPendingContract = o.buyerContractAuditStatus === 'pending' || o.contractAuditStatus === 'buyer_pending' || (!!o.buyerContractFile && o.buyerContractAuditStatus !== 'rejected');
+        const isBuyerRejectedContract = o.buyerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'buyer_rejected' || (o.status === 0 && o.contractRejectReason);
+        const isPaymentPending = o.paymentAuditStatus === 'pending' || (!!o.paymentVoucher && o.paymentAuditStatus !== 'rejected');
+        const isPaymentRejected = o.paymentAuditStatus === 'rejected' || (o.status === 4 && o.paymentRejectReason);
+
+        if (isBuyerPendingContract && o.status === 0) {
+          btn = `<span style="font-size:12px; color:#b45309; font-weight:bold;">⏳ 合同已提交，平台审核中...</span>`;
+        } else if (isPaymentPending && o.status === 4) {
+          btn = `<span style="font-size:12px; color:#b45309; font-weight:bold;">⏳ 对公凭证已提交，平台审核中...</span>`;
+        } else if (isBuyerRejectedContract && o.status === 0) {
+          btn = `<button class="btn btn-danger btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', false, () => H5App.renderUserOrders())">重新上传签约合同</button>`;
+        } else if (isPaymentRejected && o.status === 4) {
+          btn = `<button class="btn btn-danger btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showPaymentModal('${o.id}', () => H5App.renderUserOrders())">重新上传打款凭证</button>`;
+        } else if (o.status === 4) {
           btn = `<div style="display:flex; gap:8px;">
-                   <button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showPaymentModal('${o.id}', () => H5App.renderUserOrders())">立即付款</button>
+                   <button class="btn btn-primary btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showPaymentModal('${o.id}', () => H5App.renderUserOrders())">去付款</button>
                    <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '买家', 'H5买家用户', () => H5App.renderUserOrders())">取消</button>
                  </div>`;
         } else if (o.status === 0) {
-          statusTag = `<span class="tag tag-warning">待买家签约</span>`;
           btn = `<div style="display:flex; gap:8px;">
-                   <button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', false, () => H5App.renderUserOrders())">立即签约</button>
+                   <button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', false, () => H5App.renderUserOrders())">去签约</button>
                    <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '买家', 'H5买家用户', () => H5App.renderUserOrders())">取消</button>
                  </div>`;
         } else if (o.status === 5) {
-          statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待卖家签约</span>`;
           btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '买家', 'H5买家用户', () => H5App.renderUserOrders())">取消订单</button>`;
         } else if (o.status === 1) {
-          statusTag = `<span class="tag tag-primary">待发货</span>`;
         } else if (o.status === 2) {
-          statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货(待签收)</span>`;
           btn = `<button class="btn btn-primary btn-sm" style="border-radius:16px; background:#10b981; border-color:#10b981;" onclick="event.stopPropagation(); H5App.confirmBuyerReceipt('${o.id}')">确认收货</button>`;
         } else if (o.status === 3) {
-          statusTag = `<span class="tag tag-success">已完结</span>`;
           if (!o.invoiceApplied) {
             btn = `<button class="btn btn-warning btn-sm" style="border-radius:16px;" onclick="event.stopPropagation(); H5App.applyInvoice('${o.id}')">申请发票</button>`;
           }
-        } else {
-          statusTag = `<span class="tag tag-danger">已关闭</span>`;
         }
 
         // Format Order Type label
@@ -1611,69 +1616,98 @@ const H5App = {
       logisticsNoEl.innerText = (o.status >= 2 || o.status === 3) ? 'SF1480928120' : '--';
     }
 
-    // Contract
+    // Contract (区分买家联与卖家联)
     const contractWrapper = document.getElementById('h5-detail-contract-wrapper');
     if (contractWrapper) {
-      if (o.status === 0 || o.status === 5) {
-        contractWrapper.innerHTML = `
-          <div style="padding:10px; text-align:center; color:#94a3b8; font-size:12px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
-            ⏳ 电子签约尚未完成，暂无可预览合同。
-          </div>
-        `;
-      } else {
-        const contractNo = o.contractNo || ('HT-' + o.id);
-        const contractImages = (o.contractImages || [
-          { label: '1. 买家签署联主合同', name: '《大宗物资买卖交易合同》- 买家签署联', type: 'contract' },
-          { label: '2. 卖家签署联主合同', name: '《大宗物资买卖交易合同》- 卖家签署联', type: 'contract' },
-          { label: '3. 质量及交割约定', name: '《大宗商品质量检验及交割条款》', type: 'contract' },
-          { label: '4. CA签章认证凭证', name: '《CA数字证书存证证明》', type: 'contract' }
-        ]).slice(0, 10);
-        contractWrapper.innerHTML = `
-          <div style="font-size:11px; color:#64748b; margin-bottom:6px; font-weight:bold;">📄 电子合同附件清单 (${contractImages.length}/10 份)：</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            ${contractImages.map((img, i) => `
-              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold; font-size:11px; color:#1e293b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${img.label}</span>
-                <button class="btn btn-outline btn-xs" id="h5-detail-preview-contract-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:10px;">[预览]</button>
+      const buyerFile = o.buyerContractFile || '《大宗买卖合同》- 买家CA签署联.pdf';
+      const sellerFile = o.sellerContractFile || '《大宗买卖合同》- 卖家CA签署联.pdf';
+      const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (o.status > 0 ? 'passed' : 'none')));
+      const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (o.status > 0 && o.status !== 5 ? 'passed' : 'none')));
+
+      contractWrapper.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <!-- 买家合同联 -->
+          <div style="border:1px solid #dbeafe; background:#f0f9ff; border-radius:8px; padding:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:bold; color:#1e40af; font-size:12px;">🛒 买家签署合同联 (${o.buyerName})</span>
+              <span style="font-size:10px; padding:1px 6px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : 'background:#dcfce7; color:#15803d;')}">
+                ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : '✓ 已完成')}
+              </span>
+            </div>
+            <div style="font-size:11px; color:#334155; font-family:monospace; margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${buyerFile}</div>
+            ${(buyerStatus === 'rejected' || o.contractRejectReason) ? `
+              <div style="font-size:11px; color:#ef4444; background:#fef2f2; padding:6px 8px; border-radius:6px; border:1px solid #fca5a5; margin-bottom:6px;">
+                <div style="font-weight:bold;">❌ 打回原因：${o.buyerContractRejectReason || o.contractRejectReason || '包含未明确约定条款'}</div>
+                <button class="btn btn-danger btn-xs" onclick="UI.showContractSigningModal('${o.id}', false, () => H5App.showH5OrderDetail('${o.id}'))" style="margin-top:4px; border-radius:12px; font-weight:bold;">重新上传签约合同</button>
               </div>
-            `).join('')}
+            ` : ''}
+            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:4px; padding:2px 6px; font-size:10px;">[点击预览买家合同]</button>
           </div>
-        `;
-        contractImages.forEach((img, i) => {
-          const btn = document.getElementById(`h5-detail-preview-contract-btn-${i}`);
-          if (btn) btn.onclick = () => UI.previewDocument(img.name, img.type, contractNo, o.amount, o.buyerName, o.shopName);
-        });
-      }
+
+          <!-- 卖家合同联 -->
+          <div style="border:1px solid #fbcfe8; background:#fdf2f8; border-radius:8px; padding:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:bold; color:#be185d; font-size:12px;">🏬 卖家签署合同联 (${o.shopName})</span>
+              <span style="font-size:10px; padding:1px 6px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (o.status === 0 || o.status === 5 ? 'background:#e2e8f0; color:#64748b;' : 'background:#dcfce7; color:#15803d;'))}">
+                ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '✓ 已完成'))}
+              </span>
+            </div>
+            <div style="font-size:11px; color:#334155; font-family:monospace; margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${sellerFile}</div>
+            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:4px; padding:2px 6px; font-size:10px;">[点击预览卖家合同]</button>
+          </div>
+        </div>
+      `;
     }
 
     // Payment Voucher Section (最多5张)
     const voucherSection = document.getElementById('h5-detail-payment-voucher-section');
-    if (o.status === 0 || o.status === 5 || o.status === 4) {
-      voucherSection.style.display = 'none';
-    } else {
-      voucherSection.style.display = 'block';
-      const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
-      const voucherImages = (o.voucherImages || [
-        { label: '1. 银行对公转账回单', name: '《银行对公转账电子回单》', type: 'voucher' },
-        { label: '2. 平台托管资金入账单', name: '《平台托管账户划转确认函》', type: 'voucher' },
-        { label: '3. 财务结算清算凭据', name: '《交易货款清算凭单》', type: 'voucher' }
-      ]).slice(0, 5);
-
-      voucherSection.innerHTML = `
-        <div style="font-size:11px; color:#166534; margin-bottom:6px; font-weight:bold;">💳 支付凭证附件清单 (${voucherImages.length}/5 份)：</div>
-        <div style="display:flex; flex-direction:column; gap:6px;">
-          ${voucherImages.map((vImg, i) => `
-            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-weight:bold; font-size:11px; color:#166534;">${vImg.label}</span>
-              <button class="btn btn-outline btn-xs" id="h5-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:10px; color:#166534; border-color:#bbf7d0; background:#fff;">[预览]</button>
+    if (voucherSection) {
+      if (o.status === 0 || o.status === 5) {
+        voucherSection.style.display = 'none';
+      } else if (o.status === 4) {
+        if (o.paymentAuditStatus === 'pending') {
+          voucherSection.style.display = 'block';
+          voucherSection.innerHTML = `
+            <div style="padding:10px; background:#fffbebf0; border:1px solid #fde68a; border-radius:8px; font-size:11px; color:#b45309; font-weight:bold;">
+              ⏳ 对公打款凭证已提交，待平台运营人员审核入账...
             </div>
-          `).join('')}
-        </div>
-      `;
-      voucherImages.forEach((vImg, i) => {
-        const btn = document.getElementById(`h5-detail-preview-voucher-btn-${i}`);
-        if (btn) btn.onclick = () => UI.previewDocument(vImg.name, vImg.type, voucherNo, o.amount, o.buyerName, o.shopName);
-      });
+          `;
+        } else if (o.paymentRejectReason) {
+          voucherSection.style.display = 'block';
+          voucherSection.innerHTML = `
+            <div style="padding:10px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:11px; color:#991b1b;">
+              <div style="font-weight:bold;">❌ 付款凭证打回原因：${o.paymentRejectReason}</div>
+              <button class="btn btn-danger btn-xs" onclick="UI.showPaymentModal('${o.id}', () => H5App.showH5OrderDetail('${o.id}'))" style="margin-top:6px; border-radius:12px; font-weight:bold;">重新上传打款凭证</button>
+            </div>
+          `;
+        } else {
+          voucherSection.style.display = 'none';
+        }
+      } else {
+        voucherSection.style.display = 'block';
+        const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
+        const voucherImages = (o.voucherImages || [
+          { label: '1. 银行对公转账回单', name: '《银行对公转账电子回单》', type: 'voucher' },
+          { label: '2. 平台托管资金入账单', name: '《平台托管账户划转确认函》', type: 'voucher' },
+          { label: '3. 财务结算清算凭据', name: '《交易货款清算凭单》', type: 'voucher' }
+        ]).slice(0, 5);
+
+        voucherSection.innerHTML = `
+          <div style="font-size:11px; color:#166534; margin-bottom:6px; font-weight:bold;">💳 支付凭证附件清单 (${voucherImages.length}/5 份)：</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            ${voucherImages.map((vImg, i) => `
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold; font-size:11px; color:#166534;">${vImg.label}</span>
+                <button class="btn btn-outline btn-xs" id="h5-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:10px; color:#166534; border-color:#bbf7d0; background:#fff;">[预览]</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        voucherImages.forEach((vImg, i) => {
+          const btn = document.getElementById(`h5-detail-preview-voucher-btn-${i}`);
+          if (btn) btn.onclick = () => UI.previewDocument(vImg.name, vImg.type, voucherNo, o.amount, o.buyerName, o.shopName);
+        });
+      }
     }
 
     // Timeline nodes (Vertical)

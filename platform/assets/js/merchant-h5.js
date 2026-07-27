@@ -226,30 +226,29 @@ const MH5App = {
     }
 
     myOrders.forEach(o => {
-      let statusTag = '';
+      let statusTag = UI.getOrderStatusBadge(o);
       let btn = '';
       
-      if(o.status === 0) {
-        statusTag = `<span class="tag tag-warning">待买家签约</span>`;
+      const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' || o.contractAuditStatus === 'seller_pending' || (!!o.sellerContractFile && o.sellerContractAuditStatus !== 'rejected');
+      const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'seller_rejected' || o.sellerContractRejectReason || (o.status === 5 && o.contractRejectReason);
+
+      if (isSellerPendingContract && o.status === 5) {
+        btn = `<span style="font-size:12px; color:#b45309; font-weight:bold;">⏳ 合同已提交，平台审核中...</span>`;
+      } else if (isSellerRejectedContract && o.status === 5) {
+        btn = `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', true, () => MH5App.renderOrders())">重新上传签约合同</button>`;
+      } else if (o.status === 0) {
         btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消订单</button>`;
-      } else if(o.status === 5) {
-        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待卖家签约</span>`;
+      } else if (o.status === 5) {
         btn = `<div style="display:flex; gap:8px;">
-                 <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', true, () => MH5App.renderOrders())">立即签约</button>
+                 <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', true, () => MH5App.renderOrders())">去签约</button>
                  <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消</button>
                </div>`;
-      } else if(o.status === 4) {
-        statusTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959;">待付款</span>`;
+      } else if (o.status === 4) {
         btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消订单</button>`;
-      } else if(o.status === 1) {
-        statusTag = `<span class="tag tag-primary">待发货</span>`;
+      } else if (o.status === 1) {
         btn = `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); MH5App.openShipModal()">立即发货</button>`;
-      } else if(o.status === 2) {
-        statusTag = `<span class="tag tag-info" style="color: #1677ff; background: #e6f4ff;">已发货</span>`;
-      } else if(o.status === 3) {
-        statusTag = `<span class="tag tag-success">已完结</span>`;
-      } else {
-        statusTag = `<span class="tag tag-danger">已关闭</span>`;
+      } else if (o.status === 2) {
+      } else if (o.status === 3) {
       }
 
       html += `
@@ -625,8 +624,7 @@ const MH5App = {
     });
 
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.id = 'mh5-modal-award';
+    modal.className = 'modal-overlay active';
     modal.style.cssText = 'display:flex !important; align-items:flex-end; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:0 !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     let offersHtml = '';

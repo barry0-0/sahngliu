@@ -53,7 +53,7 @@ window.UI = {
     if (modal) modal.remove();
 
     modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay active';
     modal.id = 'modal-doc-preview';
     modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.6) !important; backdrop-filter:blur(10px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:120000 !important; padding:20px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
@@ -277,7 +277,7 @@ window.UI = {
     if (modal) modal.remove();
 
     modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay active';
     modal.id = 'modal-order-detail';
     modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.45) !important; backdrop-filter:blur(8px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:110000 !important; padding:20px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
@@ -709,7 +709,7 @@ Object.assign(window.UI, {
     }
 
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay active';
     modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
     
     const isMobile = window.innerWidth <= 768;
@@ -855,13 +855,16 @@ Object.assign(window.UI, {
     const files = this._signingState.offlineFiles || [];
     const fileName = files.length > 0 ? files.map(f => f.name).join(', ') : 'offline_signed_contract.pdf';
     order.contractFile = fileName;
+    delete order.contractRejectReason;
     
     if (isSeller) {
-      order.status = 4;
-      UI.toast(`线下已签署合同文件 (${files.length}份) 上传成功！等待买家付款。`, 'success');
+      order.contractAuditStatus = 'seller_pending';
+      order.sellerContractFile = fileName;
+      UI.toast(`线下已签署合同文件 (${files.length}份) 上传成功！已提交运营端审核（待卖家合同审核）。`, 'success');
     } else {
-      order.status = 5;
-      UI.toast(`已成功上传签署好的合同文件 (${files.length}份)，已向商家发出签约提醒。`, 'success');
+      order.contractAuditStatus = 'buyer_pending';
+      order.buyerContractFile = fileName;
+      UI.toast(`已成功上传签署好的合同文件 (${files.length}份)，已提交运营端审核（待买家合同审核）。`, 'success');
     }
 
     const overlay = document.querySelector('.modal-overlay[style*="z-index: 110000"]');
@@ -896,7 +899,7 @@ Object.assign(window.UI, {
     }
 
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay active';
     modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
     
     const isMobile = window.innerWidth <= 768;
@@ -1048,8 +1051,10 @@ Object.assign(window.UI, {
     const files = this._paymentState.voucherFiles || [];
     const fileName = files.length > 0 ? files.map(f => f.name).join(', ') : 'offline_payment_voucher.jpg';
     order.paymentVoucher = fileName;
-    order.status = 1;
-    UI.toast(`已成功提交 ${files.length} 份打款凭证！商家到账确认中。`, 'success');
+    order.paymentAuditStatus = 'pending';
+    delete order.paymentRejectReason;
+
+    UI.toast(`已成功提交 ${files.length} 份打款凭证！已提交运营端审核（待付款凭证审核）。`, 'success');
 
     const overlay = document.querySelector('.modal-overlay[style*="z-index: 110000"]');
     if (overlay) overlay.remove();
@@ -1058,6 +1063,22 @@ Object.assign(window.UI, {
       UI._paymentCallback();
       UI._paymentCallback = null;
     }
+  },
+
+  getOrderStatusBadge(o) {
+    let statusText = '';
+    let statusColor = '';
+    if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
+    else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
+    else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
+    else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
+    else if (o.status === 2) { statusText = '待签收'; statusColor = '#0958d9'; }
+    else if (o.status === 3) { statusText = '已完成'; statusColor = '#52c41a'; }
+    else if (o.status === -1) { statusText = '已取消'; statusColor = '#ef4444'; }
+    else if (o.status === -2) { statusText = '已关闭'; statusColor = '#64748b'; }
+    else { statusText = '处理中'; statusColor = '#fa8c16'; }
+
+    return `<span class="tag" style="background:${statusColor}15; color:${statusColor}; border:1px solid ${statusColor}40; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">${statusText}</span>`;
   },
 
   showInvoiceModal(orderId, callback) {

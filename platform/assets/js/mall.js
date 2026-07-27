@@ -1323,27 +1323,34 @@ window.MallApp = {
     const tbody = document.querySelector('#table-uc-orders tbody');
     let html = '';
     MockData.orders.filter(o => o.buyerName === this.currentBuyerName).forEach(o => {
-      let statusTag = '';
+      let statusTag = UI.getOrderStatusBadge(o);
       let actBtn = '';
-      if (o.status === 0) {
-        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待买家签约</span>`;
-        actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.signContract('${o.id}')">签署合同(盖章)</button>
+      const isBuyerPendingContract = o.buyerContractAuditStatus === 'pending' || o.contractAuditStatus === 'buyer_pending' || (!!o.buyerContractFile && o.buyerContractAuditStatus !== 'rejected');
+      const isBuyerRejectedContract = o.buyerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'buyer_rejected' || (o.status === 0 && o.contractRejectReason);
+      const isPaymentPending = o.paymentAuditStatus === 'pending' || (!!o.paymentVoucher && o.paymentAuditStatus !== 'rejected');
+      const isPaymentRejected = o.paymentAuditStatus === 'rejected' || (o.status === 4 && o.paymentRejectReason);
+
+      if (isBuyerPendingContract && o.status === 0) {
+        actBtn = `<span style="font-size:12px; color:#d97706; font-weight:bold;">⏳ 合同已提交，平台审核中...</span>`;
+      } else if (isPaymentPending && o.status === 4) {
+        actBtn = `<span style="font-size:12px; color:#d97706; font-weight:bold;">⏳ 付款凭证已提交，平台审核中...</span>`;
+      } else if (isBuyerRejectedContract && o.status === 0) {
+        actBtn = `<button class="btn btn-danger btn-sm" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.renderUCOrders())">重新上传签约合同</button>`;
+      } else if (isPaymentRejected && o.status === 4) {
+        actBtn = `<button class="btn btn-danger btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.renderUCOrders())">重新上传打款凭证</button>`;
+      } else if (o.status === 0) {
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.renderUCOrders())">去签约(盖章)</button>
                   <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 4) {
-        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591;">待付款</span>`;
-        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.renderUCOrders())">确认付款</button>
+        actBtn = `<button class="btn btn-primary btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.renderUCOrders())">去付款</button>
                   <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 5) {
-        statusTag = `<span class="tag tag-warning" style="background:#fff0f6; color:#c41d7f; border:1px solid #ffd6e7;">待卖家签约</span>`;
         actBtn = `<button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '买家', '${this.currentBuyerName}', () => MallApp.renderUCOrders())">取消</button>`;
       } else if (o.status === 1) {
-        statusTag = `<span class="tag tag-primary">待发货</span>`;
         actBtn = '';
       } else if (o.status === 2) {
-        statusTag = `<span class="tag tag-info" style="color: #0958d9; background: #e6f4ff;">待签收</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="MallApp.confirmBuyerReceipt('${o.id}')">确认收货</button>`;
       } else if (o.status === 3) {
-        statusTag = `<span class="tag tag-success">已完成</span>`;
         actBtn = !o.invoiceApplied 
           ? `<button class="btn btn-primary btn-sm" onclick="MallApp.applyInvoice('${o.id}')">申请发票</button>`
           : '';
@@ -1515,21 +1522,36 @@ window.MallApp = {
     };
 
     const st = statusMap[o.status] || statusMap[2];
-    const sTitle = document.getElementById('pc-detail-status-title');
     if (sTitle) sTitle.innerText = st.title;
-    const sDesc = document.getElementById('pc-detail-status-desc');
     if (sDesc) sDesc.innerText = st.desc;
 
     // 顶部操作按钮
     const topActionsEl = document.getElementById('pc-detail-top-actions');
     if (topActionsEl) {
       let actionHtml = '';
+      const isBuyerPendingContract = o.buyerContractAuditStatus === 'pending' || o.contractAuditStatus === 'buyer_pending' || (!!o.buyerContractFile && o.buyerContractAuditStatus !== 'rejected');
+      const isBuyerRejectedContract = o.buyerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'buyer_rejected' || o.contractRejectReason;
+      const isPaymentPending = o.paymentAuditStatus === 'pending' || (!!o.paymentVoucher && o.paymentAuditStatus !== 'rejected');
+      const isPaymentRejected = o.paymentAuditStatus === 'rejected' || o.paymentRejectReason;
+
       if (o.status === 2) {
         actionHtml += `<button class="btn btn-primary" onclick="MallApp.confirmBuyerReceipt('${o.id}')" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认收货</button>`;
       } else if (o.status === 4) {
-        actionHtml += `<button class="btn btn-primary" onclick="UI.showPaymentModal('${o.id}', () => MallApp.switchOrderDetailStatus('${o.id}', 1))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">去付款</button>`;
+        if (isPaymentPending) {
+          actionHtml += `<div style="padding:6px 16px; background:#fffbebf0; border:1px solid #fde68a; border-radius:20px; color:#b45309; font-weight:bold; font-size:13px;">⏳ 对公打款凭证已提交，平台审核入账中...</div>`;
+        } else if (isPaymentRejected) {
+          actionHtml += `<button class="btn btn-danger" onclick="UI.showPaymentModal('${o.id}', () => MallApp.switchOrderDetailStatus('${o.id}', 1))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">重新上传付款凭证</button>`;
+        } else {
+          actionHtml += `<button class="btn btn-primary" onclick="UI.showPaymentModal('${o.id}', () => MallApp.switchOrderDetailStatus('${o.id}', 1))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">去付款</button>`;
+        }
       } else if (o.status === 0) {
-        actionHtml += `<button class="btn btn-primary" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.switchOrderDetailStatus('${o.id}', 4))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">确认签约合同</button>`;
+        if (isBuyerPendingContract) {
+          actionHtml += `<div style="padding:6px 16px; background:#fffbebf0; border:1px solid #fde68a; border-radius:20px; color:#b45309; font-weight:bold; font-size:13px;">⏳ 您的签署合同已提交，等待平台运营审核...</div>`;
+        } else if (isBuyerRejectedContract) {
+          actionHtml += `<button class="btn btn-danger" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.switchOrderDetailStatus('${o.id}', 4))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">重新上传签约合同</button>`;
+        } else {
+          actionHtml += `<button class="btn btn-primary" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.switchOrderDetailStatus('${o.id}', 4))" style="border-radius:20px; padding:8px 24px; font-weight:bold;">去签约(盖章)</button>`;
+        }
       }
       topActionsEl.innerHTML = actionHtml;
     }
@@ -1581,6 +1603,53 @@ window.MallApp = {
       `;
     }
 
+    // 渲染合同模块 (区分买家联与卖家联)
+    const pcContractWrapper = document.getElementById('pc-detail-contract-wrapper');
+    if (pcContractWrapper) {
+      const buyerFile = o.buyerContractFile || '《大宗买卖合同》- 买家CA签署联.pdf';
+      const sellerFile = o.sellerContractFile || '《大宗买卖合同》- 卖家CA签署联.pdf';
+      const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (o.status > 0 ? 'passed' : 'none')));
+      const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (o.status > 0 && o.status !== 5 ? 'passed' : 'none')));
+
+      pcContractWrapper.innerHTML = `
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+          <!-- 买家合同联 (买家视角) -->
+          <div style="border:1px solid #dbeafe; background:#f0f9ff; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-weight:bold; color:#1e40af; font-size:13px;">🛒 买家签署合同联 (${o.buyerName})</span>
+                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : 'background:#dcfce7; color:#15803d;')}">
+                  ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : '✓ 已完成')}
+                </span>
+              </div>
+              <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${buyerFile}">📄 ${buyerFile}</div>
+              ${(buyerStatus === 'rejected' || o.contractRejectReason) ? `
+                <div style="font-size:12px; color:#ef4444; background:#fef2f2; padding:8px 10px; border-radius:6px; border:1px solid #fca5a5; margin-bottom:10px;">
+                  <div style="font-weight:bold;">❌ 线下合同打回原因：${o.buyerContractRejectReason || o.contractRejectReason || '包含未明确约定交割条款'}</div>
+                  <button class="btn btn-danger btn-xs" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.showOrderDetail('${o.id}'))" style="margin-top:6px; font-weight:bold;">重新上传签约合同</button>
+                </div>
+              ` : ''}
+            </div>
+            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览买家合同】</button>
+          </div>
+
+          <!-- 卖家合同联 -->
+          <div style="border:1px solid #fbcfe8; background:#fdf2f8; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-weight:bold; color:#be185d; font-size:13px;">🏬 卖家签署合同联 (${o.shopName})</span>
+                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (o.status === 0 || o.status === 5 ? 'background:#e2e8f0; color:#64748b;' : 'background:#dcfce7; color:#15803d;'))}">
+                  ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '✓ 已完成'))}
+                </span>
+              </div>
+              <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${sellerFile}">📄 ${sellerFile}</div>
+            </div>
+            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览卖家合同】</button>
+          </div>
+        </div>
+      `;
+    }
+
     // 金额汇总
     const subtotalEl = document.getElementById('pc-detail-subtotal-price');
     if (subtotalEl) subtotalEl.innerText = o.amount;
@@ -1594,8 +1663,28 @@ window.MallApp = {
         <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
         支付凭证与资金托管存证
       </h3>`;
-      if (o.status === 0 || o.status === 5 || o.status === 4) {
+      if (o.status === 0 || o.status === 5) {
         voucherCard.style.display = 'none';
+      } else if (o.status === 4) {
+        if (o.paymentAuditStatus === 'pending') {
+          voucherCard.style.display = 'block';
+          voucherCard.innerHTML = voucherTitle + `
+            <div style="padding:14px; background:#fffbebf0; border:1px solid #fde68a; border-radius:8px; font-size:13px;">
+              <div style="color:#b45309; font-weight:bold;">⏳ 您已提交对公打款凭证 (${o.paymentVoucher || '银行回单.jpg'})，正在等待运营人员审核入账...</div>
+            </div>
+          `;
+        } else if (o.paymentRejectReason) {
+          voucherCard.style.display = 'block';
+          voucherCard.innerHTML = voucherTitle + `
+            <div style="padding:14px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:13px;">
+              <div style="color:#991b1b; font-weight:bold;">❌ 付款凭证打回重审原因：${o.paymentRejectReason}</div>
+              <div style="font-size:11px; color:#b91c1c; margin-top:4px;">上次提交凭证：${o.paymentVoucher || '--'}</div>
+              <button class="btn btn-danger btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.showOrderDetail('${o.id}'))" style="margin-top:10px; font-weight:bold;">重新上传打款凭证</button>
+            </div>
+          `;
+        } else {
+          voucherCard.style.display = 'none';
+        }
       } else {
         voucherCard.style.display = 'block';
         const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
