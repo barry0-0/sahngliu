@@ -1456,41 +1456,7 @@ window.MallApp = {
     const contractEl = document.getElementById('pc-detail-contract-no');
     if (contractEl) contractEl.innerText = o.contractNo || ('HT-' + o.id);
 
-    // 渲染合同模块 (最多支持10张合同附件)
-    const contractWrapper = document.getElementById('pc-detail-contract-wrapper');
-    if (contractWrapper) {
-      if (o.status === 0 || o.status === 5) {
-        contractWrapper.innerHTML = `
-          <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
-            ⏳ 双方电子签约尚未完成，暂无可预览合同。
-          </div>
-        `;
-      } else {
-        const contractNo = o.contractNo || ('HT-' + o.id);
-        const contractImages = (o.contractImages || [
-          { label: '1. 主交易合同 (买家盖章联)', name: '《大宗物资买卖交易主合同》- 买家CA签署联', type: 'contract' },
-          { label: '2. 主交易合同 (卖家盖章联)', name: '《大宗物资买卖交易主合同》- 卖家CA签署联', type: 'contract' },
-          { label: '3. 货品质量验收标准附件', name: '《大宗商品质量检验与交付验收约定表》', type: 'contract' },
-          { label: '4. CA数字证书签署存证', name: '《国家CA中心数字证书签署存证证明》', type: 'contract' }
-        ]).slice(0, 10);
 
-        contractWrapper.innerHTML = `
-          <div style="margin-bottom:8px; font-size:12px; color:#64748b; font-weight:bold;">📄 已存档电子合同附件 (${contractImages.length}/10 份)：</div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            ${contractImages.map((img, i) => `
-              <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
-                <span style="font-weight:bold; color:#1e293b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${img.label}">${img.label}</span>
-                <button class="btn btn-outline btn-xs" id="pc-detail-preview-contract-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; flex-shrink:0;">【预览】</button>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        contractImages.forEach((img, i) => {
-          const btn = document.getElementById(`pc-detail-preview-contract-btn-${i}`);
-          if (btn) btn.onclick = () => UI.previewDocument(img.name, img.type, contractNo, o.amount, o.buyerName, o.shopName);
-        });
-      }
-    }
 
     // 5. 填充买家与收货物流
     const rName = document.getElementById('pc-detail-receiver-name');
@@ -1522,6 +1488,8 @@ window.MallApp = {
     };
 
     const st = statusMap[o.status] || statusMap[2];
+    const sTitle = document.getElementById('pc-detail-status-title');
+    const sDesc = document.getElementById('pc-detail-status-desc');
     if (sTitle) sTitle.innerText = st.title;
     if (sDesc) sDesc.innerText = st.desc;
 
@@ -1606,45 +1574,51 @@ window.MallApp = {
     // 渲染合同模块 (区分买家联与卖家联)
     const pcContractWrapper = document.getElementById('pc-detail-contract-wrapper');
     if (pcContractWrapper) {
-      const buyerFile = o.buyerContractFile || '《大宗买卖合同》- 买家CA签署联.pdf';
-      const sellerFile = o.sellerContractFile || '《大宗买卖合同》- 卖家CA签署联.pdf';
-      const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (o.status > 0 ? 'passed' : 'none')));
-      const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (o.status > 0 && o.status !== 5 ? 'passed' : 'none')));
+      const isContractPassedByStatus = o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3;
+      const isBuyerPassedByStatus = isContractPassedByStatus || o.status === 5;
+
+      const hasBuyerFile = isBuyerPassedByStatus || !!(o.buyerContractFile || o.buyerContract);
+      const buyerFile = o.buyerContractFile || o.buyerContract || (isBuyerPassedByStatus ? '《大宗买卖合同》- 买家CA签署联.pdf' : '未上传合同文件');
+      const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (hasBuyerFile ? 'passed' : 'none')));
+
+      const hasSellerFile = isContractPassedByStatus || !!(o.sellerContractFile || o.sellerContract);
+      const sellerFile = o.sellerContractFile || o.sellerContract || (isContractPassedByStatus ? '《大宗买卖合同》- 卖家CA签署联.pdf' : '未上传合同文件');
+      const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (hasSellerFile ? 'passed' : 'none')));
 
       pcContractWrapper.innerHTML = `
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
           <!-- 买家合同联 (买家视角) -->
-          <div style="border:1px solid #dbeafe; background:#f0f9ff; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="border:1px solid ${hasBuyerFile ? '#dbeafe' : '#e2e8f0'}; background:${hasBuyerFile ? '#f0f9ff' : '#f8fafc'}; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between; opacity:${hasBuyerFile ? '1' : '0.75'};">
             <div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span style="font-weight:bold; color:#1e40af; font-size:13px;">🛒 买家签署合同联 (${o.buyerName})</span>
-                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : 'background:#dcfce7; color:#15803d;')}">
-                  ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : '✓ 已完成')}
+                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (hasBuyerFile ? 'background:#dcfce7; color:#15803d;' : 'background:#e2e8f0; color:#64748b;'))}">
+                  ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : (hasBuyerFile ? '✓ 已存证' : '未上传'))}
                 </span>
               </div>
               <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${buyerFile}">📄 ${buyerFile}</div>
               ${(buyerStatus === 'rejected' || o.contractRejectReason) ? `
                 <div style="font-size:12px; color:#ef4444; background:#fef2f2; padding:8px 10px; border-radius:6px; border:1px solid #fca5a5; margin-bottom:10px;">
-                  <div style="font-weight:bold;">❌ 线下合同打回原因：${o.buyerContractRejectReason || o.contractRejectReason || '包含未明确约定交割条款'}</div>
+                  <div style="font-weight:bold;">❌ 线上/线下合同打回原因：${o.buyerContractRejectReason || o.contractRejectReason || '包含未明确约定交割条款'}</div>
                   <button class="btn btn-danger btn-xs" onclick="UI.showContractSigningModal('${o.id}', false, () => MallApp.showOrderDetail('${o.id}'))" style="margin-top:6px; font-weight:bold;">重新上传签约合同</button>
                 </div>
               ` : ''}
             </div>
-            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览买家合同】</button>
+            ${hasBuyerFile ? `<button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览买家合同】</button>` : '<span style="color:#94a3b8; font-size:11px; margin-top:4px;">（暂未上传合同）</span>'}
           </div>
 
           <!-- 卖家合同联 -->
-          <div style="border:1px solid #fbcfe8; background:#fdf2f8; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="border:1px solid ${hasSellerFile ? '#fbcfe8' : '#e2e8f0'}; background:${hasSellerFile ? '#fdf2f8' : '#f8fafc'}; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:space-between; opacity:${hasSellerFile ? '1' : '0.75'};">
             <div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span style="font-weight:bold; color:#be185d; font-size:13px;">🏬 卖家签署合同联 (${o.shopName})</span>
-                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (o.status === 0 || o.status === 5 ? 'background:#e2e8f0; color:#64748b;' : 'background:#dcfce7; color:#15803d;'))}">
-                  ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '✓ 已完成'))}
+                <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (hasSellerFile ? 'background:#dcfce7; color:#15803d;' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '未上传')))}">
+                  ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (hasSellerFile ? '✓ 已存证' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '未上传')))}
                 </span>
               </div>
               <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${sellerFile}">📄 ${sellerFile}</div>
             </div>
-            <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览卖家合同】</button>
+            ${hasSellerFile ? `<button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览卖家合同】</button>` : '<span style="color:#94a3b8; font-size:11px; margin-top:4px;">（卖家未上传合同）</span>'}
           </div>
         </div>
       `;
@@ -1663,27 +1637,37 @@ window.MallApp = {
         <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
         支付凭证与资金托管存证
       </h3>`;
+      const hasPaymentVoucher = !!(o.paymentVoucher);
+
       if (o.status === 0 || o.status === 5) {
         voucherCard.style.display = 'none';
       } else if (o.status === 4) {
-        if (o.paymentAuditStatus === 'pending') {
-          voucherCard.style.display = 'block';
+        voucherCard.style.display = 'block';
+        if (o.paymentAuditStatus === 'pending' || hasPaymentVoucher) {
+          const uploadedVoucher = o.paymentVoucher || '买家对公转账凭证.jpg';
           voucherCard.innerHTML = voucherTitle + `
             <div style="padding:14px; background:#fffbebf0; border:1px solid #fde68a; border-radius:8px; font-size:13px;">
-              <div style="color:#b45309; font-weight:bold;">⏳ 您已提交对公打款凭证 (${o.paymentVoucher || '银行回单.jpg'})，正在等待运营人员审核入账...</div>
+              <div style="color:#b45309; font-weight:bold; margin-bottom:6px;">⏳ 您已提交对公打款凭证，正在等待运营人员审核入账...</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #fef3c7;">
+                <span style="font-family:monospace; font-weight:bold; color:#0f172a;">📄 ${uploadedVoucher}</span>
+                <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${uploadedVoucher}', 'voucher', '${o.paymentVoucher || ('TXN-PAY-' + o.id)}', '${o.amount}', '${o.buyerName}', '${o.shopName}')">【点击预览凭证】</button>
+              </div>
             </div>
           `;
-        } else if (o.paymentRejectReason) {
-          voucherCard.style.display = 'block';
+        } else if (o.paymentAuditStatus === 'rejected' || o.paymentRejectReason) {
           voucherCard.innerHTML = voucherTitle + `
             <div style="padding:14px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:13px;">
-              <div style="color:#991b1b; font-weight:bold;">❌ 付款凭证打回重审原因：${o.paymentRejectReason}</div>
+              <div style="color:#991b1b; font-weight:bold;">❌ 付款凭证打回重审原因：${o.paymentRejectReason || '包含问题账单'}</div>
               <div style="font-size:11px; color:#b91c1c; margin-top:4px;">上次提交凭证：${o.paymentVoucher || '--'}</div>
               <button class="btn btn-danger btn-sm" onclick="UI.showPaymentModal('${o.id}', () => MallApp.showOrderDetail('${o.id}'))" style="margin-top:10px; font-weight:bold;">重新上传打款凭证</button>
             </div>
           `;
         } else {
-          voucherCard.style.display = 'none';
+          voucherCard.innerHTML = voucherTitle + `
+            <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+              ⏳ 暂未上传对公打款凭证。请在顶部点击【去付款】提交凭证。
+            </div>
+          `;
         }
       } else {
         voucherCard.style.display = 'block';

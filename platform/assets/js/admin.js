@@ -2562,12 +2562,15 @@ AdminApp.showOrderDetailPage = function(orderId) {
   // 渲染合同模块 (区分买家联与卖家联)
   const contractWrapper = document.getElementById('admin-detail-contract-wrapper');
   if (contractWrapper) {
-    const hasBuyerFile = !!(o.buyerContractFile || o.buyerContract);
-    const buyerFile = o.buyerContractFile || o.buyerContract || '未上传合同文件';
+    const isContractPassedByStatus = o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3;
+    const isBuyerPassedByStatus = isContractPassedByStatus || o.status === 5;
+
+    const hasBuyerFile = isBuyerPassedByStatus || !!(o.buyerContractFile || o.buyerContract);
+    const buyerFile = o.buyerContractFile || o.buyerContract || (isBuyerPassedByStatus ? '《大宗买卖合同》- 买家CA签署联.pdf' : '未上传合同文件');
     const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (hasBuyerFile ? 'passed' : 'none')));
 
-    const hasSellerFile = !!(o.sellerContractFile || o.sellerContract);
-    const sellerFile = o.sellerContractFile || o.sellerContract || '未上传合同文件';
+    const hasSellerFile = isContractPassedByStatus || !!(o.sellerContractFile || o.sellerContract);
+    const sellerFile = o.sellerContractFile || o.sellerContract || (isContractPassedByStatus ? '《大宗买卖合同》- 卖家CA签署联.pdf' : '未上传合同文件');
     const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (hasSellerFile ? 'passed' : 'none')));
 
     const hasPendingContractHeader = buyerStatus === 'pending' || sellerStatus === 'pending';

@@ -2309,10 +2309,16 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   // Contract (区分买家联与卖家联)
   const contractWrapper = document.getElementById('merchant-detail-contract-wrapper');
   if (contractWrapper) {
-    const buyerFile = o.buyerContractFile || '《大宗买卖合同》- 买家CA签署联.pdf';
-    const sellerFile = o.sellerContractFile || '《大宗买卖合同》- 卖家CA签署联.pdf';
-    const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (o.status > 0 ? 'passed' : 'none')));
-    const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (o.status > 0 && o.status !== 5 ? 'passed' : 'none')));
+    const isContractPassedByStatus = o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3;
+    const isBuyerPassedByStatus = isContractPassedByStatus || o.status === 5;
+
+    const hasBuyerFile = isBuyerPassedByStatus || !!(o.buyerContractFile || o.buyerContract);
+    const buyerFile = o.buyerContractFile || o.buyerContract || (isBuyerPassedByStatus ? '《大宗买卖合同》- 买家CA签署联.pdf' : '未上传合同文件');
+    const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (hasBuyerFile ? 'passed' : 'none')));
+
+    const hasSellerFile = isContractPassedByStatus || !!(o.sellerContractFile || o.sellerContract);
+    const sellerFile = o.sellerContractFile || o.sellerContract || (isContractPassedByStatus ? '《大宗买卖合同》- 卖家CA签署联.pdf' : '未上传合同文件');
+    const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (hasSellerFile ? 'passed' : 'none')));
 
     contractWrapper.innerHTML = `
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
