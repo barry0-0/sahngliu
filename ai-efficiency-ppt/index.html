@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 辅助研发与产品敏捷实践分享 - 周鑫</title>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --primary: #374151;
+            --text-main: #111827;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            width: 100%; height: 100%;
+            background: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            user-select: none;
+        }
+        .deck-container {
+            width: 100vw; height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide-frame {
+            width: 100vw; height: 100vh;
+            position: absolute; top: 0; left: 0;
+            background: #ffffff;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s;
+            transform: scale(0.985);
+            pointer-events: none;
+        }
+        .slide-frame.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        iframe {
+            width: 100vw; height: 100vh;
+            border: none; display: block;
+        }
+
+        /* 隐藏式全屏左右点击翻页热区 */
+        .click-area {
+            position: fixed; top: 0; bottom: 0;
+            width: 30%; z-index: 99;
+            cursor: pointer;
+            display: flex; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .click-area.left { left: 0; justify-content: flex-start; padding-left: 40px; }
+        .click-area.right { right: 0; justify-content: flex-end; padding-right: 40px; }
+        .click-area:hover { opacity: 1; }
+        
+        /* 偏灰色透明度较低的高级大箭头 */
+        .arrow-icon {
+            font-size: 72px; font-weight: 300;
+            color: rgba(75, 85, 99, 0.25);
+            transition: color 0.25s ease, transform 0.25s ease;
+            line-height: 1;
+            user-select: none;
+        }
+        .click-area.left:hover .arrow-icon {
+            color: rgba(31, 41, 55, 0.55);
+            transform: translateX(-6px);
+        }
+        .click-area.right:hover .arrow-icon {
+            color: rgba(31, 41, 55, 0.55);
+            transform: translateX(6px);
+        }
+
+        /* 翻页时才短暂浮现的页码指示器 */
+        .top-badge {
+            position: fixed; top: 24px; right: 32px; z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px; border-radius: 4px;
+            font-size: 13px; font-weight: 700; color: #4b5563;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            opacity: 0; transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .top-badge.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-badge" id="counter">1 / 9</div>
+
+    <!-- 隐藏式低透明度高级大箭头翻页热区 -->
+    <div class="click-area left" onclick="prevSlide()">
+        <div class="arrow-icon">‹</div>
+    </div>
+    <div class="click-area right" onclick="nextSlide()">
+        <div class="arrow-icon">›</div>
+    </div>
+
+    <div class="deck-container">
+        <div class="slide-frame active"><iframe src="slides/slide1.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide2.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide3.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide4.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide5.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide6.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide7.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide8.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide9.html"></iframe></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let badgeTimer = null;
+        const slides = document.querySelectorAll('.slide-frame');
+        const counter = document.getElementById('counter');
+
+        function triggerBadgeShow() {
+            counter.classList.add('show');
+            if (badgeTimer) clearTimeout(badgeTimer);
+            badgeTimer = setTimeout(() => {
+                counter.classList.remove('show');
+            }, 1800); // 1.8秒后自动淡出隐藏
+        }
+
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= slides.length) index = slides.length - 1;
+            
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+            counter.innerText = `${currentSlide + 1} / ${slides.length}`;
+            triggerBadgeShow();
+        }
+
+        function prevSlide() { showSlide(currentSlide - 1); }
+        function nextSlide() { showSlide(currentSlide + 1); }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

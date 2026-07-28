@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 8 - AI 实践的优势与局限复盘</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --primary: #1f2937;
+            --accent: #374151;
+            --text-main: #111827;
+            --text-sub: #4b5563;
+            --border: #e5e7eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; margin-top: 10px; }
+        .panel {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .panel-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .pros { color: #111827; }
+        .cons { color: #4b5563; }
+
+        .item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; border-radius: 4px; margin-bottom: 10px; }
+        .item-head { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #111827; }
+        .item-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="tag">07. Trade-Off & Reflection</div>
+        <div class="title">AI 辅助产品研发的优势与局限客观复盘</div>
+    </div>
+
+    <div class="grid">
+        <div class="panel" style="border-top: 4px solid #374151; animation-delay: 0.1s;">
+            <div class="panel-title pros">
+                <span>🚀 实践探索核心优势 (Core Advantages)</span>
+            </div>
+            <div>
+                <div class="item">
+                    <div class="item-head">1. 研发分析周期稳步提速</div>
+                    <div class="item-desc">竞品调研与高保真原型生成由传统 4-6 周压缩至 2-3 周可评审，大幅提升需求前期验证效率。</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">2. 原型表达升级为“真实代码系统”</div>
+                    <div class="item-desc">直接输出带 JS 交互控制与内存数据库的原型，支持状态机锁死与凭证预览，评审直观。</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">3. 知识梳理全面覆盖</div>
+                    <div class="item-desc">借助 AI 对既有多端系统及文档的并行拆解，有效避免人工梳理遗漏功能盲区。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="border-top: 4px solid #9ca3af; animation-delay: 0.2s;">
+            <div class="panel-title cons">
+                <span>⚠️ 潜在局限与改进方向 (Limitations)</span>
+            </div>
+            <div>
+                <div class="item">
+                    <div class="item-head">1. 特殊线下业务推演边界</div>
+                    <div class="item-desc">AI 能够覆盖常规主干逻辑，但对于极特殊的地域性线下对账规则，仍需人工深入校验。</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">2. Mock 代码至后端架构转换</div>
+                    <div class="item-desc">目前原型采用前端 Mock 数据，后续仍需补充完整的 OpenAPI/Swagger 协议与 DDL 设计。</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">3. 极端边缘异常逻辑覆盖</div>
+                    <div class="item-desc">AI 倾向于生成主干成功路径，极端网络中断、并发冲突规则仍需人工制定防线。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

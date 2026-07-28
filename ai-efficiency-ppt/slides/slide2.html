@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 2 - 工作流编排、iOS 交互与开源 Skill 实践</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --primary: #1f2937;
+            --accent: #374151;
+            --text-main: #111827;
+            --text-sub: #4b5563;
+            --border: #e5e7eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden; padding: 50px 70px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .header { margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+        .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .title { font-size: 30px; font-weight: 800; color: #111827; margin-top: 4px; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; margin-top: 6px; }
+        .card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .card-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        
+        .img-box {
+            width: 100%; height: 130px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 12px; filter: grayscale(10%); transition: filter 0.3s ease;
+        }
+        .img-box:hover { filter: grayscale(0%); }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .detail-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .detail-item { font-size: 12px; color: var(--text-sub); line-height: 1.5; background: #f9fafb; padding: 6px 10px; border-radius: 4px; border-left: 3px solid #374151; }
+        .detail-item b { color: #111827; }
+
+        .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip { font-size: 11px; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="tag">01. Workflow & Fullstack Practice</div>
+        <div class="title">工作流编排、iOS 交互开发与开源 Skill 实践</div>
+    </div>
+
+    <div class="grid">
+        <!-- 模块 1: Dify/Coze 编排 -->
+        <div class="card" style="animation-delay: 0.1s;">
+            <div>
+                <div class="card-title">⚡ Dify / Coze 工作流编排</div>
+                <div class="img-box">
+                    <img src="../assets/img/dify_coze.jpg" alt="Workflow Orchestration">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>多分支工作流：</b>可视化搭建条件分支、意图识别与 API 逻辑链接。</div>
+                    <div class="detail-item"><b>量化交易 Agent：</b>自动化抓取行情数据、计算均线指标并输出交易决策建议。</div>
+                </div>
+            </div>
+            <div class="chip-group">
+                <span class="chip">Dify / Coze</span>
+                <span class="chip">量化交易 Agent</span>
+            </div>
+        </div>
+
+        <!-- 模块 2: iOS 原生开发 -->
+        <div class="card" style="animation-delay: 0.2s;">
+            <div>
+                <div class="card-title">📱 iOS 灵动岛原生交互开发</div>
+                <div class="img-box">
+                    <img src="../assets/img/ios_island.jpg" alt="iOS Dynamic Island">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>原生 Swift/SwiftUI：</b>全栈实现 iOS 灵动岛 (Dynamic Island) 展开/收起动画。</div>
+                    <div class="detail-item"><b>端侧交互控制：</b>打通实时状态推送、后台任务挂起与灵动岛双形态融合。</div>
+                </div>
+            </div>
+            <div class="chip-group">
+                <span class="chip">Swift / SwiftUI</span>
+                <span class="chip">灵动岛 Native</span>
+            </div>
+        </div>
+
+        <!-- 模块 3: 开源 Skill 逆向 -->
+        <div class="card" style="animation-delay: 0.3s;">
+            <div>
+                <div class="card-title">🛠️ 前沿框架与逆向 Skill 编写</div>
+                <div class="img-box">
+                    <img src="../assets/img/skill_code.jpg" alt="Python Skill Reverse">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>前沿 Agent 实践：</b>深入体验 OpenClaw、Hermes 等大模型 Agent 工具链。</div>
+                    <div class="detail-item"><b>自研开源 Skill：</b>编写 Boss 直聘数据逆向 Skill、小红书数据分析及矩阵号自动化脚本。</div>
+                </div>
+            </div>
+            <div class="chip-group">
+                <span class="chip">OpenClaw</span>
+                <span class="chip">Boss/小红书 Skill</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 4 - 项目背景与 S2B2B 定位</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --primary: #1f2937;
+            --accent: #374151;
+            --text-main: #111827;
+            --text-sub: #4b5563;
+            --border: #e5e7eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; margin-top: 10px; }
+        .box {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .box-title { font-size: 19px; font-weight: 700; color: #111827; margin-bottom: 10px; }
+        .box-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px; }
+        
+        .img-box {
+            width: 100%; height: 200px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 16px; filter: grayscale(10%); transition: filter 0.3s ease;
+        }
+        .img-box:hover { filter: grayscale(0%); }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .pill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .pill { background: #f3f4f6; border: 1px solid #e5e7eb; padding: 10px 12px; border-radius: 4px; font-size: 12px; color: #374151; }
+        .pill b { color: #111827; display: block; margin-bottom: 2px; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="tag">03. Project Context & Positioning</div>
+        <div class="title">集团“建圈强链”与 S2B2B 交易平台架构</div>
+    </div>
+
+    <div class="container">
+        <div class="box" style="animation-delay: 0.1s;">
+            <div>
+                <div class="box-title">🌾 响应数智赋能与产业振兴方案</div>
+                <div class="box-desc">
+                    响应“建圈强链”指导意见，解决传统交易集中度低、管理粗放及信息不对称等现实诉求。
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/qianjiang_analysis.jpg" alt="Strategy PPT Analysis">
+                </div>
+            </div>
+            <div class="pill-grid">
+                <div class="pill"><b>01. 统一交易</b>打破区域隔离限制</div>
+                <div class="pill"><b>02. 产销一体</b>全程溯源与视频云播</div>
+            </div>
+        </div>
+
+        <div class="box" style="animation-delay: 0.2s;">
+            <div>
+                <div class="box-title">🏢 S2B2B 交易平台架构定位</div>
+                <div class="box-desc">
+                    以 S（园区运营总控）为枢纽，链接 B（商家/供应商）与 B（企业买家），构建轻量去资金网关的真实履约生态。
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/apple_ai_map.jpg" alt="S2B2B Architecture">
+                </div>
+            </div>
+            <div class="pill-grid">
+                <div class="pill"><b>法务电子合同</b>线上双边电子盖章</div>
+                <div class="pill"><b>公对公打款</b>线下凭证穿透审核</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

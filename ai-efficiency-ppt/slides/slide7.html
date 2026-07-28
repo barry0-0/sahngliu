@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 7 - 规格打点与 GitHub 敏捷协同</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --primary: #1f2937;
+            --accent: #374151;
+            --text-main: #111827;
+            --text-sub: #4b5563;
+            --border: #e5e7eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+
+        .container { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; flex: 1; margin-top: 10px; }
+        .box {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .box-title { font-size: 19px; font-weight: 700; color: #111827; margin-bottom: 10px; }
+        .box-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 14px; }
+        
+        .img-box {
+            width: 100%; height: 200px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 14px; filter: grayscale(10%); transition: filter 0.3s ease;
+        }
+        .img-box:hover { filter: grayscale(0%); }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 4px; font-size: 13px; color: #374151; }
+        .item b { color: #111827; margin-right: 6px; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="tag">06. Spec Annotation & GitHub Workflow</div>
+        <div class="title">HTML 原型规格打点与 GitHub 版本控制敏捷托管</div>
+    </div>
+
+    <div class="container">
+        <div class="box" style="animation-delay: 0.1s;">
+            <div>
+                <div class="box-title">📍 嵌入式 PRD 打点工具 (html-prd-annotator)</div>
+                <div class="box-desc">可在原型页面上直接点击元素生成 DOM 路径与规格卡片，无缝对照字段定义与业务规则。</div>
+                <div class="img-box">
+                    <img src="../assets/img/code_skill.jpg" alt="PRD Annotator Tool">
+                </div>
+            </div>
+            <div class="item-list">
+                <div class="item"><b>1. 唯一 Selector</b>支持 DOM 节点拾取与光圈动画</div>
+                <div class="item"><b>2. 物理数据备份</b>打点配置生成 JSON，开箱即用</div>
+            </div>
+        </div>
+
+        <div class="box" style="animation-delay: 0.2s;">
+            <div>
+                <div class="box-title">🚀 代码托管与评审 (GitHub Workflow)</div>
+                <div class="box-desc">原型代码与需求文档统一在 GitHub 托管，评审修改历史清晰可溯。</div>
+                <div class="img-box">
+                    <img src="../assets/img/git_workflow.jpg" alt="GitHub Code Repo">
+                </div>
+            </div>
+            <div style="font-size: 13px; color: #374151; background: #f9fafb; padding: 12px; border-radius: 4px; border: 1px solid #e5e7eb;">
+                💡 <b>协同优势：</b>访问 GitHub Page 链接即可体验最新原型，沟通效率显著提升。
+            </div>
+        </div>
+    </div>
+</body>
+</html>
