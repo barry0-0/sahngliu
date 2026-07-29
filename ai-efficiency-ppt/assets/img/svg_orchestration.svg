@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-orchestration" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f3f4f6" />
+            <stop offset="100%" stop-color="#e5e7eb" />
+        </linearGradient>
+        <linearGradient id="accent-orchestration" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d1d5db" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bg-orchestration)" />
+    <rect width="100%" height="100%" fill="url(#grid)" opacity="0.5" />
+    
+    <g transform="translate(400, 200)">
+        
+            <circle cx="-100" cy="0" r="40" fill="#ffffff" stroke="#1f2937" stroke-width="4"/>
+            <text x="-100" y="5" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">Agent A</text>
+            
+            <circle cx="100" cy="0" r="40" fill="#ffffff" stroke="#1f2937" stroke-width="4"/>
+            <text x="100" y="5" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">Agent B</text>
+            
+            <circle cx="0" cy="-100" r="45" fill="#1f2937" />
+            <text x="0" y="-95" font-family="sans-serif" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">Manager</text>
+            
+            <path d="M 0 -55 L -80 -25" stroke="#374151" stroke-width="3" />
+            <path d="M 0 -55 L 80 -25" stroke="#374151" stroke-width="3" />
+            
+            <rect x="-40" y="60" width="80" height="40" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2"/>
+            <text x="0" y="85" font-family="sans-serif" font-size="12" fill="#4b5563" font-weight="bold" text-anchor="middle">Data Sync</text>
+            <path d="M -80 30 L -40 60" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,2"/>
+            <path d="M 80 30 L 40 60" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,2"/>
+        
+    </g>
+    
+    <text x="30" y="40" font-family="-apple-system, sans-serif" font-size="24" font-weight="bold" fill="#111827" letter-spacing="1">ORCHESTRATION</text>
+    <text x="30" y="70" font-family="-apple-system, sans-serif" font-size="14" font-weight="normal" fill="#4b5563">Connecting Multiple Agents</text>
+    
+    <rect x="0" y="390" width="800" height="10" fill="url(#accent-orchestration)" />
+</svg>

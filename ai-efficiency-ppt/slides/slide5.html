@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 5 - 竞品调研与知识整理</title>
+    <title>Slide 5 - 个人全栈 AI 工具实践全景</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -16,84 +16,106 @@
         body {
             width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; padding: 45px 65px; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .header { margin-bottom: 14px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+        .title { font-size: 28px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 28px; flex: 1; margin-top: 10px; }
-        .panel {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; flex: 1; margin-top: 4px; }
+        .card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px;
             display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .panel-title { font-size: 19px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        .card-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
         
         .img-box {
-            width: 100%; height: 260px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
-            margin-bottom: 16px; filter: grayscale(10%); transition: filter 0.3s ease;
+            width: 100%; height: 120px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin: 6px 0; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
         .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .file-list { display: flex; flex-direction: column; gap: 8px; }
-        .file-item {
-            background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 4px;
-            display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-        }
-        .file-name { font-weight: 600; color: #111827; }
-        .file-tag { font-size: 11px; color: #374151; background: #f3f4f6; padding: 2px 8px; border-radius: 4px; border: 1px solid #d1d5db; font-weight: 600; }
+        
+        .detail-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+        .detail-item { font-size: 11px; color: var(--text-sub); line-height: 1.45; background: #f9fafb; padding: 5px 8px; border-radius: 4px; border-left: 3px solid #374151; }
+        .detail-item b { color: #111827; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">04. Automated Research & Output</div>
-        <div class="title">行业既有系统自动化调研与知识结构整理</div>
+        <div class="tag">04. Personal AI Practice Portfolio</div>
+        <div class="title">个人全栈 AI 实践：从旅游路线 Agent 到 iOS 灵动岛与逆向 Skill</div>
     </div>
 
     <div class="grid">
-        <div class="panel" style="animation-delay: 0.1s;">
+        <!-- 实践 1: 旅游路线 Agent -->
+        <div class="card" style="animation-delay: 0.1s;">
             <div>
-                <div class="panel-title">🌐 Chrome 自动化抓取多端系统与文档解析</div>
-                <div class="img-box">
-                    <img src="../assets/img/qianjiang_analysis.jpg" alt="Automated Chrome Research">
+                <div class="card-title">
+                    <span>🗺️ 跨端系统级旅游路线 Agent</span>
+                    <span style="font-size: 11px; color: #374151; font-weight: 600;">系统级调用</span>
                 </div>
-            </div>
-            <div style="font-size: 13px; color: #374151; background: #f9fafb; padding: 12px; border-radius: 4px; border: 1px solid #e5e7eb;">
-                💡 <b>实践体会：</b>借助 AI 脚本调度 Chrome 自动抓取运营端/商家端/供应商端菜单，秒级整理全域拓扑结构。
+                <div class="img-box">
+                    <img src="../assets/img/svg_apple_map.svg" alt="Apple Maps Agent Integration">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>背景突破：</b>突破当时 Apple Intelligence API 限制，借鉴 OpenClaw 代理思想。</div>
+                    <div class="detail-item"><b>落地效果：</b>输入路线需求，AI 生成 GeoJSON 坐标，<b>自动唤起并调用系统原生 Apple Maps</b> 渲染。</div>
+                </div>
             </div>
         </div>
 
-        <div class="panel" style="animation-delay: 0.2s;">
+        <!-- 实践 2: Dify/Coze 编排 -->
+        <div class="card" style="animation-delay: 0.2s;">
             <div>
-                <div class="panel-title">📄 结构化输出 Markdown 知识大纲</div>
-                <div class="file-list">
-                    <div class="file-item">
-                        <span class="file-name">📄 运营端菜单.md</span>
-                        <span class="file-tag">运营后台结构</span>
-                    </div>
-                    <div class="file-item">
-                        <span class="file-name">📄 商家后台菜单.md</span>
-                        <span class="file-tag">商户工作台</span>
-                    </div>
-                    <div class="file-item">
-                        <span class="file-name">📄 供应商端菜单.md</span>
-                        <span class="file-tag">供货端节点</span>
-                    </div>
-                    <div class="file-item">
-                        <span class="file-name">📄 买家端 PC 商城菜单.md</span>
-                        <span class="file-tag">买家大厅</span>
-                    </div>
-                    <div class="file-item">
-                        <span class="file-name">📄 全功能与菜单目录大纲.md</span>
-                        <span class="file-tag">全景图</span>
-                    </div>
+                <div class="card-title">
+                    <span>⚡ Dify / Coze 多分支工作流编排</span>
+                    <span style="font-size: 11px; color: #374151; font-weight: 600;">Workflow</span>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_orchestration.svg" alt="Workflow Orchestration">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>工作流编排：</b>搭建可视化条件分支、意图识别与 API 请求转换。</div>
+                    <div class="detail-item"><b>量化交易 Agent：</b>自动化行情抓取、计算均线指标并输出交易决策。</div>
                 </div>
             </div>
-            <div style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-top: 14px;">
-                整合既有功能清单 Excel 与解决方案 PDF，输出了完备的需求知识库。
+        </div>
+
+        <!-- 实践 3: iOS 原生开发 -->
+        <div class="card" style="animation-delay: 0.3s;">
+            <div>
+                <div class="card-title">
+                    <span>📱 iOS 灵动岛 Native 交互复刻</span>
+                    <span style="font-size: 11px; color: #374151; font-weight: 600;">iOS Native</span>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_ios_island.svg" alt="iOS Dynamic Island">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>Swift/SwiftUI：</b>全栈实现 iOS 灵动岛 (Dynamic Island) 展开/收起交互动画。</div>
+                    <div class="detail-item"><b>敏捷交付：</b>打通实时状态推送与后台任务挂起，具备客户端全栈落地能力。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实践 4: 开源 Skill -->
+        <div class="card" style="animation-delay: 0.4s;">
+            <div>
+                <div class="card-title">
+                    <span>🛠️ 逆向工程与自研开源 Skill</span>
+                    <span style="font-size: 11px; color: #374151; font-weight: 600;">Skill/Python</span>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_skill_reverse.svg" alt="Python Skill Reverse">
+                </div>
+                <div class="detail-list">
+                    <div class="detail-item"><b>前沿 Agent 实践：</b>深入体验 OpenClaw、Hermes 等大模型 Agent 工具链。</div>
+                    <div class="detail-item"><b>自研开源 Skill：</b>发布 Boss 直聘逆向 Skill、小红书数据分析及矩阵号自动化工具。</div>
+                </div>
             </div>
         </div>
     </div>

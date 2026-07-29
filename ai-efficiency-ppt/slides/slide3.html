@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 3 - 早期 AI 尝试：系统级旅游路线 Agent 实践</title>
+    <title>Slide 3 - AI 核心干货深度拆解 (上)：Prompt & Agent</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -16,81 +16,87 @@
         body {
             width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow: hidden; padding: 50px 70px; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; padding: 45px 65px; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .header { margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+        .header { margin-bottom: 14px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .title { font-size: 30px; font-weight: 800; color: #111827; margin-top: 4px; }
+        .title { font-size: 28px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .content-box {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 28px 36px;
-            flex: 1; display: flex; flex-direction: column; justify-content: space-between;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.02); margin-top: 6px;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; margin-top: 4px; }
+        .card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
-        
-        .section-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        .section-desc { font-size: 14px; color: var(--text-sub); line-height: 1.7; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .card-badge { font-size: 11px; background: #f3f4f6; color: #374151; padding: 3px 8px; border-radius: 4px; border: 1px solid #d1d5db; font-weight: 600; }
 
-        .feature-list { display: flex; flex-direction: column; gap: 12px; }
-        .feature-item {
-            background: #f9fafb; border: 1px solid #e5e7eb; border-left: 4px solid #374151;
-            padding: 12px 16px; border-radius: 4px;
-        }
-        .feature-item-head { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 4px; }
-        .feature-item-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+        .four-step { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .step-item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 8px 10px; border-radius: 4px; font-size: 11px; line-height: 1.45; }
+        .step-item b { color: #111827; display: block; margin-bottom: 2px; }
 
-        .img-container {
-            width: 100%; height: 320px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
-            filter: grayscale(10%); transition: filter 0.3s ease;
+        .img-box {
+            width: 100%; height: 110px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 8px; filter: grayscale(10%); transition: filter 0.3s ease;
         }
-        .img-container:hover { filter: grayscale(0%); }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .img-box:hover { filter: grayscale(0%); }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .bottom-pill {
-            background: #f3f4f6; border: 1px solid #e5e7eb; padding: 12px 20px; border-radius: 4px;
-            display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #374151;
-        }
+        .hot-case { background: #ffffff; border: 1px dashed #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 11px; color: var(--text-sub); }
+        .hot-case b { color: #111827; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">02. Early System Agent Practice</div>
-        <div class="title">早期 AI 尝试：跨端系统级旅游路线 Agent 实践</div>
+        <div class="tag">02. Deep Dive: Prompt & Agent</div>
+        <div class="title">AI 核心技术深度拆解：为什么用、用来做什么、如何使用 (Prompt & Agent)</div>
     </div>
 
-    <div class="content-box">
-        <div class="main-grid">
+    <div class="grid">
+        <!-- 1. Prompt -->
+        <div class="card" style="animation-delay: 0.1s;">
             <div>
-                <div class="section-title">🗺️ 突破端侧限制 · 一键旅游计划与 Apple Maps 联动</div>
-                <div class="section-desc">
-                    由于当时 iOS/macOS 原生 Apple Intelligence 存在 API 限制，借鉴电脑端 OpenClaw 思想，打造了一款<b>能直接调用系统原生 Apple Maps 地图的旅游计划 Agent</b>。
+                <div class="card-title">
+                    <span>✍️ Prompt (提示词工程)</span>
+                    <span class="card-badge">沟通与约束</span>
                 </div>
-                
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <div class="feature-item-head">1. 突破端侧 API 限制与推理调度</div>
-                        <div class="feature-item-desc">绕过本地模型接口约束，通过中间层代理把目的地偏好交由大模型生成结构化行程与 GeoJSON 坐标。</div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-item-head">2. 系统级 Schema 唤起 Apple Maps</div>
-                        <div class="feature-item-desc">Agent 计算出导航路径后，<b>自动唤起并直接调用系统原生 Apple Maps</b>，在地图界面无缝渲染景点路线。</div>
-                    </div>
+                <div class="four-step">
+                    <div class="step-item"><b>1. 为什么有？</b>大模型需要明确上下文与角色指令才能精准回答。</div>
+                    <div class="step-item"><b>2. 用来干什么？</b>限定回答角色、输出格式（如 JSON）与思考链 (CoT)。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>防止 AI 幻觉乱答，获得结构化高质产出。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>给定“角色 + 任务 + 限制 + 样例 (Few-shot)”。</div>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_prompt.svg" alt="Prompt Engineering Logic">
                 </div>
             </div>
-
-            <div class="img-container">
-                <img src="../assets/img/apple_ai_map.jpg" alt="Apple Maps Agent Integration">
+            <div class="hot-case">
+                <b>🔥 热门爆款：</b>结构化写需求提示词模板、“你是一个资深架构师...”，瞬间输出专业级文档。
             </div>
         </div>
 
-        <div class="bottom-pill">
-            <span>💡 <b>核心要点：</b>利用代理调度 + 系统原生 URL Schema，打通 LLM 智能决策与原生 App 调用的能力闭环。</span>
-            <span style="font-weight: 700; color: #111827;">System Level Integration</span>
+        <!-- 2. Agent -->
+        <div class="card" style="animation-delay: 0.2s;">
+            <div>
+                <div class="card-title">
+                    <span>🤖 Agent (自主智能体)</span>
+                    <span class="card-badge">大脑 + 记忆 + 工具</span>
+                </div>
+                <div class="four-step">
+                    <div class="step-item"><b>1. 为什么有？</b>单次对话无法完成复杂多步骤与跨软件任务。</div>
+                    <div class="step-item"><b>2. 用来干什么？</b>自主目标拆解、调用 API / 脚本、自我纠错闭环。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>无需人工干预，全自动执行长流程任务。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>设定目标 ➔ 给定 Tool Call 工具包 ➔ 让 Agent 自主循环。</div>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_agent.svg" alt="Agent Architecture Flow">
+                </div>
+            </div>
+            <div class="hot-case">
+                <b>🔥 热门爆款：</b><b>Devin</b>（全球首个 AI 程序员自动修 Bug）、<b>Manus</b>（自动订机票酒店系统）。
+            </div>
         </div>
     </div>
 </body>

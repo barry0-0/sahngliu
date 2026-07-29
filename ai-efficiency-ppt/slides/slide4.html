@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 4 - 项目背景与 S2B2B 定位</title>
+    <title>Slide 4 - AI 核心干货深度拆解 (下)：Workflow & MCP</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -16,70 +16,86 @@
         body {
             width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; padding: 45px 65px; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .header { margin-bottom: 14px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+        .title { font-size: 28px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; margin-top: 10px; }
-        .box {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
-            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; margin-top: 4px; }
+        .card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .box-title { font-size: 19px; font-weight: 700; color: #111827; margin-bottom: 10px; }
-        .box-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px; }
-        
+        .card-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .card-badge { font-size: 11px; background: #f3f4f6; color: #374151; padding: 3px 8px; border-radius: 4px; border: 1px solid #d1d5db; font-weight: 600; }
+
+        .four-step { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .step-item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 8px 10px; border-radius: 4px; font-size: 11px; line-height: 1.45; }
+        .step-item b { color: #111827; display: block; margin-bottom: 2px; }
+
         .img-box {
-            width: 100%; height: 200px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
-            margin-bottom: 16px; filter: grayscale(10%); transition: filter 0.3s ease;
+            width: 100%; height: 110px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 8px; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
         .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .pill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .pill { background: #f3f4f6; border: 1px solid #e5e7eb; padding: 10px 12px; border-radius: 4px; font-size: 12px; color: #374151; }
-        .pill b { color: #111827; display: block; margin-bottom: 2px; }
+
+        .hot-case { background: #ffffff; border: 1px dashed #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 11px; color: var(--text-sub); }
+        .hot-case b { color: #111827; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">03. Project Context & Positioning</div>
-        <div class="title">集团“建圈强链”与 S2B2B 交易平台架构</div>
+        <div class="tag">03. Deep Dive: Workflow & MCP</div>
+        <div class="title">AI 核心技术深度拆解：为什么用、用来做什么、如何使用 (Workflow & MCP)</div>
     </div>
 
-    <div class="container">
-        <div class="box" style="animation-delay: 0.1s;">
+    <div class="grid">
+        <!-- 3. Workflow -->
+        <div class="card" style="animation-delay: 0.1s;">
             <div>
-                <div class="box-title">🌾 响应数智赋能与产业振兴方案</div>
-                <div class="box-desc">
-                    响应“建圈强链”指导意见，解决传统交易集中度低、管理粗放及信息不对称等现实诉求。
+                <div class="card-title">
+                    <span>⚡ Workflow (工作流编排)</span>
+                    <span class="card-badge">确定性 + LLM 节点</span>
+                </div>
+                <div class="four-step">
+                    <div class="step-item"><b>1. 为什么有？</b>纯 LLM 自由度过高，复杂业务需要严格约束执行路线。</div>
+                    <div class="step-item"><b>2. 用来干什么？</b>拖拽 API 请求、条件分支与大模型处理形成连线。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>兼顾 AI 智能理解与传统软件的确定性稳定性。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>在 Dify/Coze 画布画流程图并配置参数。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/qianjiang_analysis.jpg" alt="Strategy PPT Analysis">
+                    <img src="../assets/img/svg_workflow.svg" alt="Workflow Canvas">
                 </div>
             </div>
-            <div class="pill-grid">
-                <div class="pill"><b>01. 统一交易</b>打破区域隔离限制</div>
-                <div class="pill"><b>02. 产销一体</b>全程溯源与视频云播</div>
+            <div class="hot-case">
+                <b>🔥 热门爆款：</b><b>Dify / Coze (扣子)</b>：自媒体热点自动抓取总结、企业售后客服机器人。
             </div>
         </div>
 
-        <div class="box" style="animation-delay: 0.2s;">
+        <!-- 4. MCP -->
+        <div class="card" style="animation-delay: 0.2s;">
             <div>
-                <div class="box-title">🏢 S2B2B 交易平台架构定位</div>
-                <div class="box-desc">
-                    以 S（园区运营总控）为枢纽，链接 B（商家/供应商）与 B（企业买家），构建轻量去资金网关的真实履约生态。
+                <div class="card-title">
+                    <span>🔌 MCP 协议 (模型上下文协议)</span>
+                    <span class="card-badge">安全数据插拔</span>
+                </div>
+                <div class="four-step">
+                    <div class="step-item"><b>1. 为什么有？</b>大模型无法直接安全读取本地数据库、浏览器与私有文件。</div>
+                    <div class="step-item"><b>2. 用来干什么？</b>制定统一接口标准，AI 像插 USB 一样安全接入外部数据。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>解耦开发，一次编写 MCP 即可供所有支持的大模型使用。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>在 Cursor / Claude 配置文件中指定 MCP 服务终端。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/apple_ai_map.jpg" alt="S2B2B Architecture">
+                    <img src="../assets/img/svg_mcp.svg" alt="MCP Integration">
                 </div>
             </div>
-            <div class="pill-grid">
-                <div class="pill"><b>法务电子合同</b>线上双边电子盖章</div>
-                <div class="pill"><b>公对公打款</b>线下凭证穿透审核</div>
+            <div class="hot-case">
+                <b>🔥 热门爆款：</b><b>Cursor MCP / Chrome DevTools MCP</b>：AI 操控浏览器自动化抓网页、读取 Git 历史。
             </div>
         </div>
     </div>

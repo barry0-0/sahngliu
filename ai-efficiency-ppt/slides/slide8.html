@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 8 - AI 实践的优势与局限复盘</title>
+    <title>Slide 8 - 五端高保真系统原型与本地跳转</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -22,68 +22,105 @@
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
         .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; margin-top: 10px; }
-        .panel {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
-            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        .proto-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 16px; }
+        .proto-card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 18px;
+            display: flex; flex-direction: column; justify-content: space-between; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
             animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .panel-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        .pros { color: #111827; }
-        .cons { color: #4b5563; }
+        .proto-card:hover { transform: translateY(-4px); border-color: #374151; }
+        .proto-head { display: flex; justify-content: space-between; align-items: center; }
+        .proto-title { font-size: 16px; font-weight: 700; color: #111827; }
+        
+        .jump-btn {
+            font-size: 12px; font-weight: 700; color: #ffffff; background: #374151;
+            padding: 6px 12px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+            transition: background 0.2s ease;
+        }
+        .jump-btn:hover { background: #111827; }
 
-        .item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; border-radius: 4px; margin-bottom: 10px; }
-        .item-head { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #111827; }
-        .item-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+        .img-box {
+            width: 100%; height: 130px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin: 6px 0; filter: grayscale(10%); transition: filter 0.3s ease;
+        }
+        .img-box:hover { filter: grayscale(0%); }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .h5-card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.2s ease;
+        }
+        .h5-card:hover { transform: translateY(-2px); border-color: #374151; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">07. Trade-Off & Reflection</div>
-        <div class="title">AI 辅助产品研发的优势与局限客观复盘</div>
+        <div class="tag">07. Production-Ready Prototypes</div>
+        <div class="title">五端纯前端高保真系统原型矩阵（支持点击跳转）</div>
     </div>
 
-    <div class="grid">
-        <div class="panel" style="border-top: 4px solid #374151; animation-delay: 0.1s;">
-            <div class="panel-title pros">
-                <span>🚀 实践探索核心优势 (Core Advantages)</span>
-            </div>
+    <div class="proto-grid">
+        <div class="proto-card" style="animation-delay: 0.1s;">
             <div>
-                <div class="item">
-                    <div class="item-head">1. 研发分析周期稳步提速</div>
-                    <div class="item-desc">竞品调研与高保真原型生成由传统 4-6 周压缩至 2-3 周可评审，大幅提升需求前期验证效率。</div>
+                <div class="proto-head">
+                    <span class="proto-title">买家端 PC 商城</span>
+                    <a href="file:///Users/barry/Desktop/工作/享宇森云/商流/platform/mall.html" target="_blank" class="jump-btn">🚀 浏览器打开</a>
                 </div>
-                <div class="item">
-                    <div class="item-head">2. 原型表达升级为“真实代码系统”</div>
-                    <div class="item-desc">直接输出带 JS 交互控制与内存数据库的原型，支持状态机锁死与凭证预览，评审直观。</div>
-                </div>
-                <div class="item">
-                    <div class="item-head">3. 知识梳理全面覆盖</div>
-                    <div class="item-desc">借助 AI 对既有多端系统及文档的并行拆解，有效避免人工梳理遗漏功能盲区。</div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_prototype.svg" alt="Mall Prototype">
                 </div>
             </div>
+            <div style="font-size: 12px; color: var(--text-sub);">大宗意向求购大厅、竞价大厅、购物车店铺分类结算。</div>
         </div>
 
-        <div class="panel" style="border-top: 4px solid #9ca3af; animation-delay: 0.2s;">
-            <div class="panel-title cons">
-                <span>⚠️ 潜在局限与改进方向 (Limitations)</span>
-            </div>
+        <div class="proto-card" style="animation-delay: 0.2s;">
             <div>
-                <div class="item">
-                    <div class="item-head">1. 特殊线下业务推演边界</div>
-                    <div class="item-desc">AI 能够覆盖常规主干逻辑，但对于极特殊的地域性线下对账规则，仍需人工深入校验。</div>
+                <div class="proto-head">
+                    <span class="proto-title">商家端 PC 后台</span>
+                    <a href="file:///Users/barry/Desktop/工作/享宇森云/商流/platform/merchant.html" target="_blank" class="jump-btn">🚀 浏览器打开</a>
                 </div>
-                <div class="item">
-                    <div class="item-head">2. Mock 代码至后端架构转换</div>
-                    <div class="item-desc">目前原型采用前端 Mock 数据，后续仍需补充完整的 OpenAPI/Swagger 协议与 DDL 设计。</div>
-                </div>
-                <div class="item">
-                    <div class="item-head">3. 极端边缘异常逻辑覆盖</div>
-                    <div class="item-desc">AI 倾向于生成主干成功路径，极端网络中断、并发冲突规则仍需人工制定防线。</div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_prototype.svg" alt="Merchant Prototype">
                 </div>
             </div>
+            <div style="font-size: 12px; color: var(--text-sub);">店铺装潢锁定状态机、商品/上架双菜单、选中标人。</div>
+        </div>
+
+        <div class="proto-card" style="animation-delay: 0.3s;">
+            <div>
+                <div class="proto-head">
+                    <span class="proto-title">园区运营总控后台</span>
+                    <a href="file:///Users/barry/Desktop/工作/享宇森云/商流/platform/admin.html" target="_blank" class="jump-btn">🚀 浏览器打开</a>
+                </div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_prototype.svg" alt="Admin Prototype">
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-sub);">单级导航、四大审核模态框、只读竞价监督。</div>
+        </div>
+    </div>
+
+    <div class="bottom-grid">
+        <div class="h5-card">
+            <div>
+                <div style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 2px;">📱 买家端 H5 小程序原型 (h5.html)</div>
+                <div style="font-size: 12px; color: var(--text-sub);">移动端购物车结算、合同追踪与确认收货。</div>
+            </div>
+            <a href="file:///Users/barry/Desktop/工作/享宇森云/商流/platform/h5.html" target="_blank" class="jump-btn">🚀 打开 H5 原型</a>
+        </div>
+
+        <div class="h5-card">
+            <div>
+                <div style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 2px;">📱 商家端 H5 移动后台 (merchant-h5.html)</div>
+                <div style="font-size: 12px; color: var(--text-sub);">移动发货录入、定标管理与商品下架。</div>
+            </div>
+            <a href="file:///Users/barry/Desktop/工作/享宇森云/商流/platform/merchant-h5.html" target="_blank" class="jump-btn">🚀 打开 H5 后台</a>
         </div>
     </div>
 </body>

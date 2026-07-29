@@ -73,7 +73,7 @@
             transform: translateX(6px);
         }
 
-        /* 翻页时才短暂浮现的页码指示器 */
+        /* 翻页时才短暂浮现的页码指示器 (支持 11 页) */
         .top-badge {
             position: fixed; top: 24px; right: 32px; z-index: 100;
             background: rgba(255, 255, 255, 0.85);
@@ -92,7 +92,7 @@
 </head>
 <body>
 
-    <div class="top-badge" id="counter">1 / 9</div>
+    <div class="top-badge" id="counter">1 / 11</div>
 
     <!-- 隐藏式低透明度高级大箭头翻页热区 -->
     <div class="click-area left" onclick="prevSlide()">
@@ -112,6 +112,8 @@
         <div class="slide-frame"><iframe src="slides/slide7.html"></iframe></div>
         <div class="slide-frame"><iframe src="slides/slide8.html"></iframe></div>
         <div class="slide-frame"><iframe src="slides/slide9.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide10.html"></iframe></div>
+        <div class="slide-frame"><iframe src="slides/slide11.html"></iframe></div>
     </div>
 
     <script>
@@ -125,7 +127,7 @@
             if (badgeTimer) clearTimeout(badgeTimer);
             badgeTimer = setTimeout(() => {
                 counter.classList.remove('show');
-            }, 1800); // 1.8秒后自动淡出隐藏
+            }, 1800);
         }
 
         function showSlide(index) {

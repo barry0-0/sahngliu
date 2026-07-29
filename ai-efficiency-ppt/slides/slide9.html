@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 9 - 后续路线规划与总结</title>
+    <title>Slide 9 - 规格打点与 GitHub 敏捷协同</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -22,81 +22,61 @@
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
         .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
-        .card {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between;
+        .container { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; flex: 1; margin-top: 10px; }
+        .box {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
             animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .card-badge { font-size: 11px; font-weight: 700; color: #ffffff; background: #374151; padding: 3px 8px; border-radius: 4px; width: fit-content; margin-bottom: 10px; }
-        .card-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }
-        .card-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; margin-bottom: 10px; }
+        .box-title { font-size: 19px; font-weight: 700; color: #111827; margin-bottom: 10px; }
+        .box-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 14px; }
         
         .img-box {
-            width: 100%; height: 110px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
-            filter: grayscale(10%); transition: filter 0.3s ease;
+            width: 100%; height: 200px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-bottom: 14px; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
         .img-box img { width: 100%; height: 100%; object-fit: cover; }
-
-        .footer-banner {
-            background: #f9fafb; border: 1px solid var(--border); border-left: 4px solid #374151;
-            border-radius: 4px; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.02); animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .banner-text { font-size: 18px; font-weight: 700; color: #111827; }
-        .banner-sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 4px; font-size: 13px; color: #374151; }
+        .item b { color: #111827; margin-right: 6px; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">08. Future Roadmap & Vision</div>
-        <div class="title">后续推进路线规划与交流总结</div>
+        <div class="tag">08. Spec Annotation & GitHub Workflow</div>
+        <div class="title">HTML 原型规格打点与 GitHub 版本控制敏捷托管</div>
     </div>
 
-    <div class="grid">
-        <div class="card" style="animation-delay: 0.1s;">
+    <div class="container">
+        <div class="box" style="animation-delay: 0.1s;">
             <div>
-                <span class="card-badge">PHASE 1 · 已完成</span>
-                <div class="card-title">五端原型与框架落盘</div>
-                <div class="card-desc">敏捷完成竞品拆解、架构梳理与原型代码生成，将前期设计转化为 2-3 周可评审。</div>
+                <div class="box-title">📍 嵌入式 PRD 打点工具 (html-prd-annotator)</div>
+                <div class="box-desc">可在原型页面上直接点击元素生成 DOM 路径与规格卡片，无缝对照字段定义与业务规则。</div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_prd_annotator.svg" alt="PRD Annotator Tool">
+                </div>
             </div>
-            <div class="img-box">
-                <img src="../assets/img/ios_island.jpg" alt="Phase 1 Deliverables">
+            <div class="item-list">
+                <div class="item"><b>1. 唯一 Selector</b>支持 DOM 节点拾取与光圈动画</div>
+                <div class="item"><b>2. 物理数据备份</b>打点配置生成 JSON，开箱即用</div>
             </div>
         </div>
 
-        <div class="card" style="animation-delay: 0.2s;">
+        <div class="box" style="animation-delay: 0.2s;">
             <div>
-                <span class="card-badge">PHASE 2 · 近期推进</span>
-                <div class="card-title">精细化 PRD 与字段字典</div>
-                <div class="card-desc">基于全量 Markdown 知识库，驱动 AI 补充边界规则、字段数据字典与错误码。</div>
+                <div class="box-title">🚀 代码托管与评审 (GitHub Workflow)</div>
+                <div class="box-desc">原型代码与需求文档统一在 GitHub 托管，评审修改历史清晰可溯。</div>
+                <div class="img-box">
+                    <img src="../assets/img/svg_git_code.svg" alt="GitHub Code Repo">
+                </div>
             </div>
-            <div class="img-box">
-                <img src="../assets/img/skill_code.jpg" alt="PRD Data Dictionary">
-            </div>
-        </div>
-
-        <div class="card" style="animation-delay: 0.3s;">
-            <div>
-                <span class="card-badge">PHASE 3 · 中长期</span>
-                <div class="card-title">OpenAPI Schema 与脚手架</div>
-                <div class="card-desc">结合原型交互逻辑，自动反向推导 Swagger 接口文档与数据库 DDL 建表语句。</div>
-            </div>
-            <div class="img-box">
-                <img src="../assets/img/git_workflow.jpg" alt="OpenAPI DDL Code">
+            <div style="font-size: 13px; color: #374151; background: #f9fafb; padding: 12px; border-radius: 4px; border: 1px solid #e5e7eb;">
+                💡 <b>协同优势：</b>访问 GitHub Page 链接即可体验最新原型，沟通效率显著提升。
             </div>
         </div>
-    </div>
-
-    <div class="footer-banner">
-        <div>
-            <div class="banner-text">“把 AI 当成高效的辅助工具，用敏捷节奏快速验证业务想法。”</div>
-            <div class="banner-sub">感谢大家的聆听，欢迎交流探讨！</div>
-        </div>
-        <div style="font-size: 15px; font-weight: 700; color: #374151;">分享人：周鑫</div>
     </div>
 </body>
 </html>
