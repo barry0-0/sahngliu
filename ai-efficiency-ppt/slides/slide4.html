@@ -40,10 +40,41 @@
             margin-bottom: 8px; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; }
 
         .hot-case { background: #ffffff; border: 1px dashed #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 11px; color: var(--text-sub); }
         .hot-case b { color: #111827; }
+
+        .example-box {
+            margin-top: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 14px; border-radius: 6px;
+            margin-top: auto; display: flex; flex-direction: column; justify-content: center; margin-bottom: 14px;
+        }
+        .example-box.agent { background: #eff6ff; border-color: #bfdbfe; }
+        .example-box.workflow { background: #fffbeb; border-color: #fde68a; }
+        .example-box.mcp { background: #fdf2f8; border-color: #fbcfe8; }
+        
+        .example-title { font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;}
+        .example-box.agent .example-title { color: #1e3a8a; }
+        .example-box.workflow .example-title { color: #92400e; }
+        .example-box.mcp .example-title { color: #831843; }
+        
+        .example-desc { font-size: 12px; color: #14532d; line-height: 1.6; margin-bottom: 10px; }
+        .example-box.agent .example-desc { color: #1e3a8a; }
+        .example-box.workflow .example-desc { color: #92400e; }
+        .example-box.mcp .example-desc { color: #831843; }
+        
+        .example-points { display: flex; flex-direction: column; gap: 8px; }
+        .example-point { font-size: 11px; color: #166534; background: #dcfce7; padding: 8px 10px; border-radius: 4px; border: 1px solid #bbf7d0; }
+        .example-point strong { color: #14532d; }
+        
+        .example-box.agent .example-point { color: #1e40af; background: #dbeafe; border-color: #bfdbfe; }
+        .example-box.agent .example-point strong { color: #1e3a8a; }
+        
+        .example-box.workflow .example-point { color: #b45309; background: #fef3c7; border-color: #fde68a; }
+        .example-box.workflow .example-point strong { color: #92400e; }
+        
+        .example-box.mcp .example-point { color: #9d174d; background: #fce7f3; border-color: #fbcfe8; }
+        .example-box.mcp .example-point strong { color: #831843; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -51,25 +82,67 @@
 <body>
     <div class="header">
         <div class="tag">03. Deep Dive: Workflow & MCP</div>
-        <div class="title">AI 核心技术深度拆解：为什么用、用来做什么、如何使用 (Workflow & MCP)</div>
+        <div class="title">AI 核心功能与人机协同载体：Workflow, MCP & HTML 交互</div>
     </div>
 
     <div class="grid">
         <!-- 3. Workflow -->
         <div class="card" style="animation-delay: 0.1s;">
-            <div>
+            <div style="display: flex; flex-direction: column; flex: 1;">
                 <div class="card-title">
                     <span>⚡ Workflow (工作流编排)</span>
                     <span class="card-badge">确定性 + LLM 节点</span>
                 </div>
                 <div class="four-step">
-                    <div class="step-item"><b>1. 为什么有？</b>纯 LLM 自由度过高，复杂业务需要严格约束执行路线。</div>
-                    <div class="step-item"><b>2. 用来干什么？</b>拖拽 API 请求、条件分支与大模型处理形成连线。</div>
-                    <div class="step-item"><b>3. 为什么要用？</b>兼顾 AI 智能理解与传统软件的确定性稳定性。</div>
-                    <div class="step-item"><b>4. 如何使用？</b>在 Dify/Coze 画布画流程图并配置参数。</div>
+                    <div class="step-item"><b>1. 为什么有？</b>纯 LLM 自由度过高，复杂业务需要强硬逻辑约束。</div>
+                    <div class="step-item"><b>2. HTML 载体：</b>高保真所见即所得，无需开发环境即可在浏览器点击交互。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>兼顾 AI 智能理解与传统软件的可控确定性。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>图形化拖拽 API 与分支节点，编排自动化流程。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_workflow.svg" alt="Workflow Canvas">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-workflow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-workflow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-workflow" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" /></marker>
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-workflow)" />
+    <rect width="100%" height="100%" fill="url(#grid-workflow)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-300" cy="0" r="50" fill="#1f2937"/>
+            <line x1="-230" y1="0" x2="-160" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-130" y="-50" width="120" height="100" rx="12" fill="#3b82f6"/>
+            <line x1="10" y1="0" x2="80" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="110" y="-50" width="120" height="100" rx="12" fill="#10b981"/>
+            <line x1="250" y1="0" x2="320" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <circle cx="390" cy="0" r="50" fill="#f59e0b"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-workflow)" />
+</svg>
+                </div>
+                <div class="example-box workflow">
+                    <div class="example-title">💡 详细实战：Dify 企微售后客服工作流</div>
+                    <div class="example-desc">将知识库检索、LLM 意图判断与人工转接节点，通过图形化连线串联成确定的业务流。</div>
+                    <div class="example-points">
+                        <div class="example-point"><strong>怎么用：</strong>当客户发问时，流程先经过意图分类器，若是查询订单走 API 分支；若是咨询则走向量库检索分支。</div>
+                        <div class="example-point"><strong>解决什么问题：</strong>解决单一 LLM / Agent 无法精准控制业务走向的问题，用硬逻辑约束大模型，确保高风险业务（如客服、医疗、交易）100% 按既定标准流程执行。</div>
+                    </div>
                 </div>
             </div>
             <div class="hot-case">
@@ -79,7 +152,7 @@
 
         <!-- 4. MCP -->
         <div class="card" style="animation-delay: 0.2s;">
-            <div>
+            <div style="display: flex; flex-direction: column; flex: 1;">
                 <div class="card-title">
                     <span>🔌 MCP 协议 (模型上下文协议)</span>
                     <span class="card-badge">安全数据插拔</span>
@@ -91,7 +164,54 @@
                     <div class="step-item"><b>4. 如何使用？</b>在 Cursor / Claude 配置文件中指定 MCP 服务终端。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_mcp.svg" alt="MCP Integration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-mcp" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-mcp" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-mcp" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-mcp)" />
+    <rect width="100%" height="100%" fill="url(#grid-mcp)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-350" y="-70" width="160" height="140" rx="16" fill="#1f2937"/>
+            <circle cx="-270" cy="0" r="40" fill="#fff"/>
+            <line x1="-170" y1="0" x2="-70" y2="0" stroke="#3b82f6" stroke-width="10" stroke-dasharray="12,12"/>
+            <path d="M -120 -30 L -70 0 L -120 30" fill="none" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+            <rect x="-40" y="-80" width="160" height="160" rx="12" fill="#e5e7eb" stroke="#9ca3af" stroke-width="8"/>
+            <rect x="-10" y="-50" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <rect x="-10" y="-10" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <rect x="-10" y="30" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <line x1="140" y1="0" x2="240" y2="0" stroke="#10b981" stroke-width="10"/>
+            <path d="M 190 -30 L 240 0 L 190 30" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 270 -60 C 270 -80 390 -80 390 -60 L 390 60 C 390 80 270 80 270 60 Z" fill="#10b981"/>
+            <path d="M 270 -60 C 270 -40 390 -40 390 -60" fill="none" stroke="#fff" stroke-width="6"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-mcp)" />
+</svg>
+                </div>
+                <div class="example-box mcp">
+                    <div class="example-title">💡 详细实战：Figma MCP 与 GitHub MCP 互通</div>
+                    <div class="example-desc">大模型不需要懂 Figma 的底层逻辑，通过 MCP 协议就能像插拔 USB 一样读取设计稿数据。</div>
+                    <div class="example-points">
+                        <div class="example-point"><strong>怎么用：</strong>在本地启动 Figma MCP Server 并在 Claude 中挂载，AI 即可直接调取设计稿颜色、尺寸，并瞬间转化为可用的 TailwindCSS 代码甚至推送到 GitHub。</div>
+                        <div class="example-point"><strong>解决什么问题：</strong>彻底打破了各种软件之间的数据孤岛，AI 可以安全的跨越边界触碰本地及云端数据，完成从设计、研发到交付的无缝数据流转。</div>
+                    </div>
                 </div>
             </div>
             <div class="hot-case">

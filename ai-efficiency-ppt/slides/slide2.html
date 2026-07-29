@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 2 - 大模型与 AI 发展真实时间线</title>
+    <title>Slide 2 - 大模型发展真实时间线</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -16,29 +16,34 @@
         body {
             width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow: hidden; padding: 45px 65px; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .header { margin-bottom: 14px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .title { font-size: 28px; font-weight: 800; color: #111827; margin-top: 4px; }
+        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .timeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; margin-top: 8px; }
+        /* CHANGED: 4 columns to 5 columns */
+        .timeline-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; flex: 1; margin-top: 10px; }
         .time-card {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 16px;
-            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative;
+            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            position: relative; overflow: hidden;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .time-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #374151;
             border-radius: 4px 4px 0 0;
         }
-        .time-badge { font-size: 13px; font-weight: 800; color: #ffffff; background: #374151; padding: 3px 8px; border-radius: 4px; width: fit-content; margin-bottom: 8px; }
+        .time-badge { font-size: 13px; font-weight: 800; color: #ffffff; background: #374151; padding: 3px 8px; border-radius: 4px; width: fit-content; margin-bottom: 8px; display: inline-block;}
         .time-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 6px; }
         .time-desc { font-size: 11px; color: var(--text-sub); line-height: 1.5; margin-bottom: 10px; }
-        .hot-box { background: #f9fafb; border: 1px border-left 3px solid #374151; padding: 8px 10px; border-radius: 4px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; }
+        .hot-box { background: #f9fafb; border-left: 3px solid #374151; padding: 8px 10px; border-radius: 4px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; }
         .hot-box b { color: #111827; display: block; margin-bottom: 2px; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        /* CHANGED: flex: 1 to fill space */
+        .img-box { width: 100%; flex: 1; margin: 16px 0; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; display: block; }
     </style>
 </head>
 <body>
@@ -47,52 +52,236 @@
         <div class="title">大模型与 AI 发展真实时间线 (2022 - 2026 爆款里程碑)</div>
     </div>
 
-    <div class="timeline-grid">
+        <div class="timeline-grid">
         <!-- 2022.11 -->
         <div class="time-card" style="animation-delay: 0.1s;">
             <div>
-                <span class="time-badge">2022 年 11 月</span>
+                <div class="time-badge">2022 年 11 月</div>
                 <div class="time-title">ChatGPT 破空出世</div>
-                <div class="time-desc">OpenAI 发布 ChatGPT (GPT-3.5)，开启全球生成式 AI 大模型热潮，创下 2 个月破亿用户记录。</div>
+                <div class="time-desc">OpenAI 发布 ChatGPT (GPT-3.5)，开启全球生成式 AI 大模型热潮，创下 2 个月破亿用户历史记录。</div>
+            </div>
+            <div class="img-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-time_2022" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-time_2022" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-time_2022" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-time_2022)" />
+    <rect width="100%" height="100%" fill="url(#grid-time_2022)" opacity="0.6" />
+    
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(200, 200)">
+            
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#1f2937"/>
+            <path d="M -20 -20 L 20 20 M 20 -20 L -20 20" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-time_2022)" />
+</svg>
             </div>
             <div class="hot-box">
-                <b>🔥 全网爆火：</b>对话问答、代码辅助、文案创作，人机交互范式重塑。
+                <b>🔥 核心演进与影响：</b>
+                单次对话问答重塑人机交互。用户通过自然语言完成代码生成、长文撰写与知识检索，彻底拉开生成式 AI 时代大幕。
             </div>
         </div>
 
         <!-- 2023.03 - 2023.11 -->
         <div class="time-card" style="animation-delay: 0.2s;">
             <div>
-                <span class="time-badge">2023 年 3-11 月</span>
+                <div class="time-badge">2023 年 3-11 月</div>
                 <div class="time-title">GPT-4 与 Coze/Dify 涌现</div>
-                <div class="time-desc">GPT-4 多模态发布；Dify (2023.05)、字节扣子 Coze (2023.11) 上线，工作流编排走入大众视野。</div>
+                <div class="time-desc">GPT-4 多模态发布；Dify (2023.05) 与字节扣子 Coze (2023.11) 上线，工作流编排走入大众视角。</div>
+            </div>
+            <div class="img-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-time_2023" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-time_2023" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-time_2023" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-time_2023)" />
+    <rect width="100%" height="100%" fill="url(#grid-time_2023)" opacity="0.6" />
+    
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(200, 200)">
+            
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#3b82f6"/>
+            <rect x="-25" y="-25" width="50" height="50" fill="#fff" rx="6"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-time_2023)" />
+</svg>
             </div>
             <div class="hot-box">
-                <b>🔥 全网爆火：</b>无代码搭建个人 AI Agent、自媒体抓取总结机器人。
+                <b>🔥 核心演进与影响：</b>
+                零代码 Agent 与可视化 Workflow 爆发。用户可自由拖拽 API 节点搭建个人 AI 助手、自媒体抓取机器人及企业客服。
             </div>
         </div>
 
         <!-- 2024.03 - 2024.11 -->
         <div class="time-card" style="animation-delay: 0.3s;">
             <div>
-                <span class="time-badge">2024 年 3-11 月</span>
+                <div class="time-badge">2024 年 3-11 月</div>
                 <div class="time-title">Devin, Cursor & MCP 协议</div>
-                <div class="time-desc">Devin (2024.03) 宣称为首个 AI 程序员；Cursor 爆火；Anthropic (2024.11) 发布 MCP 协议与 Computer Use。</div>
+                <div class="time-desc">Devin (2024.03) 亮相；Cursor 席卷程序员圈；Anthropic (2024.11) 发布 MCP 协议，统一上下文读写标准。</div>
+            </div>
+            <div class="img-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-time_2024" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-time_2024" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-time_2024" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-time_2024)" />
+    <rect width="100%" height="100%" fill="url(#grid-time_2024)" opacity="0.6" />
+    
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(200, 200)">
+            
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#10b981"/>
+            <polygon points="-15,-25 30,0 -15,25" fill="#fff"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-time_2024)" />
+</svg>
             </div>
             <div class="hot-box">
-                <b>🔥 全网爆火：</b>AI 直接操控电脑屏幕点击、安全插拔连接本地文件与数据库。
+                <b>🔥 核心演进与影响：</b>
+                从对话向 IDE 工程级辅助演进。Cursor 实现代码全库理解，MCP 确立统一数据规范，AI 可安全读写本地文件与数据库。
+            </div>
+        </div>
+
+        <!-- NEW: 2024 - 2026 Dev Tooling -->
+        <div class="time-card" style="animation-delay: 0.35s;">
+            <div>
+                <div class="time-badge">2024 - 2026 年</div>
+                <div class="time-title">基建爆发：CLI, Skill, Claw</div>
+                <div class="time-desc">Antigravity 终端自动化 (CLI)、原子化技能编排 (Skill) 与底层调度框架 (OpenClaw) 深度融入业务流。</div>
+            </div>
+            <div class="img-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-time_tooling" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-time_tooling" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-time_tooling" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-time_tooling)" />
+    <rect width="100%" height="100%" fill="url(#grid-time_tooling)" opacity="0.6" />
+    
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(200, 200)">
+            
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#8b5cf6"/>
+            <rect x="-20" y="-30" width="40" height="30" fill="none" stroke="#fff" stroke-width="6" rx="4"/>
+            <line x1="-10" y1="-15" x2="5" y2="-15" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <path d="M -15 15 C 0 35 15 35 15 15" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-time_tooling)" />
+</svg>
+            </div>
+            <div class="hot-box">
+                <b>🔥 真正自主操控电脑：</b>
+                突破窗口限制！在 OpenClaw 与 CLI/Skill 驱动下，AI 真正具备跨软件调配、接管终端与自动化操控电脑的能力。
             </div>
         </div>
 
         <!-- 2025 - 2026 -->
         <div class="time-card" style="animation-delay: 0.4s;">
             <div>
-                <span class="time-badge">2025 - 2026 年</span>
-                <div class="time-title">DeepSeek & 全自主 Agent</div>
-                <div class="time-desc">DeepSeek R1/V3 (2025.01) 震撼全球；Manus 全自主 Agent 爆火，AI 进入全自动化交付与应用爆发期。</div>
+                <div class="time-badge">2025 - 2026 年</div>
+                <div class="time-title">Kimi k3, GPT-5 & Gemini 3.6</div>
+                <div class="time-desc">Kimi k3 深度推理爆发；GPT-5.6 / Gemini 3.6 开启超长上下文与原生多模态 Agent 新浪潮。</div>
+            </div>
+            <div class="img-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-time_2025" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-time_2025" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-time_2025" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-time_2025)" />
+    <rect width="100%" height="100%" fill="url(#grid-time_2025)" opacity="0.6" />
+    
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(200, 200)">
+            
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#f59e0b"/>
+            <path d="M -20 0 C 0 -45 30 -45 30 0 C 0 45 -20 45 -20 0 Z" fill="#fff"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-time_2025)" />
+</svg>
             </div>
             <div class="hot-box">
-                <b>🔥 全网爆火：</b>开源推理大模型落地、全自动订机票酒店、全套原型与代码极速交付。
+                <b>🔥 前沿爆款与焦点新闻：</b>
+                长文本深度逻辑推理、多模态实时交互，前沿旗舰大模型全面融入企业真实生产力与自动化交付。
             </div>
         </div>
     </div>

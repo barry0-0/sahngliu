@@ -40,10 +40,41 @@
             margin-bottom: 8px; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; }
 
         .hot-case { background: #ffffff; border: 1px dashed #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 11px; color: var(--text-sub); }
         .hot-case b { color: #111827; }
+        
+        .example-box {
+            margin-top: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 14px; border-radius: 6px;
+            margin-top: auto; display: flex; flex-direction: column; justify-content: center; margin-bottom: 14px;
+        }
+        .example-box.agent { background: #eff6ff; border-color: #bfdbfe; }
+        .example-box.workflow { background: #fffbeb; border-color: #fde68a; }
+        .example-box.mcp { background: #fdf2f8; border-color: #fbcfe8; }
+        
+        .example-title { font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;}
+        .example-box.agent .example-title { color: #1e3a8a; }
+        .example-box.workflow .example-title { color: #92400e; }
+        .example-box.mcp .example-title { color: #831843; }
+        
+        .example-desc { font-size: 12px; color: #14532d; line-height: 1.6; margin-bottom: 10px; }
+        .example-box.agent .example-desc { color: #1e3a8a; }
+        .example-box.workflow .example-desc { color: #92400e; }
+        .example-box.mcp .example-desc { color: #831843; }
+        
+        .example-points { display: flex; flex-direction: column; gap: 8px; }
+        .example-point { font-size: 11px; color: #166534; background: #dcfce7; padding: 8px 10px; border-radius: 4px; border: 1px solid #bbf7d0; }
+        .example-point strong { color: #14532d; }
+        
+        .example-box.agent .example-point { color: #1e40af; background: #dbeafe; border-color: #bfdbfe; }
+        .example-box.agent .example-point strong { color: #1e3a8a; }
+        
+        .example-box.workflow .example-point { color: #b45309; background: #fef3c7; border-color: #fde68a; }
+        .example-box.workflow .example-point strong { color: #92400e; }
+        
+        .example-box.mcp .example-point { color: #9d174d; background: #fce7f3; border-color: #fbcfe8; }
+        .example-box.mcp .example-point strong { color: #831843; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -51,25 +82,69 @@
 <body>
     <div class="header">
         <div class="tag">02. Deep Dive: Prompt & Agent</div>
-        <div class="title">AI 核心技术深度拆解：为什么用、用来做什么、如何使用 (Prompt & Agent)</div>
+        <div class="title">AI 核心功能与人机协同载体：Prompt, Agent & Markdown</div>
     </div>
 
     <div class="grid">
         <!-- 1. Prompt -->
         <div class="card" style="animation-delay: 0.1s;">
-            <div>
+            <div style="display: flex; flex-direction: column; flex: 1;">
                 <div class="card-title">
                     <span>✍️ Prompt (提示词工程)</span>
                     <span class="card-badge">沟通与约束</span>
                 </div>
                 <div class="four-step">
-                    <div class="step-item"><b>1. 为什么有？</b>大模型需要明确上下文与角色指令才能精准回答。</div>
-                    <div class="step-item"><b>2. 用来干什么？</b>限定回答角色、输出格式（如 JSON）与思考链 (CoT)。</div>
-                    <div class="step-item"><b>3. 为什么要用？</b>防止 AI 幻觉乱答，获得结构化高质产出。</div>
-                    <div class="step-item"><b>4. 如何使用？</b>给定“角色 + 任务 + 限制 + 样例 (Few-shot)”。</div>
+                    <div class="step-item"><b>1. 为什么有？</b>大模型需要明确角色与上下文指令，避免回答发散。</div>
+                    <div class="step-item"><b>2. Markdown 载体：</b>人类易读易写、AI 极为节省 Token 的最佳结构化文本。</div>
+                    <div class="step-item"><b>3. 为什么要用？</b>约束 AI 输出规范，消除沟通歧义，获得高质量沉淀。</div>
+                    <div class="step-item"><b>4. 如何使用？</b>给定“角色 + 任务 + 格式限制 + Few-shot 示例”。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_prompt.svg" alt="Prompt Engineering Logic">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-prompt" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-prompt" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-prompt" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" /></marker>
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-prompt)" />
+    <rect width="100%" height="100%" fill="url(#grid-prompt)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-320" y="-40" width="160" height="80" rx="8" fill="#1f2937"/>
+            <path d="M -270 -10 L -210 -10 M -270 10 L -230 10" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <line x1="-140" y1="0" x2="-80" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-50" y="-50" width="100" height="100" rx="50" fill="#3b82f6"/>
+            <circle cx="0" cy="0" r="20" fill="#fff"/>
+            <line x1="70" y1="0" x2="130" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="160" y="-40" width="160" height="80" rx="8" fill="#10b981"/>
+            <path d="M 210 -10 L 270 -10 M 210 10 L 250 10" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="290" cy="-20" r="10" fill="#fff"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-prompt)" />
+</svg>
+                </div>
+                <div class="example-box">
+                    <div class="example-title">💡 详细实战：结构化需求分析模板</div>
+                    <div class="example-desc">将产品经理零散的想法或会议录音，直接转化为标准化的 Markdown PRD 文档。</div>
+                    <div class="example-points">
+                        <div class="example-point"><strong>怎么用：</strong>在提示词中给定固定的角色设定、任务指令、输出格式要求和一段参考范例（Few-shot）。</div>
+                        <div class="example-point"><strong>解决什么问题：</strong>解决大模型回答过于发散、格式混乱、无法直接落地的业务难题，确保每次输出稳定可用，不再是“废话文学”。</div>
+                    </div>
                 </div>
             </div>
             <div class="hot-case">
@@ -79,7 +154,7 @@
 
         <!-- 2. Agent -->
         <div class="card" style="animation-delay: 0.2s;">
-            <div>
+            <div style="display: flex; flex-direction: column; flex: 1;">
                 <div class="card-title">
                     <span>🤖 Agent (自主智能体)</span>
                     <span class="card-badge">大脑 + 记忆 + 工具</span>
@@ -91,7 +166,51 @@
                     <div class="step-item"><b>4. 如何使用？</b>设定目标 ➔ 给定 Tool Call 工具包 ➔ 让 Agent 自主循环。</div>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_agent.svg" alt="Agent Architecture Flow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-agent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-agent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-agent" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#cbd5e1" /></marker>
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-agent)" />
+    <rect width="100%" height="100%" fill="url(#grid-agent)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-250" cy="0" r="60" fill="#1f2937"/>
+            <circle cx="-250" cy="0" r="20" fill="#fff"/>
+            <line x1="-170" y1="0" x2="-90" y2="0" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-60" y="-70" width="120" height="140" rx="16" fill="#3b82f6"/>
+            <path d="M -20 -20 L 20 -20 M -20 0 L 20 0 M -20 20 L 0 20" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+            <line x1="80" y1="-20" x2="140" y2="-60" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <line x1="80" y1="20" x2="140" y2="60" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="170" y="-100" width="100" height="80" rx="12" fill="#f59e0b"/>
+            <rect x="170" y="20" width="100" height="80" rx="12" fill="#10b981"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-agent)" />
+</svg>
+                </div>
+                <div class="example-box agent">
+                    <div class="example-title">💡 详细实战：Cursor 多 Agent 协同写代码</div>
+                    <div class="example-desc">打破单次对话限制，多个专业 Agent 在后台互相配合完成庞大的工程代码修改。</div>
+                    <div class="example-points">
+                        <div class="example-point"><strong>怎么用：</strong>在 Composer 面板输入“写一个登录页面”，系统自动唤起代码搜索 Agent、编写 Agent 与 Linter Agent。</div>
+                        <div class="example-point"><strong>解决什么问题：</strong>实现了“理解上下文 -> 自主搜集信息 -> 自动修改多处代码 -> 自查纠错”的闭环，Agent 像真实的程序员一样拥有执行力和自驱力，大幅替代人工编码环节。</div>
+                    </div>
                 </div>
             </div>
             <div class="hot-case">

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Slide 11 - 后续路线规划与总结</title>
+    <title>Slide 11 - 交付模式转变分析与后续推进规划</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -16,84 +16,228 @@
         body {
             width: 100vw; height: 100vh; background: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow: hidden; padding: 60px 80px; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; padding: 50px 70px; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+        .header { margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
         .tag { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .title { font-size: 32px; font-weight: 800; color: #111827; margin-top: 4px; }
+        .title { font-size: 30px; font-weight: 800; color: #111827; margin-top: 4px; }
 
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex: 1; margin-top: 10px; }
         .card {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 22px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative;
         }
-        .card-badge { font-size: 11px; font-weight: 700; color: #ffffff; background: #374151; padding: 3px 8px; border-radius: 4px; width: fit-content; margin-bottom: 10px; }
-        .card-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }
-        .card-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; margin-bottom: 10px; }
-        
+        .card-badge { font-size: 11px; background: #f3f4f6; color: #374151; padding: 3px 8px; border-radius: 4px; border: 1px solid #d1d5db; font-weight: 700; display: inline-block; margin-bottom: 10px; }
+        .card-badge.pros { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .card-badge.cons { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+        .card-badge.future { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+
+        .card-title { font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 12px; }
+        .list-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .list-item { font-size: 12px; color: var(--text-sub); line-height: 1.5; background: #f9fafb; padding: 10px; border-radius: 4px; border: 1px solid #f3f4f6; }
+        .list-item strong { color: #111827; display: block; margin-bottom: 2px; }
+
         .img-box {
-            width: 100%; height: 110px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
-            filter: grayscale(10%); transition: filter 0.3s ease;
+            width: 100%; height: 100px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            margin-top: auto;
         }
-        .img-box:hover { filter: grayscale(0%); }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; }
 
         .footer-banner {
-            background: #f9fafb; border: 1px solid var(--border); border-left: 4px solid #374151;
-            border-radius: 4px; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.02); animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center; margin-top: 16px;
         }
-        .banner-text { font-size: 18px; font-weight: 700; color: #111827; }
-        .banner-sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+        .banner-text { font-size: 14px; font-weight: 700; color: #111827; }
+        .banner-sub { font-size: 12px; color: #4b5563; margin-top: 2px; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="tag">10. Future Roadmap & Vision</div>
-        <div class="title">后续推进路线规划与交流总结</div>
+        <div class="tag">10. Paradigm Shift & Future Vision</div>
+        <div class="title">交付模式转变优劣势分析与后续演进规划</div>
     </div>
 
     <div class="grid">
+        <!-- 🟢 模式优势 -->
         <div class="card" style="animation-delay: 0.1s;">
             <div>
-                <span class="card-badge">PHASE 1 · 已完成</span>
-                <div class="card-title">五端原型与框架落盘</div>
-                <div class="card-desc">敏捷完成竞品拆解、架构梳理与原型代码生成，将前期设计转化为 2-3 周可评审。</div>
+                <span class="card-badge pros">🟢 核心优势 (PROS)</span>
+                <div class="card-title">代码级高保真与极速交付</div>
+                <div class="list-box">
+                    <div class="list-item">
+                        <strong>极致还原度</strong>
+                        从手绘/草图直接生成 HTML 代码，实现 100% 交互保真，消除二次还原误差。
+                    </div>
+                    <div class="list-item">
+                        <strong>知识库同源驱动</strong>
+                        原型与 Markdown 需求文档同源联动，需求变更时一键同步更新大纲与页面。
+                    </div>
+                    <div class="list-item">
+                        <strong>交付效率数量级提升</strong>
+                        原本需要 2-3 周的五端原型设计缩短至数小时，大幅缩短产品验证周期。
+                    </div>
+                </div>
             </div>
             <div class="img-box">
-                <img src="../assets/img/svg_deliverables.svg" alt="Phase 1 Deliverables">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-tradeoff_pros" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-tradeoff_pros" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-tradeoff_pros" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-tradeoff_pros)" />
+    <rect width="100%" height="100%" fill="url(#grid-tradeoff_pros)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-150" cy="0" r="60" fill="#10b981"/>
+            <path d="M -180 0 L -160 20 L -120 -20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#10b981"/>
+            <rect x="-40" y="10" width="140" height="20" rx="10" fill="#10b981"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-tradeoff_pros)" />
+</svg>
             </div>
         </div>
 
+        <!-- 🔴 阶段性挑战与适应 -->
         <div class="card" style="animation-delay: 0.2s;">
             <div>
-                <span class="card-badge">PHASE 2 · 近期推进</span>
-                <div class="card-title">精细化 PRD 与字段字典</div>
-                <div class="card-desc">基于全量 Markdown 知识库，驱动 AI 补充边界规则、字段数据字典与错误码。</div>
+                <span class="card-badge cons">🔴 阶段性适应与挑战 (CONS)</span>
+                <div class="card-title">交付形态与沟通习惯转变</div>
+                <div class="list-box">
+                    <div class="list-item">
+                        <strong>交付物形态认知变更</strong>
+                        从传统 Axure/静态图片转为 HTML 交互页面与代码文件，团队需要适应新的交付形式。
+                    </div>
+                    <div class="list-item">
+                        <strong>评审与沟通模式重建</strong>
+                        研发与测试需要习惯“通过结构化 Prompt + 交互原型”进行对齐，跨阶段沟通尚需磨合。
+                    </div>
+                    <div class="list-item">
+                        <strong>AI 工具链门槛要求</strong>
+                        产品人员需具备 Prompt 工程与 MCP 调配能力，存在短期技能跨越与习惯适应期。
+                    </div>
+                </div>
             </div>
             <div class="img-box">
-                <img src="../assets/img/svg_data_dict.svg" alt="PRD Data Dictionary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-tradeoff_cons" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-tradeoff_cons" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-tradeoff_cons" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-tradeoff_cons)" />
+    <rect width="100%" height="100%" fill="url(#grid-tradeoff_cons)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-150" cy="0" r="60" fill="#ef4444"/>
+            <path d="M -170 -20 L -130 20 M -130 -20 L -170 20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#ef4444"/>
+            <rect x="-40" y="10" width="160" height="20" rx="10" fill="#ef4444"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-tradeoff_cons)" />
+</svg>
             </div>
         </div>
 
+        <!-- 🚀 后续推进想法 -->
         <div class="card" style="animation-delay: 0.3s;">
             <div>
-                <span class="card-badge">PHASE 3 · 中长期</span>
-                <div class="card-title">OpenAPI Schema 与脚手架</div>
-                <div class="card-desc">结合原型交互逻辑，自动反向推导 Swagger 接口文档与数据库 DDL 建表语句。</div>
+                <span class="card-badge future">🚀 后续推进方向 (EVOLUTION)</span>
+                <div class="card-title">知识沉淀与 PRD 交付升级</div>
+                <div class="list-box">
+                    <div class="list-item">
+                        <strong>结构化产品知识库沉淀</strong>
+                        将业务拓扑与功能细节持续沉淀为标准 Markdown 知识库，为后续版本迭代与 AI 深度理解提供“第二大脑”。
+                    </div>
+                    <div class="list-item">
+                        <strong>交互式打点与内联 PRD</strong>
+                        引入原型节点可视化打点（Pinpoint）与内联规格卡片，实现“所见即所得”的需求标注与交互对照。
+                    </div>
+                    <div class="list-item">
+                        <strong>自动化接口与测试推导</strong>
+                        基于打点规格与知识库，进一步自动化反向推导 OpenAPI 接口定义与 QA 测试用例边界。
+                    </div>
+                </div>
             </div>
             <div class="img-box">
-                <img src="../assets/img/svg_openapi.svg" alt="OpenAPI DDL Code">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-openapi" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-openapi" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-openapi" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-openapi)" />
+    <rect width="100%" height="100%" fill="url(#grid-openapi)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-300" y="-90" width="600" height="180" rx="12" fill="#1f2937"/>
+            <circle cx="-260" cy="-55" r="8" fill="#ef4444"/>
+            <circle cx="-230" cy="-55" r="8" fill="#f59e0b"/>
+            <circle cx="-200" cy="-55" r="8" fill="#10b981"/>
+            <path d="M -260 -10 Q -270 -10 -270 10 Q -270 30 -260 30" fill="none" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 260 -10 Q 270 -10 270 10 Q 270 30 260 30" fill="none" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
+            <rect x="-220" y="-10" width="120" height="12" rx="6" fill="#60a5fa"/>
+            <rect x="-80" y="-10" width="200" height="12" rx="6" fill="#a3e635"/>
+            <rect x="-220" y="30" width="160" height="12" rx="6" fill="#60a5fa"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-openapi)" />
+</svg>
             </div>
         </div>
     </div>
 
     <div class="footer-banner">
         <div>
-            <div class="banner-text">“把 AI 当成高效的辅助工具，用敏捷节奏快速验证业务想法。”</div>
+            <div class="banner-text">“拥抱交付模式的过渡期适应，用 AI 赋能产品与研发全链路。”</div>
             <div class="banner-sub">感谢大家的聆听，欢迎交流探讨！</div>
         </div>
         <div style="font-size: 15px; font-weight: 700; color: #374151;">分享人：周鑫</div>

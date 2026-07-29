@@ -35,7 +35,7 @@
             margin: 6px 0; filter: grayscale(10%); transition: filter 0.3s ease;
         }
         .img-box:hover { filter: grayscale(0%); }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; }
         
         .detail-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
         .detail-item { font-size: 11px; color: var(--text-sub); line-height: 1.45; background: #f9fafb; padding: 5px 8px; border-radius: 4px; border-left: 3px solid #374151; }
@@ -59,7 +59,38 @@
                     <span style="font-size: 11px; color: #374151; font-weight: 600;">系统级调用</span>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_apple_map.svg" alt="Apple Maps Agent Integration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-apple_map" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-apple_map" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-apple_map" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-apple_map)" />
+    <rect width="100%" height="100%" fill="url(#grid-apple_map)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-300" y="-80" width="600" height="160" rx="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <circle cx="-150" cy="0" r="50" fill="#cbd5e1"/>
+            <rect x="-50" y="-30" width="260" height="20" rx="10" fill="#9ca3af"/>
+            <rect x="-50" y="10" width="180" height="20" rx="10" fill="#9ca3af"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-apple_map)" />
+</svg>
                 </div>
                 <div class="detail-list">
                     <div class="detail-item"><b>背景突破：</b>突破当时 Apple Intelligence API 限制，借鉴 OpenClaw 代理思想。</div>
@@ -76,7 +107,38 @@
                     <span style="font-size: 11px; color: #374151; font-weight: 600;">Workflow</span>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_orchestration.svg" alt="Workflow Orchestration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-orchestration" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-orchestration" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-orchestration" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-orchestration)" />
+    <rect width="100%" height="100%" fill="url(#grid-orchestration)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-300" y="-80" width="600" height="160" rx="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <circle cx="-150" cy="0" r="50" fill="#cbd5e1"/>
+            <rect x="-50" y="-30" width="260" height="20" rx="10" fill="#9ca3af"/>
+            <rect x="-50" y="10" width="180" height="20" rx="10" fill="#9ca3af"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-orchestration)" />
+</svg>
                 </div>
                 <div class="detail-list">
                     <div class="detail-item"><b>工作流编排：</b>搭建可视化条件分支、意图识别与 API 请求转换。</div>
@@ -93,7 +155,38 @@
                     <span style="font-size: 11px; color: #374151; font-weight: 600;">iOS Native</span>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_ios_island.svg" alt="iOS Dynamic Island">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-ios_island" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-ios_island" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-ios_island" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-ios_island)" />
+    <rect width="100%" height="100%" fill="url(#grid-ios_island)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-300" y="-80" width="600" height="160" rx="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <circle cx="-150" cy="0" r="50" fill="#cbd5e1"/>
+            <rect x="-50" y="-30" width="260" height="20" rx="10" fill="#9ca3af"/>
+            <rect x="-50" y="10" width="180" height="20" rx="10" fill="#9ca3af"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-ios_island)" />
+</svg>
                 </div>
                 <div class="detail-list">
                     <div class="detail-item"><b>Swift/SwiftUI：</b>全栈实现 iOS 灵动岛 (Dynamic Island) 展开/收起交互动画。</div>
@@ -110,7 +203,38 @@
                     <span style="font-size: 11px; color: #374151; font-weight: 600;">Skill/Python</span>
                 </div>
                 <div class="img-box">
-                    <img src="../assets/img/svg_skill_reverse.svg" alt="Python Skill Reverse">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-skill_reverse" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-skill_reverse" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-skill_reverse" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-skill_reverse)" />
+    <rect width="100%" height="100%" fill="url(#grid-skill_reverse)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <rect x="-300" y="-80" width="600" height="160" rx="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <circle cx="-150" cy="0" r="50" fill="#cbd5e1"/>
+            <rect x="-50" y="-30" width="260" height="20" rx="10" fill="#9ca3af"/>
+            <rect x="-50" y="10" width="180" height="20" rx="10" fill="#9ca3af"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-skill_reverse)" />
+</svg>
                 </div>
                 <div class="detail-list">
                     <div class="detail-item"><b>前沿 Agent 实践：</b>深入体验 OpenClaw、Hermes 等大模型 Agent 工具链。</div>

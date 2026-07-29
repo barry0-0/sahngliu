@@ -1,398 +1,302 @@
 import os
 
-svg_template = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="100%" height="100%">
+svg_template = """<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
     <defs>
         <linearGradient id="bg-{id}" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f3f4f6" />
-            <stop offset="100%" stop-color="#e5e7eb" />
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
         </linearGradient>
         <linearGradient id="accent-{id}" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#374151" />
             <stop offset="100%" stop-color="#1f2937" />
         </linearGradient>
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d1d5db" stroke-width="1" />
+        <pattern id="grid-{id}" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
         </pattern>
         {defs}
     </defs>
+    
     <rect width="100%" height="100%" fill="url(#bg-{id})" />
-    <rect width="100%" height="100%" fill="url(#grid)" opacity="0.5" />
+    <rect width="100%" height="100%" fill="url(#grid-{id})" opacity="0.6" />
     
-    <g transform="translate(400, 200)">
-        {content}
-    </g>
+    <svg viewBox="{viewbox}" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="{transform}">
+            {content}
+        </g>
+    </svg>
     
-    <text x="30" y="40" font-family="-apple-system, sans-serif" font-size="24" font-weight="bold" fill="#111827" letter-spacing="1">{title}</text>
-    <text x="30" y="70" font-family="-apple-system, sans-serif" font-size="14" font-weight="normal" fill="#4b5563">{subtitle}</text>
-    
-    <rect x="0" y="390" width="800" height="10" fill="url(#accent-{id})" />
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-{id})" />
 </svg>"""
 
 diagrams = [
     {
-        "id": "prompt",
-        "title": "PROMPT ENGINEERING",
-        "subtitle": "Constraint & Context Formatting",
+        "id": "time_2022",
+        "viewbox": "0 0 400 400",
+        "transform": "translate(200, 200)",
         "content": """
-            <rect x="-150" y="-80" width="300" height="160" rx="10" fill="#ffffff" stroke="#374151" stroke-width="4"/>
-            <text x="0" y="-30" font-family="sans-serif" font-size="18" font-weight="bold" fill="#1f2937" text-anchor="middle">ROLE + TASK</text>
-            <line x1="-100" y1="-10" x2="100" y2="-10" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5,5"/>
-            <text x="0" y="20" font-family="sans-serif" font-size="16" fill="#4b5563" text-anchor="middle">Constraints & Rules</text>
-            <text x="0" y="50" font-family="sans-serif" font-size="16" fill="#4b5563" text-anchor="middle">Few-Shot Examples</text>
-            <circle cx="-150" cy="0" r="20" fill="#374151"/><text x="-150" y="5" fill="#fff" font-family="sans-serif" font-size="14" text-anchor="middle">IN</text>
-            <circle cx="150" cy="0" r="20" fill="#1f2937"/><text x="150" y="5" fill="#fff" font-family="sans-serif" font-size="14" text-anchor="middle">OUT</text>
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#1f2937"/>
+            <path d="M -20 -20 L 20 20 M 20 -20 L -20 20" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
         """
+    },
+    {
+        "id": "time_2023",
+        "viewbox": "0 0 400 400",
+        "transform": "translate(200, 200)",
+        "content": """
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#3b82f6"/>
+            <rect x="-25" y="-25" width="50" height="50" fill="#fff" rx="6"/>
+        """
+    },
+    {
+        "id": "time_2024",
+        "viewbox": "0 0 400 400",
+        "transform": "translate(200, 200)",
+        "content": """
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#10b981"/>
+            <polygon points="-15,-25 30,0 -15,25" fill="#fff"/>
+        """
+    },
+    {
+        "id": "time_2025",
+        "viewbox": "0 0 400 400",
+        "transform": "translate(200, 200)",
+        "content": """
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#f59e0b"/>
+            <path d="M -20 0 C 0 -45 30 -45 30 0 C 0 45 -20 45 -20 0 Z" fill="#fff"/>
+        """
+    },
+    {
+        "id": "time_tooling",
+        "viewbox": "0 0 400 400",
+        "transform": "translate(200, 200)",
+        "content": """
+            <line x1="0" y1="-200" x2="0" y2="200" stroke="#cbd5e1" stroke-width="6"/>
+            <circle cx="0" cy="0" r="60" fill="#8b5cf6"/>
+            <rect x="-20" y="-30" width="40" height="30" fill="none" stroke="#fff" stroke-width="6" rx="4"/>
+            <line x1="-10" y1="-15" x2="5" y2="-15" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <path d="M -15 15 C 0 35 15 35 15 15" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+        """
+    },
+    {
+        "id": "prompt",
+        "content": """
+            <rect x="-320" y="-40" width="160" height="80" rx="8" fill="#1f2937"/>
+            <path d="M -270 -10 L -210 -10 M -270 10 L -230 10" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <line x1="-140" y1="0" x2="-80" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-50" y="-50" width="100" height="100" rx="50" fill="#3b82f6"/>
+            <circle cx="0" cy="0" r="20" fill="#fff"/>
+            <line x1="70" y1="0" x2="130" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="160" y="-40" width="160" height="80" rx="8" fill="#10b981"/>
+            <path d="M 210 -10 L 270 -10 M 210 10 L 250 10" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="290" cy="-20" r="10" fill="#fff"/>
+        """,
+        "defs": """<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" /></marker>"""
     },
     {
         "id": "agent",
-        "title": "AGENT ARCHITECTURE",
-        "subtitle": "Autonomous Execution & Memory",
         "content": """
-            <circle cx="0" cy="0" r="70" fill="#ffffff" stroke="#1f2937" stroke-width="6"/>
-            <text x="0" y="5" font-family="sans-serif" font-size="20" font-weight="bold" fill="#1f2937" text-anchor="middle">LLM BRAIN</text>
-            
-            <circle cx="-120" cy="-60" r="40" fill="#f9fafb" stroke="#6b7280" stroke-width="3"/>
-            <text x="-120" y="-55" font-family="sans-serif" font-size="14" fill="#374151" text-anchor="middle">Memory</text>
-            
-            <circle cx="120" cy="-60" r="40" fill="#f9fafb" stroke="#6b7280" stroke-width="3"/>
-            <text x="120" y="-55" font-family="sans-serif" font-size="14" fill="#374151" text-anchor="middle">Tools</text>
-            
-            <circle cx="0" cy="100" r="40" fill="#f9fafb" stroke="#6b7280" stroke-width="3"/>
-            <text x="0" y="105" font-family="sans-serif" font-size="14" fill="#374151" text-anchor="middle">Action</text>
-            
-            <path d="M -50 -50 L -90 -60" stroke="#374151" stroke-width="3" stroke-dasharray="4,4"/>
-            <path d="M 50 -50 L 90 -60" stroke="#374151" stroke-width="3" stroke-dasharray="4,4"/>
-            <path d="M 0 70 L 0 60" stroke="#374151" stroke-width="3" />
-        """
+            <circle cx="-250" cy="0" r="60" fill="#1f2937"/>
+            <circle cx="-250" cy="0" r="20" fill="#fff"/>
+            <line x1="-170" y1="0" x2="-90" y2="0" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-60" y="-70" width="120" height="140" rx="16" fill="#3b82f6"/>
+            <path d="M -20 -20 L 20 -20 M -20 0 L 20 0 M -20 20 L 0 20" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+            <line x1="80" y1="-20" x2="140" y2="-60" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <line x1="80" y1="20" x2="140" y2="60" stroke="#cbd5e1" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="170" y="-100" width="100" height="80" rx="12" fill="#f59e0b"/>
+            <rect x="170" y="20" width="100" height="80" rx="12" fill="#10b981"/>
+        """,
+        "defs": """<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#cbd5e1" /></marker>"""
     },
     {
         "id": "workflow",
-        "title": "WORKFLOW CANVAS",
-        "subtitle": "Multi-Step Logic Orchestration",
         "content": """
-            <rect x="-200" y="-50" width="80" height="100" rx="8" fill="#fff" stroke="#1f2937" stroke-width="3"/>
-            <text x="-160" y="5" font-family="sans-serif" font-size="14" fill="#1f2937" font-weight="bold" text-anchor="middle">START</text>
-            
-            <path d="M -120 0 L -70 0" stroke="#1f2937" stroke-width="4" marker-end="url(#arrow)"/>
-            
-            <rect x="-70" y="-50" width="100" height="100" rx="8" fill="#fff" stroke="#374151" stroke-width="3"/>
-            <text x="-20" y="-5" font-family="sans-serif" font-size="14" fill="#1f2937" font-weight="bold" text-anchor="middle">LLM Node</text>
-            <text x="-20" y="15" font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Analyze Data</text>
-            
-            <path d="M 30 0 L 80 0" stroke="#1f2937" stroke-width="4" marker-end="url(#arrow)"/>
-            
-            <rect x="80" y="-50" width="100" height="100" rx="8" fill="#1f2937" />
-            <text x="130" y="5" font-family="sans-serif" font-size="14" fill="#fff" font-weight="bold" text-anchor="middle">END</text>
+            <circle cx="-300" cy="0" r="50" fill="#1f2937"/>
+            <line x1="-230" y1="0" x2="-160" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="-130" y="-50" width="120" height="100" rx="12" fill="#3b82f6"/>
+            <line x1="10" y1="0" x2="80" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <rect x="110" y="-50" width="120" height="100" rx="12" fill="#10b981"/>
+            <line x1="250" y1="0" x2="320" y2="0" stroke="#9ca3af" stroke-width="6" marker-end="url(#arrow)"/>
+            <circle cx="390" cy="0" r="50" fill="#f59e0b"/>
         """,
-        "defs": """
-            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937" />
-            </marker>
-        """
+        "defs": """<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" /></marker>"""
     },
     {
         "id": "mcp",
-        "title": "MCP INTEGRATION",
-        "subtitle": "Model Context Protocol",
         "content": """
-            <rect x="-180" y="-60" width="120" height="120" rx="10" fill="#fff" stroke="#374151" stroke-width="4"/>
-            <text x="-120" y="0" font-family="sans-serif" font-size="18" fill="#1f2937" font-weight="bold" text-anchor="middle">Claude</text>
-            <text x="-120" y="20" font-family="sans-serif" font-size="12" fill="#6b7280" text-anchor="middle">LLM Engine</text>
-            
-            <path d="M -60 -10 L 60 -10" stroke="#1f2937" stroke-width="4" stroke-dasharray="6,4" marker-end="url(#arrow-mcp)"/>
-            <path d="M 60 10 L -60 10" stroke="#1f2937" stroke-width="4" stroke-dasharray="6,4" marker-end="url(#arrow-mcp)"/>
-            <text x="0" y="-20" font-family="sans-serif" font-size="14" fill="#1f2937" font-weight="bold" text-anchor="middle">MCP API</text>
-            
-            <rect x="60" y="-60" width="120" height="120" rx="10" fill="#1f2937" />
-            <text x="120" y="-5" font-family="sans-serif" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">Local DB /</text>
-            <text x="120" y="15" font-family="sans-serif" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">File System</text>
-        """,
-        "defs": """
-            <marker id="arrow-mcp" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937" />
-            </marker>
-        """
-    },
-    {
-        "id": "apple_map",
-        "title": "APPLE MAPS AGENT",
-        "subtitle": "System UI & Map Invocation",
-        "content": """
-            <rect x="-80" y="-120" width="160" height="240" rx="20" fill="#ffffff" stroke="#1f2937" stroke-width="5"/>
-            <rect x="-30" y="-110" width="60" height="10" rx="5" fill="#1f2937"/>
-            <rect x="-60" y="-70" width="120" height="100" rx="10" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
-            <path d="M -30 -20 Q 0 -50 30 -20 T -10 10" fill="none" stroke="#3b82f6" stroke-width="4"/>
-            <circle cx="-30" cy="-20" r="5" fill="#ef4444"/>
-            <circle cx="30" cy="-20" r="5" fill="#10b981"/>
-            
-            <rect x="-60" y="50" width="120" height="30" rx="8" fill="#1f2937"/>
-            <text x="0" y="70" font-family="sans-serif" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">Navigate</text>
-        """
-    },
-    {
-        "id": "orchestration",
-        "title": "ORCHESTRATION",
-        "subtitle": "Connecting Multiple Agents",
-        "content": """
-            <circle cx="-100" cy="0" r="40" fill="#ffffff" stroke="#1f2937" stroke-width="4"/>
-            <text x="-100" y="5" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">Agent A</text>
-            
-            <circle cx="100" cy="0" r="40" fill="#ffffff" stroke="#1f2937" stroke-width="4"/>
-            <text x="100" y="5" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">Agent B</text>
-            
-            <circle cx="0" cy="-100" r="45" fill="#1f2937" />
-            <text x="0" y="-95" font-family="sans-serif" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">Manager</text>
-            
-            <path d="M 0 -55 L -80 -25" stroke="#374151" stroke-width="3" />
-            <path d="M 0 -55 L 80 -25" stroke="#374151" stroke-width="3" />
-            
-            <rect x="-40" y="60" width="80" height="40" rx="5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2"/>
-            <text x="0" y="85" font-family="sans-serif" font-size="12" fill="#4b5563" font-weight="bold" text-anchor="middle">Data Sync</text>
-            <path d="M -80 30 L -40 60" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,2"/>
-            <path d="M 80 30 L 40 60" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,2"/>
-        """
-    },
-    {
-        "id": "ios_island",
-        "title": "iOS DYNAMIC ISLAND",
-        "subtitle": "Live Activities & UI Overlay",
-        "content": """
-            <rect x="-100" y="-80" width="200" height="60" rx="30" fill="#000000" />
-            <circle cx="-60" cy="-50" r="15" fill="#1f2937" stroke="#374151" stroke-width="2"/>
-            <path d="M -50 -50 Q -30 -70 -10 -50 T 30 -50" fill="none" stroke="#3b82f6" stroke-width="3"/>
-            <text x="50" y="-45" font-family="sans-serif" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">12:34</text>
-            
-            <rect x="-120" y="20" width="240" height="80" rx="20" fill="#fff" stroke="#e5e7eb" stroke-width="2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.1))"/>
-            <text x="-90" y="55" font-family="sans-serif" font-size="16" fill="#1f2937" font-weight="bold">Next Step:</text>
-            <text x="-90" y="75" font-family="sans-serif" font-size="14" fill="#6b7280">Arrive at Destination</text>
-            <circle cx="80" cy="60" r="15" fill="#10b981"/>
-        """
-    },
-    {
-        "id": "skill_reverse",
-        "title": "SKILL REVERSE ENGINEERING",
-        "subtitle": "Python Logic & Execution",
-        "content": """
-            <rect x="-140" y="-100" width="280" height="200" rx="8" fill="#1f2937" />
-            <circle cx="-120" cy="-80" r="6" fill="#ef4444"/>
-            <circle cx="-100" cy="-80" r="6" fill="#f59e0b"/>
-            <circle cx="-80" cy="-80" r="6" fill="#10b981"/>
-            <line x1="-140" y1="-60" x2="140" y2="-60" stroke="#374151" stroke-width="2"/>
-            
-            <text x="-120" y="-30" font-family="monospace" font-size="14" fill="#a78bfa">def</text>
-            <text x="-90" y="-30" font-family="monospace" font-size="14" fill="#60a5fa">analyze_logic</text>
-            <text x="25" y="-30" font-family="monospace" font-size="14" fill="#e5e7eb">(code):</text>
-            
-            <text x="-100" y="0" font-family="monospace" font-size="14" fill="#34d399"># Extract architecture</text>
-            
-            <text x="-100" y="30" font-family="monospace" font-size="14" fill="#e5e7eb">ast = parse(code)</text>
-            
-            <text x="-100" y="60" font-family="monospace" font-size="14" fill="#f472b6">return</text>
-            <text x="-40" y="60" font-family="monospace" font-size="14" fill="#e5e7eb">ast.reverse()</text>
-        """
-    },
-    {
-        "id": "strategy",
-        "title": "STRATEGY PPT ANALYSIS",
-        "subtitle": "Data Parsing & Insights",
-        "content": """
-            <rect x="-120" y="-90" width="240" height="160" rx="8" fill="#fff" stroke="#1f2937" stroke-width="4"/>
-            <rect x="-100" y="-70" width="200" height="40" rx="4" fill="#f3f4f6"/>
-            <rect x="-100" y="-20" width="90" height="70" rx="4" fill="#1f2937"/>
-            <rect x="0" y="-20" width="100" height="70" rx="4" fill="#e5e7eb"/>
-            
-            <circle cx="-55" cy="15" r="20" fill="#fff"/>
-            <path d="M 10 10 L 90 10 M 10 30 L 70 30 M 10 50 L 80 50" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
-            
-            <path d="M 120 0 L 160 0 L 140 30 Z" fill="#374151" transform="rotate(90 140 15)"/>
-        """
-    },
-    {
-        "id": "s2b2b",
-        "title": "S2B2B ARCHITECTURE",
-        "subtitle": "Supplier -> Business -> Business",
-        "content": """
-            <rect x="-160" y="-40" width="80" height="80" rx="10" fill="#1f2937"/>
-            <text x="-120" y="5" font-family="sans-serif" font-size="20" fill="#fff" font-weight="bold" text-anchor="middle">S</text>
-            
-            <path d="M -80 0 L -30 0" stroke="#6b7280" stroke-width="3" marker-end="url(#arrow-s2b2b)"/>
-            
-            <rect x="-20" y="-40" width="80" height="80" rx="10" fill="#fff" stroke="#1f2937" stroke-width="4"/>
-            <text x="20" y="5" font-family="sans-serif" font-size="20" fill="#1f2937" font-weight="bold" text-anchor="middle">B</text>
-            
-            <path d="M 60 0 L 110 0" stroke="#6b7280" stroke-width="3" marker-end="url(#arrow-s2b2b)"/>
-            
-            <rect x="120" y="-40" width="80" height="80" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="3"/>
-            <text x="160" y="5" font-family="sans-serif" font-size="20" fill="#4b5563" font-weight="bold" text-anchor="middle">b</text>
-        """,
-        "defs": """
-            <marker id="arrow-s2b2b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b7280" />
-            </marker>
-        """
-    },
-    {
-        "id": "chrome_research",
-        "title": "AUTOMATED CHROME",
-        "subtitle": "Web Scraping & DOM Interaction",
-        "content": """
-            <rect x="-150" y="-100" width="300" height="200" rx="8" fill="#fff" stroke="#1f2937" stroke-width="4"/>
-            <rect x="-150" y="-100" width="300" height="30" rx="0" fill="#f3f4f6"/>
-            <circle cx="-130" cy="-85" r="5" fill="#e5e7eb"/>
-            <circle cx="-115" cy="-85" r="5" fill="#e5e7eb"/>
-            <circle cx="-100" cy="-85" r="5" fill="#e5e7eb"/>
-            <rect x="-80" y="-92" width="200" height="14" rx="7" fill="#fff" stroke="#d1d5db" stroke-width="1"/>
-            
-            <rect x="-120" y="-50" width="240" height="40" rx="4" fill="#e5e7eb"/>
-            <rect x="-120" y="0" width="100" height="80" rx="4" fill="#f3f4f6" stroke="#9ca3af" stroke-dasharray="4,4"/>
-            <rect x="-10" y="0" width="130" height="20" rx="4" fill="#e5e7eb"/>
-            <rect x="-10" y="30" width="130" height="20" rx="4" fill="#e5e7eb"/>
-            
-            <path d="M 50 80 L 70 50 L 90 80 Z" fill="#1f2937" transform="rotate(-30 70 50) translate(0 10)"/>
-            <circle cx="70" cy="50" r="6" fill="#ef4444" opacity="0.8"/>
+            <rect x="-350" y="-70" width="160" height="140" rx="16" fill="#1f2937"/>
+            <circle cx="-270" cy="0" r="40" fill="#fff"/>
+            <line x1="-170" y1="0" x2="-70" y2="0" stroke="#3b82f6" stroke-width="10" stroke-dasharray="12,12"/>
+            <path d="M -120 -30 L -70 0 L -120 30" fill="none" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+            <rect x="-40" y="-80" width="160" height="160" rx="12" fill="#e5e7eb" stroke="#9ca3af" stroke-width="8"/>
+            <rect x="-10" y="-50" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <rect x="-10" y="-10" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <rect x="-10" y="30" width="100" height="12" fill="#9ca3af" rx="6"/>
+            <line x1="140" y1="0" x2="240" y2="0" stroke="#10b981" stroke-width="10"/>
+            <path d="M 190 -30 L 240 0 L 190 30" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 270 -60 C 270 -80 390 -80 390 -60 L 390 60 C 390 80 270 80 270 60 Z" fill="#10b981"/>
+            <path d="M 270 -60 C 270 -40 390 -40 390 -60" fill="none" stroke="#fff" stroke-width="6"/>
         """
     },
     {
         "id": "prototype",
-        "title": "PROTOTYPE UI",
-        "subtitle": "Interactive Wireframing",
         "content": """
-            <rect x="-140" y="-120" width="280" height="240" rx="6" fill="#fff" stroke="#374151" stroke-width="3"/>
-            <line x1="-140" y1="-80" x2="140" y2="-80" stroke="#e5e7eb" stroke-width="2"/>
-            <line x1="-60" y1="-80" x2="-60" y2="120" stroke="#e5e7eb" stroke-width="2"/>
-            
-            <rect x="-120" y="-105" width="40" height="10" rx="2" fill="#1f2937"/>
-            <rect x="-120" y="-60" width="40" height="8" rx="2" fill="#d1d5db"/>
-            <rect x="-120" y="-40" width="40" height="8" rx="2" fill="#d1d5db"/>
-            <rect x="-120" y="-20" width="40" height="8" rx="2" fill="#d1d5db"/>
-            
-            <rect x="-40" y="-60" width="160" height="100" rx="4" fill="#f3f4f6"/>
-            <circle cx="40" cy="-10" r="20" fill="#1f2937"/>
-            
-            <rect x="-40" y="50" width="70" height="50" rx="4" fill="#e5e7eb"/>
-            <rect x="50" y="50" width="70" height="50" rx="4" fill="#e5e7eb"/>
+            <rect x="-300" y="-80" width="600" height="160" rx="8" fill="#fff" stroke="#1f2937" stroke-width="6"/>
+            <line x1="-300" y1="-30" x2="300" y2="-30" stroke="#1f2937" stroke-width="6"/>
+            <circle cx="-270" cy="-55" r="6" fill="#1f2937"/>
+            <circle cx="-240" cy="-55" r="6" fill="#1f2937"/>
+            <circle cx="-210" cy="-55" r="6" fill="#1f2937"/>
+            <rect x="-260" y="-10" width="160" height="70" rx="4" fill="#e5e7eb"/>
+            <rect x="-60" y="-10" width="160" height="70" rx="4" fill="#e5e7eb"/>
+            <rect x="140" y="-10" width="120" height="70" rx="4" fill="#e5e7eb"/>
         """
     },
     {
         "id": "prd_annotator",
-        "title": "PRD ANNOTATOR",
-        "subtitle": "Automated Spec Generation",
         "content": """
-            <rect x="-160" y="-100" width="140" height="200" rx="4" fill="#fff" stroke="#1f2937" stroke-width="3"/>
-            <line x1="-140" y1="-70" x2="-40" y2="-70" stroke="#9ca3af" stroke-width="4"/>
-            <line x1="-140" y1="-50" x2="-60" y2="-50" stroke="#9ca3af" stroke-width="4"/>
-            <line x1="-140" y1="-30" x2="-40" y2="-30" stroke="#9ca3af" stroke-width="4"/>
-            
-            <path d="M -10 -20 L 30 -20" stroke="#3b82f6" stroke-width="3" stroke-dasharray="4,4" marker-end="url(#arrow-prd)"/>
-            
-            <rect x="40" y="-100" width="120" height="200" rx="4" fill="#1f2937" />
-            <text x="100" y="-70" font-family="sans-serif" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">SPEC v1</text>
-            <rect x="60" y="-50" width="80" height="4" fill="#4b5563"/>
-            <rect x="60" y="-35" width="60" height="4" fill="#4b5563"/>
-            <rect x="60" y="-20" width="70" height="4" fill="#4b5563"/>
-            
-            <circle cx="-60" cy="-20" r="15" fill="#ef4444" opacity="0.8"/>
+            <rect x="-200" y="-90" width="160" height="180" rx="8" fill="#fff" stroke="#1f2937" stroke-width="6"/>
+            <line x1="-160" y1="-50" x2="-60" y2="-50" stroke="#9ca3af" stroke-width="6"/>
+            <line x1="-160" y1="-20" x2="-80" y2="-20" stroke="#9ca3af" stroke-width="6"/>
+            <line x1="-160" y1="10" x2="-60" y2="10" stroke="#9ca3af" stroke-width="6"/>
+            <path d="M -20 -20 L 40 -20" stroke="#3b82f6" stroke-width="6" stroke-dasharray="8,8" marker-end="url(#arrow)"/>
+            <rect x="60" y="-90" width="160" height="180" rx="8" fill="#1f2937" />
+            <rect x="90" y="-50" width="100" height="8" fill="#4b5563" rx="4"/>
+            <rect x="90" y="-20" width="80" height="8" fill="#4b5563" rx="4"/>
+            <rect x="90" y="10" width="90" height="8" fill="#4b5563" rx="4"/>
+            <circle cx="-80" cy="-20" r="16" fill="#ef4444" opacity="0.8"/>
+            <circle cx="80" cy="-20" r="16" fill="#ef4444" opacity="0.8"/>
         """,
-        "defs": """
-            <marker id="arrow-prd" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
-            </marker>
-        """
+        "defs": """<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" /></marker>"""
     },
     {
         "id": "git_code",
-        "title": "GITHUB REPO",
-        "subtitle": "Version Control & Sync",
         "content": """
-            <path d="M -20 -80 L 20 -80 L 60 -40 L 60 80 L -60 80 L -60 -40 Z" fill="#fff" stroke="#1f2937" stroke-width="4"/>
-            <circle cx="-20" cy="-20" r="10" fill="#374151"/>
-            <circle cx="-20" cy="40" r="10" fill="#374151"/>
-            <circle cx="20" cy="10" r="10" fill="#1f2937"/>
-            <line x1="-20" y1="-10" x2="-20" y2="30" stroke="#374151" stroke-width="4"/>
-            <path d="M -20 -20 Q 20 -20 20 0" fill="none" stroke="#374151" stroke-width="4"/>
-            
-            <text x="0" y="120" font-family="monospace" font-size="16" fill="#1f2937" font-weight="bold" text-anchor="middle">git commit -m "Auto"</text>
+            <line x1="-300" y1="0" x2="300" y2="0" stroke="#1f2937" stroke-width="8"/>
+            <circle cx="-200" cy="0" r="20" fill="#1f2937"/>
+            <circle cx="0" cy="0" r="20" fill="#1f2937"/>
+            <circle cx="200" cy="0" r="20" fill="#1f2937"/>
+            <path d="M -150 0 C -100 -80 -50 -80 0 -80 L 100 -80 C 150 -80 170 -40 200 0" fill="none" stroke="#3b82f6" stroke-width="8"/>
+            <circle cx="0" cy="-80" r="16" fill="#3b82f6"/>
+            <circle cx="100" cy="-80" r="16" fill="#3b82f6"/>
+        """
+    },
+    {
+        "id": "tradeoff_pros",
+        "content": """
+            <circle cx="-150" cy="0" r="60" fill="#10b981"/>
+            <path d="M -180 0 L -160 20 L -120 -20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#10b981"/>
+            <rect x="-40" y="10" width="140" height="20" rx="10" fill="#10b981"/>
+        """
+    },
+    {
+        "id": "tradeoff_cons",
+        "content": """
+            <circle cx="-150" cy="0" r="60" fill="#ef4444"/>
+            <path d="M -170 -20 L -130 20 M -130 -20 L -170 20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#ef4444"/>
+            <rect x="-40" y="10" width="160" height="20" rx="10" fill="#ef4444"/>
         """
     },
     {
         "id": "deliverables",
-        "title": "PHASE 1 DELIVERABLES",
-        "subtitle": "HTML Prototypes & Documentation",
         "content": """
-            <rect x="-150" y="-80" width="90" height="120" rx="4" fill="#fff" stroke="#374151" stroke-width="3"/>
-            <text x="-105" y="-50" font-family="sans-serif" font-size="18" fill="#1f2937" font-weight="bold" text-anchor="middle">HTML</text>
-            <line x1="-130" y1="-20" x2="-80" y2="-20" stroke="#d1d5db" stroke-width="4"/>
-            <line x1="-130" y1="-5" x2="-90" y2="-5" stroke="#d1d5db" stroke-width="4"/>
-            
-            <rect x="-45" y="-60" width="90" height="120" rx="4" fill="#1f2937" stroke="#1f2937" stroke-width="3"/>
-            <text x="0" y="-30" font-family="sans-serif" font-size="18" fill="#fff" font-weight="bold" text-anchor="middle">PRD</text>
-            <line x1="-25" y1="0" x2="25" y2="0" stroke="#4b5563" stroke-width="4"/>
-            <line x1="-25" y1="15" x2="15" y2="15" stroke="#4b5563" stroke-width="4"/>
-            
-            <rect x="60" y="-40" width="90" height="120" rx="4" fill="#f3f4f6" stroke="#9ca3af" stroke-width="3"/>
-            <text x="105" y="-10" font-family="sans-serif" font-size="18" fill="#374151" font-weight="bold" text-anchor="middle">UML</text>
-            <line x1="80" y1="20" x2="130" y2="20" stroke="#d1d5db" stroke-width="4"/>
-            <line x1="80" y1="35" x2="110" y2="35" stroke="#d1d5db" stroke-width="4"/>
+            <rect x="-300" y="-70" width="160" height="140" rx="8" fill="#fff" stroke="#1f2937" stroke-width="6"/>
+            <circle cx="-220" cy="0" r="30" fill="#3b82f6"/>
+            <line x1="-280" y1="-20" x2="-260" y2="20" stroke="#1f2937" stroke-width="6" stroke-linecap="round"/>
+            <line x1="-160" y1="-20" x2="-180" y2="20" stroke="#1f2937" stroke-width="6" stroke-linecap="round"/>
+            <rect x="-80" y="-70" width="160" height="140" rx="8" fill="#1f2937"/>
+            <line x1="-40" y1="-20" x2="40" y2="-20" stroke="#4b5563" stroke-width="8" stroke-linecap="round"/>
+            <line x1="-40" y1="20" x2="20" y2="20" stroke="#4b5563" stroke-width="8" stroke-linecap="round"/>
+            <rect x="140" y="-70" width="160" height="140" rx="8" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <rect x="170" y="-30" width="40" height="30" rx="4" fill="#9ca3af"/>
+            <rect x="230" y="10" width="40" height="30" rx="4" fill="#9ca3af"/>
+            <line x1="190" y1="-15" x2="250" y2="25" stroke="#9ca3af" stroke-width="6"/>
         """
     },
     {
         "id": "data_dict",
-        "title": "DATA DICTIONARY",
-        "subtitle": "Schema & Field Definitions",
         "content": """
-            <rect x="-140" y="-80" width="280" height="160" rx="6" fill="#fff" stroke="#1f2937" stroke-width="4"/>
-            <line x1="-140" y1="-40" x2="140" y2="-40" stroke="#1f2937" stroke-width="2"/>
-            <line x1="-40" y1="-80" x2="-40" y2="80" stroke="#e5e7eb" stroke-width="2"/>
-            <line x1="60" y1="-80" x2="60" y2="80" stroke="#e5e7eb" stroke-width="2"/>
-            
-            <text x="-90" y="-55" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">FIELD</text>
-            <text x="10" y="-55" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">TYPE</text>
-            <text x="100" y="-55" font-family="sans-serif" font-size="12" fill="#1f2937" font-weight="bold" text-anchor="middle">DESC</text>
-            
-            <text x="-90" y="-15" font-family="monospace" font-size="12" fill="#4b5563" text-anchor="middle">user_id</text>
-            <text x="10" y="-15" font-family="monospace" font-size="12" fill="#3b82f6" text-anchor="middle">BIGINT</text>
-            <text x="100" y="-15" font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Primary Key</text>
-            
-            <text x="-90" y="15" font-family="monospace" font-size="12" fill="#4b5563" text-anchor="middle">status</text>
-            <text x="10" y="15" font-family="monospace" font-size="12" fill="#3b82f6" text-anchor="middle">TINYINT</text>
-            <text x="100" y="15" font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">0: Off, 1: On</text>
-            
-            <text x="-90" y="45" font-family="monospace" font-size="12" fill="#4b5563" text-anchor="middle">created_at</text>
-            <text x="10" y="45" font-family="monospace" font-size="12" fill="#3b82f6" text-anchor="middle">DATETIME</text>
-            <text x="100" y="45" font-family="sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Timestamp</text>
+            <rect x="-350" y="-80" width="700" height="160" rx="8" fill="#fff" stroke="#1f2937" stroke-width="6"/>
+            <line x1="-350" y1="-30" x2="350" y2="-30" stroke="#1f2937" stroke-width="6"/>
+            <line x1="-100" y1="-80" x2="-100" y2="80" stroke="#e5e7eb" stroke-width="4"/>
+            <line x1="100" y1="-80" x2="100" y2="80" stroke="#e5e7eb" stroke-width="4"/>
+            <rect x="-300" y="-60" width="80" height="12" rx="6" fill="#1f2937"/>
+            <rect x="-60" y="-60" width="100" height="12" rx="6" fill="#1f2937"/>
+            <rect x="140" y="-60" width="160" height="12" rx="6" fill="#1f2937"/>
+            <rect x="-280" y="0" width="120" height="12" rx="6" fill="#9ca3af"/>
+            <rect x="-40" y="0" width="80" height="12" rx="6" fill="#3b82f6"/>
+            <rect x="140" y="0" width="140" height="12" rx="6" fill="#cbd5e1"/>
+            <rect x="-280" y="40" width="100" height="12" rx="6" fill="#9ca3af"/>
+            <rect x="-40" y="40" width="60" height="12" rx="6" fill="#3b82f6"/>
+            <rect x="140" y="40" width="180" height="12" rx="6" fill="#cbd5e1"/>
         """
     },
     {
         "id": "openapi",
-        "title": "OPENAPI DDL CODE",
-        "subtitle": "RESTful Interface Generation",
         "content": """
-            <rect x="-160" y="-90" width="320" height="180" rx="8" fill="#1f2937"/>
-            <circle cx="-140" cy="-70" r="5" fill="#ef4444"/>
-            <circle cx="-120" cy="-70" r="5" fill="#f59e0b"/>
-            <circle cx="-100" cy="-70" r="5" fill="#10b981"/>
-            
-            <text x="-140" y="-30" font-family="monospace" font-size="14" fill="#a78bfa">openapi:</text>
-            <text x="-70" y="-30" font-family="monospace" font-size="14" fill="#a3e635">"3.0.0"</text>
-            
-            <text x="-140" y="-5" font-family="monospace" font-size="14" fill="#a78bfa">paths:</text>
-            <text x="-120" y="20" font-family="monospace" font-size="14" fill="#60a5fa">/api/v1/orders:</text>
-            <text x="-100" y="45" font-family="monospace" font-size="14" fill="#a78bfa">get:</text>
-            <text x="-80" y="70" font-family="monospace" font-size="14" fill="#60a5fa">summary:</text>
-            <text x="-10" y="70" font-family="monospace" font-size="14" fill="#a3e635">"List Orders"</text>
+            <rect x="-300" y="-90" width="600" height="180" rx="12" fill="#1f2937"/>
+            <circle cx="-260" cy="-55" r="8" fill="#ef4444"/>
+            <circle cx="-230" cy="-55" r="8" fill="#f59e0b"/>
+            <circle cx="-200" cy="-55" r="8" fill="#10b981"/>
+            <path d="M -260 -10 Q -270 -10 -270 10 Q -270 30 -260 30" fill="none" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 260 -10 Q 270 -10 270 10 Q 270 30 260 30" fill="none" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
+            <rect x="-220" y="-10" width="120" height="12" rx="6" fill="#60a5fa"/>
+            <rect x="-80" y="-10" width="200" height="12" rx="6" fill="#a3e635"/>
+            <rect x="-220" y="30" width="160" height="12" rx="6" fill="#60a5fa"/>
         """
     }
 ]
 
+other_ids = [
+    "apple_map", "orchestration", "ios_island",
+    "skill_reverse", "strategy", "s2b2b", "chrome_research"
+]
+
+for oid in other_ids:
+    d = {"id": oid}
+    if oid == 'strategy':
+        d['content'] = """
+            <circle cx="-200" cy="0" r="70" fill="none" stroke="#1f2937" stroke-width="12"/>
+            <circle cx="-200" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="12"/>
+            <circle cx="-200" cy="0" r="10" fill="#ef4444"/>
+            <path d="M 0 50 L 100 -30 L 200 -10 L 300 -80" fill="none" stroke="#3b82f6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <polygon points="280,-80 300,-80 300,-60" fill="none" stroke="#3b82f6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        """
+    elif oid == 's2b2b':
+        d['content'] = """
+            <rect x="-300" y="-50" width="120" height="100" rx="12" fill="#1f2937"/>
+            <line x1="-160" y1="0" x2="-80" y2="0" stroke="#cbd5e1" stroke-width="8" stroke-dasharray="12,12"/>
+            <rect x="-60" y="-80" width="100" height="160" rx="12" fill="#3b82f6"/>
+            <line x1="60" y1="-20" x2="160" y2="-60" stroke="#cbd5e1" stroke-width="8"/>
+            <line x1="60" y1="20" x2="160" y2="60" stroke="#cbd5e1" stroke-width="8"/>
+            <circle cx="220" cy="-70" r="40" fill="#10b981"/>
+            <circle cx="220" cy="70" r="40" fill="#f59e0b"/>
+        """
+    else:
+        d['content'] = """
+            <rect x="-300" y="-80" width="600" height="160" rx="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="6"/>
+            <circle cx="-150" cy="0" r="50" fill="#cbd5e1"/>
+            <rect x="-50" y="-30" width="260" height="20" rx="10" fill="#9ca3af"/>
+            <rect x="-50" y="10" width="180" height="20" rx="10" fill="#9ca3af"/>
+        """
+    diagrams.append(d)
+
 for d in diagrams:
+    vb = d.get("viewbox", "0 0 1000 300")
+    tf = d.get("transform", "translate(500, 150)")
+    
     svg_str = svg_template.format(
         id=d["id"],
-        title=d["title"],
-        subtitle=d["subtitle"],
         content=d["content"],
-        defs=d.get("defs", "")
+        defs=d.get("defs", ""),
+        viewbox=vb,
+        transform=tf
     )
-    file_path = os.path.join("/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/assets/img", f"svg_{d['id']}.svg")
+    file_path = os.path.join("assets/img", f"svg_{d['id']}.svg")
     with open(file_path, "w") as f:
         f.write(svg_str)
     print(f"Generated {file_path}")

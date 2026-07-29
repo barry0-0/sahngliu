@@ -37,6 +37,8 @@
         .item-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+            .img-box { width: 100%; height: 160px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; }
+        .img-box img, .img-box svg { width: 100%; height: 100%; object-fit: cover; display: block; }
     </style>
 </head>
 <body>
@@ -50,6 +52,38 @@
             <div class="panel-title pros">
                 <span>🚀 实践探索核心优势 (Core Advantages)</span>
             </div>
+            <div class="img-box"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-tradeoff_pros" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-tradeoff_pros" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-tradeoff_pros" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-tradeoff_pros)" />
+    <rect width="100%" height="100%" fill="url(#grid-tradeoff_pros)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-150" cy="0" r="60" fill="#10b981"/>
+            <path d="M -180 0 L -160 20 L -120 -20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#10b981"/>
+            <rect x="-40" y="10" width="140" height="20" rx="10" fill="#10b981"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-tradeoff_pros)" />
+</svg></div>
             <div>
                 <div class="item">
                     <div class="item-head">1. 研发分析周期稳步提速</div>
@@ -70,6 +104,38 @@
             <div class="panel-title cons">
                 <span>⚠️ 潜在局限与改进方向 (Limitations)</span>
             </div>
+            <div class="img-box"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <linearGradient id="bg-tradeoff_cons" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f8fafc" />
+            <stop offset="100%" stop-color="#f1f5f9" />
+        </linearGradient>
+        <linearGradient id="accent-tradeoff_cons" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#374151" />
+            <stop offset="100%" stop-color="#1f2937" />
+        </linearGradient>
+        <pattern id="grid-tradeoff_cons" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" stroke-width="1" />
+        </pattern>
+        
+    </defs>
+    
+    <rect width="100%" height="100%" fill="url(#bg-tradeoff_cons)" />
+    <rect width="100%" height="100%" fill="url(#grid-tradeoff_cons)" opacity="0.6" />
+    
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <g transform="translate(500, 150)">
+            
+            <circle cx="-150" cy="0" r="60" fill="#ef4444"/>
+            <path d="M -170 -20 L -130 20 M -130 -20 L -170 20" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="-40" y="-30" width="200" height="20" rx="10" fill="#ef4444"/>
+            <rect x="-40" y="10" width="160" height="20" rx="10" fill="#ef4444"/>
+        
+        </g>
+    </svg>
+    
+    <rect x="0" y="100%" transform="translate(0, -6)" width="100%" height="6" fill="url(#accent-tradeoff_cons)" />
+</svg></div>
             <div>
                 <div class="item">
                     <div class="item-head">1. 特殊线下业务推演边界</div>
