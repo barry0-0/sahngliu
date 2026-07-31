@@ -1086,8 +1086,8 @@ Object.assign(window.UI, {
     if (!order) return;
 
     const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important;';
+    overlay.className = 'modal-overlay active';
+    overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     const isMobile = window.innerWidth <= 768;
     const contentWidth = isMobile ? '100%' : '480px';
@@ -1114,29 +1114,24 @@ Object.assign(window.UI, {
 
           <div>
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">抬头类型 *</label>
-            <div style="display:flex; gap:16px;">
-              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                <input type="radio" name="inv-type" value="enterprise" checked onchange="document.getElementById('inv-tax-group').style.display='block'"> 企业
+            <div style="display:flex; gap:20px;">
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
+                <input type="radio" name="pc_inv_type" value="enterprise" checked onclick="document.getElementById('inv-tax-group').style.display='block'; document.getElementById('inv-title-input').value='${order.buyerName || '万通建材有限公司'}';" style="cursor:pointer; width:16px; height:16px;"> 企业
               </label>
-              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                <input type="radio" name="inv-type" value="individual" onchange="document.getElementById('inv-tax-group').style.display='none'"> 个人/非企业
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
+                <input type="radio" name="pc_inv_type" value="individual" onclick="document.getElementById('inv-tax-group').style.display='none'; document.getElementById('inv-title-input').value='个人';" style="cursor:pointer; width:16px; height:16px;"> 个人/非企业
               </label>
             </div>
           </div>
 
           <div>
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">发票抬头名称 *</label>
-            <input type="text" id="inv-title-input" class="form-control" placeholder="请输入发票抬头" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
+            <input type="text" id="inv-title-input" class="form-control" value="${order.buyerName || '万通建材有限公司'}" readonly disabled style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#f1f5f9; color:#64748b; cursor:not-allowed; box-sizing:border-box;">
           </div>
 
           <div id="inv-tax-group">
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">纳税人识别号 *</label>
-            <input type="text" id="inv-tax-input" class="form-control" placeholder="请输入企业税号" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
-          </div>
-
-          <div>
-            <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">接收邮箱 *</label>
-            <input type="email" id="inv-email-input" class="form-control" placeholder="请输入电子邮箱" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; box-sizing:border-box;">
+            <input type="text" id="inv-tax-input" class="form-control" value="91310115MA1K39999X" readonly disabled style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#f1f5f9; color:#64748b; cursor:not-allowed; box-sizing:border-box;">
           </div>
         </div>
 
@@ -1150,10 +1145,10 @@ Object.assign(window.UI, {
     document.body.appendChild(overlay);
 
     overlay.querySelector('#inv-submit-btn').onclick = () => {
-      const isEnterprise = overlay.querySelector('input[name="inv-type"]:checked').value === 'enterprise';
+      const selectedRadio = overlay.querySelector('input[name="pc_inv_type"]:checked');
+      const isEnterprise = selectedRadio ? selectedRadio.value === 'enterprise' : true;
       const title = overlay.querySelector('#inv-title-input').value.trim();
-      const tax = overlay.querySelector('#inv-tax-input').value.trim();
-      const email = overlay.querySelector('#inv-email-input').value.trim();
+      const tax = isEnterprise ? overlay.querySelector('#inv-tax-input').value.trim() : '';
 
       if (!title) {
         UI.toast('请填写发票抬头名称！', 'error');
@@ -1163,21 +1158,21 @@ Object.assign(window.UI, {
         UI.toast('请填写企业纳税人识别号！', 'error');
         return;
       }
-      if (!email) {
-        UI.toast('请填写接收发票的电子邮箱！', 'error');
-        return;
-      }
 
       order.invoiceApplied = true;
       order.invoiceDetails = { isEnterprise, title, tax, email, time: new Date().toISOString() };
 
+      const now = new Date();
+      const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+      const seqStr = String((MockData.invoices ? MockData.invoices.length : 0) + 1).padStart(4, '0');
       const newInv = {
-        id: 'INV-' + new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 900) + 100),
+        id: 'INV-' + dateStr + '-' + seqStr,
         orderId: order.id,
         buyerName: order.buyerName || '万通建材采购部',
         type: isEnterprise ? '增值税专用发票' : '增值税普通发票',
         amount: order.amount,
-        applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        applyTime: now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0'),
+        issueTime: '',
         status: '待开具',
         title: title,
         taxNo: tax,
@@ -1208,8 +1203,8 @@ Object.assign(window.UI, {
     }
 
     const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important;';
+    overlay.className = 'modal-overlay active';
+    overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     const contentWidth = isMobile ? '100%' : '600px';
     if (isMobile) {

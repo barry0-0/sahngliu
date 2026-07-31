@@ -1158,7 +1158,7 @@ const MerchantApp = {
         } else if (o.invoiceApplied || invRec) {
           actBtn = `<button class="btn btn-sm" style="background:#fff7e6; color:#d46b08; border:1px solid #ffe58f; font-weight:bold; animation:pulse 2s infinite;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">🔔 待开票 (买家已申请)</button>`;
         } else {
-          actBtn = `<button class="btn btn-outline btn-sm text-secondary" style="border-color:#cbd5e1; color:#64748b;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">📄 上传发票 (未申请)</button>`;
+          actBtn = '';
         }
       } else if(o.status === -1) {
         statusTag = `<span class="tag tag-danger" style="background:#fff1f0; color:#ef4444; border:1px solid #ffa39e;">已取消</span>`;
@@ -2243,7 +2243,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
     } else if (o.invoiceApplied || invRec) {
       actHtml = `<button class="btn btn-sm" style="background:#fff7e6; color:#d46b08; border:1px solid #ffe58f; font-weight:bold;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">🔔 待开票 (买家已申请)</button>`;
     } else {
-      actHtml = `<button class="btn btn-outline btn-sm text-secondary" style="border-color:#cbd5e1; color:#64748b;" onclick="MerchantApp.openInvoiceUploadModal('${o.id}')">📄 上传发票 (买家未申请)</button>`;
+      actHtml = '';
     }
   }
   actContainer.innerHTML = actHtml;
@@ -2578,14 +2578,20 @@ MerchantApp._submitUploadedInvoice = function(orderId) {
     inv.fileName = fileName;
     inv.orderId = orderId;
     inv.applyTime = inv.applyTime || new Date().toISOString().replace('T', ' ').slice(0, 19);
+    inv.issueTime = inv.issueTime || new Date().toISOString().replace('T', ' ').slice(0, 19);
   } else {
+    const now = new Date();
+    const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+    const seqStr = String((MockData.invoices ? MockData.invoices.length : 0) + 1).padStart(4, '0');
+    const timeNow = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
     inv = {
-      id: 'INV-' + new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 900) + 100),
+      id: 'INV-' + dateStr + '-' + seqStr,
       orderId: orderId,
       buyerName: order ? order.buyerName : '万通建材采购部',
       type: '增值税专用发票',
       amount: order ? order.amount : '¥0.00',
-      applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      applyTime: timeNow,
+      issueTime: timeNow,
       status: '已开具',
       fileName: fileName
     };

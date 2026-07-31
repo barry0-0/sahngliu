@@ -759,26 +759,25 @@
       </div>
 
       <div>
-        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">发票类型 <span style="color: #ef4444;">*</span></label>
-        <select id="h5-inv-type" class="form-control w-full" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 10px;">
-          <option value="增值税专用发票 (13%)">增值税专用发票 (13% 进项可抵扣)</option>
-          <option value="增值税普通发票 (电子)">增值税普通发票 (电子普票)</option>
-        </select>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">抬头类型 <span style="color: #ef4444;">*</span></label>
+        <div style="display:flex; gap:20px; font-size:13px; padding: 2px 0;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
+            <input type="radio" id="h5-inv-type-ent" name="h5-inv-type-choice" value="enterprise" checked style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='block'; document.getElementById('h5-inv-title').value='万通建材有限公司';"> 企业
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
+            <input type="radio" id="h5-inv-type-ind" name="h5-inv-type-choice" value="individual" style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='none'; document.getElementById('h5-inv-title').value='个人';"> 个人/非企业
+          </label>
+        </div>
       </div>
 
       <div>
-        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">抬头名称 (企业全称) <span style="color: #ef4444;">*</span></label>
-        <input type="text" id="h5-inv-title" class="form-control w-full" value="万通建材有限公司" placeholder="请输入企业工商注册全称" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; box-sizing: border-box;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">抬头名称 <span style="color: #ef4444;">*</span></label>
+        <input type="text" id="h5-inv-title" class="form-control w-full" value="万通建材有限公司" readonly disabled placeholder="发票抬头" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #64748b; cursor: not-allowed; padding: 0 12px; box-sizing: border-box;">
       </div>
 
-      <div>
-        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">纳税人识别号 (统一社会信用代码) <span style="color: #ef4444;">*</span></label>
-        <input type="text" id="h5-inv-taxno" class="form-control w-full" value="91330100MA2B3C4D5E" placeholder="18位纳税人识别号" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; font-family: monospace; box-sizing: border-box;">
-      </div>
-
-      <div>
-        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">接收电子发票邮箱 <span style="color: #ef4444;">*</span></label>
-        <input type="email" id="h5-inv-email" class="form-control w-full" value="finance@wantong.com" placeholder="用于接收发票PDF文件" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; padding: 0 12px; box-sizing: border-box;">
+      <div id="h5-taxno-group">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">纳税人识别号 <span style="color: #ef4444;">*</span></label>
+        <input type="text" id="h5-inv-taxno" class="form-control w-full" value="91310115MA1K39999X" readonly disabled placeholder="纳税人识别号" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #64748b; cursor: not-allowed; padding: 0 12px; font-family: monospace; box-sizing: border-box;">
       </div>
     </div>
 

@@ -444,6 +444,7 @@ const H5App = {
           </div>
           <div style="flex:1; display:flex; flex-direction:column; gap:4px; font-size:12px; color:#64748b; line-height:1.5; margin-top:4px;">
             <div>买方账号: <span style="font-family:monospace; font-weight:bold; color:#0284c7;">${buyerPhone}</span> <span style="color:#64748b;">(${d.buyerName})</span></div>
+            <div>需求数量: <span style="color:#0f172a; font-weight:bold; font-family:monospace;">${d.quantity || '--'}</span> <span style="color:#475569; font-weight:bold;">${d.unit || ''}</span></div>
             <div>交期范围: <span style="color:#334155; font-weight:500;">${deliveryPeriod}</span></div>
             <div>发布时间: <span style="color:#64748b;">${formatTimeSec(d.publishTime)}</span></div>
             ${quotePriceHtml}
@@ -489,6 +490,8 @@ const H5App = {
       buyerName: 'H5买家用户',
       buyerPhone: '186****9966',
       goodsName: goodsName,
+      quantity: quantity,
+      unit: unit,
       category: '大宗物资',
       deliveryPeriod: deliveryPeriod,
       remark: '需求数量：' + quantity + unit,
@@ -2006,36 +2009,51 @@ const H5App = {
       return;
     }
 
-    invoices.forEach(inv => {
+    invoices.forEach((inv, idx) => {
       const isIssued = inv.status === '已开具' || inv.status === '已送达' || inv.status === '已完成';
-      const statusText = isIssued ? '已开具' : '待开具';
-      let tag = isIssued
-        ? `<span style="background:#f6ffed; color:#389e0d; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">${statusText}</span>`
-        : `<span style="background:#fff7e6; color:#d46b08; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">${statusText}</span>`;
+      const statusText = isIssued ? '【已开具】' : '【待开具】';
+      const tag = isIssued
+        ? `<span style="background:#f6ffed; color:#389e0d; border:1px solid #b7eb8f; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${statusText}</span>`
+        : `<span style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${statusText}</span>`;
 
-      const timeStr = inv.createTime || inv.applyTime || '—';
-      const orderRef = inv.orderId ? ` (${inv.orderId})` : '';
+      const applyTimeStr = inv.applyTime || inv.createTime || '—';
+      const issueTimeStr = isIssued ? (inv.issueTime || inv.applyTime || '—') : '—';
+      const seqStr = String(idx + 1).padStart(2, '0');
 
       html += `
-        <div style="background: #ffffff; border-radius: 16px; padding: 14px 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.035); display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: 700; color: #0f172a;">${inv.type}</span>
+        <div style="background: #ffffff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 18px rgba(0,0,0,0.035); border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 10px; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace;">序号: ${seqStr}</span>
+              <span style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace;">发票号: ${inv.id}</span>
+            </div>
             ${tag}
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 10px;">
-            <div>
-              <div style="font-size: 10px; color: #94a3b8;">发票编号${orderRef ? '/关联订单' : ''}</div>
-              <div style="font-size: 11px; font-weight: 700; color: #334155; font-family: monospace;">${inv.id}${orderRef}</div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #475569;">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">关联订单号:</span>
+              <span style="font-weight: 600; font-family: monospace; color: #334155;">${inv.orderId || '—'}</span>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 10px; color: #94a3b8;">发票金额</div>
-              <div style="font-size: 14px; font-weight: 800; color: #ef4444; font-family: monospace;">${inv.amount}</div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">关联申请金额:</span>
+              <span style="font-weight: 800; font-family: monospace; color: #ef4444;">${inv.amount}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">申请时间:</span>
+              <span>${applyTimeStr}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">开具时间:</span>
+              <span>${issueTimeStr}</span>
             </div>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; margin-top: 2px;">
-            <span>申请/开具时间: ${timeStr}</span>
-            ${isIssued ? `<button class="btn btn-primary btn-sm" style="border-radius: 14px; font-size: 11px; padding: 4px 12px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none; color: #fff; font-weight: bold;" onclick="UI.toast('已拉取增值税电子发票PDF/图文可随时打印', 'info')">查看电子发票</button>` : `<span style="font-size:11px; color:#d46b08; font-weight:bold;">商家开具中...</span>`}
-          </div>
+
+          ${isIssued ? `
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 2px; display: flex; justify-content: flex-end;">
+              <button class="btn btn-primary btn-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 12px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none; color: #fff; font-weight: bold;" onclick="UI.toast('已拉取电子发票文件，可随时查阅打印', 'info')">查看电子发票</button>
+            </div>
+          ` : ''}
         </div>
       `;
     });
@@ -2043,35 +2061,66 @@ const H5App = {
     list.innerHTML = html;
   },
 
+  applyInvoice(orderId) {
+    const order = (window.MockData.orders || []).find(o => o.id === orderId);
+    const amountStr = order ? order.amount : '¥ 0.00';
+    this.openApplyInvoiceModal(orderId, amountStr);
+  },
+
   openApplyInvoiceModal(orderId, amountStr) {
-    document.getElementById('h5-inv-order-id').innerText = orderId;
-    document.getElementById('h5-inv-amount').innerText = amountStr || '¥ 0.00';
+    const orderEl = document.getElementById('h5-inv-order-id');
+    const amountEl = document.getElementById('h5-inv-amount');
+    const titleEl = document.getElementById('h5-inv-title');
+    const taxEl = document.getElementById('h5-inv-taxno');
+    const entRadio = document.getElementById('h5-inv-type-ent');
+    const taxGroup = document.getElementById('h5-taxno-group');
+
+    if (orderEl) orderEl.innerText = orderId;
+    if (amountEl) amountEl.innerText = amountStr || '¥ 0.00';
+    if (entRadio) entRadio.checked = true;
+    if (taxGroup) taxGroup.style.display = 'block';
+    if (titleEl) titleEl.value = '万通建材有限公司';
+    if (taxEl) taxEl.value = '91310115MA1K39999X';
+
     UI.openModal('sheet-h5-apply-invoice');
   },
 
   submitApplyInvoice() {
     const orderId = document.getElementById('h5-inv-order-id').innerText;
     const amountStr = document.getElementById('h5-inv-amount').innerText;
-    const invType = document.getElementById('h5-inv-type').value;
+    const entRadio = document.getElementById('h5-inv-type-ent');
+    const isEnterprise = entRadio ? entRadio.checked : true;
+    const invType = isEnterprise ? '增值税专用发票' : '增值税普通发票';
     const title = document.getElementById('h5-inv-title').value.trim();
-    const taxNo = document.getElementById('h5-inv-taxno').value.trim();
-    const email = document.getElementById('h5-inv-email').value.trim();
+    const taxNoEl = document.getElementById('h5-inv-taxno');
+    const taxNo = taxNoEl ? taxNoEl.value.trim() : '';
 
-    if (!title || !taxNo || !email) {
-      UI.toast('请完整填写发票抬头、税号及受票邮箱', 'warning');
+    if (!title) {
+      UI.toast('请填写发票抬头名称', 'warning');
+      return;
+    }
+    if (isEnterprise && !taxNo) {
+      UI.toast('请填写企业纳税人识别号', 'warning');
       return;
     }
 
+    const order = (window.MockData.orders || []).find(o => o.id === orderId);
+    if (order) order.invoiceApplied = true;
+
+    const now = new Date();
+    const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+    const seqStr = String((window.MockData.invoices ? window.MockData.invoices.length : 0) + 1).padStart(4, '0');
+
     const newInv = {
-      id: 'INV' + Date.now().toString().slice(-8),
+      id: 'INV-' + dateStr + '-' + seqStr,
       orderId: orderId,
-      type: invType,
+      type: isEnterprise ? '增值税专用发票' : '增值税普通发票',
       amount: amountStr,
       title: title,
-      taxNo: taxNo,
-      email: email,
+      taxNo: isEnterprise ? taxNo : '',
       status: '待开具',
-      applyTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
+      applyTime: now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0'),
+      issueTime: ''
     };
 
     if (!window.MockData.invoices) window.MockData.invoices = [];
@@ -2079,6 +2128,7 @@ const H5App = {
 
     UI.closeModal('sheet-h5-apply-invoice');
     UI.toast('发票申请已成功提交，等待卖家上传并开具！', 'success');
+    this.renderUserOrders();
     this.renderUserInvoices();
   }
 };

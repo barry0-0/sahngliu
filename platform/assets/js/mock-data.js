@@ -185,15 +185,15 @@ window.MockData = {
 
   // --- 7. 求购大厅与咨询监控库 (supply_demand & chats) ---
   demands: [
-    { id: 'REQ001', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: 'Q345B 槽钢 50吨', category: '钢材', deliveryPeriod: '2026-08-01 至 2026-08-15', remark: '需包含运输到场费用，提供材质单。', publishTime: '2026-07-07 09:00:00', status: 1, quotesCount: 3 },
-    { id: 'REQ002', buyerName: '星辉建筑公司', buyerPhone: '159****3322', goodsName: '防腐木 樟子松 5000立方', category: '木材', deliveryPeriod: '2026-08-10 至 2026-09-10', remark: '要求全烘干处理，满足防腐特级标准。', publishTime: '2026-07-08 10:15:00', status: 0, quotesCount: 1 },
-    { id: 'REQ003', buyerName: 'H5买家用户', buyerPhone: '186****9966', goodsName: 'PO42.5 散装水泥 100吨', category: '水泥', deliveryPeriod: '2026-07-25 至 2026-07-30', remark: '直接送达萧山在建工地现场。', publishTime: '2026-07-08 14:00:00', status: '已下架', rejectReason: '配送范围超出本省' },
-    { id: 'REQ004', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '海螺牌 P.O 42.5 水泥 500吨', category: '水泥', deliveryPeriod: '2026-08-05 至 2026-08-20', remark: '需按周分批配送至项目部仓库。', publishTime: '2026-07-09 08:00:00', status: '已下架', offlineReason: '采购计划变更' },
-    { id: 'REQ005', buyerName: '丰收农贸直销', buyerPhone: '135****4422', goodsName: '进口小麦 300吨', category: '大米', deliveryPeriod: '2026-07-10 至 2026-07-20', remark: '自主清空仓库处理。', publishTime: '2026-07-10 09:00:00', status: '已下架' },
-    { id: 'REQ006', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '镀锌废钢管 30吨', category: '钢材', deliveryPeriod: '2026-06-20 至 2026-06-25', remark: '【已完结】旧管切割回收批次。', publishTime: '2026-06-15 08:00:00', status: 2, quotesCount: 12 },
-    { id: 'REQ007', buyerName: '星辉建筑公司', buyerPhone: '159****3322', goodsName: 'HRB400E 线材 8mm 60吨', category: '钢材', deliveryPeriod: '2026-08-15 至 2026-08-30', remark: '运抵萧山工地，需附质量证明书。', publishTime: '2026-07-15 14:00:00', status: 1, quotesCount: 2 },
-    { id: 'REQ008', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '多层阻燃板 18mm 1500张', category: '木材', deliveryPeriod: '2026-08-20 至 2026-09-05', remark: '需提供B1级防火检验报告。', publishTime: '2026-07-16 16:00:00', status: 1, quotesCount: 5 },
-    { id: 'REQ009', buyerName: 'H5买家用户', buyerPhone: '186****9966', goodsName: 'HRB400E 抗震螺纹钢 12mm 30吨', category: '钢材', deliveryPeriod: '2026-08-01 至 2026-08-10', remark: '现货即发，送抵萧山现场。', publishTime: '2026-07-20 11:00:00', status: 1, quotesCount: 2 }
+    { id: 'REQ001', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: 'Q345B 槽钢 50吨', quantity: '50', unit: '吨', category: '钢材', deliveryPeriod: '2026-08-01 至 2026-08-15', remark: '需包含运输到场费用，提供材质单。', publishTime: '2026-07-07 09:00:00', status: 1, quotesCount: 3 },
+    { id: 'REQ002', buyerName: '星辉建筑公司', buyerPhone: '159****3322', goodsName: '防腐木 樟子松 5000立方', quantity: '5000', unit: '立方', category: '木材', deliveryPeriod: '2026-08-10 至 2026-09-10', remark: '要求全烘干处理，满足防腐特级标准。', publishTime: '2026-07-08 10:15:00', status: 0, quotesCount: 1 },
+    { id: 'REQ003', buyerName: 'H5买家用户', buyerPhone: '186****9966', goodsName: 'PO42.5 散装水泥 100吨', quantity: '100', unit: '吨', category: '水泥', deliveryPeriod: '2026-07-25 至 2026-07-30', remark: '直接送达萧山在建工地现场。', publishTime: '2026-07-08 14:00:00', status: '已下架', rejectReason: '配送范围超出本省' },
+    { id: 'REQ004', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '海螺牌 P.O 42.5 水泥 500吨', quantity: '500', unit: '吨', category: '水泥', deliveryPeriod: '2026-08-05 至 2026-08-20', remark: '需按周分批配送至项目部仓库。', publishTime: '2026-07-09 08:00:00', status: '已下架', offlineReason: '采购计划变更' },
+    { id: 'REQ005', buyerName: '丰收农贸直销', buyerPhone: '135****4422', goodsName: '进口小麦 300吨', quantity: '300', unit: '吨', category: '大米', deliveryPeriod: '2026-07-10 至 2026-07-20', remark: '自主清空仓库处理。', publishTime: '2026-07-10 09:00:00', status: '已下架' },
+    { id: 'REQ006', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '镀锌废钢管 30吨', quantity: '30', unit: '吨', category: '钢材', deliveryPeriod: '2026-06-20 至 2026-06-25', remark: '【已完结】旧管切割回收批次。', publishTime: '2026-06-15 08:00:00', status: 2, quotesCount: 12 },
+    { id: 'REQ007', buyerName: '星辉建筑公司', buyerPhone: '159****3322', goodsName: 'HRB400E 线材 8mm 60吨', quantity: '60', unit: '吨', category: '钢材', deliveryPeriod: '2026-08-15 至 2026-08-30', remark: '运抵萧山工地，需附质量证明书。', publishTime: '2026-07-15 14:00:00', status: 1, quotesCount: 2 },
+    { id: 'REQ008', buyerName: '万通建材采购部', buyerPhone: '138****8818', goodsName: '多层阻燃板 18mm 1500张', quantity: '1500', unit: '张', category: '木材', deliveryPeriod: '2026-08-20 至 2026-09-05', remark: '需提供B1级防火检验报告。', publishTime: '2026-07-16 16:00:00', status: 1, quotesCount: 5 },
+    { id: 'REQ009', buyerName: 'H5买家用户', buyerPhone: '186****9966', goodsName: 'HRB400E 抗震螺纹钢 12mm 30吨', quantity: '30', unit: '吨', category: '钢材', deliveryPeriod: '2026-08-01 至 2026-08-10', remark: '现货即发，送抵萧山现场。', publishTime: '2026-07-20 11:00:00', status: 1, quotesCount: 2 }
   ],
   chats: [
     {
@@ -325,9 +325,9 @@ window.MockData = {
     { id: 4, title: '发票开具提醒', content: '您申请的增值税专用发票 INV-202607-001 已开具并寄出，请注意查收。', time: '2026-07-03 14:30:00' }
   ],
   invoices: [
-    { id: 'INV-202607-001', orderId: 'ORD202607070088', buyerName: '万通建材采购部', type: '增值税专用发票', amount: '¥56,000.00', applyTime: '2026-07-01 14:00:00', status: '已开具', fileUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80', fileName: 'INV-202607-001增值税专票.pdf' },
-    { id: 'INV-202607-099', orderId: 'ORD202607220099', buyerName: '万通建材采购部', type: '增值税专用发票', amount: '¥310,000.00', applyTime: '2026-07-23 10:15:00', status: '待开具', title: '万通建材有限公司', taxNo: '91310115MA1K39999X', email: 'caiwu@wantong.com' },
-    { id: 'INV-202607-015', orderId: 'ORD202607080001', buyerName: '万通建材采购部', type: '增值税普通发票', amount: '¥240,000.00', applyTime: '2026-07-08 10:00:00', status: '待开具' }
+    { id: 'INV-20260701-0001', orderId: 'ORD202607070088', buyerName: '万通建材采购部', type: '增值税专用发票', amount: '¥56,000.00', applyTime: '2026-07-01 10:00:00', issueTime: '2026-07-01 14:30:00', status: '已开具', fileUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80', fileName: 'INV-20260701-0001增值税专票.pdf' },
+    { id: 'INV-20260723-0002', orderId: 'ORD202607220099', buyerName: '万通建材采购部', type: '增值税专用发票', amount: '¥310,000.00', applyTime: '2026-07-23 10:15:00', issueTime: '', status: '待开具', title: '万通建材有限公司', taxNo: '91310115MA1K39999X', email: 'caiwu@wantong.com' },
+    { id: 'INV-20260708-0003', orderId: 'ORD202607080001', buyerName: '万通建材采购部', type: '增值税普通发票', amount: '¥240,000.00', applyTime: '2026-07-08 10:00:00', issueTime: '', status: '待开具' }
   ],
 
   // --- 12. 装饰与协议配置 ---

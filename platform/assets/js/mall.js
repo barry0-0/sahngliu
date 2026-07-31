@@ -542,6 +542,7 @@ window.MallApp = {
         const goodsName = d.goodsName || d.title || '';
         const buyerPhone = d.buyerPhone || '138****8818';
         const deliveryPeriod = d.deliveryPeriod || '2026-08-01 至 2026-08-15';
+        const qtyStr = d.quantity ? `${d.quantity} ${d.unit || '吨'}` : '';
         
         let statusTag = `<span style="color:#16a34a; font-size:11px; font-weight:bold; flex-shrink:0;">展示中</span>`;
         if (d.status === 2 || d.status === -1 || d.status === '已下架') {
@@ -557,7 +558,7 @@ window.MallApp = {
               </div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 11px; color: #64748b;">
                 <span>买方: <strong style="color:#334155;">${buyerPhone}</strong> (${d.buyerName})</span>
-                <span>交期: ${deliveryPeriod.split(' ')[0]}</span>
+                <span>${qtyStr ? `数量: <strong style="color:#0f172a;">${qtyStr}</strong> | ` : ''}交期: ${deliveryPeriod.split(' ')[0]}</span>
               </div>
             </div>
           </div>
@@ -685,6 +686,7 @@ window.MallApp = {
             <!-- 中间内容 (Flex 1 自动撑开，保证固定底部位置) -->
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; font-size:13px; color:#64748b; line-height:1.5;">
               <div>买方账号: <span style="font-family:monospace; font-weight:bold; color:#0284c7;">${buyerPhone}</span> <span style="color:#64748b;">(${d.buyerName})</span></div>
+              <div>需求数量: <span style="color:#0f172a; font-weight:bold; font-family:monospace;">${d.quantity || '--'}</span> <span style="color:#475569; font-weight:bold;">${d.unit || ''}</span></div>
               <div>交期范围: <span style="color:#1e293b; font-weight:500;">${deliveryPeriod}</span></div>
               <div>发布时间: <span style="color:#64748b;">${formatTimeSec(d.publishTime)}</span></div>
               ${quotePriceHtml}
@@ -780,18 +782,28 @@ window.MallApp = {
       let mainTitle = parts[0] || rawTitle;
       let subSpec = parts.slice(1).join(' · ').replace(/规格:\s*/g, '').trim();
 
+      const currentBuyer = this.currentBuyerName || '万通建材采购部';
+      const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部';
+      const hasWinner = b.winner && b.winner !== '-' && b.winner !== '未选定中标人' && b.winner !== '未定标';
+
       let tag = '';
       if (b.status === 0 || b.status === 1 || b.status === 2) {
         tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
       } else if (b.status === 3) {
         tag = `<span class="tag tag-warning" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
       } else if (b.status === 4) {
-        tag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已结束</span>`;
+        tag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#64748b; border:1px solid #d9d9d9; font-weight:500;">已结束</span>`;
       }
 
       let btnText = '看货报名';
       let btnStyle = 'background:var(--primary-color); color:#fff;';
-      if (!b.userApplied) {
+      if (b.status === 4) {
+        btnText = '查看详情';
+        btnStyle = 'background:#f5f5f5; color:#595959; border:1px solid #d9d9d9;';
+      } else if (b.status === 3) {
+        btnText = '查看详情';
+        btnStyle = 'background:#f5f5f5; color:#595959; border:1px solid #d9d9d9;';
+      } else if (!b.userApplied) {
         btnText = '看货报名';
         btnStyle = 'background:#1677ff; color:#fff; font-weight:bold;';
       } else if (!b.userInspected) {
@@ -800,15 +812,9 @@ window.MallApp = {
       } else if (!b.userOffered) {
         btnText = '报价竞拍';
         btnStyle = 'background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:bold;';
-      } else if (b.status === 0 || b.status === 1 || b.status === 2) {
+      } else {
         btnText = '加价竞拍';
         btnStyle = 'background:linear-gradient(135deg, #9a66e4, #7e22ce); color:#fff; font-weight:bold;';
-      } else if (b.status === 3) {
-        btnText = '查看详情';
-        btnStyle = 'background:#f5f5f5; color:#595959; border:1px solid #d9d9d9;';
-      } else if (b.status === 4) {
-        btnText = '查看详情';
-        btnStyle = 'background:#f5f5f5; color:#595959; border:1px solid #d9d9d9;';
       }
 
       const createTimeStr = b.createdAt ? b.createdAt.split(' ')[0] : '2026-07-01';
@@ -908,7 +914,11 @@ window.MallApp = {
         </div>
       `;
     } else if (b.status === 4) {
-      if (b.winner === (this.currentBuyerName || '万通建材采购部')) {
+      const currentBuyer = this.currentBuyerName || '万通建材采购部';
+      const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部';
+      const hasWinner = b.winner && b.winner !== '-' && b.winner !== '未选定中标人' && b.winner !== '未定标';
+
+      if (isWinner) {
         actionCardHTML = `
           <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:16px; color:#15803d; box-sizing:border-box;">
             <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">🏆 恭喜您中标该项目！</h4>
@@ -916,11 +926,20 @@ window.MallApp = {
             <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 20px;" onclick="UI.closeModal('modal-bidding-detail'); document.querySelector('.uc-menu-item[data-target=\\'uc-orders\\']').click();">去订单中心处理</button>
           </div>
         `;
+      } else if (hasWinner) {
+        actionCardHTML = `
+          <div style="background:#fff1f0; border:1px solid #ffa39e; border-radius:12px; padding:16px; color:#cf1322; box-sizing:border-box;">
+            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#cf1322;">❌ 本次竞价未中标</h4>
+            <p style="margin:0 0 6px 0; font-size:12px; color:#434343;">本次竞价项目已结标并选出中标单位。中标买家：<strong style="color:#0f172a;">${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong></p>
+            <div style="font-size:11px; color:#8c8c8c; margin-top:4px;">提示：您未获得本次项目的中标资格，当前仅可查看公开竞标详情。</div>
+          </div>
+        `;
       } else {
         actionCardHTML = `
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; color:#64748b; box-sizing:border-box;">
-            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">竞价已结束</h4>
-            <p style="margin:0; font-size:12px;">本次项目已结标。中标人：<strong>${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444;">${b.currentMaxOffer}</strong></p>
+            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">⚠️ 竞价已结束 (未定标 / 中途终结)</h4>
+            <p style="margin:0 0 6px 0; font-size:12px;">该项目在定标发布前已终结废标，未产生中标买方。</p>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">提示：此项目已终止且无法执行后续履约，您仅可查看发布与历史出价记录。</div>
           </div>
         `;
       }
@@ -1735,21 +1754,24 @@ window.MallApp = {
     const tbody = document.querySelector('#table-uc-invoices tbody');
     let html = '';
     const myInvoices = MockData.invoices.filter(i => !i.buyerName || i.buyerName === this.currentBuyerName || i.buyerName === '万通建材采购部');
-    myInvoices.forEach(i => {
+    myInvoices.forEach((i, idx) => {
       const isIssued = i.status === '已开具' || i.status === '已送达' || i.status === '已完成';
       const statusStr = isIssued ? '已开具' : '待开具';
       const tagClass = isIssued ? 'tag-success' : 'tag-warning';
+      const issueTimeStr = isIssued ? (i.issueTime || i.applyTime || '—') : '—';
       html += `
         <tr>
-          <td class="font-mono font-bold">${i.id}</td>
-          <td>${i.type}</td>
+          <td class="text-center font-mono" style="color:#64748b;">${String(idx + 1).padStart(2, '0')}</td>
+          <td class="font-mono font-bold" style="color:#0f172a;">${i.id}</td>
+          <td class="font-mono" style="color:#475569;">${i.orderId || '—'}</td>
           <td class="text-danger font-bold">${i.amount}</td>
-          <td>${i.applyTime || i.createTime || '—'}</td>
-          <td><span class="tag ${tagClass}">${statusStr}</span></td>
+          <td style="color:#64748b; font-size:13px;">${i.applyTime || i.createTime || '—'}</td>
+          <td style="color:#64748b; font-size:13px;">${issueTimeStr}</td>
+          <td class="text-center"><span class="tag ${tagClass}">【${statusStr}】</span></td>
         </tr>
       `;
     });
-    if (tbody) tbody.innerHTML = html || '<tr><td colspan="5" class="text-center p-4 text-secondary">暂无发票申请记录</td></tr>';
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">暂无发票申请记录</td></tr>';
   },
 
   _msgTab: 'spot',
@@ -1885,11 +1907,15 @@ window.MallApp = {
       const specDesc = parts.slice(1).join(' · ').replace(goodsName, '').replace(/规格:\s*/g, '').replace(/^[\s·]+|[\s·]+$/g, '') || '标准规格';
 
       let tag = '';
+      const currentBuyer = this.currentBuyerName || '万通建材采购部';
+      const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部' || b.winner === 'H5买家用户';
+      const hasWinner = b.winner && b.winner !== '-' && b.winner !== '未选定中标人' && b.winner !== '未定标';
+
       if (b.status === 0 || b.status === 1 || b.status === 2) tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">竞价中</span>`;
       else if (b.status === 3) tag = `<span class="tag tag-warning" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
-      else if (b.status === 4) tag = (b.winner === '万通建材采购部' || b.winner === 'H5买家用户')
-        ? `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f; font-weight:bold;">🏆 中标</span>`
-        : `<span class="tag tag-secondary" style="color:#94a3b8;">已结束</span>`;
+      else if (b.status === 4) {
+        tag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#64748b; border:1px solid #d9d9d9;">已结束</span>`;
+      }
 
       let actBtnText = '【查看详情】';
       let actBtnBg = 'linear-gradient(135deg, #0284c7, #0369a1)';
