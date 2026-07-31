@@ -506,11 +506,13 @@ const AdminApp = {
       let statusTag = '';
       let actBtn = '';
 
-      // Mock status normalization
+      // Mock status normalization: 0=待审核, 1=已上架, 2=已下架, 3=已售罄
       let currentStatus = p.status;
-      if (p.status === '未上架') currentStatus = 2;
-      if (p.status === '已下架') currentStatus = 2;
+      if (p.status === '待审核') currentStatus = 0;
+      if (p.status === '已上架') currentStatus = 1;
+      if (p.status === '未上架' || p.status === '已下架' || p.status === '下架') currentStatus = 2;
       if (p.status === '已售罄') currentStatus = 3;
+      if (typeof currentStatus !== 'number') currentStatus = 0;
 
       if (currentStatus === 0) {
         statusTag = `<span class="tag tag-warning">待审核</span>`;
