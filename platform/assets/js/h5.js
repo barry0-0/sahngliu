@@ -1191,12 +1191,26 @@ const H5App = {
       filtered = filtered.filter(p => p.name.includes(keyword));
     }
     filtered.forEach(p => {
+      const isSpot = (p.shelfType === '现货' || !p.shelfType);
+      const tagHtml = isSpot 
+        ? `<span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">现货</span>`
+        : `<span style="background:#f3e8ff; color:#7e22ce; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">预售</span>`;
+      const stockHtml = isSpot
+        ? `<span style="font-size:11px; color:#64748b; font-weight:500;">库存: ${p.stock !== undefined ? p.stock : 100}</span>`
+        : `<span style="font-size:11px; color:#7e22ce; font-weight:500;">按需定制</span>`;
+
       html += `
         <div style="background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 12px; display: flex; flex-direction: column;" onclick="H5App.showCartSheet('${p.id}')">
-          <img src="${p.image}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div style="position:relative;">
+            <img src="${p.image}" style="width: 100%; height: 120px; object-fit: cover;">
+            <div style="position:absolute; top:6px; left:6px; z-index:2;">${tagHtml}</div>
+          </div>
           <div style="padding: 10px;">
             <div style="font-weight: bold; font-size: 13px; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.name}</div>
-            <div style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${p.priceStr}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+              <div style="color: var(--danger-color); font-weight: bold; font-size: 16px;">${p.priceStr}</div>
+              ${stockHtml}
+            </div>
             <div class="text-xs text-gray-400 mt-1">(店内) ${p.shopName}</div>
             <div class="mt-2 flex items-center justify-end" onclick="event.stopPropagation()">
               <div class="flex items-center gap-1" style="justify-content: flex-end;">
@@ -1206,7 +1220,7 @@ const H5App = {
                   <button class="stepper-btn plus" style="font-size: 14px; width: 24px; height: 24px;" onclick="let inp=this.previousElementSibling; inp.value=parseInt(inp.value||1)+1">+</button>
                 </div>
                 <button class="btn btn-primary flex items-center justify-center" style="width: 30px; height: 30px; padding: 0; border-radius: 50%; flex-shrink: 0; background: var(--primary-color); border: none; cursor: pointer; color: #fff;" onclick="H5App.quickAddToCart('${p.id}')">
-                  <svg class="icon-svg" style="width: 14px; height: 14px; color: #fff;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  <svg class="icon-svg" style="width: 14px; height: 14px; color: #fff;" viewBox="0 0 24 24" fill="none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                 </button>
               </div>
             </div>
