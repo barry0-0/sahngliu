@@ -1077,8 +1077,7 @@ const MerchantApp = {
     if (statusEl && statusEl.value !== '') {
       myOrders = myOrders.filter(o => {
         let statusText = '';
-        if (o.status === 0) statusText = '待买家签约';
-        else if (o.status === 5) statusText = '待卖家签约';
+        if (o.status === 0) statusText = '待签约';
         else if (o.status === 4) statusText = '待付款';
         else if (o.status === 1) statusText = '待发货';
         else if (o.status === 2) statusText = '待签收';
@@ -1086,7 +1085,7 @@ const MerchantApp = {
         else if (o.status === -1) statusText = '已取消';
         else if (o.status === -2) statusText = '已关闭';
         
-        if (statusEl.value === '待签约') return o.status === 0 || o.status === 5;
+        if (statusEl.value === '待签约') return o.status === 0;
         return statusText === statusEl.value;
       });
     }
@@ -1121,14 +1120,9 @@ const MerchantApp = {
       let actBtn = '';
       
       if(o.status === 0) {
-        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待买家签约</span>`;
-        actBtn = `<div style="display:flex; gap:6px; align-items:center;">
-                    <button class="btn btn-text btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${this.currentShopId}', () => MerchantApp.renderOrders())">取消</button>
-                  </div>`;
-      } else if(o.status === 5) {
-        statusTag = `<span class="tag tag-warning" style="background:#fcf0f7; color:#c41d7f; border:1px solid #ffadd2;">待卖家签约</span>`;
-        const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' || o.contractAuditStatus === 'seller_pending' || (!!o.sellerContractFile && o.sellerContractAuditStatus !== 'rejected');
-        const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'seller_rejected' || o.contractRejectReason;
+        statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border:1px solid #ffd591;">待签约</span>`;
+        const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' && !!o.sellerContractFile;
+        const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected';
         if (isSellerPendingContract) {
           actBtn = `<span style="font-size:12px; color:#b45309; font-weight:bold;">⏳ 合同已提交，平台审核中...</span>`;
         } else if (isSellerRejectedContract) {
@@ -1534,7 +1528,7 @@ const MerchantApp = {
         shopId: ann.shopId || 'S001',
         shopName: ann.shopName,
         buyerName: offer.buyerName,
-        status: 0, // 待买家签约
+        status: 0, // 待签约
         time: new Date().toISOString().replace('T', ' ').substring(0, 19),
         type: '竞价交易',
         paymentVoucher: null,
@@ -1851,8 +1845,7 @@ const MerchantApp = {
       let html = '';
       myOrders.forEach((o, idx) => {
         let statusTag = '';
-        if (o.status === 0) statusTag = `<span class="tag tag-warning">待买家签约</span>`;
-        else if (o.status === 5) statusTag = `<span class="tag tag-warning">待卖家签约</span>`;
+        if (o.status === 0) statusTag = `<span class="tag tag-warning">待签约</span>`;
         else if (o.status === 4) statusTag = `<span class="tag tag-secondary">待付款</span>`;
         else if (o.status === 1) statusTag = `<span class="tag tag-primary">待发货</span>`;
         else if (o.status === 2) statusTag = `<span class="tag tag-info">已发货</span>`;
@@ -2193,8 +2186,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
 
   // Render Status Banner
   const bannerMap = {
-    0: { title: '订单待签约', desc: '等待买方签署大宗买卖交易合同及保证资金协议。' },
-    5: { title: '订单待卖家签约', desc: '买方已电子签名，请您点击上方“立即签署”盖章确认。' },
+    0: { title: '订单待签约', desc: '请与买家确认合同条款，双方各自上传签署好的合同文件，上传后由运营平台统一审核。' },
     4: { title: '订单待付款', desc: '买卖双方已签署合同，等待买方托管支付货款。' },
     1: { title: '订单待发货', desc: '买方已托管支付，请您安排专车直达运送货品并录入快递单号发货。' },
     2: { title: '卖家已发货', desc: '您已完成发货，大宗专车正在配送中，等待买方确认收货。' },
@@ -2215,19 +2207,17 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   // Action buttons
   const actContainer = document.getElementById('merchant-detail-top-actions');
   let actHtml = '';
-  const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' || o.contractAuditStatus === 'seller_pending' || (!!o.sellerContractFile && o.sellerContractAuditStatus !== 'rejected');
-  const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'seller_rejected' || o.sellerContractRejectReason || (o.status === 5 && o.contractRejectReason);
+  const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' && !!o.sellerContractFile;
+  const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected';
 
-  if (isSellerPendingContract && o.status === 5) {
+  if (isSellerPendingContract && o.status === 0) {
     actHtml = `<div style="padding:6px 16px; background:#fffbebf0; border:1px solid #fde68a; border-radius:20px; color:#b45309; font-weight:bold; font-size:13px;">⏳ 您的签署合同已提交，等待平台运营审核...</div>`;
-  } else if (isSellerRejectedContract && o.status === 5) {
+  } else if (isSellerRejectedContract && o.status === 0) {
     actHtml = `
       <button class="btn btn-danger btn-sm" onclick="UI.showContractSigningModal('${o.id}', true, () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">重新上传签约合同</button>
-      <div style="margin-top:4px; font-size:11px; color:#ef4444;">❌ 驳回原因：${o.sellerContractRejectReason || o.contractRejectReason || '审核未通过'}</div>
+      <div style="margin-top:4px; font-size:11px; color:#ef4444;">❌ 驳回原因：${o.sellerContractRejectReason || '审核未通过'}</div>
     `;
   } else if (o.status === 0) {
-    actHtml = `<button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>`;
-  } else if (o.status === 5) {
     actHtml = `
       <button class="btn btn-primary btn-sm" onclick="UI.showContractSigningModal('${o.id}', true, () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">去签约(盖章)</button>
       <button class="btn btn-outline btn-sm text-danger" onclick="UI.cancelOrder('${o.id}', '卖家', '${MerchantApp.currentShopId}', () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })">取消订单</button>
@@ -2251,7 +2241,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   // Render Steps
   const stepsContainer = document.getElementById('merchant-detail-steps');
   let currentStep = 0;
-  if (o.status === 0 || o.status === 5) currentStep = 1;
+  if (o.status === 0) currentStep = 1;
   else if (o.status === 4) currentStep = 2;
   else if (o.status === 1) currentStep = 3;
   else if (o.status === 2) currentStep = 4;
@@ -2259,7 +2249,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
 
   const steps = [
     { name: '1. 提交买单', time: o.time },
-    { name: '2. 电子签约', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
+    { name: '2. 合同签署及审核', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
     { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
     { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
     { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
@@ -2309,16 +2299,13 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   // Contract (区分买家联与卖家联)
   const contractWrapper = document.getElementById('merchant-detail-contract-wrapper');
   if (contractWrapper) {
-    const isContractPassedByStatus = o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3;
-    const isBuyerPassedByStatus = isContractPassedByStatus || o.status === 5;
+    const hasBuyerFile = !!(o.buyerContractFile || o.buyerContract);
+    const buyerFile = o.buyerContractFile || o.buyerContract || '未上传合同文件';
+    const buyerStatus = o.buyerContractAuditStatus || 'none';
 
-    const hasBuyerFile = isBuyerPassedByStatus || !!(o.buyerContractFile || o.buyerContract);
-    const buyerFile = o.buyerContractFile || o.buyerContract || (isBuyerPassedByStatus ? '《大宗买卖合同》- 买家CA签署联.pdf' : '未上传合同文件');
-    const buyerStatus = o.buyerContractAuditStatus || (o.contractAuditStatus === 'buyer_pending' ? 'pending' : (o.contractAuditStatus === 'buyer_rejected' ? 'rejected' : (hasBuyerFile ? 'passed' : 'none')));
-
-    const hasSellerFile = isContractPassedByStatus || !!(o.sellerContractFile || o.sellerContract);
-    const sellerFile = o.sellerContractFile || o.sellerContract || (isContractPassedByStatus ? '《大宗买卖合同》- 卖家CA签署联.pdf' : '未上传合同文件');
-    const sellerStatus = o.sellerContractAuditStatus || (o.contractAuditStatus === 'seller_pending' ? 'pending' : (o.contractAuditStatus === 'seller_rejected' ? 'rejected' : (hasSellerFile ? 'passed' : 'none')));
+    const hasSellerFile = !!(o.sellerContractFile || o.sellerContract);
+    const sellerFile = o.sellerContractFile || o.sellerContract || '未上传合同文件';
+    const sellerStatus = o.sellerContractAuditStatus || 'none';
 
     contractWrapper.innerHTML = `
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
@@ -2327,13 +2314,13 @@ MerchantApp.showOrderDetailPage = function(orderId) {
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-weight:bold; color:#1e40af; font-size:13px;">🛒 买家签署合同联 (${o.buyerName})</span>
-              <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : 'background:#dcfce7; color:#15803d;')}">
-                ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : '✓ 已完成')}
+              <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${buyerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (buyerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (buyerStatus === 'passed' ? 'background:#dcfce7; color:#15803d;' : (hasBuyerFile ? 'background:#dbeafe; color:#1e40af;' : 'background:#e2e8f0; color:#64748b;')))}">
+                ${buyerStatus === 'pending' ? '⏳ 待审核' : (buyerStatus === 'rejected' ? '❌ 已打回' : (buyerStatus === 'passed' ? '✓ 已审核通过' : (hasBuyerFile ? '已上传' : '未上传')))}
               </span>
             </div>
             <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${buyerFile}">📄 ${buyerFile}</div>
           </div>
-          <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览买家合同】</button>
+          ${buyerStatus === 'passed' ? `<button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${buyerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览买家合同】</button>` : '<span style="color:#94a3b8; font-size:11px;">（审核通过后可预览）</span>'}
         </div>
 
         <!-- 卖家合同联 (卖家视角) -->
@@ -2341,19 +2328,19 @@ MerchantApp.showOrderDetailPage = function(orderId) {
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-weight:bold; color:#be185d; font-size:13px;">🏬 卖家签署合同联 (${o.shopName})</span>
-              <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (o.status === 0 || o.status === 5 ? 'background:#e2e8f0; color:#64748b;' : 'background:#dcfce7; color:#15803d;'))}">
-                ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (o.status === 0 || o.status === 5 ? '⏳ 待签署' : '✓ 已完成'))}
+              <span style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; ${sellerStatus === 'pending' ? 'background:#fef3c7; color:#b45309;' : (sellerStatus === 'rejected' ? 'background:#fee2e2; color:#b91c1c;' : (sellerStatus === 'passed' ? 'background:#dcfce7; color:#15803d;' : (hasSellerFile ? 'background:#fce7f3; color:#be185d;' : 'background:#e2e8f0; color:#64748b;')))}">
+                ${sellerStatus === 'pending' ? '⏳ 待审核' : (sellerStatus === 'rejected' ? '❌ 已打回' : (sellerStatus === 'passed' ? '✓ 已审核通过' : (hasSellerFile ? '已上传' : '未上传')))}
               </span>
             </div>
             <div style="font-size:12px; color:#334155; font-family:monospace; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${sellerFile}">📄 ${sellerFile}</div>
-            ${(sellerStatus === 'rejected' || o.contractRejectReason) ? `
+            ${(sellerStatus === 'rejected') ? `
               <div style="font-size:12px; color:#ef4444; background:#fef2f2; padding:8px 10px; border-radius:6px; border:1px solid #fca5a5; margin-bottom:10px;">
-                <div style="font-weight:bold;">❌ 卖家合同打回原因：${o.sellerContractRejectReason || o.contractRejectReason || '公章骑缝章模糊'}</div>
+                <div style="font-weight:bold;">❌ 卖家合同打回原因：${o.sellerContractRejectReason || ''}</div>
                 <button class="btn btn-danger btn-xs" onclick="UI.showContractSigningModal('${o.id}', true, () => { MerchantApp.showOrderDetailPage('${o.id}'); MerchantApp.renderOrders(); })" style="margin-top:6px; font-weight:bold;">重新上传签约合同</button>
               </div>
             ` : ''}
           </div>
-          <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览卖家合同】</button>
+          ${sellerStatus === 'passed' ? `<button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${sellerFile}', 'contract', '${o.contractNo || 'HT-' + o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="align-self:flex-start;">【点击预览卖家合同】</button>` : '<span style="color:#94a3b8; font-size:11px;">（审核通过后可预览）</span>'}
         </div>
       </div>
     `;
@@ -2366,7 +2353,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
       <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
       支付凭证与资金托管存证
     </h3>`;
-    if (o.status === 0 || o.status === 5) {
+    if (o.status === 0) {
       voucherCard.style.display = 'none';
     } else if (o.status === 4) {
       if (o.paymentAuditStatus === 'pending' || o.paymentVoucher) {
@@ -2377,7 +2364,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
             <div style="color:#b45309; font-weight:bold; margin-bottom:6px;">⏳ 买家对公打款凭证已提交，待平台运营人员审核入账...</div>
             <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #fef3c7;">
               <span style="font-family:monospace; font-weight:bold; color:#0f172a;">📄 ${uploadedVoucher}</span>
-              <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${uploadedVoucher}', 'voucher', '${o.paymentVoucher || ('TXN-PAY-' + o.id)}', '${o.amount}', '${o.buyerName}', '${o.shopName}')">【点击预览凭证】</button>
+              <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${uploadedVoucher}', 'voucher', '${o.paymentVoucher || ('TXN-PAY-' + o.id)}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="${o.paymentAuditStatus === 'passed' ? '' : 'display:none;'}">【点击预览凭证】</button>
             </div>
           </div>
         `;
@@ -2399,7 +2386,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
           ${voucherImages.map((vImg, i) => `
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
               <span style="font-weight:bold; color:#166534; font-size:12px;">${vImg.label}</span>
-              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
+              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;${o.paymentAuditStatus === 'passed' ? '' : 'display:none;'}">【预览】</button>
             </div>
           `).join('')}
         </div>

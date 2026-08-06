@@ -210,7 +210,7 @@ const MH5App = {
     // 过滤状态
     const status = this.currentOrderFilter || 'all';
     if (status === 'sign') {
-      myOrders = myOrders.filter(o => o.status === 0 || o.status === 5);
+      myOrders = myOrders.filter(o => o.status === 0);
     } else if (status === 'ship') {
       myOrders = myOrders.filter(o => o.status === 1);
     } else if (status === 'pay') {
@@ -229,16 +229,14 @@ const MH5App = {
       let statusTag = UI.getOrderStatusBadge(o);
       let btn = '';
       
-      const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' || o.contractAuditStatus === 'seller_pending' || (!!o.sellerContractFile && o.sellerContractAuditStatus !== 'rejected');
-      const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected' || o.contractAuditStatus === 'seller_rejected' || o.sellerContractRejectReason || (o.status === 5 && o.contractRejectReason);
+      const isSellerPendingContract = o.sellerContractAuditStatus === 'pending' && !!o.sellerContractFile;
+      const isSellerRejectedContract = o.sellerContractAuditStatus === 'rejected';
 
-      if (isSellerPendingContract && o.status === 5) {
+      if (isSellerPendingContract && o.status === 0) {
         btn = `<span style="font-size:12px; color:#b45309; font-weight:bold;">⏳ 合同已提交，平台审核中...</span>`;
-      } else if (isSellerRejectedContract && o.status === 5) {
+      } else if (isSellerRejectedContract && o.status === 0) {
         btn = `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', true, () => MH5App.renderOrders())">重新上传签约合同</button>`;
       } else if (o.status === 0) {
-        btn = `<button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消订单</button>`;
-      } else if (o.status === 5) {
         btn = `<div style="display:flex; gap:8px;">
                  <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); UI.showContractSigningModal('${o.id}', true, () => MH5App.renderOrders())">去签约</button>
                  <button class="btn btn-outline btn-sm" style="border-radius:16px; border-color:#ef4444; color:#ef4444;" onclick="event.stopPropagation(); UI.cancelOrder('${o.id}', '卖家', 'H5商家用户', () => MH5App.renderOrders())">取消</button>
@@ -713,7 +711,7 @@ const MH5App = {
         shopId: ann.shopId || 'S001',
         shopName: ann.shopName,
         buyerName: offer.buyerName,
-        status: 0, // 待买家签约
+        status: 0, // 待签约
         time: new Date().toISOString().replace('T', ' ').substring(0, 19),
         type: '竞价交易',
         paymentVoucher: null,
@@ -771,26 +769,31 @@ const MH5App = {
         <div style="display: flex; justify-content: space-between; margin-top: 15px;">
           <div>
             <p>买方盖章：</p>
-            <div style="border: 2px dashed #ff4d4f; color: #ff4d4f; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; transform: rotate(-5deg); font-size:11px;">
-              ✔ ${order.buyerName}<br>电子合同签署专用章
+            <div style="color: ${order.buyerContractFile ? '#ff4d4f' : '#999'}; border: 2px dashed ${order.buyerContractFile ? '#ff4d4f' : '#ccc'}; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; ${order.buyerContractFile ? 'transform: rotate(-5deg)' : ''}; font-size:11px;">
+              ${order.buyerContractFile ? '✔ ' + order.buyerName + '<br>电子合同签署专用章' : '(买方可上传签署)'}
             </div>
           </div>
           <div>
             <p>卖方盖章：</p>
-            <div style="color: #999; border: 1px dashed #ccc; padding: 8px 12px; font-size:11px;">
-              (未签章)
+            <div style="color: ${order.sellerContractFile ? '#ff4d4f' : '#999'}; border: 2px dashed ${order.sellerContractFile ? '#ff4d4f' : '#ccc'}; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; ${order.sellerContractFile ? 'transform: rotate(-5deg)' : ''}; font-size:11px;">
+              ${order.sellerContractFile ? '✔ ' + order.shopName + '<br>电子合同签署专用章' : '(未签章)'}
             </div>
           </div>
         </div>
+        <div style="margin-top:12px; padding:8px; background:#fef3c7; border-radius:6px; border:1px solid #fde68a; font-size:12px; color:#92400e;">
+          📌 请上传您已签署好的合同文件（需盖章扫描件），提交后等待运营统一审核。</div>
       `;
     }
     
     const signBtn = document.getElementById('mh5-contract-sign-btn');
     if (signBtn) {
       signBtn.onclick = () => {
-        order.status = 1; // Change to pending shipment / "待发货"
+        order.sellerContractFile = '《大宗买卖合同》- 卖家CA签署联.pdf';
+        order.sellerContractAuditStatus = 'pending';
+        delete order.sellerContractRejectReason;
         UI.closeModal('sheet-mh5-contract');
-        UI.toast('电子合同商家签章成功！合同正式生效，请尽快安排发货。', 'success');
+        const buyerUploaded = !!(order.buyerContractFile || order.buyerContract);
+        UI.toast(buyerUploaded ? '卖家合同已提交，双方均已上传，等待运营端统一审核。' : '卖家合同已提交，待买家上传合同后运营统一审核。', 'success');
         this.renderOrders();
       };
     }

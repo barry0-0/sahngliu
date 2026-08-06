@@ -265,8 +265,7 @@ window.UI = {
 
     let statusText = '';
     let statusColor = '';
-    if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
-    else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
+    if (o.status === 0) { statusText = '待签约'; statusColor = '#fa8c16'; }
     else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
     else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
     else if (o.status === 2) { statusText = '待签收(已发货)'; statusColor = '#0958d9'; }
@@ -285,9 +284,9 @@ window.UI = {
 
     const stepItems = [
       { num: 1, title: '订单创建', time: o.time || '2026-07-08 09:12', done: true },
-      { num: 2, title: '买家盖章', time: o.status === 0 || o.status === 4 ? '等待签章' : `${dateStr} 10:15`, done: o.status !== 0 && o.status !== 4 },
-      { num: 3, title: '卖家盖章', time: o.status === 0 || o.status === 5 || o.status === 4 ? '等待签章' : `${dateStr} 11:20`, done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
-      { num: 4, title: '打款与核销', time: o.status === 4 ? '等待打款' : (o.status === 0 || o.status === 5 ? '等待合同' : `${dateStr} 14:00`), done: o.status !== 0 && o.status !== 5 && o.status !== 4 },
+      { num: 2, title: '合同签署', time: (o.buyerContractAuditStatus || o.sellerContractAuditStatus) && (o.buyerContractAuditStatus !== 'none' || o.sellerContractAuditStatus !== 'none') ? `${dateStr} 10:15` : '等待签署', done: o.status !== 0 && o.status !== 4 },
+      { num: 3, title: '合同审核', time: (o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3) ? `${dateStr} 11:20` : '等待审核', done: o.status !== 0 && o.status !== 4 },
+      { num: 4, title: '打款与核销', time: o.status === 4 ? '等待打款' : (o.status === 0 ? '等待签约' : `${dateStr} 14:00`), done: o.status !== 0 && o.status !== 4 },
       { num: 5, title: '物流发货', time: o.status === 1 ? '备货中' : (o.status === 2 || o.status === 3 ? `${dateStr} 15:45` : '未发货'), done: o.status === 2 || o.status === 3 },
       { num: 6, title: '签收结清', time: o.status === 3 ? `${dateStr} 18:30` : '等待确认', done: o.status === 3 }
     ];
@@ -297,7 +296,7 @@ window.UI = {
     `;
     stepItems.forEach((st, i) => {
       const activeColor = st.done ? '#10b981' : '#cbd5e1';
-      const isCurrent = (o.status === 0 && i === 1) || (o.status === 5 && i === 2) || (o.status === 4 && i === 3) || (o.status === 1 && i === 4) || (o.status === 2 && i === 5) || (o.status === 3 && i === 5);
+      const isCurrent = (o.status === 0 && i === 1) || (o.status === 0 && i === 2) || (o.status === 4 && i === 3) || (o.status === 1 && i === 4) || (o.status === 2 && i === 5) || (o.status === 3 && i === 5);
       stepsHtml += `
         <div style="display:flex; flex-direction:column; align-items:center; z-index:2; text-align:center;">
           <div style="width:28px; height:28px; border-radius:50%; background:${isCurrent ? '#7c3aed' : activeColor}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; box-shadow: ${isCurrent ? '0 0 0 4px rgba(124,58,237,0.2)' : 'none'};">
@@ -397,20 +396,20 @@ window.UI = {
           <!-- Electronic Contract & Certificate Section -->
           <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:12px; padding:16px;">
             <div style="font-weight:bold; font-size:13px; color:#6b21a8; margin-bottom:8px; display:flex; items-center; justify-content:space-between;">
-              <span>📜 电子合同与双边 CA 签章状态存证</span>
-              <span style="font-size:11px; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:4px;">CA 电子签章存证</span>
+              <span>📜 合同签署与平台审核状态</span>
+              <span style="font-size:11px; background:#f3e8ff; color:#7e22ce; padding:2px 8px; border-radius:4px;">合同签署存证</span>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px; margin-top:8px;">
               <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #f3e8ff;">
-                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">买方主体盖章：</div>
-                <div style="color:${o.status === 0 || o.status === 4 ? '#d97706' : '#16a34a'}; font-weight:bold;">
-                  ${o.status === 0 || o.status === 4 ? '⏳ 待买家完成电子盖章' : '✓ 万通建材采购部 (已完成 CA 电子签章存证)'}
+                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">买方合同签署：</div>
+                <div style="font-weight:bold;">
+                  ${o.buyerContractAuditStatus === 'passed' ? '<span style="color:#16a34a;">✓ 已审核通过</span>' : (o.buyerContractAuditStatus === 'rejected' ? '<span style="color:#dc2626;">❌ 已打回</span>' : ((o.buyerContractFiles?.length || o.buyerContractFile) ? '<span style="color:#d97706;">⏳ 已上传待审核</span>' : '<span style="color:#94a3b8;">⏳ 待上传合同</span>'))}
                 </div>
               </div>
               <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #f3e8ff;">
-                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">卖方主体盖章：</div>
-                <div style="color:${o.status === 0 || o.status === 5 || o.status === 4 ? '#d97706' : '#16a34a'}; font-weight:bold;">
-                  ${o.status === 0 || o.status === 5 || o.status === 4 ? '⏳ 待卖家完成电子盖章' : `✓ ${o.shopName} (已完成 CA 电子签章存证)`}
+                <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">卖方合同签署：</div>
+                <div style="font-weight:bold;">
+                  ${o.sellerContractAuditStatus === 'passed' ? '<span style="color:#16a34a;">✓ 已审核通过</span>' : (o.sellerContractAuditStatus === 'rejected' ? '<span style="color:#dc2626;">❌ 已打回</span>' : ((o.sellerContractFiles?.length || o.sellerContractFile) ? '<span style="color:#d97706;">⏳ 已上传待审核</span>' : '<span style="color:#94a3b8;">⏳ 待上传合同</span>'))}
                 </div>
               </div>
           </div>
@@ -422,7 +421,7 @@ window.UI = {
               <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px;">财务确认入账</span>
             </div>
             <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #bbf7d0; font-size:12px;">
-              ${o.status === 0 || o.status === 5 || o.status === 4 
+              ${o.status === 0 || o.status === 4 
                 ? `<span style="color:#fa8c16; font-weight:bold;">⏳ 订单尚未付款</span>`
                 : o.paymentVoucher 
                   ? `<div style="display:flex; justify-content:space-between; align-items:center;">
@@ -853,18 +852,20 @@ Object.assign(window.UI, {
     if (!order) return;
 
     const files = this._signingState.offlineFiles || [];
-    const fileName = files.length > 0 ? files.map(f => f.name).join(', ') : 'offline_signed_contract.pdf';
-    order.contractFile = fileName;
-    delete order.contractRejectReason;
+    const fileNames = files.length > 0 ? files.map(f => f.name) : ['offline_signed_contract.pdf'];
     
     if (isSeller) {
-      order.contractAuditStatus = 'seller_pending';
-      order.sellerContractFile = fileName;
-      UI.toast(`线下已签署合同文件 (${files.length}份) 上传成功！已提交运营端审核（待卖家合同审核）。`, 'success');
+      order.sellerContractFiles = fileNames;
+      order.sellerContractAuditStatus = 'pending';
+      delete order.sellerContractRejectReason;
+      const buyerUploaded = !!(order.buyerContractFiles && order.buyerContractFiles.length > 0);
+      UI.toast(buyerUploaded ? `卖家合同文件 (${files.length}份) 上传成功！双方合同均已提交，等待运营端统一审核。` : `卖家合同文件 (${files.length}份) 上传成功！待买家上传合同后，运营统一审核。`, 'success');
     } else {
-      order.contractAuditStatus = 'buyer_pending';
-      order.buyerContractFile = fileName;
-      UI.toast(`已成功上传签署好的合同文件 (${files.length}份)，已提交运营端审核（待买家合同审核）。`, 'success');
+      order.buyerContractFiles = fileNames;
+      order.buyerContractAuditStatus = 'pending';
+      delete order.buyerContractRejectReason;
+      const sellerUploaded = !!(order.sellerContractFiles && order.sellerContractFiles.length > 0);
+      UI.toast(sellerUploaded ? `买家合同文件 (${files.length}份) 上传成功！双方合同均已提交，等待运营端统一审核。` : `买家合同文件 (${files.length}份) 上传成功！待卖家上传合同后，运营统一审核。`, 'success');
     }
 
     const overlay = document.querySelector('.modal-overlay[style*="z-index: 110000"]');
@@ -1068,8 +1069,7 @@ Object.assign(window.UI, {
   getOrderStatusBadge(o) {
     let statusText = '';
     let statusColor = '';
-    if (o.status === 0) { statusText = '待买家签约'; statusColor = '#fa8c16'; }
-    else if (o.status === 5) { statusText = '待卖家签约'; statusColor = '#c41d7f'; }
+    if (o.status === 0) { statusText = '待签约'; statusColor = '#fa8c16'; }
     else if (o.status === 4) { statusText = '待付款'; statusColor = '#d46b08'; }
     else if (o.status === 1) { statusText = '待发货'; statusColor = '#1677ff'; }
     else if (o.status === 2) { statusText = '待签收'; statusColor = '#0958d9'; }
@@ -1279,7 +1279,7 @@ Object.assign(window.UI, {
       productName: demand.title + ' (求购采纳成单)',
       amount: q.price.split('/')[0], // Extract price
       type: '现货交易',
-      status: 0, // 待买家签约
+      status: 0, // 待签约
       time: new Date().toISOString().replace('T', ' ').substring(0, 16)
     };
     MockData.orders.unshift(newOrder);
