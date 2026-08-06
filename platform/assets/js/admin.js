@@ -1976,7 +1976,6 @@ const AdminApp = {
             <td style="padding:10px; font-family:monospace; color:#475569;">${phone}</td>
             <td style="padding:10px; color:#64748b;">${o.time}</td>
             <td style="padding:10px; text-align:right; font-weight:bold; color:#ef4444;">${o.offerPrice}</td>
-            <td style="padding:10px; text-align:center;">${tag}</td>
           </tr>
         `;
       });

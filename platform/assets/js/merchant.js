@@ -1389,12 +1389,18 @@ const MerchantApp = {
           acts += `<button class="btn btn-warning btn-sm" onclick="MerchantApp.openEditAnnModal('${a.id}')">编辑</button>`;
           acts += `<button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="MerchantApp.resubmitBiddingAnn('${a.id}')">提交审核</button>`;
         } else if (aStatus === '已通过') {
-          if (a.status !== 4) {
-            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', false)">查看出价/定标</button>`;
+          if (a.status === 3) {
+            // 等待公布：显示【定标】按钮和【查看出价】按钮
+            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', false)">定标</button>`;
+            acts += `<button class="btn btn-outline btn-sm text-primary" style="margin-left:4px;" onclick="MerchantApp.openAwardModal('${a.id}', true)">查看出价</button>`;
             acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">下架</button>`;
-          } else {
-            // 已结束：查看出价 (不用定标)
+          } else if (a.status === 4) {
+            // 已结束：只显示【查看出价】
             acts += `<button class="btn btn-outline btn-sm text-primary" onclick="MerchantApp.openAwardModal('${a.id}', true)">查看出价</button>`;
+          } else {
+            // 竞价中 (status 0,1,2)：【查看出价】+【下架】
+            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', true)">查看出价</button>`;
+            acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">下架</button>`;
           }
         }
 
@@ -1433,14 +1439,22 @@ const MerchantApp = {
     const ann = MockData.biddingAnnouncements.find(a => a.id === bidId);
     if (!ann) return;
     
-    document.getElementById('award-bid-title').innerText = `${ann.title} (${bidId})`;
+    // 如果不是等待公布状态 (status !== 3)，即使传入 isViewOnly=false 也强制为纯查看模式
+    if (ann.status !== 3) {
+      isViewOnly = true;
+    }
+
+    const modalTitleEl = document.getElementById('award-bid-title');
+    if (modalTitleEl) {
+      modalTitleEl.innerText = isViewOnly ? `查看出价明细 - ${ann.title}` : `竞价定标处理 - ${ann.title}`;
+    }
     
     const offers = MockData.biddingOffers.filter(o => o.bidId === bidId);
     const tbody = document.querySelector('#table-bid-offers tbody');
     let html = '';
     
     if (offers.length === 0) {
-      html = `<tr><td colspan="7" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
+      html = `<tr><td colspan="6" style="text-align:center; padding: 20px;">暂无买家出价记录</td></tr>`;
     } else {
       // Sort offers desc by price
       offers.sort((x, y) => {
@@ -1450,20 +1464,16 @@ const MerchantApp = {
       });
       
       offers.forEach((o, idx) => {
-        let tag = '';
         let btn = '';
         
-        if (ann.status === 4 || isViewOnly) { // 已结束或纯查看出价
+        if (isViewOnly || ann.status === 4) { // 纯查看出价模式
           if (o.status === 1 || ann.winner === o.buyerName) {
-            tag = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f;">已中标</span>`;
-            btn = `<span class="text-secondary text-sm">已生成履约订单</span>`;
+            btn = `<span class="tag tag-success" style="background:#f6ffed; color:#52c41a; border-color:#b7eb8f; padding:2px 8px; border-radius:4px; font-size:11px;">已中标履约</span>`;
           } else {
-            tag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#595959; border-color:#d9d9d9;">未中标</span>`;
-            btn = `-`;
+            btn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
           }
-        } else { // 竞价中/等待公布
-          tag = `<span class="tag tag-primary" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">出价中</span>`;
-          btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
+        } else { // 只有处于定标中且非 ViewOnly 才能操作【选为中标】
+          btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
         }
 
         const user = MockData.users.find(u => u.name && u.name.includes(o.buyerName)) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
@@ -1486,7 +1496,6 @@ const MerchantApp = {
             <td style="font-family:monospace; color:#475569;">${phone}</td>
             <td>${o.time}</td>
             <td class="font-bold text-danger text-lg">${o.offerPrice}</td>
-            <td>${tag}</td>
             <td>${btn}</td>
           </tr>
         `;

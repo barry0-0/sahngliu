@@ -877,18 +877,29 @@ window.MallApp = {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
 
-    // UI steps: 看货报名(0) -> 现场看货(1) -> 参加竞价(2) -> 等待公布(3) -> 中标付款(4)
-    let currentStep = b.status + 1; // status maps to index 0-4
+    // 计算买家实际到达的步骤节点 (0:看货报名, 1:现场看货, 2:参加竞价, 3:等待公布, 4:中标付款)
+    const currentBuyer = this.currentBuyerName || '万通建材采购部';
+    const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部' || b.winner === 'H5买家用户';
+    let buyerStepIndex = 0;
+    if (b.userOffered) {
+      if (b.status === 4) buyerStepIndex = isWinner ? 4 : 3;
+      else if (b.status === 3) buyerStepIndex = 3;
+      else buyerStepIndex = 2;
+    } else if (b.userInspected) {
+      buyerStepIndex = 1;
+    } else if (b.userApplied) {
+      buyerStepIndex = 0;
+    }
 
     const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
     let stepsHtml = '<div class="steps-container">';
     steps.forEach((name, index) => {
       let stateClass = '';
-      if (index < b.status) stateClass = 'done';
-      else if (index === b.status) stateClass = 'active';
+      if (index < buyerStepIndex) stateClass = 'done';
+      else if (index === buyerStepIndex) stateClass = 'active';
       stepsHtml += `
         <div class="step-item ${stateClass}">
-          <div class="step-circle">${index < b.status ? '✓' : (index + 1)}</div>
+          <div class="step-circle">${index < buyerStepIndex ? '✓' : (index + 1)}</div>
           <div class="step-title">${name}</div>
         </div>
       `;
@@ -937,9 +948,9 @@ window.MallApp = {
       } else {
         actionCardHTML = `
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; color:#64748b; box-sizing:border-box;">
-            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">⚠️ 竞价已结束 (未定标 / 中途终结)</h4>
-            <p style="margin:0 0 6px 0; font-size:12px;">该项目在定标发布前已终结废标，未产生中标买方。</p>
-            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">提示：此项目已终止且无法执行后续履约，您仅可查看发布与历史出价记录。</div>
+            <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">⚠️ 竞价已结束 (无人出价 / 未产生中标人)</h4>
+            <p style="margin:0 0 6px 0; font-size:12px;">该竞价项目已截止，期间无人参与出价或未选定中标人，项目已流标。</p>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">提示：此项目已终结，无中标履约数据，仅可查看基本发布信息。</div>
           </div>
         `;
       }
@@ -1875,9 +1886,8 @@ window.MallApp = {
     const tbody = document.querySelector('#table-uc-bids tbody');
     if (!tbody) return;
 
-    // 获取我参与过的所有竞拍公告记录 (含各个状态)
     const myBids = (MockData.biddingAnnouncements || []).filter(b => {
-      return (b.offers || []).some(o => o.merchantName === '万通建材采购部' || o.merchantName === 'H5买家用户' || o.shopName === '万通建材采购部') || b.id === 'BID20260701001' || b.id === 'BID20260701002';
+      return b.userApplied || b.userInspected || b.userOffered || (b.offers || []).some(o => o.merchantName === 'H5买家用户' || o.merchantName === '万通建材采购部' || o.shopName === '万通建材采购部');
     });
 
     if (myBids.length === 0) {
@@ -1912,9 +1922,12 @@ window.MallApp = {
       }
 
       let actBtnText = '【查看详情】';
-      let actBtnBg = 'linear-gradient(135deg, #0284c7, #0369a1)';
+      let actBtnBg = 'linear-gradient(135deg, #64748b, #475569)';
 
-      if (!b.userApplied) {
+      if (b.status === 4 || b.status === 3) {
+        actBtnText = '【查看详情】';
+        actBtnBg = 'linear-gradient(135deg, #64748b, #475569)';
+      } else if (!b.userApplied) {
         actBtnText = '【看货报名】';
         actBtnBg = 'linear-gradient(135deg, #10b981, #059669)';
       } else if (!b.userInspected) {
@@ -1923,12 +1936,9 @@ window.MallApp = {
       } else if (!b.userOffered) {
         actBtnText = '【报价竞拍】';
         actBtnBg = 'linear-gradient(135deg, #f59e0b, #d97706)';
-      } else if (b.status === 0 || b.status === 1 || b.status === 2) {
+      } else {
         actBtnText = '【加价竞拍】';
         actBtnBg = 'linear-gradient(135deg, #9a66e4, #7e22ce)';
-      } else {
-        actBtnText = '【查看详情】';
-        actBtnBg = 'linear-gradient(135deg, #64748b, #475569)';
       }
 
       let actBtn = `<button class="btn btn-primary btn-sm" style="border-radius:14px; padding:4px 12px; font-size:11px; background:${actBtnBg}; border:none; font-weight:bold;" onclick="MallApp.showBiddingDetail('${b.id}')">${actBtnText}</button>`;

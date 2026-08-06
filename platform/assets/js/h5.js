@@ -799,13 +799,26 @@ const H5App = {
     // 清洗标题中的阶段前缀，展现标准：公告标题 + 货品名称 + 规格
     const cleanedTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
 
+    // 计算买家实际到达的步骤节点 (0:看货报名, 1:现场看货, 2:参加竞价, 3:等待公布, 4:中标付款)
+    const isWinner = b.winner === 'H5买家用户' || b.winner === '万通建材采购部';
+    let buyerStepIndex = 0;
+    if (b.userOffered) {
+      if (b.status === 4) buyerStepIndex = isWinner ? 4 : 3;
+      else if (b.status === 3) buyerStepIndex = 3;
+      else buyerStepIndex = 2;
+    } else if (b.userInspected) {
+      buyerStepIndex = 1;
+    } else if (b.userApplied) {
+      buyerStepIndex = 0;
+    }
+
     // 5步流程节点 (横向高颜值进度条)
     const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
     let stepsHtml = '<div style="display:flex; justify-content:space-between; position:relative; padding:10px 4px; margin-bottom:12px;">';
     stepsHtml += '<div style="position:absolute; top:21px; left:20px; right:20px; height:2px; background:#e2e8f0; z-index:1;"></div>';
     steps.forEach((name, index) => {
-      let isActive = index === b.status;
-      let isDone = index < b.status;
+      let isActive = index === buyerStepIndex;
+      let isDone = index < buyerStepIndex;
       let dotBg = '#fff';
       let dotBorder = '#cbd5e1';
       let dotColor = '#94a3b8';
@@ -1944,7 +1957,10 @@ const H5App = {
 
       let btnText = '看货报名';
       let btnBg = '#1677ff';
-      if (!b.userApplied) {
+      if (b.status === 4 || b.status === 3) {
+        btnText = '查看详情';
+        btnBg = '#64748b';
+      } else if (!b.userApplied) {
         btnText = '看货报名';
         btnBg = '#1677ff';
       } else if (!b.userInspected) {
@@ -1953,12 +1969,9 @@ const H5App = {
       } else if (!b.userOffered) {
         btnText = '报价竞拍';
         btnBg = 'linear-gradient(135deg, #10b981, #059669)';
-      } else if (b.status === 0 || b.status === 1 || b.status === 2) {
+      } else {
         btnText = '加价竞拍';
         btnBg = 'linear-gradient(135deg, #9a66e4, #7e22ce)';
-      } else {
-        btnText = '查看详情';
-        btnBg = '#64748b';
       }
 
       html += `
