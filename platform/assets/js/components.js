@@ -563,6 +563,48 @@ window.MainApp = {
 };
 
 // 页面加载完成后自动初始化
+// 全局记录 mouse-down 目标元素，防止拖拽选择文本时触发遮罩收起
+let _globalModalMouseDownTarget = null;
+document.addEventListener('mousedown', (e) => {
+  _globalModalMouseDownTarget = e.target;
+}, true);
+
+// 全局遮罩层背景点击自动收起弹窗 & data-close-modal 绑定
+document.addEventListener('click', (e) => {
+  // 1. 响应带 data-close-modal 属性或 .modal-close 样式的关闭按钮
+  const closeBtn = e.target.closest('[data-close-modal], .modal-close');
+  if (closeBtn) {
+    const modalId = closeBtn.getAttribute('data-close-modal');
+    if (modalId && typeof UI.closeModal === 'function') {
+      UI.closeModal(modalId);
+      return;
+    }
+    const parentOverlay = closeBtn.closest('.modal-overlay');
+    if (parentOverlay) {
+      if (parentOverlay.id && typeof UI.closeModal === 'function') {
+        UI.closeModal(parentOverlay.id);
+      } else {
+        parentOverlay.remove();
+      }
+      return;
+    }
+  }
+
+  // 2. 点击遮罩层背景 (modal-overlay 外部空白区域) 自动收起关闭弹窗
+  if (e.target && e.target.classList && e.target.classList.contains('modal-overlay') && _globalModalMouseDownTarget === e.target) {
+    const overlay = e.target;
+    if (overlay.id && typeof UI.closeModal === 'function') {
+      UI.closeModal(overlay.id);
+    }
+    if (!overlay.id || overlay.id.startsWith('modal-doc-preview') || overlay.id.startsWith('modal-order-detail')) {
+      overlay.remove();
+    } else {
+      overlay.classList.remove('active');
+      overlay.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important;';
+    }
+  }
+}, true);
+
 document.addEventListener('DOMContentLoaded', () => {
   UI.initTabs();
   

@@ -417,8 +417,7 @@ const MH5App = {
         btnHtml += `<button class="btn btn-text btn-sm text-danger" style="padding:0; font-weight:bold; margin-left: 10px;" onclick="MerchantH5App.deleteBiddingAnn('${a.id}')">删除</button>`;
       } else if (aStatus === '已通过') {
         if (a.status === 3) {
-          btnHtml += `<button class="btn btn-text btn-sm text-primary" style="padding:0; font-weight:bold;" onclick="MerchantH5App.openAwardModal('${a.id}')">定标</button>`;
-          btnHtml += `<button class="btn btn-text btn-sm text-primary" style="padding:0; font-weight:bold; margin-left:10px;" onclick="MerchantH5App.openAwardModal('${a.id}')">查看出价</button>`;
+          btnHtml += `<button class="btn btn-text btn-sm text-primary" style="padding:0; font-weight:bold;" onclick="MerchantH5App.openAwardModal('${a.id}')">查看出价</button>`;
           btnHtml += `<button class="btn btn-text btn-sm text-danger" style="padding:0; font-weight:bold; margin-left:10px;" onclick="MerchantH5App.withdrawBiddingAnn('${a.id}')">撤回</button>`;
         } else if (a.status === 4) {
           btnHtml += `<button class="btn btn-text btn-sm text-primary" style="padding:0; font-weight:bold;" onclick="MerchantH5App.openAwardModal('${a.id}')">查看出价</button>`;

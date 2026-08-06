@@ -432,7 +432,7 @@
 </div>
 
 <!-- H5 商品详情/购买 Floating Card -->
-<div class="modal-overlay" id="sheet-h5-product-detail" style="display:none; align-items:center; justify-content:center; z-index: 9999; padding: 16px; background: rgba(15,23,42,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: fixed; inset: 0;">
+<div class="modal-overlay" id="sheet-h5-product-detail" style="display:none; align-items:center; justify-content:center; z-index: 9999; padding: 16px; background: rgba(15,23,42,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: fixed; inset: 0;" onclick="if(event.target===this) UI.closeModal('sheet-h5-product-detail')">
   <div class="modal-content" style="width: 100%; max-width: 350px; border-radius: 28px; padding: 24px; margin: 0 auto; background: #ffffff; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
     
     <!-- Header -->

@@ -25,6 +25,10 @@
 │           ├── merchant.js            # 商家端 PC 业务逻辑
 │           ├── merchant-h5.js         # 商家端 H5 业务逻辑
 │           └── admin.js               # 运营端后台业务逻辑（审核流、订单透视、报价核校、竞价监督）
+├── .agents/                           # Agent 插件与规则配置目录
+│   ├── rules/
+│   │   └── grill-me.md                # 项目专属规则：强制执行 Grill-Me 追问
+│   └── skills/                        # 项目自定义 Agent Skills
 ```
 
 ---
@@ -132,3 +136,24 @@
 1. **零构建部署**：本项目为纯前端高保真系统，可直接通过 `Live Server`（或本地 Nginx/http-server）托管 `platform/` 目录进行演示及交互验收。
 2. **全局事件秒切说明**：为配合业务效果演示，在任意页面点击诸如 `待付款`、`待发货`、`正常营业` 等带有状态类名或标签色彩的元素时，页面会自动在对应的预设状态集中循环轮转文字与色彩。二次开发若需要接入真实接口数据，可在 `components.js` 的事件委托中屏蔽这一演示机制。
 3. **数据扩充**：若需要拓展或修改初始数据，可直接修改 `platform/assets/js/mock-data.js` 中 `MockData` 对象的初始化数组。
+
+---
+
+## 🤖 6. AI Agent 工作流与强制规则 (Grill-Me 规范)
+
+本项目配置了强制性的 Agent 规则。任何 AI Agent 在处理本项目代码、需求、回答用户问题或执行终端/文件操作前，**必须优先触发执行 `/grill-me` 追问与压力测试工作流**，通过单问题交互逐一明确方案、厘清依赖后再进行编码与变更。
+
+### 6.1 Grill-Me Skill 目录及文件位置
+* **项目级规则文件**：[.agents/rules/grill-me.md](file:///Users/barry/Desktop/工作/享宇森云/商流/.agents/rules/grill-me.md)
+* **全局配置文件**：
+  * [/Users/barry/.gemini/config/GEMINI.md](file:///Users/barry/.gemini/config/GEMINI.md)
+  * [/Users/barry/.agents/GEMINI.md](file:///Users/barry/.agents/GEMINI.md)
+* **内置 Skill 定义文件**：[/Users/barry/.gemini/config/skills/grilling/SKILL.md](file:///Users/barry/.gemini/config/skills/grilling/SKILL.md)
+
+### 6.2 Agent 使用指南与推荐 Skill (Suggested Skills)
+1. **优先触发 Grill-Me**：当用户提出任何需求（或输入 `/grill-me`）时，Agent 必须**先使用 `ask_question` 工具逐个向用户提问**，梳理业务细节、推荐最佳选项，完成需求确认。
+2. **推荐 Skill 链**：
+   * `grilling` (或 `/grill-me`)：用于需求对齐与设计决议追问。
+   * `html-prd-annotator`：用于前端原型页面的 PRD 标注及功能点卡片查看。
+   * `jo-html-product`：用于项目 HTML 原型的设计规范与响应式调整。
+   * `code-review`：用于后续重构修改后的代码审查。

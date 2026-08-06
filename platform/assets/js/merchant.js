@@ -77,6 +77,7 @@ const MerchantApp = {
       const statusBadge = document.getElementById('pc-shop-status-badge');
       const warningBox = document.getElementById('pc-shop-warning-box');
       const reasonText = document.getElementById('pc-suspend-reason-text');
+      const remarkText = document.getElementById('pc-suspend-remark-text');
 
       if (statusBadge) {
         statusBadge.style.cursor = 'pointer';
@@ -105,21 +106,13 @@ const MerchantApp = {
       }
 
       if (shop.status === '闭店中' || shop.status === '已关停' || shop.status === '已禁用' || shop.status === '审核未通过') {
-        if (shop.suspendReason) {
-          if (statusText) statusText.innerText = '您的店铺已被平台强行关闭整改，限制对外展现！';
-          if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">闭店中 (已下架)</span>';
-          if (warningBox) warningBox.style.display = 'block';
-          if (reasonText) reasonText.innerText = shop.suspendReason;
-        } else if (shop.rejectReason) {
-          if (statusText) statusText.innerText = '您的店铺资料审核未通过，处于关闭状态，请根据拒审原因修改后重新提交！';
-          if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">闭店中 (审核未通过)</span>';
-          if (warningBox) warningBox.style.display = 'block';
-          if (reasonText) reasonText.innerText = shop.rejectReason;
-        } else {
-          if (statusText) statusText.innerText = '您的店铺当前处于闭店状态，外部买家不可见。';
-          if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-secondary" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px; background:#e2e8f0; color:#475569;">闭店中</span>';
-          if (warningBox) warningBox.style.display = 'none';
-        }
+        if (warningBox) warningBox.style.display = 'block';
+
+        let forcedReason = shop.suspendReason || shop.rejectReason || '资质证明扫描件不够清晰，主体印章模糊，请重新拍清晰上传。';
+
+        if (statusText) statusText.innerText = '您的店铺资料审核未通过，处于关闭状态，请根据下架原因修改后重新提交！';
+        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">闭店中 (审核未通过)</span>';
+        if (reasonText) reasonText.innerText = forcedReason;
       } else if (shop.status === '待审核') {
         if (statusText) statusText.innerText = '店铺基本资料及装潢信息已提交审核，预计在1-2个工作日内完成审核。';
         if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-warning" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">待审核</span>';
@@ -1390,9 +1383,8 @@ const MerchantApp = {
           acts += `<button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="MerchantApp.resubmitBiddingAnn('${a.id}')">提交审核</button>`;
         } else if (aStatus === '已通过') {
           if (a.status === 3) {
-            // 等待公布：显示【定标】按钮和【查看出价】按钮
-            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', false)">定标</button>`;
-            acts += `<button class="btn btn-outline btn-sm text-primary" style="margin-left:4px;" onclick="MerchantApp.openAwardModal('${a.id}', true)">查看出价</button>`;
+            // 等待公布：显示【查看出价】按钮（内含选为中标定标功能）
+            acts += `<button class="btn btn-primary btn-sm" onclick="MerchantApp.openAwardModal('${a.id}', false)">查看出价</button>`;
             acts += `<button class="btn btn-outline btn-sm text-danger" style="margin-left:4px;" onclick="MerchantApp.withdrawBiddingAnn('${a.id}')">下架</button>`;
           } else if (a.status === 4) {
             // 已结束：只显示【查看出价】
@@ -2089,22 +2081,16 @@ window.cycleMerchantShopStatus = () => {
     shop.status = '待审核';
     delete shop.rejectReason;
     delete shop.suspendReason;
+    delete shop.suspendRemark;
   } else if (shop.status === '待审核') {
     shop.status = '闭店中';
-    delete shop.rejectReason;
-    delete shop.suspendReason;
-  } else if (shop.status === '闭店中' && !shop.rejectReason && !shop.suspendReason) {
-    shop.status = '闭店中';
-    shop.rejectReason = '资质证照扫描件不够清晰，主体印章模糊，请重新拍照上传。';
-    delete shop.suspendReason;
-  } else if (shop.status === '闭店中' && shop.rejectReason) {
-    shop.status = '闭店中';
-    shop.suspendReason = '您的商铺违反了平台《大宗商品诚信交易规范》，被予以强行闭店处罚。';
-    delete shop.rejectReason;
+    shop.suspendReason = '资质证明扫描件不够清晰，主体印章模糊，请重新拍照上传。';
+    shop.suspendRemark = '经平台核查，营业执照副本公章防伪模糊，请于3个工作日内补全提交加盖清晰印章的高清材料。';
   } else {
     shop.status = '正常营业';
     delete shop.rejectReason;
     delete shop.suspendReason;
+    delete shop.suspendRemark;
   }
 
   UI.toast(`[演示] 店铺状态已切换，当前主状态: ${shop.status}`, 'info');
