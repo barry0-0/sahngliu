@@ -1,8 +1,8 @@
 import os
 import re
 
-svg_dir = "/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/assets/img"
-slides_dir = "/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/slides"
+svg_dir = "/Users/barry/Desktop/Obsidian/享宇森云/商流/ai-efficiency-ppt/assets/img"
+slides_dir = "/Users/barry/Desktop/Obsidian/享宇森云/商流/ai-efficiency-ppt/slides"
 
 svg_files = {
     "Prompt Engineering Logic": "svg_prompt.svg",

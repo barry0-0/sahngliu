@@ -95,7 +95,7 @@ replacements = {
     ]
 }
 
-slides_dir = "/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/slides"
+slides_dir = "/Users/barry/Desktop/Obsidian/享宇森云/商流/ai-efficiency-ppt/slides"
 
 for filename, rules in replacements.items():
     filepath = os.path.join(slides_dir, filename)

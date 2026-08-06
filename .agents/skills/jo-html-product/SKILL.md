@@ -14,7 +14,7 @@ This skill acts as a guidelines wrapper for implementing and optimizing HTML pro
 > Whenever you perform ANY modification or optimization to existing HTML code in this workspace, you MUST first read the optimization requirements in this skill.
 
 ## Dependencies
-- None. (Optional: [html-prd-annotator](file:///Users/barry/Desktop/工作/享宇森云/商流/.agents/skills/html-prd-annotator/SKILL.md) if annotator is needed).
+- None. (Optional: [html-prd-annotator](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/.agents/skills/html-prd-annotator/SKILL.md) if annotator is needed).
 
 ## Design Rules
 

@@ -96,37 +96,37 @@
 ## 📝 4. 历次迭代改动文件一览表
 
 ### 4.1 HTML 结构文件改动
-* **[admin.html](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/admin.html)**：
+* **[admin.html](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/admin.html)**：
   - 移除了供求信息审核表格中的 `备注` 列头。
   - 增设了所有管理表格的第一列 `序号` 标头。
   - 在底部补充植入了四个物理审核弹窗（店铺、商品、需求、公告）以及只读竞价监督弹窗 `#modal-admin-bid-detail`。
-* **[mall.html](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/mall.html)**：
+* **[mall.html](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/mall.html)**：
   - 移除了顶部 Header 区域的购物车悬浮角标和搜索框。
   - 首页添加拉长居中的全宽搜索横条，背景 Banner 更换为港口海运宏伟背景。
   - 个人中心左侧菜单新增【我的购物车】及动态红点，并将购物车视图 `#uc-cart` 结构移入。
   - 简化了“发布需求”和“提交报价”弹窗，移除了备注和数量字段。
   - 订单详情添加 `#pc-detail-payment-voucher-card` 付款凭证展示容器。
-* **[h5.html](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/h5.html)**：
+* **[h5.html](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/h5.html)**：
   - 同步简化 H5 “发布需求”和“提交报价”表单 HTML，移除购物车顶部全局入口，并在 H5 购物车内按店铺渲染。
 
 ### 4.2 JavaScript 逻辑文件改动
-* **[mock-data.js](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/assets/js/mock-data.js)**：
+* **[mock-data.js](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/assets/js/mock-data.js)**：
   - 订单测试数据类型属性统一调整为 `现货交易` 和 `竞价交易`。
   - 扩充了竞价出价历史与待审核、已拒绝的竞价公告案例。
-* **[components.js](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/assets/js/components.js)**：
+* **[components.js](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/assets/js/components.js)**：
   - 重写了 `UI.showOrderDetail`，加入双通道货款支付凭证（线下汇款回执/在线回单流水）的渲染及点击预览警示逻辑。
   - 植入全局状态点击秒切委托代理器，方便快速切换演示。
   - 修复 `UI.showDemandQuotesModal` 的字段空指针异常。
-* **[admin.js](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/assets/js/admin.js)**：
+* **[admin.js](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/assets/js/admin.js)**：
   - 移除了供求列表渲染中的 `备注` 数据单元格。
   - 删除了已通过资源的 `驳回重审` 动作。
   - 剔除了运营端竞价监控的 `编辑` 与 `删除` 操作按钮，重构状态 tag 为纯粹的流程节点名字（无括弧后缀）。
   - 实现了 `showBiddingDetail` 只读报价排行弹窗渲染逻辑，绑定了新审核模态框的提交。
-* **[mall.js](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/assets/js/mall.js)**：
+* **[mall.js](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/assets/js/mall.js)**：
   - 将购物车所有操作函数中的比较操作符由强等于 `===` 升级为宽等于 `==`，兼容数值和字符串 ID 匹配。
   - 移除求购大厅卡片中的“查看报价”按钮，简化报价提交参数。
   - 首页及寻源卡片渲染中移除 `d.title` 引用，降级为 `d.goodsName` 解决渲染奔溃。
-* **[h5.js](file:///Users/barry/Desktop/工作/享宇森云/商流/platform/assets/js/h5.js)**：
+* **[h5.js](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/platform/assets/js/h5.js)**：
   - 同步同步 H5 侧的购物车宽松匹配及报价、发布需求参数简化。
 
 ---
@@ -144,7 +144,7 @@
 本项目配置了强制性的 Agent 规则。任何 AI Agent 在处理本项目代码、需求、回答用户问题或执行终端/文件操作前，**必须优先触发执行 `/grill-me` 追问与压力测试工作流**，通过单问题交互逐一明确方案、厘清依赖后再进行编码与变更。
 
 ### 6.1 Grill-Me Skill 目录及文件位置
-* **项目级规则文件**：[.agents/rules/grill-me.md](file:///Users/barry/Desktop/工作/享宇森云/商流/.agents/rules/grill-me.md)
+* **项目级规则文件**：[.agents/rules/grill-me.md](file:///Users/barry/Desktop/Obsidian/享宇森云/商流/.agents/rules/grill-me.md)
 * **全局配置文件**：
   * [/Users/barry/.gemini/config/GEMINI.md](file:///Users/barry/.gemini/config/GEMINI.md)
   * [/Users/barry/.agents/GEMINI.md](file:///Users/barry/.agents/GEMINI.md)

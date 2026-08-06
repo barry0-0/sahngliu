@@ -1,8 +1,8 @@
 import os
 import re
 
-slides_dir = "/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/slides"
-assets_img_dir = "/Users/barry/Desktop/工作/享宇森云/商流/ai-efficiency-ppt/assets/img"
+slides_dir = "/Users/barry/Desktop/Obsidian/享宇森云/商流/ai-efficiency-ppt/slides"
+assets_img_dir = "/Users/barry/Desktop/Obsidian/享宇森云/商流/ai-efficiency-ppt/assets/img"
 
 for filename in os.listdir(slides_dir):
     if not filename.endswith(".html"):
