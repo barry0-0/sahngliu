@@ -274,7 +274,11 @@ window.MallApp = {
     const grid1 = document.getElementById('grid-home-products');
     const grid2 = document.getElementById('grid-spot-products');
     if (grid1 && !keyword && !shopId) {
-      const top4 = MockData.products.filter(p => p.status === 1).slice(0, 4);
+      // 首页精选商品：过滤已上架(status===1)，按 listTime / createTime 降序排序（最新到最旧），取前4条
+      const top4 = MockData.products
+        .filter(p => p.status === 1)
+        .sort((a, b) => new Date(formatTimeSec(b.listTime || b.createTime)) - new Date(formatTimeSec(a.listTime || a.createTime)))
+        .slice(0, 4);
       let homeHtml = '';
       top4.forEach(p => {
         const isSpot = (p.shelfType === '现货' || !p.shelfType);
@@ -321,7 +325,10 @@ window.MallApp = {
     }
     if (grid2) {
       let spotHtml = '';
-      let filtered = MockData.products.filter(p => p.status === 1);
+      // 现货/预售市场：过滤已上架(status===1)，默认按 listTime / createTime 降序排序（最新到最旧）
+      let filtered = MockData.products
+        .filter(p => p.status === 1)
+        .sort((a, b) => new Date(formatTimeSec(b.listTime || b.createTime)) - new Date(formatTimeSec(a.listTime || a.createTime)));
       if (keyword) {
         filtered = filtered.filter(p => p.name.includes(keyword) || p.shopName.includes(keyword));
       }
@@ -531,12 +538,14 @@ window.MallApp = {
   },
 
   renderHomeExtras() {
-    // 渲染大宗求购
+    // 渲染大宗求购：只展示【展示中】(status===1)，按发布时间降序排序（最新到最旧），前4条
     const dGrid = document.getElementById('list-home-demands');
     if (dGrid) {
       let dHtml = '';
-      // 只展示【展示中】(status===1) 和【已下架】(status===2 || status===-1 || status==='已下架')
-      const targetDemands = MockData.demands.filter(d => d.status === 1 || d.status === 2 || d.status === -1 || d.status === '已下架').slice(0, 4);
+      const targetDemands = MockData.demands
+        .filter(d => d.status === 1)
+        .sort((a, b) => new Date(formatTimeSec(b.publishTime)) - new Date(formatTimeSec(a.publishTime)))
+        .slice(0, 4);
       
       targetDemands.forEach(d => {
         const goodsName = d.goodsName || d.title || '';
@@ -545,9 +554,6 @@ window.MallApp = {
         const qtyStr = d.quantity ? `${d.quantity} ${d.unit || '吨'}` : '';
         
         let statusTag = `<span style="color:#16a34a; font-size:11px; font-weight:bold; flex-shrink:0;">展示中</span>`;
-        if (d.status === 2 || d.status === -1 || d.status === '已下架') {
-          statusTag = `<span style="color:#94a3b8; font-size:11px; font-weight:500; flex-shrink:0;">已下架</span>`;
-        }
 
         dHtml += `
           <div class="product-card cursor-pointer" onclick="document.querySelector('.mall-nav-item[data-target=\\'mall-demand\\']').click()" style="margin: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #f1f5f9; background:#fff; height: 105px; box-sizing: border-box; overflow:hidden;">
@@ -567,13 +573,16 @@ window.MallApp = {
       dGrid.innerHTML = dHtml;
     }
 
-    // 渲染首页的 热门竞价
+    // 渲染首页的热门竞价：只展示【竞价中】(status===1)且已通过审核的，按创建/审核时间降序排序（最新到最旧），前4条
     const bidList = document.getElementById('list-home-bids');
     if (bidList) {
-      const bids = MockData.biddingAnnouncements.filter(b => b.auditStatus === '已通过' || !b.auditStatus).slice(0, 4); // 均展示4条
+      const bids = MockData.biddingAnnouncements
+        .filter(b => b.status === 1 && (b.auditStatus === '已通过' || !b.auditStatus))
+        .sort((a, b) => new Date(formatTimeSec(b.createdAt)) - new Date(formatTimeSec(a.createdAt)))
+        .slice(0, 4);
       let bHtml = '';
       bids.forEach(b => {
-        let tag = b.status === 1 ? '<span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">竞价中</span>' : '<span class="tag tag-secondary text-[10px]" style="border-radius: 6px; padding: 2px 6px;">已结束</span>';
+        let tag = '<span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">竞价中</span>';
         bHtml += `
           <div class="product-card cursor-pointer" onclick="MallApp.showBiddingDetail('${b.id}')" style="margin: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #f1f5f9; height: 105px; box-sizing: border-box; overflow:hidden;">
             <div class="product-info" style="padding: 12px 16px; height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
