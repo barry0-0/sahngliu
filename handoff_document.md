@@ -148,7 +148,7 @@
 * **全局配置文件**：
   * [/Users/barry/.gemini/config/GEMINI.md](file:///Users/barry/.gemini/config/GEMINI.md)
   * [/Users/barry/.agents/GEMINI.md](file:///Users/barry/.agents/GEMINI.md)
-* **内置 Skill 定义文件**：[/Users/barry/.gemini/config/skills/grilling/SKILL.md](file:///Users/barry/.gemini/config/skills/grilling/SKILL.md)
+* **内置 Skill 定义文件**：[/Users/barry/.agents/skills/batch-grill-me](file:///Users/barry/.agents/skills/batch-grill-me)
 
 ### 6.2 Agent 使用指南与推荐 Skill (Suggested Skills)
 1. **优先触发 Grill-Me**：当用户提出任何需求（或输入 `/grill-me`）时，Agent 必须**先使用 `ask_question` 工具逐个向用户提问**，梳理业务细节、推荐最佳选项，完成需求确认。
