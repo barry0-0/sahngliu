@@ -2182,8 +2182,8 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   // Render Status Banner
   const bannerMap = {
     0: { title: '订单待签约', desc: '请与买家确认合同条款，双方各自上传签署好的合同文件，上传后由运营平台统一审核。' },
-    4: { title: '订单待付款', desc: '买卖双方已签署合同，等待买方托管支付货款。' },
-    1: { title: '订单待发货', desc: '买方已托管支付，请您安排专车直达运送货品并录入快递单号发货。' },
+    4: { title: '订单待付款', desc: '买卖双方已签署合同，等待买方完成付款。' },
+    1: { title: '订单待发货', desc: '买方已付款，请您安排专车直达运送货品并录入快递单号发货。' },
     2: { title: '卖家已发货', desc: '您已完成发货，大宗专车正在配送中，等待买方确认收货。' },
     3: { title: '交易履约已完成', desc: '买方已核验货品并确认收货，结算货款已划拨至您的商户余额。' },
     '-1': { title: '订单已关闭', desc: o.closeReason || '交易关闭。' }
@@ -2197,7 +2197,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
 
   document.getElementById('merchant-detail-create-time').innerText = o.time || '2026-07-07 10:15:00';
-  document.getElementById('merchant-detail-pay-method').innerText = o.payMethod || '线上担保支付 (托管账户)';
+  document.getElementById('merchant-detail-pay-method').innerText = o.payMethod || '线上担保支付';
 
   // Action buttons
   const actContainer = document.getElementById('merchant-detail-top-actions');
@@ -2238,17 +2238,18 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   let currentStep = 0;
   if (o.status === 0) currentStep = 1;
   else if (o.status === 4) currentStep = 2;
-  else if (o.status === 1) currentStep = 3;
-  else if (o.status === 2) currentStep = 4;
-  else if (o.status === 3) currentStep = 5;
+  else if (o.status === 1) currentStep = 4;
+  else if (o.status === 2) currentStep = 5;
+  else if (o.status === 3) currentStep = 6;
 
   const steps = [
     { name: '1. 提交买单', time: o.time },
     { name: '2. 合同签署及审核', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
-    { name: '3. 资金托管', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
-    { name: '4. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
-    { name: '5. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
-    { name: '6. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00:00' : '' }
+    { name: '3. 买家的付款', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
+    { name: '4. 付款后的审核', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:30:00' : '' },
+    { name: '5. 卖家发货', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
+    { name: '6. 确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
+    { name: '7. 结算出账', time: (o.status === 3) ? '2026-07-09 10:00:00' : '' }
   ];
 
   stepsContainer.innerHTML = steps.map((st, index) => {
@@ -2268,7 +2269,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   }).join('') + `
     <!-- Line background -->
     <div style="position:absolute; top:16px; left:40px; right:40px; height:2px; background:#cbd5e1; z-index:0;"></div>
-    <div style="position:absolute; top:16px; left:40px; width:calc(${o.status === -1 ? 0 : Math.min(100, (currentStep / 5) * 100)}% - 80px); height:2px; background:var(--primary-color); z-index:0; transition: width 0.3s ease;"></div>
+    <div style="position:absolute; top:16px; left:40px; width:calc(${o.status === -1 ? 0 : Math.min(100, (currentStep / 6) * 100)}% - 80px); height:2px; background:var(--primary-color); z-index:0; transition: width 0.3s ease;"></div>
   `;
 
   // Goods
@@ -2346,7 +2347,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   if (voucherCard) {
     const voucherTitle = `<h3 class="text-base font-bold mb-3" style="color:#0f172a; display:flex; align-items:center; gap:8px;">
       <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
-      支付凭证与资金托管存证
+      支付凭证与付款审核存证
     </h3>`;
     if (o.status === 0) {
       voucherCard.style.display = 'none';
@@ -2371,7 +2372,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
       const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
       const voucherImages = (o.voucherImages || [
         { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
-        { label: '2. 平台托管账户资金划转凭单', name: '《平台合规托管账户资金划转确认函》', type: 'voucher' },
+        { label: '2. 平台付款审核划转凭单', name: '《平台合规付款审核划转确认函》', type: 'voucher' },
         { label: '3. 财务对账清算划转凭据', name: '《交易货款清算划划拨款凭单》', type: 'voucher' }
       ]).slice(0, 5);
 

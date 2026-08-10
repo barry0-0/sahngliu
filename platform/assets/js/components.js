@@ -104,9 +104,9 @@ window.UI = {
           <div style="margin-top: 24px;">
             <strong>主要条款说明：</strong>
             <ol style="margin-top: 6px; padding-left: 20px;">
-              <li><strong>交货期限：</strong>自订单合同生效且买方支付担保金入托管账户起3个工作日内发货。</li>
+              <li><strong>交货期限：</strong>自订单合同生效且买方支付担保金并完成付款起3个工作日内发货。</li>
               <li><strong>质量保证：</strong>货到目的地后，买方应在24小时内完成质量验收，如有异议需提供国家承认的第三方检测报告。</li>
-              <li><strong>结算路径：</strong>货款由平台监管托管，买方收到货并确认无异议后，由平台全额拨付至卖方。</li>
+              <li><strong>结算路径：</strong>货款由平台统一结算，买方收到货并确认无异议后，由平台全额拨付至卖方。</li>
             </ol>
           </div>
 
@@ -286,9 +286,10 @@ window.UI = {
       { num: 1, title: '订单创建', time: o.time || '2026-07-08 09:12', done: true },
       { num: 2, title: '合同签署', time: (o.buyerContractAuditStatus || o.sellerContractAuditStatus) && (o.buyerContractAuditStatus !== 'none' || o.sellerContractAuditStatus !== 'none') ? `${dateStr} 10:15` : '等待签署', done: o.status !== 0 && o.status !== 4 },
       { num: 3, title: '合同审核', time: (o.status === 4 || o.status === 1 || o.status === 2 || o.status === 3) ? `${dateStr} 11:20` : '等待审核', done: o.status !== 0 && o.status !== 4 },
-      { num: 4, title: '打款与核销', time: o.status === 4 ? '等待打款' : (o.status === 0 ? '等待签约' : `${dateStr} 14:00`), done: o.status !== 0 && o.status !== 4 },
-      { num: 5, title: '物流发货', time: o.status === 1 ? '备货中' : (o.status === 2 || o.status === 3 ? `${dateStr} 15:45` : '未发货'), done: o.status === 2 || o.status === 3 },
-      { num: 6, title: '签收结清', time: o.status === 3 ? `${dateStr} 18:30` : '等待确认', done: o.status === 3 }
+      { num: 4, title: '买家的付款', time: o.status === 4 ? '等待付款' : (o.status === 0 ? '等待签约' : `${dateStr} 14:00`), done: o.status !== 0 && o.status !== 4 },
+      { num: 5, title: '付款后的审核', time: o.status === 0 ? '等待签约' : (o.status === 4 ? '等待付款' : `${dateStr} 14:30`), done: o.status === 1 || o.status === 2 || o.status === 3 },
+      { num: 6, title: '物流发货', time: o.status === 1 ? '备货中' : (o.status === 2 || o.status === 3 ? `${dateStr} 15:45` : '未发货'), done: o.status === 2 || o.status === 3 },
+      { num: 7, title: '签收结清', time: o.status === 3 ? `${dateStr} 18:30` : '等待确认', done: o.status === 3 }
     ];
 
     let stepsHtml = `
@@ -296,7 +297,7 @@ window.UI = {
     `;
     stepItems.forEach((st, i) => {
       const activeColor = st.done ? '#10b981' : '#cbd5e1';
-      const isCurrent = (o.status === 0 && i === 1) || (o.status === 0 && i === 2) || (o.status === 4 && i === 3) || (o.status === 1 && i === 4) || (o.status === 2 && i === 5) || (o.status === 3 && i === 5);
+      const isCurrent = (o.status === 0 && i === 1) || (o.status === 0 && i === 2) || (o.status === 4 && i === 3) || (o.status === 1 && i === 5) || (o.status === 2 && i === 6) || (o.status === 3 && i === 6);
       stepsHtml += `
         <div style="display:flex; flex-direction:column; align-items:center; z-index:2; text-align:center;">
           <div style="width:28px; height:28px; border-radius:50%; background:${isCurrent ? '#7c3aed' : activeColor}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; box-shadow: ${isCurrent ? '0 0 0 4px rgba(124,58,237,0.2)' : 'none'};">
@@ -434,7 +435,7 @@ window.UI = {
                   : `<div style="display:flex; justify-content:space-between; align-items:center;">
                        <div>
                          <div style="font-weight:bold; color:#15803d;">在线支付：担保结算已结清</div>
-                         <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 托管状态: 平台监管中</div>
+                         <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 付款状态: 待审核</div>
                        </div>
                        <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
                      </div>`

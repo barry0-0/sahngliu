@@ -1489,7 +1489,7 @@ window.MallApp = {
     const timeEl = document.getElementById('pc-detail-create-time');
     if (timeEl) timeEl.innerText = o.createTime || '2026-07-07 10:15:00';
     const payEl = document.getElementById('pc-detail-pay-method');
-    if (payEl) payEl.innerText = o.payMethod || '线上担保支付 (托管账户)';
+    if (payEl) payEl.innerText = o.payMethod || '线上担保支付';
     const contractEl = document.getElementById('pc-detail-contract-no');
     if (contractEl) contractEl.innerText = o.contractNo || ('HT-' + o.id);
 
@@ -1513,13 +1513,13 @@ window.MallApp = {
     const sAvatar = document.getElementById('pc-detail-shop-avatar');
     if (sAvatar) sAvatar.innerText = (o.shopName || '商').charAt(0);
 
-    // 7. 状态 Banner 与 6步流程进度条
+    // 7. 状态 Banner 与 7步流程进度条
     const statusMap = {
       0: { title: '当前状态：待签约', desc: '请与卖家确认合同条款，双方各自上传签署好的合同文件，上传后由运营平台统一审核。', step: 0, tag: 'tag-warning' },
-      4: { title: '当前状态：待买家付款', desc: '合同双签成功，请将款项支付至平台监管托管账户。', step: 1, tag: 'tag-secondary' },
-      1: { title: '当前状态：买家已付款 (待卖家发货)', desc: '资金已入托管账户，商家正在调配货品安排装车配送。', step: 2, tag: 'tag-primary' },
-      2: { title: '当前状态：卖家已发货 (待买家确认收货)', desc: '货品已由专车运往指定仓储地点，请收货后及时核对质量并确认收货。', step: 3, tag: 'tag-info' },
-      3: { title: '当前状态：交易已完结 (已成功收货)', desc: '买家已确认收货，托管资金已打入卖家账户，交易圆满完成！', step: 4, tag: 'tag-success' },
+      4: { title: '当前状态：待买家付款', desc: '合同双签成功，请将款项支付至平台对公收款账户。', step: 2, tag: 'tag-secondary' },
+      1: { title: '当前状态：买家已付款 (待卖家发货)', desc: '买家已完成付款，商家正在调配货品安排装车配送。', step: 4, tag: 'tag-primary' },
+      2: { title: '当前状态：卖家已发货 (待买家确认收货)', desc: '货品已由专车运往指定仓储地点，请收货后及时核对质量并确认收货。', step: 5, tag: 'tag-info' },
+      3: { title: '当前状态：交易已完结 (已成功收货)', desc: '买家已确认收货，买家付款已打入卖家账户，交易圆满完成！', step: 6, tag: 'tag-success' },
       '-1': { title: '当前状态：订单已关闭', desc: '该订单已被取消或超期关闭。', step: 0, tag: 'tag-danger' }
     };
 
@@ -1560,8 +1560,8 @@ window.MallApp = {
       topActionsEl.innerHTML = actionHtml;
     }
 
-    // 渲染 6步流程图
-    const steps = ['提交订单', '双方签约', '托管付款', '商家发货', '确认收货', '交易完结'];
+    // 渲染 7步流程图
+    const steps = ['提交订单', '双方签约', '买家的付款', '付款后的审核', '商家发货', '确认收货', '交易完结'];
     const currentStepIndex = st.step;
     const stepsContainer = document.getElementById('pc-detail-steps');
     if (stepsContainer) {
@@ -1668,7 +1668,7 @@ window.MallApp = {
     if (voucherCard) {
       const voucherTitle = `<h3 class="text-base font-bold mb-3" style="color:#0f172a; display:flex; align-items:center; gap:8px; margin:0 0 12px 0;">
         <span style="width:4px; height:16px; background:#10b981; border-radius:2px; display:inline-block;"></span>
-        支付凭证与资金托管存证
+        支付凭证与付款审核存证
       </h3>`;
       const hasPaymentVoucher = !!(o.paymentVoucher);
 
@@ -1707,7 +1707,7 @@ window.MallApp = {
         const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
         const voucherImages = (o.voucherImages || [
           { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
-          { label: '2. 平台托管账户资金划转凭单', name: '《平台合规托管账户资金划转确认函》', type: 'voucher' },
+          { label: '2. 平台付款审核划转凭单', name: '《平台合规付款审核划转确认函》', type: 'voucher' },
           { label: '3. 财务对账清算划转凭据', name: '《交易货款清算划划拨款凭单》', type: 'voucher' }
         ]).slice(0, 5);
 

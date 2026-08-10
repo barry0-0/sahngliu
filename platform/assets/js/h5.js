@@ -1613,8 +1613,8 @@ const H5App = {
     // Status mapping
     const statusMap = {
       0: { title: '待签约', desc: '买卖双方各自上传签署好的合同文件，上传后由运营平台统一审核。' },
-      4: { title: '等待买方付款', desc: '请及时在钱包或通过线下对公向平台监管账户汇款。' },
-      1: { title: '等待卖家发货', desc: '资金托管入账已确认，等待卖家安排专车大宗运输发货。' },
+      4: { title: '等待买方付款', desc: '请及时在钱包或通过线下对公向平台对公收款账户汇款。' },
+      1: { title: '等待卖家发货', desc: '买家的付款已确认，等待卖家安排专车大宗运输发货。' },
       2: { title: '卖家已发货', desc: '专车已在途运输，请在收到货品后核对质量并确认收货。' },
       3: { title: '交易已完成', desc: '双方均已确认收货，货款已划拨至卖家商户余额。' },
       '-1': { title: '订单已关闭', desc: o.closeReason || '交易异常已关闭。' }
@@ -1718,7 +1718,7 @@ const H5App = {
         const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
         const voucherImages = (o.voucherImages || [
           { label: '1. 银行对公转账回单', name: '《银行对公转账电子回单》', type: 'voucher' },
-          { label: '2. 平台托管资金入账单', name: '《平台托管账户划转确认函》', type: 'voucher' },
+          { label: '2. 平台付款审核入账单', name: '《平台付款审核划转确认函》', type: 'voucher' },
           { label: '3. 财务结算清算凭据', name: '《交易货款清算凭单》', type: 'voucher' }
         ]).slice(0, 5);
 
@@ -1746,14 +1746,15 @@ const H5App = {
       let currentStep = 0;
     if (o.status === 0) currentStep = 1; // 签约中
     else if (o.status === 4) currentStep = 2; // 待付款
-    else if (o.status === 1) currentStep = 3; // 待发货
-    else if (o.status === 2) currentStep = 4; // 待签收
-    else if (o.status === 3) currentStep = 5; // 已完成
+    else if (o.status === 1) currentStep = 4; // 待发货
+    else if (o.status === 2) currentStep = 5; // 待签收
+    else if (o.status === 3) currentStep = 6; // 已完成
 
     const steps = [
       { name: '提交订单', time: o.time },
       { name: '双方合同签署及平台审核完成', time: (o.status >= 4 || o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 11:20:00' : '' },
-      { name: '货款资金平台托管入账', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
+      { name: '买家的付款', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:00:00' : '' },
+      { name: '付款后的审核', time: (o.status === 1 || o.status === 2 || o.status === 3) ? '2026-07-07 14:30:00' : '' },
       { name: '卖家安排专车发货配送', time: (o.status === 2 || o.status === 3) ? '2026-07-08 09:30:00' : '' },
       { name: '买方现场核验签字确认收货', time: (o.status === 3) ? '2026-07-09 08:30:00' : '' },
       { name: '财务清算划拨，订单履约完结', time: (o.status === 3) ? '2026-07-09 10:00:00' : '' }
