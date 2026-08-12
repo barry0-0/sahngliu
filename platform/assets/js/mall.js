@@ -573,22 +573,23 @@ window.MallApp = {
       dGrid.innerHTML = dHtml;
     }
 
-    // 渲染首页的热门竞价：只展示【竞价中】(status===1)且已通过审核的，按创建/审核时间降序排序（最新到最旧），前4条
+    // 渲染首页的热门竞价：只展示【竞价中】(status===1 || status===2)且已通过审核的，按创建/审核时间降序排序（最新到最旧），前4条
     const bidList = document.getElementById('list-home-bids');
     if (bidList) {
       const bids = MockData.biddingAnnouncements
-        .filter(b => b.status === 1 && (b.auditStatus === '已通过' || !b.auditStatus))
+        .filter(b => (b.status === 1 || b.status === 2) && (b.auditStatus === '已通过' || !b.auditStatus))
         .sort((a, b) => new Date(formatTimeSec(b.createdAt)) - new Date(formatTimeSec(a.createdAt)))
         .slice(0, 4);
       let bHtml = '';
       bids.forEach(b => {
         let tag = '<span class="tag tag-success text-[10px]" style="border-radius: 6px; padding: 2px 6px;">竞价中</span>';
+        const displayPrice = (b.currentMaxOffer && b.currentMaxOffer !== '-') ? b.currentMaxOffer : b.startPrice;
         bHtml += `
           <div class="product-card cursor-pointer" onclick="MallApp.showBiddingDetail('${b.id}')" style="margin: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #f1f5f9; height: 105px; box-sizing: border-box; overflow:hidden;">
             <div class="product-info" style="padding: 12px 16px; height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
               <div class="product-title truncate" title="${b.title}" style="font-size: 14px; font-weight: bold; color: #1e293b;">${b.title}</div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                <span class="product-price" style="color: var(--danger-color); font-weight: 800; font-size: 14px;">${b.currentMaxOffer || b.startPrice}</span>
+                <span class="product-price" style="color: var(--danger-color); font-weight: 800; font-size: 14px;">${displayPrice}</span>
                 <div class="flex items-center gap-2">
                   <span style="font-size: 11px; color: #64748b; font-weight: 500;">${b.shopName}</span>
                   ${tag}
@@ -1528,6 +1529,20 @@ window.MallApp = {
     const sDesc = document.getElementById('pc-detail-status-desc');
     if (sTitle) sTitle.innerText = st.title;
     if (sDesc) sDesc.innerText = st.desc;
+
+    // 现货订单 3 天倒计时
+    const spotBanner = document.getElementById('pc-detail-spot-countdown-banner');
+    const isSpotOrder = (o.orderType || o.typeStr || o.type || '').includes('现货');
+    if (spotBanner) {
+      if (isSpotOrder) {
+        spotBanner.style.display = 'flex';
+        const titleEl = document.getElementById('pc-spot-countdown-title');
+        if (titleEl) titleEl.innerText = o.status === 0 ? '现货订单未传合同自动取消倒计时：' : '现货大宗交易3天履约保障倒计时：';
+        UI.startSpotOrderCountdown(o.createTime || o.time, 'pc-spot-countdown-val');
+      } else {
+        spotBanner.style.display = 'none';
+      }
+    }
 
     // 顶部操作按钮
     const topActionsEl = document.getElementById('pc-detail-top-actions');

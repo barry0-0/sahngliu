@@ -2199,6 +2199,20 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   document.getElementById('merchant-detail-create-time').innerText = o.time || '2026-07-07 10:15:00';
   document.getElementById('merchant-detail-pay-method').innerText = o.payMethod || '线上担保支付';
 
+  // 现货订单 3 天倒计时
+  const spotBanner = document.getElementById('merchant-detail-spot-countdown-banner');
+  const isSpotOrder = (o.type || '').includes('现货');
+  if (spotBanner) {
+    if (isSpotOrder) {
+      spotBanner.style.display = 'flex';
+      const titleEl = document.getElementById('merchant-spot-countdown-title');
+      if (titleEl) titleEl.innerText = o.status === 0 ? '现货订单未传合同自动取消倒计时：' : '现货大宗交易3天履约保障倒计时：';
+      UI.startSpotOrderCountdown(o.time, 'merchant-spot-countdown-val');
+    } else {
+      spotBanner.style.display = 'none';
+    }
+  }
+
   // Action buttons
   const actContainer = document.getElementById('merchant-detail-top-actions');
   let actHtml = '';

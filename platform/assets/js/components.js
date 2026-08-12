@@ -240,6 +240,45 @@ window.UI = {
     this.openModal(modalId);
   },
 
+  startSpotOrderCountdown(orderTimeStr, elementId) {
+    if (window._spotOrderTimers && window._spotOrderTimers[elementId]) {
+      clearInterval(window._spotOrderTimers[elementId]);
+    }
+    if (!window._spotOrderTimers) window._spotOrderTimers = {};
+
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const baseMs = 3 * 24 * 60 * 60 * 1000;
+    if (!window._mockOrderStartTimes) window._mockOrderStartTimes = {};
+    if (!window._mockOrderStartTimes[elementId]) {
+      window._mockOrderStartTimes[elementId] = Date.now();
+    }
+    const targetMs = window._mockOrderStartTimes[elementId] + baseMs;
+
+    const update = () => {
+      const targetElement = document.getElementById(elementId);
+      if (!targetElement) {
+        if (window._spotOrderTimers[elementId]) {
+          clearInterval(window._spotOrderTimers[elementId]);
+          delete window._spotOrderTimers[elementId];
+        }
+        return;
+      }
+      const diff = Math.max(0, targetMs - Date.now());
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const pad = n => String(n).padStart(2, '0');
+      targetElement.innerText = `${pad(days)}日 ${pad(hours)}时 ${pad(minutes)}分 ${pad(seconds)}秒`;
+    };
+
+    update();
+    window._spotOrderTimers[elementId] = setInterval(update, 1000);
+  },
+
   /**
    * 关闭模态框
    * 查看订单轨迹和详情
@@ -255,6 +294,7 @@ window.UI = {
       return;
     }
 
+    const isSpotOrder = (o.type || o.orderType || o.typeStr || '').includes('现货');
     const shop = (MockData.shops || []).find(s => s.id === o.shopId || s.shopName === o.shopName);
     const sellerCompany = shop ? shop.companyName : (o.sellerCompany || '华东大宗物资贸易有限公司');
     const buyerPhone = o.buyerPhone || '138****8818';
@@ -331,6 +371,18 @@ window.UI = {
         <!-- Modal Body -->
         <div style="padding:24px; overflow-y:auto; flex:1; font-size:13px; color:#334155; display:flex; flex-direction:column; gap:20px; box-sizing:border-box;">
           
+          ${isSpotOrder ? `
+            <div style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border:1px solid #fed7aa; border-radius:10px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; color:#c2410c;">
+              <div style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:13px;">
+                <span style="font-size:18px;">⏱️</span>
+                <span>${o.status === 0 ? '现货订单未传合同自动取消倒计时：' : '现货大宗交易3天履约保障倒计时：'}</span>
+              </div>
+              <div style="font-family: monospace; font-size: 14px; font-weight: 800; color: #ea580c; background: #fff; padding: 4px 12px; border-radius: 6px; border: 1px solid #fdba74; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <span id="spot-modal-countdown-val">03日 00时 00分 00秒</span>
+              </div>
+            </div>
+          ` : ''}
+
           <!-- Step Process Bar -->
           ${stepsHtml}
 
@@ -453,6 +505,9 @@ window.UI = {
     `;
 
     document.body.appendChild(modal);
+    if (isSpotOrder) {
+      setTimeout(() => this.startSpotOrderCountdown(o.time, 'spot-modal-countdown-val'), 50);
+    }
     this.openModal('modal-order-detail');
   },
 

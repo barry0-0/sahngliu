@@ -1623,6 +1623,20 @@ const H5App = {
     document.getElementById('h5-detail-status-text').innerText = s.title;
     document.getElementById('h5-detail-status-desc').innerText = s.desc;
 
+    // 现货订单 3 天倒计时
+    const spotBanner = document.getElementById('h5-detail-spot-countdown-banner');
+    const isSpotOrder = (o.type || '').includes('现货');
+    if (spotBanner) {
+      if (isSpotOrder) {
+        spotBanner.style.display = 'flex';
+        const titleEl = document.getElementById('h5-spot-countdown-title');
+        if (titleEl) titleEl.innerText = o.status === 0 ? '现货订单未传合同取消倒计时：' : '现货3天履约保障倒计时：';
+        UI.startSpotOrderCountdown(o.time, 'h5-spot-countdown-val');
+      } else {
+        spotBanner.style.display = 'none';
+      }
+    }
+
     // Goods info
     const imgUrl = 'https://images.unsplash.com/photo-1590509653066-51f7bb54c2a4?auto=format&fit=crop&w=120&q=80';
     document.getElementById('h5-detail-goods-img').src = imgUrl;

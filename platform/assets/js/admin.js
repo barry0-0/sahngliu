@@ -2519,6 +2519,20 @@ AdminApp.showOrderDetailPage = function(orderId) {
   document.getElementById('admin-detail-buyer-name').innerText = o.buyerName || '--';
   document.getElementById('admin-detail-shop-name').innerText = o.shopName || '--';
 
+  // 现货订单 3 天倒计时
+  const spotBanner = document.getElementById('admin-detail-spot-countdown-banner');
+  const isSpotOrder = (o.type || '').includes('现货');
+  if (spotBanner) {
+    if (isSpotOrder) {
+      spotBanner.style.display = 'flex';
+      const titleEl = document.getElementById('admin-spot-countdown-title');
+      if (titleEl) titleEl.innerText = o.status === 0 ? '现货订单未传合同自动取消倒计时：' : '现货大宗交易3天履约保障倒计时：';
+      UI.startSpotOrderCountdown(o.time, 'admin-spot-countdown-val');
+    } else {
+      spotBanner.style.display = 'none';
+    }
+  }
+
   const statusBadge = document.getElementById('admin-detail-status-badge');
   statusBadge.innerHTML = UI.getOrderStatusBadge(o);
   const detailHasPendingContract = (o.buyerContractAuditStatus === 'pending' || o.sellerContractAuditStatus === 'pending') && !!(o.buyerContractFiles?.length || o.buyerContractFile) && !!(o.sellerContractFiles?.length || o.sellerContractFile);
