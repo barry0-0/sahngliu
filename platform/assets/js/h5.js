@@ -361,6 +361,51 @@ const H5App = {
     }
   },
 
+  buyNow(productId, quantity) {
+    const qtyInput = document.getElementById('h5-pd-qty');
+    const pId = productId || (qtyInput ? qtyInput.dataset.pid : null) || this.currentDetailId;
+    const qty = parseInt(quantity || (qtyInput ? qtyInput.value : 1)) || 1;
+    
+    const p = (MockData.products || []).find(item => item.id == pId) || {
+      id: pId,
+      name: '大宗现货商品',
+      price: '¥4,150.00',
+      unit: '吨',
+      shopName: '远大钢铁官方直营店',
+      shopId: 'S001'
+    };
+
+    const priceNum = parseFloat(String(p.price || p.unitPrice || '4150').replace(/[^\d.]/g, '')) || 4150;
+    const totalAmount = priceNum * qty;
+    const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const orderId = 'ORD' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + Math.floor(1000 + Math.random() * 9000);
+
+    const newOrder = {
+      id: orderId,
+      shopId: p.shopId || 'S001',
+      shopName: p.shopName || '远大钢铁官方直营店',
+      buyerName: 'H5买家用户',
+      productName: p.name || p.productName || '大宗现货商品',
+      amount: amountStr,
+      status: 0, // 待签约
+      type: '现货交易订单',
+      orderType: '现货交易订单',
+      time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      buyerContractAuditStatus: 'none',
+      sellerContractAuditStatus: 'none',
+      buyerContractFiles: [],
+      sellerContractFiles: []
+    };
+
+    MockData.orders.unshift(newOrder);
+    this.renderUserOrders();
+    UI.closeModal('sheet-h5-product-detail');
+
+    UI.showOrderGeneratedModal(orderId, () => {
+      this.switchH5View('view-uc-orders');
+    });
+  },
+
   renderDemands(keyword = '') {
     const list = document.getElementById('h5-demand-list');
     if (!list) return;

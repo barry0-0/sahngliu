@@ -793,7 +793,7 @@
     <!-- Action Buttons -->
     <div class="flex gap-4" style="display:flex; gap:16px;">
       <button class="btn btn-outline flex-1 py-3 text-sm font-bold transition-all hover:bg-slate-50" style="border-radius: 14px; border-color: var(--primary-color); color: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail');">加入购物车</button>
-      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.addToCart(MallApp.currentDetailId, document.getElementById('pd-qty').value); UI.closeModal('modal-product-detail'); document.querySelector('.mall-nav-item[data-target=\'mall-ucenter\']').click(); setTimeout(() => { const cartMenu = document.querySelector('.uc-menu-item[data-target=\'uc-cart\']'); if (cartMenu) cartMenu.click(); }, 50);">立即购买</button>
+      <button class="btn btn-primary flex-1 py-3 text-sm font-bold transition-all" style="border-radius: 14px; background: var(--primary-color); height: 48px; flex:1;" onclick="MallApp.buyNow(MallApp.currentDetailId, document.getElementById('pd-qty').value);">立即购买</button>
     </div>
   </div>
 </div>

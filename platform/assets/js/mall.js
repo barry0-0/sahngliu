@@ -525,6 +525,53 @@ window.MallApp = {
     UI.toast(`已加入购物车，数量: ${quantity}`, 'success');
   },
 
+  buyNow(productId, quantity = 1) {
+    const pId = productId || this.currentDetailId;
+    if (!pId) return;
+    const qty = parseInt(quantity) || 1;
+    const p = (MockData.products || []).find(item => item.id === pId) || {
+      id: pId,
+      name: '大宗现货商品',
+      price: '¥4,150.00',
+      unit: '吨',
+      shopName: '远大钢铁官方直营店',
+      shopId: 'S001'
+    };
+
+    const priceNum = parseFloat(String(p.price || p.unitPrice || '4150').replace(/[^\d.]/g, '')) || 4150;
+    const totalAmount = priceNum * qty;
+    const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const orderId = 'ORD' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + Math.floor(1000 + Math.random() * 9000);
+
+    const newOrder = {
+      id: orderId,
+      shopId: p.shopId || 'S001',
+      shopName: p.shopName || '远大钢铁官方直营店',
+      buyerName: this.currentBuyerName || '万通建材采购部',
+      productName: p.name || p.productName || '大宗现货商品',
+      amount: amountStr,
+      status: 0, // 待签约
+      type: '现货交易订单',
+      orderType: '现货交易订单',
+      time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      buyerContractAuditStatus: 'none',
+      sellerContractAuditStatus: 'none',
+      buyerContractFiles: [],
+      sellerContractFiles: []
+    };
+
+    MockData.orders.unshift(newOrder);
+    this.renderUCOrders();
+    UI.closeModal('modal-product-detail');
+
+    UI.showOrderGeneratedModal(orderId, () => {
+      document.querySelector('.mall-nav-item[data-target="mall-ucenter"]')?.click();
+      setTimeout(() => {
+        MallApp.showUCTab('uc-orders');
+      }, 50);
+    });
+  },
+
   showProductDetail(productId) {
     const p = MockData.products.find(p => p.id === productId);
     if (!p) return;

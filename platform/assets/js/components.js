@@ -280,6 +280,48 @@ window.UI = {
   },
 
   /**
+   * 订单生成成功告知弹窗
+   */
+  showOrderGeneratedModal(orderId, onViewOrders) {
+    let modal = document.getElementById('modal-order-generated-notice');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.id = 'modal-order-generated-notice';
+    modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.5) !important; backdrop-filter:blur(6px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:120000 !important; padding:20px !important; box-sizing:border-box !important;';
+
+    modal.innerHTML = `
+      <div style="background:#fff; border-radius:16px; width:440px; max-width:92vw; padding:28px 24px; text-align:center; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative;">
+        <div style="width:60px; height:60px; border-radius:50%; background:#dcfce7; color:#16a34a; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 16px auto;">✓</div>
+        <h3 style="margin:0 0 10px 0; font-size:18px; font-weight:bold; color:#0f172a;">已成功生成订单！</h3>
+        <p style="margin:0 0 20px 0; font-size:13px; color:#475569; line-height:1.6;">
+          系统已为您创建待签约交易订单：<br>
+          <strong style="font-family:monospace; color:#7c3aed; font-size:15px;">${orderId}</strong><br>
+          请前往个人中心的<strong style="color:#0f172a;">「我的订单」</strong>列表进行查看并上传合同处理。
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center;">
+          <button onclick="UI.closeModal('modal-order-generated-notice')" class="btn btn-outline" style="border-radius:20px; padding:8px 20px; font-size:13px;">稍后再看</button>
+          <button id="btn-go-to-orders" class="btn btn-primary" style="border-radius:20px; padding:8px 24px; font-weight:bold; font-size:13px;">前往订单中心查看</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    this.openModal('modal-order-generated-notice');
+
+    const btnGo = document.getElementById('btn-go-to-orders');
+    if (btnGo) {
+      btnGo.addEventListener('click', () => {
+        UI.closeModal('modal-order-generated-notice');
+        if (typeof onViewOrders === 'function') {
+          onViewOrders();
+        }
+      });
+    }
+  },
+
+  /**
    * 关闭模态框
    * 查看订单轨迹和详情
    */
