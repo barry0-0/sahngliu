@@ -1449,7 +1449,7 @@ window.MallApp = {
       html += `
         <tr>
           <td><a href="javascript:void(0)" onclick="MallApp.showOrderDetail('${o.id}')" style="font-weight:bold; color:var(--primary-color);">${o.id}</a></td>
-          <td>${o.productName}</td>
+          <td>${UI.formatListProductName(o)}</td>
           <td>
             <div>${o.shopName}</div>
             <div class="text-xs text-gray-400 bg-gray-100 px-1 rounded inline-block mt-1">No.${o.shopId}</div>
@@ -1835,6 +1835,13 @@ window.MallApp = {
       const statusStr = isIssued ? '已开具' : '待开具';
       const tagClass = isIssued ? 'tag-success' : 'tag-warning';
       const issueTimeStr = isIssued ? (i.issueTime || i.applyTime || '—') : '—';
+      const actBtns = isIssued
+        ? `<div style="display:flex; justify-content:center; gap:6px;">
+            <button class="btn btn-outline btn-sm" style="padding:2px 10px; font-size:12px;" onclick="MallApp.viewInvoice('${i.id}')">查看发票</button>
+            <button class="btn btn-primary btn-sm" style="padding:2px 12px; font-size:12px;" onclick="MallApp.downloadInvoice('${i.id}')">下载</button>
+           </div>`
+        : `<span style="font-size:12px; color:#94a3b8;">待商家开具</span>`;
+
       html += `
         <tr>
           <td class="text-center font-mono" style="color:#64748b;">${String(idx + 1).padStart(2, '0')}</td>
@@ -1844,10 +1851,20 @@ window.MallApp = {
           <td style="color:#64748b; font-size:13px;">${i.applyTime || i.createTime || '—'}</td>
           <td style="color:#64748b; font-size:13px;">${issueTimeStr}</td>
           <td class="text-center"><span class="tag ${tagClass}">【${statusStr}】</span></td>
+          <td class="text-center">${actBtns}</td>
         </tr>
       `;
     });
-    if (tbody) tbody.innerHTML = html || '<tr><td colspan="7" class="text-center p-4 text-secondary">暂无发票申请记录</td></tr>';
+    if (tbody) tbody.innerHTML = html || '<tr><td colspan="8" class="text-center p-4 text-secondary">暂无发票申请记录</td></tr>';
+  },
+
+  viewInvoice(invId) {
+    const inv = MockData.invoices.find(i => i.id === invId);
+    UI.previewInvoice(inv || { id: invId });
+  },
+
+  downloadInvoice(invId) {
+    UI.downloadInvoice(invId);
   },
 
   _msgTab: 'spot',

@@ -1627,7 +1627,7 @@ const H5App = {
               </div>
               ${statusTag}
             </div>
-            <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">${o.productName}</div>
+            <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">${UI.formatListProductName(o)}</div>
             <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">店铺: ${o.shopName}</div>
             <div class="flex justify-between items-center mt-3" style="display:flex; justify-content:space-between; align-items:center;">
               <div class="text-danger font-bold text-base" style="font-size: 16px; font-family: monospace;">${o.amount}</div>
@@ -2145,8 +2145,9 @@ const H5App = {
           </div>
 
           ${isIssued ? `
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 2px; display: flex; justify-content: flex-end;">
-              <button class="btn btn-primary btn-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 12px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none; color: #fff; font-weight: bold;" onclick="UI.toast('已拉取电子发票文件，可随时查阅打印', 'info')">查看电子发票</button>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 2px; display: flex; justify-content: flex-end; gap: 8px;">
+              <button class="btn btn-outline btn-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 12px;" onclick="H5App.viewInvoice('${inv.id}')">查看发票</button>
+              <button class="btn btn-primary btn-sm" style="border-radius: 12px; font-size: 11px; padding: 4px 12px; background: linear-gradient(135deg, #9a66e4, #7e22ce); border: none; color: #fff; font-weight: bold;" onclick="H5App.downloadInvoice('${inv.id}')">下载</button>
             </div>
           ` : ''}
         </div>
@@ -2154,6 +2155,15 @@ const H5App = {
     });
 
     list.innerHTML = html;
+  },
+
+  viewInvoice(invId) {
+    const inv = (window.MockData.invoices || []).find(i => i.id === invId);
+    UI.previewInvoice(inv || { id: invId });
+  },
+
+  downloadInvoice(invId) {
+    UI.downloadInvoice(invId);
   },
 
   applyInvoice(orderId) {

@@ -5,6 +5,32 @@
 
 window.UI = {
   /**
+   * 订单列表中商品名称格式化 (多个商品只显示首个商品+省略号)
+   */
+  formatListProductName(order) {
+    if (!order) return '--';
+    
+    // 1. 如果 order.products 数组存在且多于1项
+    if (Array.isArray(order.products) && order.products.length > 0) {
+      const firstItem = order.products[0];
+      const firstName = firstItem.name || firstItem.productName || '大宗商品';
+      if (order.products.length > 1) {
+        return `${firstName}...`;
+      }
+      return firstName;
+    }
+
+    // 2. 如果 order.productName 包含顿号 '、'
+    const rawName = String(order.productName || '');
+    if (rawName.includes('、')) {
+      const firstPart = rawName.split('、')[0].trim();
+      return `${firstPart}...`;
+    }
+
+    return rawName || '--';
+  },
+
+  /**
    * Toast 提示框
    * @param {string} message 提示信息
    * @param {string} type 'success' | 'error' | 'info' | 'warning'
@@ -359,6 +385,66 @@ window.UI = {
         }
       });
     }
+  },
+
+  /**
+   * 电子发票预览弹窗
+   */
+  previewInvoice(inv) {
+    let modal = document.getElementById('modal-invoice-preview');
+    if (modal) modal.remove();
+
+    const invId = inv ? (inv.id || 'INV202607010001') : 'INV202607010001';
+    const amount = inv ? (inv.amount || '¥155,000.00') : '¥155,000.00';
+    const time = inv ? (inv.issueTime || inv.applyTime || '2026-07-15 14:00:00') : '2026-07-15 14:00:00';
+
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.id = 'modal-invoice-preview';
+    modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.6) !important; backdrop-filter:blur(6px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:120000 !important; padding:20px !important; box-sizing:border-box !important;';
+
+    modal.innerHTML = `
+      <div style="background:#fff; border-radius:16px; width:600px; max-width:92vw; padding:24px; text-align:left; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:16px; font-weight:bold; color:#0f172a; display:flex; align-items:center; gap:8px;">
+            <span>🧾 增值税电子普通发票</span>
+            <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px; font-weight:normal;">已验真</span>
+          </h3>
+          <button onclick="UI.closeModal('modal-invoice-preview')" style="border:none; background:none; font-size:20px; color:#64748b; cursor:pointer;">&times;</button>
+        </div>
+
+        <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; padding:20px; margin-bottom:20px; font-family:monospace;">
+          <div style="text-align:center; font-size:18px; font-weight:bold; color:#1e293b; margin-bottom:16px;">浙江增值税电子普通发票</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px; color:#475569;">
+            <div>发票代码：<strong style="color:#0f172a;">033002600111</strong></div>
+            <div>发票号码：<strong style="color:#7c3aed;">${invId}</strong></div>
+            <div>开票日期：<span>${time}</span></div>
+            <div>校验码：<span>8829 4019 5521 9081</span></div>
+            <div>购买方：<span>万通建材采购部 (91330100MA23456789)</span></div>
+            <div>销售方：<span>远大钢铁官方直营店 (91330108MA88776655)</span></div>
+          </div>
+          <div style="border-top:1px solid #e2e8f0; margin-top:12px; padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:bold; color:#334155;">价税合计（大写）：</span>
+            <span style="font-size:16px; font-weight:bold; color:#dc2626;">${amount}</span>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button onclick="UI.closeModal('modal-invoice-preview')" class="btn btn-outline" style="border-radius:20px; padding:8px 20px; font-size:13px;">关闭预览</button>
+          <button onclick="UI.downloadInvoice('${invId}')" class="btn btn-primary" style="border-radius:20px; padding:8px 24px; font-weight:bold; font-size:13px; background:var(--primary-color);">下载电子发票 (PDF)</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    this.openModal('modal-invoice-preview');
+  },
+
+  /**
+   * 电子发票下载
+   */
+  downloadInvoice(invId) {
+    UI.toast(`📥 电子发票【${invId}】(PDF/OFD文件) 已开始下载`, 'success');
   },
 
   /**

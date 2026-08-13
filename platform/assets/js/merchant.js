@@ -1174,6 +1174,7 @@ const MerchantApp = {
           <td>${idx + 1}</td>
           <td><a href="javascript:void(0)" onclick="MerchantApp.showOrderDetailPage('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
           <td><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
+          <td style="font-weight:bold; color:#0f172a; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${UI.formatListProductName(o)}</td>
           <td style="font-weight:bold; color:#334155;">${o.buyerName}</td>
           <td class="font-mono text-secondary">${buyerPhone}</td>
           <td class="font-bold text-danger">${o.amount}</td>
@@ -1189,7 +1190,7 @@ const MerchantApp = {
       `;
     });
     if(tbody) {
-      tbody.innerHTML = html || '<tr><td colspan="9" class="text-center p-4 text-secondary">没有找到符合条件的订单数据</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="10" class="text-center p-4 text-secondary">没有找到符合条件的订单数据</td></tr>';
       this._appendPagination(tbody, myOrders.length);
     }
   },

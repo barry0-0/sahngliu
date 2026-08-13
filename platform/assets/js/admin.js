@@ -891,6 +891,7 @@ const AdminApp = {
           <td>${idx + 1}</td>
           <td><a href="javascript:void(0)" onclick="AdminApp.showOrderDetailPage('${o.id}')" style="font-weight:bold; color:var(--primary-color); font-family:monospace;">${o.id}</a></td>
           <td><span class="tag tag-info" style="font-size:11px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;">${o.type || '现货交易订单'}</span></td>
+          <td style="font-weight:bold; color:#0f172a; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${UI.formatListProductName(o)}</td>
           <td style="font-weight:bold;">${o.buyerName}</td>
           <td style="font-family:monospace; color:#0284c7;">${buyerPhone}</td>
           <td style="font-weight:bold;">${o.shopName}</td>
@@ -910,7 +911,7 @@ const AdminApp = {
         </tr>
       `;
     });
-    tbody.innerHTML = html || '<tr><td colspan="12" class="text-center p-4 text-secondary">暂无符合条件的订单记录</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="13" class="text-center p-4 text-secondary">暂无符合条件的订单记录</td></tr>';
     this._appendPagination(tbody, list.length);
   },
 

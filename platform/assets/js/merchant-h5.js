@@ -255,7 +255,7 @@ const MH5App = {
             <div style="font-family: monospace; font-size: 12px; color: #64748b;">${o.id}</div>
             ${statusTag}
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">${o.productName}</div>
+          <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">${UI.formatListProductName(o)}</div>
           <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">买方: ${o.buyerName}</div>
           <div class="flex justify-between items-center mt-3" style="display:flex; justify-content:space-between; align-items:center;">
             <div class="text-danger font-bold text-base" style="font-size: 16px; font-family: monospace;">${o.amount}</div>
