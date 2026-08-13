@@ -322,6 +322,46 @@ window.UI = {
   },
 
   /**
+   * 购物车生成订单二次确认弹窗 (精简版)
+   */
+  confirmCartCheckout(orderInfo, onConfirm) {
+    let modal = document.getElementById('modal-confirm-cart-checkout');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.id = 'modal-confirm-cart-checkout';
+    modal.style.cssText = 'position:fixed !important; inset:0 !important; background:rgba(15,23,42,0.5) !important; backdrop-filter:blur(6px) !important; display:flex !important; align-items:center !important; justify-content:center !important; z-index:120000 !important; padding:20px !important; box-sizing:border-box !important;';
+
+    modal.innerHTML = `
+      <div style="background:#fff; border-radius:16px; width:380px; max-width:90vw; padding:24px 20px; text-align:center; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative;">
+        <div style="width:48px; height:48px; border-radius:50%; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 12px auto;">❓</div>
+        <h3 style="margin:0 0 8px 0; font-size:17px; font-weight:bold; color:#0f172a;">是否确认生成订单？</h3>
+        <p style="margin:0 0 20px 0; font-size:13px; color:#64748b; line-height:1.5;">
+          确认后将提交购物车中所选商品，生成对应的待签约交易订单。
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center;">
+          <button onclick="UI.closeModal('modal-confirm-cart-checkout')" class="btn btn-outline" style="border-radius:20px; padding:8px 22px; font-size:13px;">取消</button>
+          <button id="btn-confirm-checkout-action" class="btn btn-primary" style="border-radius:20px; padding:8px 24px; font-weight:bold; font-size:13px; background:var(--primary-color);">确认生成</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    this.openModal('modal-confirm-cart-checkout');
+
+    const btnConfirm = document.getElementById('btn-confirm-checkout-action');
+    if (btnConfirm) {
+      btnConfirm.addEventListener('click', () => {
+        UI.closeModal('modal-confirm-cart-checkout');
+        if (typeof onConfirm === 'function') {
+          onConfirm();
+        }
+      });
+    }
+  },
+
+  /**
    * 关闭模态框
    * 查看订单轨迹和详情
    */

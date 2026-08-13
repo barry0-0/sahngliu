@@ -1492,44 +1492,50 @@ const H5App = {
     const firstItem = selectedItems[0];
     const totalAmount = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
-    const orderId = 'ORD' + Date.now().toString().substring(5);
 
-    // 构建商品名称串 (支持同商家多个货品显示)
-    const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
-
-    const newOrder = {
-      id: orderId,
-      shopId: firstItem.shopId,
+    // 二次确认弹窗
+    UI.confirmCartCheckout({
       shopName: firstItem.shopName,
-      buyerName: 'H5买家用户',
-      productName: productNamesStr,
-      amount: amountStr,
-      status: 0, // 待签约
-      type: '现货交易',
-      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      products: selectedItems.map(item => ({
-        name: item.productName || item.name,
-        price: item.price,
-        quantity: item.quantity,
-        amount: item.price * item.quantity
-      }))
-    };
+      totalAmountStr: amountStr,
+      products: selectedItems
+    }, () => {
+      const orderId = 'ORD' + Date.now().toString().substring(5);
+      const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
 
-    // 插入订单库
-    MockData.orders.unshift(newOrder);
+      const newOrder = {
+        id: orderId,
+        shopId: firstItem.shopId,
+        shopName: firstItem.shopName,
+        buyerName: 'H5买家用户',
+        productName: productNamesStr,
+        amount: amountStr,
+        status: 0, // 待签约
+        type: '现货交易',
+        time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        products: selectedItems.map(item => ({
+          name: item.productName || item.name,
+          price: item.price,
+          quantity: item.quantity,
+          amount: item.price * item.quantity
+        }))
+      };
 
-    // 清理选中的购物车项
-    MockData.cart = MockData.cart.filter(item => !item.checked);
+      // 插入订单库
+      MockData.orders.unshift(newOrder);
 
-    // 更新购物车渲染与角标
-    this.renderCart();
-    this.updateCartBadge();
-    if (window.MainApp) MainApp.updateCartCount();
+      // 清理选中的购物车项
+      MockData.cart = MockData.cart.filter(item => !item.checked);
 
-    UI.toast(`订单已生成，请在此进行签约！`, 'success');
+      // 更新购物车渲染与角标
+      this.renderCart();
+      this.updateCartBadge();
+      if (window.MainApp) MainApp.updateCartCount();
 
-    // 切换到“我的”订单列表
-    this.switchH5View('view-uc-orders');
+      // 告知已生成订单
+      UI.showOrderGeneratedModal(orderId, () => {
+        this.switchH5View('view-uc-orders');
+      });
+    });
   },
 
   currentUserOrderFilter: 'all',

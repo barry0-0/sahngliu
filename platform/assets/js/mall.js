@@ -2278,42 +2278,49 @@ window.MallApp = {
     const firstItem = selectedItems[0];
     const totalAmount = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const amountStr = '¥' + totalAmount.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
-    const orderId = 'ORD' + Date.now().toString().substring(5);
 
-    // 构建商品名称串 (支持同商家多个货品显示)
-    const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
-
-    const newOrder = {
-      id: orderId,
-      shopId: firstItem.shopId,
+    // 购物车二次确认弹窗
+    UI.confirmCartCheckout({
       shopName: firstItem.shopName,
-      buyerName: this.currentBuyerName || '万通建材采购部',
-      productName: productNamesStr,
-      amount: amountStr,
-      status: 0, // 待签约
-      type: '现货交易',
-      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      products: selectedItems.map(item => ({
-        name: item.productName || item.name,
-        price: item.price,
-        quantity: item.quantity,
-        amount: item.price * item.quantity
-      }))
-    };
+      totalAmountStr: amountStr,
+      products: selectedItems
+    }, () => {
+      const orderId = 'ORD' + Date.now().toString().substring(5);
+      const productNamesStr = selectedItems.map(item => `${item.productName || item.name} (${item.quantity}件)`).join('、');
 
-    // 将新订单加入 MockData.orders 最前
-    MockData.orders.unshift(newOrder);
+      const newOrder = {
+        id: orderId,
+        shopId: firstItem.shopId,
+        shopName: firstItem.shopName,
+        buyerName: this.currentBuyerName || '万通建材采购部',
+        productName: productNamesStr,
+        amount: amountStr,
+        status: 0, // 待签约
+        type: '现货交易',
+        time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        products: selectedItems.map(item => ({
+          name: item.productName || item.name,
+          price: item.price,
+          quantity: item.quantity,
+          amount: item.price * item.quantity
+        }))
+      };
 
-    // 清理购物车中被选中的商品
-    MockData.cart = MockData.cart.filter(item => !item.checked);
+      // 将新订单加入 MockData.orders 最前
+      MockData.orders.unshift(newOrder);
 
-    this.renderCart();
+      // 清理购物车中被选中的商品
+      MockData.cart = MockData.cart.filter(item => !item.checked);
 
-    UI.toast(`订单 ${orderId} 提交成功！已自动合并同商家商品。`, 'success');
-    
-    // 跳转到订单管理页面
-    this.renderUCOrders();
-    document.querySelector('.uc-menu-item[data-target="uc-orders"]').click();
+      this.renderCart();
+
+      // 告知已生成订单
+      UI.showOrderGeneratedModal(orderId, () => {
+        this.renderUCOrders();
+        const orderTab = document.querySelector('.uc-menu-item[data-target="uc-orders"]');
+        if (orderTab) orderTab.click();
+      });
+    });
   }
 };
 
