@@ -1052,10 +1052,20 @@
     </div>
     <div class="modal-body" style="padding:20px; font-size:13px;">
       <input type="hidden" id="edit-prod-id">
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品名称 <span class="text-danger">*</span></label>
-        <input type="text" id="edit-prod-name" class="form-control" style="width:100%; padding:8px;" placeholder="请输入商品名称">
+      <input type="hidden" id="edit-prod-img">
+
+      <!-- 商品图片与商品名称合并放置在最上方 -->
+      <div class="form-group mb-4" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0;">
+          <label class="form-label font-bold mb-1 block">商品图片</label>
+          <img id="edit-prod-img-preview" src="" style="width:48px; height:48px; border-radius:8px; border:1px solid #e2e8f0; object-fit:cover; display:block; background:#f8fafc;">
+        </div>
+        <div style="flex:1;">
+          <label class="form-label font-bold mb-1 block">商品名称 <span class="text-danger">*</span></label>
+          <input type="text" id="edit-prod-name" class="form-control" style="width:100%; height:48px; padding:8px 12px; border-radius:8px;" placeholder="请输入商品名称">
+        </div>
       </div>
+
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 140px; gap:12px;">
         <div>
           <label class="form-label font-bold mb-1 block">售卖单价 (数值) <span class="text-danger">*</span></label>
@@ -1063,14 +1073,7 @@
         </div>
         <div>
           <label class="form-label font-bold mb-1 block">计价单位 <span class="text-danger">*</span></label>
-          <select id="edit-prod-unit" class="form-control" style="width:100%; padding:8px;">
-            <option value="/ 吨">/ 吨</option>
-            <option value="/ 袋">/ 袋</option>
-            <option value="/ 箱">/ 箱</option>
-            <option value="/ 斤">/ 斤</option>
-            <option value="/ 立方">/ 立方</option>
-            <option value="/ 件">/ 件</option>
-          </select>
+          <input type="text" id="edit-prod-unit" class="form-control" style="width:100%; padding:8px;" placeholder="如: 吨">
         </div>
       </div>
       <div class="form-group mb-4" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
@@ -1101,13 +1104,6 @@
         <div>
           <label class="form-label font-bold mb-1 block">起售数量</label>
           <input type="text" id="edit-prod-min-qty" class="form-control" style="width:100%; padding:8px;" placeholder="如: 10袋 / 1吨">
-        </div>
-      </div>
-      <div class="form-group mb-4">
-        <label class="form-label font-bold mb-1 block">商品图片</label>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <img id="edit-prod-img-preview" src="" style="width:60px; height:60px; border-radius:6px; border:1px solid #ddd; object-fit:cover;">
-          <input type="text" id="edit-prod-img" class="form-control" style="flex:1; padding:8px;" placeholder="请输入网络图片或选择上传" onchange="document.getElementById('edit-prod-img-preview').src=this.value">
         </div>
       </div>
     </div>

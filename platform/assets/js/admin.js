@@ -589,15 +589,16 @@ const AdminApp = {
     document.getElementById('edit-prod-name').value = p.name;
     
     const priceStr = p.priceStr || '¥280.00 / 袋';
-    const priceMatch = priceStr.match(/(?:¥\s*)?([\d\.,]+)\s*(\/.*)?/);
+    const priceMatch = priceStr.match(/(?:¥\s*)?([\d\.,]+)(?:\s*\/\s*|\s+)?([^\d\.,\s]+)?/);
     if (priceMatch) {
-      document.getElementById('edit-prod-price-num').value = priceMatch[1];
-      if (priceMatch[2]) {
-        const unitEl = document.getElementById('edit-prod-unit');
-        if (unitEl) unitEl.value = priceMatch[2].trim();
-      }
+      document.getElementById('edit-prod-price-num').value = priceMatch[1] || '';
+      const rawUnit = (priceMatch[2] || p.unit || '吨').replace(/^\/\s*/, '').trim();
+      const unitEl = document.getElementById('edit-prod-unit');
+      if (unitEl) unitEl.value = rawUnit;
     } else {
       document.getElementById('edit-prod-price-num').value = p.priceStr;
+      const unitEl = document.getElementById('edit-prod-unit');
+      if (unitEl) unitEl.value = (p.unit || '吨').replace(/^\/\s*/, '').trim();
     }
 
     document.getElementById('edit-prod-cat').value = p.category;
@@ -648,8 +649,9 @@ const AdminApp = {
     if (!p) return;
     p.name = document.getElementById('edit-prod-name').value;
     const num = document.getElementById('edit-prod-price-num').value || '0.00';
-    const unit = document.getElementById('edit-prod-unit').value || '/ 吨';
-    p.priceStr = `¥${num} ${unit}`;
+    const rawUnit = (document.getElementById('edit-prod-unit').value || '吨').trim().replace(/^\/\s*/, '') || '吨';
+    p.unit = rawUnit;
+    p.priceStr = `¥${num} / ${rawUnit}`;
     p.category = document.getElementById('edit-prod-cat').value;
     p.shelfType = document.getElementById('edit-prod-shelf-type').value;
     p.stock = p.shelfType === '现货' ? (parseInt(document.getElementById('edit-prod-stock').value) || 0) : 0;
