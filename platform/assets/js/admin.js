@@ -258,6 +258,49 @@ const AdminApp = {
   renderCustomers() {
     const tbody = document.querySelector('#table-customers tbody');
     if (!tbody) return;
+
+    window.openAuditMerchantModal = (userId) => {
+      const user = MockData.users.find(u => u.id == userId);
+      if (!user) return;
+
+      const targetIdEl = document.getElementById('audit-merchant-target-id');
+      const infoEl = document.getElementById('audit-merchant-info');
+      if (targetIdEl) targetIdEl.value = user.id;
+      if (infoEl) {
+        const licensePreview = user.licenseImage
+          ? `<img src="${user.licenseImage}" alt="营业执照" style="width:100%; height:132px; object-fit:contain; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; cursor:pointer;" onclick="UI.openImagePreview('${user.licenseImage}')">`
+          : `<div style="height:132px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; background:#f8fafc;">未上传营业执照</div>`;
+        const detailItem = (label, value) => `
+          <div style="padding:10px 12px; border:1px solid #eef2f7; border-radius:8px; background:#fff;">
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">${label}</div>
+            <div style="font-size:13px; color:#0f172a; font-weight:600; word-break:break-all;">${value || '--'}</div>
+          </div>`;
+        infoEl.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:#0f172a;">企业认证资料</div>
+            <span style="padding:4px 8px; border-radius:999px; background:#fff7ed; color:#c2410c; font-size:11px;">待审核</span>
+          </div>
+          <div style="display:grid; grid-template-columns:180px 1fr; gap:14px; align-items:start;">
+            <div>
+              <div style="font-size:12px; color:#475569; font-weight:600; margin-bottom:8px;">营业执照</div>
+              ${licensePreview}
+              <div style="font-size:11px; color:#64748b; margin-top:6px; word-break:break-all;">${user.licenseFileName || '暂无文件名'}</div>
+              ${user.licenseImage ? `<button type="button" class="btn btn-text btn-sm" style="padding:4px 0; color:#7c3aed;" onclick="UI.openImagePreview('${user.licenseImage}')">查看原图</button>` : ''}
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              ${detailItem('企业名称', user.companyName)}
+              ${detailItem('统一社会信用代码', user.creditCode)}
+              ${detailItem('法定代表人', user.legalPerson)}
+              ${detailItem('经办人姓名', user.operatorName)}
+              ${detailItem('经办人手机号', user.operatorMobile)}
+              ${detailItem('法人身份证号码', user.idCardNo)}
+            </div>
+          </div>`;
+      }
+      const reasonEl = document.getElementById('audit-merchant-reason');
+      if (reasonEl) reasonEl.value = '';
+      UI.showModal('modal-audit-merchant');
+    };
     
     window.showCustomerDetail = (accountNo, certStatus, merchantStatus, regTime) => {
       document.getElementById('detail-account-no').innerText = accountNo;
@@ -319,7 +362,7 @@ const AdminApp = {
       let acts = `<a href="javascript:;" class="text-primary mr-3" style="color: #9a66e4;" onclick="showCustomerDetail('${u.mobile}', ${u.certStatus}, ${u.merchantStatus}, '${u.regTime}')">详情</a>`;
       
       if (companyStatus === '待审核' || (u.certStatus > 0 && u.merchantStatus === 0)) {
-         acts += `<button class="btn btn-text btn-sm text-primary" onclick="UI.showModal('modal-audit-merchant')" style="color: #9a66e4;">审核商家</button>`;
+         acts += `<button class="btn btn-text btn-sm text-primary" onclick="openAuditMerchantModal('${u.id}')" style="color: #9a66e4;">审核商家</button>`;
       }
 
       html += `
@@ -1649,7 +1692,6 @@ const AdminApp = {
         html += `
           <tr>
             <td><img src="${b.url}" style="width:120px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #eee;"></td>
-            <td class="text-gray-500 text-sm">#/pages/mall/index</td>
             <td>${tag}</td>
             <td>
               <button class="btn btn-text btn-sm text-primary" onclick="AdminApp.toggleBannerActive('${type}', '${b.id}')">${toggleText}</button>

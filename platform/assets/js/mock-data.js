@@ -100,9 +100,9 @@ window.MockData = {
   // --- 2. 统一用户库 (sys_user) ---
   users: [
     { id: '10001', mobile: '13800138000', name: '张三 (普通买家)', type: 1, certStatus: 0, merchantStatus: 0, regTime: '2026-06-15 10:23:00' },
-    { id: '10002', mobile: '13911112222', name: '万通建材采购部', type: 1, certStatus: 2, merchantStatus: 0, regTime: '2026-06-18 14:00:00' }, 
+    { id: '10002', mobile: '13911112222', name: '万通建材采购部', type: 1, certStatus: 2, merchantStatus: 0, regTime: '2026-06-18 14:00:00', companyName: '万通建材有限公司', creditCode: '91330100MA2B3C4D5E', legalPerson: '张三', operatorName: '张三', operatorMobile: '139****2222', idCardNo: '3301********1234', licenseImage: './assets/images/mock-business-license.svg', licenseFileName: '万通建材有限公司-营业执照.jpg' },
     { id: '10003', mobile: '13566668888', name: '远大钢铁集团', type: 2, certStatus: 2, merchantStatus: 2, regTime: '2026-05-01 09:30:00' }, 
-    { id: '10004', mobile: '18600009999', name: '李四 (新注册)', type: 1, certStatus: 0, merchantStatus: 1, regTime: '2026-07-08 08:15:00' },
+    { id: '10004', mobile: '18600009999', name: '李四 (新注册)', type: 1, certStatus: 0, merchantStatus: 1, regTime: '2026-07-08 08:15:00', companyName: '美德纳（上海）医药贸易有限公司', creditCode: '91310112MAD5T2164X', legalPerson: 'SHU HAN', operatorName: 'SHU HAN', operatorMobile: '188****1234', idCardNo: '3101********5678', licenseImage: './assets/images/mock-business-license.svg', licenseFileName: '美德纳（上海）医药贸易有限公司-营业执照.jpg' },
     { id: '10005', mobile: '13700005555', name: '华东木业发展', type: 2, certStatus: 2, merchantStatus: 2, regTime: '2026-03-12 11:15:00' },
     { id: '10006', mobile: '18888888888', name: '星辉建筑公司', type: 1, certStatus: 2, merchantStatus: 0, regTime: '2026-04-20 16:45:00' },
     { id: '10007', mobile: '15900001111', name: '海螺水泥直销', type: 2, certStatus: 2, merchantStatus: 2, regTime: '2026-01-10 09:00:00' }
