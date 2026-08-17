@@ -2413,7 +2413,28 @@ MerchantApp.showOrderDetailPage = function(orderId) {
   document.getElementById('merchant-detail-logistics-no').innerText = (o.status >= 2 || o.status === 3) ? `${o.logisticsCarrier || '顺丰速运'} ${o.logisticsNo || 'SF1480928120'}` : '--';
 
   // Buyer
-  document.getElementById('merchant-detail-buyer-name').innerText = o.buyerName || '--';
+  const buyerName = o.buyerName || '--';
+  const buyerRecord = (MockData.users || []).find(user => user.name === buyerName);
+  const buyerPhoneRaw = o.buyerPhone || buyerRecord?.mobile || buyerRecord?.operatorMobile;
+  const buyerPhone = buyerPhoneRaw ? String(buyerPhoneRaw).replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') : '138****8818';
+  const buyerNameHeaderEl = document.getElementById('merchant-detail-buyer-name');
+  const buyerNameCardEl = document.getElementById('merchant-detail-buyer-card-name');
+  const buyerPhoneEl = document.getElementById('merchant-detail-buyer-card-phone');
+  if (buyerNameHeaderEl) buyerNameHeaderEl.innerText = buyerName;
+  if (buyerNameCardEl) buyerNameCardEl.innerText = buyerName;
+  if (buyerPhoneEl) buyerPhoneEl.innerText = buyerPhone;
+
+  // Commission
+  const commissionAmountEl = document.getElementById('merchant-detail-commission-amount');
+  const commissionRateEl = document.getElementById('merchant-detail-commission-rate');
+  const commissionFeeEl = document.getElementById('merchant-detail-commission-fee');
+  const numericAmount = parseFloat(String(o.amount || '').replace(/[^\d.]/g, ''));
+  if (commissionAmountEl) commissionAmountEl.innerText = o.amount || '¥0.00';
+  if (commissionRateEl) commissionRateEl.innerText = '0.60%';
+  if (commissionFeeEl) {
+    const fee = !isNaN(numericAmount) ? numericAmount * 0.006 : 0;
+    commissionFeeEl.innerText = '¥' + fee.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
 
 };

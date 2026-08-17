@@ -538,7 +538,7 @@
                    </div>
                  </div>
 
-                 <!-- 右侧：物流、平台抽佣 -->
+                 <!-- 右侧：物流、买家信息、平台抽佣 -->
                  <div style="display:flex; flex-direction:column; gap:20px;">
                    <!-- 物流与收货人 -->
                    <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
@@ -548,6 +548,22 @@
                          <span style="color:#94a3b8; width:70px; display:inline-block;">快递单号:</span>
                          <span id="admin-detail-logistics-no" style="font-family:monospace; color:#0284c7; font-weight:bold;">--</span>
                        </div>
+                     </div>
+                   </div>
+
+                   <!-- 买家信息 -->
+                   <div class="card shadow-sm border-0" style="background:#fff; border-radius:12px; padding:20px;">
+                     <h4 class="font-bold text-sm mb-3" style="color:#0f172a; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">👤 交易买家信息</h4>
+                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                       <div style="width:40px; height:40px; border-radius:50%; background:var(--primary-bg); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">买</div>
+                       <div>
+                         <div id="admin-detail-buyer-card-name" style="font-weight:bold; color:#0f172a; font-size:14px;">--</div>
+                         <div style="font-size:11px; color:#16a34a; margin-top:2px;">✓ 平台认证真实采购方</div>
+                       </div>
+                     </div>
+                     <div style="font-size:13px; display:flex; justify-content:space-between; border-top:1px solid #f1f5f9; padding-top:10px;">
+                       <span style="color:#94a3b8;">买家手机号:</span>
+                       <span id="admin-detail-buyer-card-phone" style="color:#334155; font-family:monospace;">--</span>
                      </div>
                    </div>
 
@@ -1039,11 +1055,7 @@
   </div>
 </div>
 
-<script src="./assets/js/mock-data.js"></script>
-<script src="./assets/js/components.js"></script>
-<script src="./assets/js/admin.js"></script>
-<script src="./assets/js/prd-data-admin.js"></script>
-<script src="./assets/js/prd-pin-tool.js"></script>
+
 
 <!-- 编辑上架商品弹窗 -->
 <div class="modal-overlay" id="modal-edit-product" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-edit-product')">
@@ -1216,6 +1228,30 @@
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
       <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-audit-shop')">取消</button>
       <button class="btn btn-primary" style="border-radius:8px;" onclick="window.confirmSubmitAuditShop()">确定提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 店铺强行关停弹窗 -->
+<div class="modal-overlay" id="modal-suspend-shop" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-suspend-shop')">
+  <div class="modal" style="width: 500px; background:#fff; border-radius: 12px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-title font-bold text-main" style="font-size:16px; margin:0; color:#0f172a;">强行关停店铺</div>
+      <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;" onclick="UI.closeModal('modal-suspend-shop')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; font-size:13px;">
+      <input type="hidden" id="suspend-shop-id">
+      <div style="padding:12px 14px; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; color:#9a3412; line-height:1.7; margin-bottom:16px;">
+        关停后店铺将进入「闭店中」状态，相关店铺经营入口会被限制。请填写本次强制关停的处理理由。
+      </div>
+      <div class="form-group">
+        <label class="form-label font-bold mb-2 block" for="suspend-reason-input">关停理由</label>
+        <textarea id="suspend-reason-input" class="form-control" required style="width:100%; min-height:100px; padding:10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; resize:vertical;" placeholder="请输入强制关停理由"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">
+      <button class="btn btn-outline" style="border-radius:8px;" onclick="UI.closeModal('modal-suspend-shop')">取消</button>
+      <button class="btn btn-danger" style="border-radius:8px;" onclick="window.confirmSuspendShop()">确认关停</button>
     </div>
   </div>
 </div>
@@ -1401,6 +1437,11 @@
     </div>
   </div>
 </div>
+<script src="./assets/js/mock-data.js"></script>
+<script src="./assets/js/components.js"></script>
+<script src="./assets/js/admin.js"></script>
+<script src="./assets/js/prd-data-admin.js"></script>
+<script src="./assets/js/prd-pin-tool.js"></script>
 
 </body>
 </html>

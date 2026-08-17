@@ -975,6 +975,7 @@ Object.assign(window.UI, {
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay active';
+    modal.id = 'modal-contract-signing';
     modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
     
     const isMobile = window.innerWidth <= 768;
@@ -1167,6 +1168,7 @@ Object.assign(window.UI, {
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay active';
+    modal.id = 'modal-payment';
     modal.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
     
     const isMobile = window.innerWidth <= 768;
@@ -1353,6 +1355,7 @@ Object.assign(window.UI, {
 
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay active';
+    overlay.id = 'modal-apply-invoice';
     overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     const isMobile = window.innerWidth <= 768;
@@ -1470,6 +1473,7 @@ Object.assign(window.UI, {
 
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay active';
+    overlay.id = 'modal-demand-quotes-runtime';
     overlay.style.cssText = 'display:flex !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     const contentWidth = isMobile ? '100%' : '600px';

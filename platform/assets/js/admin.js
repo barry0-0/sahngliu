@@ -260,7 +260,13 @@ const AdminApp = {
     if (!tbody) return;
 
     window.openAuditMerchantModal = (userId) => {
-      const user = MockData.users.find(u => u.id == userId);
+      let user = null;
+      if (userId) {
+        user = MockData.users.find(u => u.id == userId || u.mobile == userId);
+      }
+      if (!user) {
+        user = MockData.users.find(u => u.merchantStatus === 1) || MockData.users[1] || MockData.users[0];
+      }
       if (!user) return;
 
       const targetIdEl = document.getElementById('audit-merchant-target-id');
@@ -301,19 +307,38 @@ const AdminApp = {
       if (reasonEl) reasonEl.value = '';
       UI.showModal('modal-audit-merchant');
     };
+    AdminApp.showAuditMerchantModal = window.openAuditMerchantModal;
     
     window.showCustomerDetail = (accountNo, certStatus, merchantStatus, regTime) => {
-      document.getElementById('detail-account-no').innerText = accountNo;
+      let user = null;
+      if (typeof accountNo === 'object' && accountNo !== null) {
+        user = accountNo;
+      } else if (accountNo) {
+        user = MockData.users.find(u => u.mobile === accountNo || u.id == accountNo);
+      }
+      if (!user) {
+        user = MockData.users.find(u => u.merchantStatus === 2) || MockData.users[2] || MockData.users[0];
+      }
+      const acc = user?.mobile || accountNo || '13566668888';
+      const cStatus = user ? user.certStatus : (certStatus !== undefined ? certStatus : 1);
+      const mStatus = user ? user.merchantStatus : (merchantStatus !== undefined ? merchantStatus : 2);
+      const rTime = user?.regTime || regTime || '2026-05-01 09:30:00';
+      const pTime = (cStatus > 0 ? (user?.certTime || '2026-05-01 09:30:00') : '');
+      const compTime = (mStatus === 2 ? (user?.merchantCertTime || '2026-06-02 11:11:26') : '');
+
+      const accEl = document.getElementById('detail-account-no');
+      if (accEl) accEl.innerText = acc;
       
       let html = '';
       
       let companyText = '未认证';
       let companyColor = 'error';
-      if (merchantStatus === 2) { companyText = '已认证'; companyColor = 'success'; }
-      else if (merchantStatus === 1) { companyText = '待审核'; companyColor = 'warning'; }
+      if (mStatus === 2) { companyText = '已认证 (通过)'; companyColor = 'success'; }
+      else if (mStatus === 1) { companyText = '待审核'; companyColor = 'warning'; }
       html += `
         <div class="timeline-item">
           <div class="timeline-dot ${companyColor}"></div>
+          ${compTime ? `<span class="timeline-time">${compTime}</span>` : ''}
           <div class="timeline-content">
             <span class="mr-4">企业认证</span>
             <span class="text-${companyColor === 'error' ? 'danger' : companyColor === 'success' ? 'success' : 'warning'}">${companyText}</span>
@@ -321,11 +346,12 @@ const AdminApp = {
         </div>
       `;
 
-      let personalText = certStatus > 0 ? '已认证' : '未认证';
-      let personalColor = certStatus > 0 ? 'success' : 'error';
+      let personalText = cStatus > 0 ? '已认证 (通过)' : '未认证';
+      let personalColor = cStatus > 0 ? 'success' : 'error';
       html += `
         <div class="timeline-item">
           <div class="timeline-dot ${personalColor}"></div>
+          ${pTime ? `<span class="timeline-time">${pTime}</span>` : ''}
           <div class="timeline-content">
             <span class="mr-4">个人认证</span>
             <span class="text-${personalColor === 'error' ? 'danger' : 'success'}">${personalText}</span>
@@ -336,14 +362,16 @@ const AdminApp = {
       html += `
         <div class="timeline-item">
           <div class="timeline-dot success"></div>
-          <span class="timeline-time">${regTime}</span>
-          <div class="timeline-content">注册</div>
+          <span class="timeline-time">${rTime}</span>
+          <div class="timeline-content">注册账号完成</div>
         </div>
       `;
       
-      document.getElementById('detail-timeline').innerHTML = html;
+      const timelineEl = document.getElementById('detail-timeline');
+      if (timelineEl) timelineEl.innerHTML = html;
       UI.showModal('modal-customer-detail');
     };
+    AdminApp.showCustomerDetail = window.showCustomerDetail;
 
     let html = '';
     MockData.users.forEach((u, idx) => {
@@ -762,19 +790,19 @@ const AdminApp = {
       let actBtn = '';
 
       if (d.status === 0) {
-        statusTag = `<span class="tag tag-warning">待审核</span>`;
+        statusTag = `<span class="tag tag-warning" style="pointer-events:none; cursor:default;">待审核</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditDemandModal('${d.id}')">审核</button>`;
       } else if (d.status === 1) {
-        statusTag = `<span class="tag tag-success">展示中</span>`;
+        statusTag = `<span class="tag tag-success" style="pointer-events:none; cursor:default;">展示中</span>`;
         actBtn = `
           <button class="btn btn-text btn-sm text-danger" onclick="window.forceOfflineDemand('${d.id}')">强行下架</button>
           <button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px; margin-left:4px;">查看报价 (${d.quotesCount || 0})</button>
         `;
       } else if (d.status === 2) {
-        statusTag = `<span class="tag tag-secondary">已完结</span>`;
+        statusTag = `<span class="tag tag-secondary" style="pointer-events:none; cursor:default;">已完结</span>`;
         actBtn = `<button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px;">查看报价 (${d.quotesCount || 0})</button>`;
       } else if (d.status === '已下架' || d.status === '审核未通过') {
-        statusTag = `<span class="tag tag-danger">已下架</span>`;
+        statusTag = `<span class="tag tag-danger" style="pointer-events:none; cursor:default;">已下架</span>`;
         if (d.rejectReason) {
           statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(拒审原因：${d.rejectReason})</div>`;
         } else if (d.offlineReason) {
@@ -784,7 +812,7 @@ const AdminApp = {
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       } else {
-        statusTag = `<span class="tag tag-secondary">${d.status}</span>`;
+        statusTag = `<span class="tag tag-secondary" style="pointer-events:none; cursor:default;">${d.status}</span>`;
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       }
 
@@ -979,10 +1007,10 @@ const AdminApp = {
     const isSellerPending = sellerAudit === 'pending';
 
     const bothUploaded = hasBuyerFile && hasSellerFile;
-    const bothPassed = buyerAudit === 'passed' && sellerAudit === 'passed';
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay active';
+    modal.id = 'modal-admin-contract-audit';
     modal.style.cssText = 'display:flex !important; opacity:1 !important; pointer-events:auto !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important;';
 
     // 生成合同文件列表 HTML
@@ -1008,10 +1036,6 @@ const AdminApp = {
           <div style="background:#f8fafc; padding:12px 16px; border-radius:8px; border:1px solid #e2e8f0;">
             <div><strong>订单编号：</strong><span style="font-family:monospace;">${o.id}</span></div>
           </div>
-          ${!bothUploaded ? `<div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; font-size:12px; color:#92400e;">⏳ 尚未双方上传完毕，待买家/卖家上传后运营统一审核。</div>` : 
-          (bothPassed ? `<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; font-size:12px; color:#166534;">✓ 双方合同均已审核通过，签约完成。</div>` : 
-          (buyerAudit === 'rejected' && sellerAudit === 'rejected' ? `<div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px 14px; font-size:12px; color:#b91c1c;">⏳ 双方合同均被打回，请买卖双方重新上传后审核。</div>` : 
-          `<div style="background:#fef3c7; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; font-size:12px; color:#92400e;">双方均已上传合同（买家${buyerFiles.length}份，卖家${sellerFiles.length}份），请统一审核。</div>`))}
 
           <!-- 买家合同卡片 -->
           <div style="border:1px solid ${hasBuyerFile ? '#bfdbfe' : '#e2e8f0'}; background:${hasBuyerFile ? '#eff6ff' : '#f8fafc'}; border-radius:10px; padding:14px; opacity:${hasBuyerFile ? '1' : '0.6'};">
@@ -1129,6 +1153,7 @@ const AdminApp = {
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay active';
+    modal.id = 'modal-admin-payment-audit';
     modal.style.cssText = 'display:flex !important; opacity:1 !important; pointer-events:auto !important; align-items:center; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:16px !important; box-sizing:border-box !important;';
 
     modal.innerHTML = `
@@ -2276,9 +2301,10 @@ window.toggleShopStatus = (shopId, newStatus) => {
 };
 
 window.openAuditShopModal = (shopId) => {
-  const shop = MockData.shops.find(s => s.id == shopId);
+  const shop = (shopId && MockData.shops.find(s => s.id == shopId)) || MockData.shops.find(s => s.status === '待审核') || MockData.shops[0];
   if (!shop) return;
-  document.getElementById('audit-shop-target-id').value = shopId;
+  const targetId = shop.id;
+  document.getElementById('audit-shop-target-id').value = targetId;
   const titleEl = document.getElementById('audit-modal-shop-title');
   if (titleEl) titleEl.innerText = `店铺入驻审核 - ${shop.shopName}`;
   const inputEl = document.getElementById('audit-reject-reason-input');
@@ -2319,9 +2345,10 @@ window.confirmSubmitAuditShop = () => {
 };
 
 window.openAuditProductModal = (prodId) => {
-  const prod = MockData.products.find(p => p.id == prodId);
+  const prod = (prodId && MockData.products.find(p => p.id == prodId)) || MockData.products.find(p => p.status === '待审核' || p.status === 0) || MockData.products[0];
   if (!prod) return;
-  document.getElementById('audit-product-target-id').value = prodId;
+  const targetId = prod.id;
+  document.getElementById('audit-product-target-id').value = targetId;
   const titleEl = document.getElementById('audit-modal-product-title');
   if (titleEl) titleEl.innerText = `上架商品审核 - ${prod.name}`;
   const inputEl = document.getElementById('audit-product-reject-input');
@@ -2358,9 +2385,10 @@ window.confirmSubmitAuditProduct = () => {
 };
 
 window.openAuditDemandModal = (demandId) => {
-  const demand = MockData.demands.find(d => d.id == demandId);
+  const demand = (demandId && MockData.demands.find(d => d.id == demandId)) || MockData.demands.find(d => d.status === 0 || d.status === '待审核') || MockData.demands[0];
   if (!demand) return;
-  document.getElementById('audit-demand-target-id').value = demandId;
+  const targetId = demand.id;
+  document.getElementById('audit-demand-target-id').value = targetId;
   const titleEl = document.getElementById('audit-modal-demand-title');
   if (titleEl) titleEl.innerText = `供求信息审核 - ${demand.goodsName || demand.title}`;
   const inputEl = document.getElementById('audit-demand-reject-input');
@@ -2561,7 +2589,15 @@ AdminApp.showOrderDetailPage = function(orderId) {
   typeTag.className = 'tag ' + (o.type.includes('现货') ? 'tag-primary' : o.type.includes('预售') ? 'tag-warning' : 'tag-info');
 
   document.getElementById('admin-detail-create-time').innerText = o.time || '2026-07-07 10:15:00';
-  document.getElementById('admin-detail-buyer-name').innerText = o.buyerName || '--';
+  const buyerName = o.buyerName || '--';
+  const buyerRecord = (MockData.users || []).find(user => user.name === buyerName);
+  const buyerPhoneRaw = o.buyerPhone || buyerRecord?.mobile || buyerRecord?.operatorMobile;
+  const buyerPhone = buyerPhoneRaw ? String(buyerPhoneRaw).replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') : '138****8818';
+  document.getElementById('admin-detail-buyer-name').innerText = buyerName;
+  const buyerNameCardEl = document.getElementById('admin-detail-buyer-card-name');
+  const buyerPhoneEl = document.getElementById('admin-detail-buyer-card-phone');
+  if (buyerNameCardEl) buyerNameCardEl.innerText = buyerName;
+  if (buyerPhoneEl) buyerPhoneEl.innerText = buyerPhone;
   document.getElementById('admin-detail-shop-name').innerText = o.shopName || '--';
 
   // 现货订单 3 天倒计时
@@ -2802,8 +2838,9 @@ AdminApp.showOrderDetailPage = function(orderId) {
     logisticsNoEl.innerText = (o.status >= 2 || o.status === 3) ? 'SF1480928120' : '--';
   }
 
-  document.getElementById('admin-detail-commission-amount').innerText = o.amount;
-  const numericAmount = parseFloat(o.amount.replace(/[^\d.]/g, ''));
+  document.getElementById('admin-detail-commission-amount').innerText = o.amount || '¥0.00';
+  document.getElementById('admin-detail-commission-rate').innerText = '0.60%';
+  const numericAmount = parseFloat(String(o.amount || '').replace(/[^\d.]/g, ''));
   if (!isNaN(numericAmount)) {
     const fee = numericAmount * 0.006;
     document.getElementById('admin-detail-commission-fee').innerText = '¥' + fee.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -2830,8 +2867,9 @@ AdminApp.resetBiddingResFilter = function() {
 };
 
 window.openAuditBiddingResModal = function(id) {
-  const r = MockData.biddingResources.find(x => x.id === id);
+  const r = (id && MockData.biddingResources.find(x => x.id === id)) || MockData.biddingResources.find(x => x.status === '待审核') || MockData.biddingResources[0];
   if (!r) return;
+  const targetId = r.id;
 
   // 填充资源信息摘要
   const infoEl = document.getElementById('audit-bidres-info');
@@ -2845,7 +2883,7 @@ window.openAuditBiddingResModal = function(id) {
   }
 
   // 重置表单
-  document.getElementById('audit-bidres-target-id').value = id;
+  document.getElementById('audit-bidres-target-id').value = targetId;
   const passRadio = document.querySelector('input[name="audit-bidres-radio"][value="pass"]');
   if (passRadio) passRadio.checked = true;
   document.getElementById('audit-bidres-reject-box').style.display = 'none';

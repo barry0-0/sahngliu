@@ -626,6 +626,7 @@ const MH5App = {
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay active';
+    modal.id = 'mh5-modal-award';
     modal.style.cssText = 'display:flex !important; align-items:flex-end; justify-content:center; background:rgba(15,23,42,0.4) !important; backdrop-filter:blur(8px) !important; position:fixed !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important; z-index:110000 !important; font-family:system-ui,-apple-system,sans-serif !important; padding:0 !important; box-sizing:border-box !important; opacity:1 !important; pointer-events:auto !important;';
 
     let offersHtml = '';
