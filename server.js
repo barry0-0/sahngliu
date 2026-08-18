@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
  * 本地实时保存于: ${new Date().toLocaleString()}
  */
 window.INITIAL_PRD_DATA = ${JSON.stringify(data || [], null, 2)};
-`;
+${payload.versionRegistry ? `window.PRD_VERSION_REGISTRY = ${JSON.stringify(payload.versionRegistry, null, 2)};\n` : ''}`;
         fs.writeFileSync(pageFilePath, pageJsContent, 'utf-8');
 
         // 1.2 如果提供了全量合并数据，更新 prd-data-all.js 和 prd-data-all.json
