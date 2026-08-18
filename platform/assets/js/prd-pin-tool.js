@@ -600,34 +600,62 @@
     .prd-right-drawer.open { right: 0; }
 
     /* 抽屉左边缘收起小箭头按钮 */
-    .prd-drawer-left-arrow {
+    /* 抽屉左边缘控制把手组 (上方全收起 + 下方半收起，按钮朝内指向右侧) */
+    .prd-drawer-left-handles {
       position: absolute;
-      left: -28px;
+      left: -32px;
       top: 50%;
       transform: translateY(-50%);
-      width: 28px;
-      height: 48px;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #ffffff;
-      border-radius: 8px 0 0 8px;
       display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 1000017;
+      user-select: none;
+    }
+    #prd-drawer.open .prd-drawer-left-handles, .prd-right-drawer.open .prd-drawer-left-handles {
+      display: flex !important;
+    }
+    .prd-drawer-handle-btn {
+      width: 32px;
+      height: 44px;
+      border-radius: 8px 0 0 8px;
+      display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: -4px 4px 12px rgba(0,0,0,0.2);
-      border: 1px solid rgba(59, 130, 246, 0.35);
+      box-shadow: -4px 4px 12px rgba(0,0,0,0.18);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .prd-drawer-handle-btn span {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    /* 上方按钮：全收起 (深色科技质感，右向箭头 › 朝内收起) */
+    .prd-handle-full-collapse {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
+      border: 1px solid #334155;
       border-right: none;
-      transition: all 0.2s;
-      z-index: 1000017;
     }
-    #prd-drawer.open .prd-drawer-left-arrow, .prd-right-drawer.open .prd-drawer-left-arrow {
-      display: flex !important;
-    }
-    .prd-drawer-left-arrow:hover {
+    .prd-handle-full-collapse:hover {
       background: #ef4444;
       border-color: #f87171;
+      transform: scale(1.08) translateX(-2px);
     }
-    .prd-drawer-left-arrow span { font-size: 16px; font-weight: 800; }
+    /* 下方按钮：半收起 (专业亮蓝，右向紧凑收折标号条图标 ⇥) */
+    .prd-handle-semi-collapse {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      border: 1px solid #60a5fa;
+      border-right: none;
+    }
+    .prd-handle-semi-collapse:hover {
+      background: #1e40af;
+      border-color: #93c5fd;
+      transform: scale(1.08) translateX(-2px);
+    }
 
     .prd-drawer-header {
       padding: 12px 14px;
@@ -3617,20 +3645,47 @@
     targetIdx = Math.max(0, Math.min(savedPins.length - 1, targetIdx));
     if (curIdx === targetIdx) return;
 
+    // 记录列表当前滚动高度，保证重绘后位置完全不跳动
+    const drawerList = document.getElementById('prd-drawer-list');
+    const prevScrollTop = drawerList ? drawerList.scrollTop : 0;
+
     const backup = JSON.parse(JSON.stringify(savedPins));
+    
+    // 移至上方：该项移到 targetIdx，原位置项依次往下瞬移顺延
     const [moved] = savedPins.splice(curIdx, 1);
     savedPins.splice(targetIdx, 0, moved);
 
+    // 重新按序赋予 1..N 连续自然序号
     reIndexPins(savedPins);
+
     const isSaved = await persistData();
     if (isSaved) {
       renderPinMarkers();
       renderRightDrawerList();
-      showToast(`✅ 需求序号已成功调整为 #${targetIdx + 1} 并同步！`, 'success');
+      renderMiniRailList();
+
+      // 瞬时锁定并恢复滚动高度
+      const updatedDrawerList = document.getElementById('prd-drawer-list');
+      if (updatedDrawerList) {
+        updatedDrawerList.scrollTop = prevScrollTop;
+      }
+
+      // 高亮瞬移成功的目标卡片
+      const movedCard = document.querySelector(`.prd-card-item:nth-child(${targetIdx + (isDrawerManageMode ? 2 : 1)})`);
+      if (movedCard) {
+        movedCard.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+        movedCard.style.boxShadow = '0 0 0 2px #2563eb, 0 4px 14px rgba(37,99,235,0.25)';
+        setTimeout(() => {
+          if (movedCard) movedCard.style.boxShadow = '';
+        }, 800);
+      }
+
+      showToast(`✅ 需求已调整至 #${targetIdx + 1}，后续序号已依次顺延！`, 'success');
     } else {
       savedPins = backup;
       reIndexPins(savedPins);
       renderRightDrawerList();
+      renderMiniRailList();
       alert('❌ 排序保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！');
       showToast('❌ 排序保存失败', 'error');
     }
@@ -3705,6 +3760,7 @@
             </div>
             ${isDrawerManageMode ? `
               <div style="display:flex; align-items:center; gap:2px;">
+                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#eff6ff; color:#1d4ed8; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="直接瞬移置顶到第 1 项">🔝 置顶</button>
                 <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f1f5f9; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="调整到任意指定序号">🔢 移至</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, -1)" title="上移一位">▲</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, 1)" title="下移一位">▼</button>
@@ -4587,9 +4643,14 @@
     drawer.className = 'prd-right-drawer';
     drawer.id = 'prd-drawer';
     drawer.innerHTML = `
-      <!-- 左边缘快捷展开/收起/半收起把手 -->
-      <div class="prd-drawer-left-arrow" id="prd-drawer-left-arrow" onclick="window.setPRDMode('hide')" title="点击完全收起抽屉">
-        <span>◀</span>
+      <!-- 左边缘快捷控制把手组 (上方全收起 + 下方半收起，按钮朝内指向右侧) -->
+      <div class="prd-drawer-left-handles" id="prd-drawer-left-handles">
+        <div class="prd-drawer-handle-btn prd-handle-full-collapse" onclick="window.setPRDMode('hide')" title="完全收起抽屉 (Full Close)">
+          <span>›</span>
+        </div>
+        <div class="prd-drawer-handle-btn prd-handle-semi-collapse" onclick="window.setPRDMode('semi')" title="半收起为标号竖条 (Semi Rail)">
+          <span>⇥</span>
+        </div>
       </div>
 
       <!-- 1. 全展开完整面板 (400px) -->
@@ -4607,7 +4668,7 @@
               <option value="ja" ${currentLang==='ja'?'selected':''}>🇯🇵 日本語</option>
               <option value="ko" ${currentLang==='ko'?'selected':''}>🇰🇷 한국어</option>
             </select>
-            <button class="prd-btn-action" style="font-size:11px; padding:3px 6px;" onclick="window.setPRDMode('semi')" title="半收起为紧凑标号竖条">➖ 半收起</button>
+            
             <button class="prd-btn-action" style="font-size:11px; background:#eff6ff; color:#1d4ed8; padding:3px 6px;" onclick="window.toggleDrawerManageMode()" title="开启/关闭排序与删除管理模式">⚙️ 排序管理</button>
             <button class="prd-btn-action" style="font-size:16px; padding:0 6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
           </div>
