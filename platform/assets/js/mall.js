@@ -1800,8 +1800,10 @@ window.MallApp = {
         <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 0)">切为待签约</button>
         <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 4)">切为待付款</button>
         <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 1)">切为待发货</button>
-        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 2)">切为待收货</button>
-        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 3)">切为已完结</button>
+        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 2)">切为待签收</button>
+        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', 3)">切为已完成</button>
+        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', -1)">切为已取消</button>
+        <button class="btn btn-outline btn-xs" onclick="MallApp.switchOrderDetailStatus('${o.id}', -2)">切为已关闭</button>
       `;
     }
   },
@@ -1810,7 +1812,9 @@ window.MallApp = {
     const o = MockData.orders.find(x => x.id === orderId);
     if (o) {
       o.status = newStatus;
-      UI.toast(`[演示] 订单状态已切换为: ${newStatus}`, 'info');
+      const statusMap = { 0: '待签约', 4: '待付款', 1: '待发货', 2: '待签收', 3: '已完成', '-1': '已取消', '-2': '已关闭' };
+      const statusName = statusMap[newStatus] || newStatus;
+      UI.toast(`[演示] 订单状态已切换为: ${statusName}`, 'info');
       this.showOrderDetail(orderId);
       this.renderUCOrders();
     }

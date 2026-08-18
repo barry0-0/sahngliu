@@ -186,7 +186,9 @@ window.MockData = {
     { id: 'ORD202607270031', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: 'Q235B 中厚板 20mm (双方合同已通过，待付款测试)', amount: '¥340,000.00', type: '现货交易订单', status: 4, buyerContractFiles: ['万通建材_合同盖章联.pdf'], buyerContractAuditStatus: 'passed', sellerContractFiles: ['远大钢铁_合同盖章联.pdf'], sellerContractAuditStatus: 'passed', paymentVoucher: null, paymentAuditStatus: 'none', time: '2026-07-27 15:00:00' },
     { id: 'ORD202607280001', buyerName: '星辉建筑公司', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '双方均已上传合同待审核测试', amount: '¥256,000.00', type: '现货交易订单', status: 0, buyerContractFiles: ['星辉建筑_合同盖章联.pdf'], buyerContractAuditStatus: 'pending', sellerContractFiles: ['远大钢铁_合同盖章联.pdf'], sellerContractAuditStatus: 'pending', time: '2026-07-28 09:00:00' },
     // 场景5：双方都被打回，仍为待签约
-    { id: 'ORD202607290001', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '双方合同均被打回测试', amount: '¥178,000.00', type: '现货交易订单', status: 0, buyerContractFiles: ['万通建材_买家合同.pdf'], buyerContractAuditStatus: 'rejected', buyerContractRejectReason: '买家公章模糊不清，请重新扫描上传', sellerContractFiles: ['远大钢铁_卖家合同.pdf'], sellerContractAuditStatus: 'rejected', sellerContractRejectReason: '卖家骑缝章不完整，请重新加盖', time: '2026-07-29 10:00:00' }
+    { id: 'ORD202607290001', buyerName: '万通建材采购部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '双方合同均被打回测试', amount: '¥178,000.00', type: '现货交易订单', status: 0, buyerContractFiles: ['万通建材_买家合同.pdf'], buyerContractAuditStatus: 'rejected', buyerContractRejectReason: '买家公章模糊不清，请重新扫描上传', sellerContractFiles: ['远大钢铁_卖家合同.pdf'], sellerContractAuditStatus: 'rejected', sellerContractRejectReason: '卖家骑缝章不完整，请重新加盖', time: '2026-07-29 10:00:00' },
+    // 竞价定标自动生成的履约订单 (BID20260711 中标定标)
+    { id: 'ORD202607180099', bidId: 'BID20260711', buyerName: '上海建工集团物资部', shopName: '远大钢铁官方直营店', shopId: 'S001', productName: '旧厂房拆除钢架公开发包 - 废钢铁骨架 - 约80吨 (竞标中标)', amount: '¥260,000.00', type: '竞价交易订单', status: 0, buyerContractAuditStatus: 'passed', sellerContractAuditStatus: 'passed', time: '2026-07-18 18:00:00' }
   ],
 
   // --- 7. 求购大厅与咨询监控库 (supply_demand & chats) ---
@@ -256,16 +258,35 @@ window.MockData = {
   ],
 
   biddingOffers: [
-    { id: 'OFR8801', bidId: 'BID20260706', buyerName: 'H5买家用户', offerPrice: '¥2,100,000.00', time: '2026-07-23 14:20:00', status: 0 },
-    { id: 'OFR8802', bidId: 'BID20260704', buyerName: 'H5买家用户', offerPrice: '¥620,000.00', time: '2026-07-22 10:15:00', status: 1 },
-    { id: 'OFR001', bidId: 'BID20260801', buyerName: '上海建工集团物资部', offerPrice: '¥820,000.00', time: '2026-07-02 10:00:00', status: 0 },
-    { id: 'OFR002', bidId: 'BID20260706', buyerName: '星辉建筑公司', offerPrice: '¥2,050,000.00', time: '2026-07-20 09:15:00', status: 0 },
-    { id: 'OFR003', bidId: 'BID20260705', buyerName: '筑美建设集团', offerPrice: '¥630,000.00', time: '2026-07-20 10:00:00', status: 0 },
-    { id: 'OFR004', bidId: 'BID20260705', buyerName: '星辉建筑公司', offerPrice: '¥620,000.00', time: '2026-07-20 09:30:00', status: 0 },
-    { id: 'OFR005', bidId: 'BID20260705', buyerName: '万通建材采购部', offerPrice: '¥640,000.00', time: '2026-07-20 10:45:00', status: 0 },
-    { id: 'OFR006', bidId: 'BID20260709', buyerName: '万通建材采购部', offerPrice: '¥350,000.00', time: '2026-07-15 10:30:00', status: 1 },
-    { id: 'OFR007', bidId: 'BID20260706', buyerName: 'H5买家用户', offerPrice: '¥2,080,000.00', time: '2026-07-20 10:15:00', status: 0 },
-    { id: 'OFR008', bidId: 'BID20260705', buyerName: 'H5买家用户', offerPrice: '¥625,000.00', time: '2026-07-20 09:45:00', status: 0 }
+    // BID20260711 (已结束，中标人上海建工集团物资部)
+    { id: 'OFR9901', bidId: 'BID20260711', buyerName: '上海建工集团物资部', buyerPhone: '138****8818', offerPrice: '¥260,000.00', time: '2026-07-18 14:00:00', status: 1 },
+    { id: 'OFR9902', bidId: 'BID20260711', buyerName: '万通建材采购部', buyerPhone: '138****9922', offerPrice: '¥250,000.00', time: '2026-07-18 13:00:00', status: 0 },
+    { id: 'OFR9903', bidId: 'BID20260711', buyerName: '星辉建筑公司', buyerPhone: '139****5566', offerPrice: '¥240,000.00', time: '2026-07-17 16:30:00', status: 0 },
+    { id: 'OFR9904', bidId: 'BID20260711', buyerName: '筑美建设集团', buyerPhone: '137****1123', offerPrice: '¥230,000.00', time: '2026-07-17 11:20:00', status: 0 },
+
+    // BID20260709 (已结束，中标人万通建材采购部)
+    { id: 'OFR006', bidId: 'BID20260709', buyerName: '万通建材采购部', buyerPhone: '138****8818', offerPrice: '¥350,000.00', time: '2026-07-15 10:30:00', status: 1 },
+    { id: 'OFR7092', bidId: 'BID20260709', buyerName: '星辉建筑公司', buyerPhone: '139****5566', offerPrice: '¥330,000.00', time: '2026-07-14 14:15:00', status: 0 },
+    { id: 'OFR7093', bidId: 'BID20260709', buyerName: '上海建工集团物资部', buyerPhone: '138****8818', offerPrice: '¥320,000.00', time: '2026-07-13 09:40:00', status: 0 },
+
+    // BID20260710 (竞价中)
+    { id: 'OFR7101', bidId: 'BID20260710', buyerName: '上海建工集团物资部', buyerPhone: '138****8818', offerPrice: '¥365,000.00', time: '2026-07-15 15:30:00', status: 0 },
+    { id: 'OFR7102', bidId: 'BID20260710', buyerName: '万通建材采购部', buyerPhone: '138****8818', offerPrice: '¥360,000.00', time: '2026-07-15 11:00:00', status: 0 },
+    { id: 'OFR7103', bidId: 'BID20260710', buyerName: '华东实业有限公司', buyerPhone: '136****7788', offerPrice: '¥355,000.00', time: '2026-07-14 16:20:00', status: 0 },
+
+    // BID20260705 (等待公布)
+    { id: 'OFR005', bidId: 'BID20260705', buyerName: '万通建材采购部', buyerPhone: '138****8818', offerPrice: '¥640,000.00', time: '2026-07-20 10:45:00', status: 0 },
+    { id: 'OFR003', bidId: 'BID20260705', buyerName: '筑美建设集团', buyerPhone: '137****1123', offerPrice: '¥630,000.00', time: '2026-07-20 10:00:00', status: 0 },
+    { id: 'OFR008', bidId: 'BID20260705', buyerName: 'H5买家用户', buyerPhone: '186****9966', offerPrice: '¥625,000.00', time: '2026-07-20 09:45:00', status: 0 },
+    { id: 'OFR004', bidId: 'BID20260705', buyerName: '星辉建筑公司', buyerPhone: '139****5566', offerPrice: '¥620,000.00', time: '2026-07-20 09:30:00', status: 0 },
+
+    // BID20260706 (竞价中)
+    { id: 'OFR8801', bidId: 'BID20260706', buyerName: '万通建材采购部', buyerPhone: '138****8818', offerPrice: '¥2,100,000.00', time: '2026-07-23 14:20:00', status: 0 },
+    { id: 'OFR007', bidId: 'BID20260706', buyerName: 'H5买家用户', buyerPhone: '186****9966', offerPrice: '¥2,080,000.00', time: '2026-07-20 10:15:00', status: 0 },
+    { id: 'OFR002', bidId: 'BID20260706', buyerName: '星辉建筑公司', buyerPhone: '139****5566', offerPrice: '¥2,050,000.00', time: '2026-07-20 09:15:00', status: 0 },
+
+    // BID20260801 (竞价中)
+    { id: 'OFR001', bidId: 'BID20260801', buyerName: '上海建工集团物资部', buyerPhone: '138****8818', offerPrice: '¥820,000.00', time: '2026-07-02 10:00:00', status: 0 }
   ],
 
   // --- 10. 商品类别字典 ---

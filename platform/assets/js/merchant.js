@@ -1359,7 +1359,7 @@ const MerchantApp = {
         } else if (aStatus === '待审核') {
           tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
         } else if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') {
-          const reasonText = a.rejectReason ? `拒审原因：${a.rejectReason}` : '(主动下架)';
+          const reasonText = a.rejectReason ? `拒审原因：${a.rejectReason}` : (a.offlineReason ? `强制下架原因：${a.offlineReason}` : '(主动下架)');
           tag = `<span class="tag tag-secondary">已下架</span><div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
         } else if (a.status === 3) {
           tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
@@ -1469,11 +1469,11 @@ const MerchantApp = {
           btn = `<button class="btn btn-success btn-sm" style="background:#52c41a;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;" onclick="MerchantApp.selectWinner('${o.id}')">选为中标</button>`;
         }
 
-        const user = MockData.users.find(u => u.name && u.name.includes(o.buyerName)) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
-        let phone = '--';
-        if (user && user.mobile) {
+        const user = (MockData.users || []).find(u => u.name && u.name.includes(o.buyerName)) || (MockData.users || []).find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
+        let phone = o.buyerPhone || '--';
+        if (phone === '--' && user && user.mobile) {
           phone = user.mobile.slice(0, 3) + '****' + user.mobile.slice(7);
-        } else {
+        } else if (phone === '--') {
           let hash = 0;
           for (let i = 0; i < o.buyerName.length; i++) {
             hash = o.buyerName.charCodeAt(i) + ((hash << 5) - hash);

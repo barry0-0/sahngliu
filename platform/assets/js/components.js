@@ -867,42 +867,117 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const text = el.innerText.trim();
     if (!text || text.length > 25) return; // 太长的句子不属于状态标签
-    
-    // 各种状态的常见映射组
-    const groups = [
-      ['正常营业', '待审核', '闭店中'],
-      ['待审批', '已同意', '已拒绝', '待提交'],
-      ['现货', '预售'],
-      ['售卖中', '已下架', '已售罄', '违规下架'],
-      ['交易中', '待付款', '待收货', '已完成', '已取消', '退款中'],
-      ['求购中', '已成单', '已关闭', '待审核'],
-      ['竞价中', '已中标', '已废标', '已结束']
-    ];
-    
-    for (const group of groups) {
-      // 模糊匹配
-      const matchIndex = group.findIndex(s => text.includes(s));
-      if (matchIndex !== -1) {
-        const nextState = group[(matchIndex + 1) % group.length];
-        
-        // 动态变更类名和背景字色，使样式更配合
-        el.innerText = nextState;
-        if (['正常营业', '已同意', '现货', '售卖中', '已完成', '已成单', '已中标'].includes(nextState)) {
-          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-success';
-          el.style.backgroundColor = ''; el.style.color = '';
-        } else if (['待审核', '待提交', '预售', '交易中', '待付款', '待收货', '求购中', '竞价中', '待审批'].includes(nextState)) {
-          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-warning';
-          el.style.backgroundColor = ''; el.style.color = '';
-        } else {
-          el.className = el.className.replace(/tag-\w+|badge-\w+/g, '') + ' tag-danger';
-          el.style.backgroundColor = ''; el.style.color = '';
-        }
-        UI.toast(`[演示切换] 状态已切换为: ${nextState}`, 'info');
-        e.preventDefault();
-        e.stopPropagation();
-        break;
+
+    // 1. 上下文识别：根据所在表格或容器精准判定所属业务域
+    let domainName = '状态';
+    let targetGroup = null;
+
+    // 订单履约上下文
+    if (el.closest('#table-orders, #table-uc-orders, #admin-order-detail-section, #merchant-order-detail-section, #uc-order-detail, .h5-order-item, .order-card, [id*="order"]')) {
+      // 区分是“订单类型”标签还是“履约状态”标签
+      if (['现货交易订单', '预售交易订单', '供求交易订单', '竞价交易订单'].some(s => text.includes(s))) {
+        domainName = '订单类型';
+        targetGroup = ['现货交易订单', '预售交易订单', '供求交易订单', '竞价交易订单'];
+      } else {
+        domainName = '订单履约状态';
+        targetGroup = ['待签约', '待付款', '待发货', '待签收', '已完成', '已取消', '已关闭'];
       }
     }
+    // 上架商品 / 货品库上下文
+    else if (el.closest('#table-merchant-products, #table-all-products, #table-listed-products, #view-products, #page-shop-products, [id*="product"]')) {
+      domainName = '商品状态';
+      targetGroup = ['待审核', '已上架', '已下架', '已售罄', '草稿'];
+    }
+    // 供求需求上下文
+    else if (el.closest('#table-demands, #view-demands, #page-demands, [id*="demand"]')) {
+      domainName = '需求状态';
+      targetGroup = ['待审核', '展示中', '已完结', '已下架'];
+    }
+    // 竞价公告监控 / 公告列表上下文
+    else if (el.closest('#table-admin-bidding-ann, #table-merchant-ann, #table-uc-bids, #view-bidding, [id*="bid-ann"], [id*="bidding-ann"]')) {
+      domainName = '竞价公告状态';
+      targetGroup = ['草稿', '待审核', '竞价中', '等待公布', '已结束', '已下架'];
+    }
+    // 竞价资源提报上下文
+    else if (el.closest('#table-admin-bidding-res, #table-merchant-res, [id*="bid-res"], [id*="bidding-res"]')) {
+      domainName = '竞价资源状态';
+      targetGroup = ['草稿', '待审核', '已通过', '未通过'];
+    }
+    // 发票中心上下文
+    else if (el.closest('#table-uc-invoices, [id*="invoice"]')) {
+      domainName = '发票状态';
+      targetGroup = ['待开具', '已开具'];
+    }
+    // 客户管理 / 商家店铺状态上下文
+    else if (el.closest('#table-customers, #table-shops, #shop-info, [id*="shop"]')) {
+      domainName = '店铺状态';
+      targetGroup = ['未开店', '待审核', '正常营业', '闭店中'];
+    }
+    // Banner 轮播上下文
+    else if (el.closest('#table-banner-pc, #table-banner-h5, [id*="banner"]')) {
+      domainName = 'Banner状态';
+      targetGroup = ['生效中', '已失效'];
+    }
+
+    // 2. 如果未命中明确上下文，按全局各业务官方枚举字典进行精确或模糊回退匹配
+    if (!targetGroup) {
+      const fallbackGroups = [
+        { name: '订单履约状态', list: ['待签约', '待付款', '待发货', '待签收', '已完成', '已取消', '已关闭'] },
+        { name: '发票状态', list: ['待开具', '已开具'] },
+        { name: 'Banner状态', list: ['生效中', '已失效'] },
+        { name: '认证状态', list: ['未认证', '审核中', '已认证', '认证失败'] },
+        { name: '需求状态', list: ['展示中', '已完结'] },
+        { name: '竞价公告状态', list: ['竞价中', '等待公布', '已结束'] },
+        { name: '竞价资源状态', list: ['已通过', '未通过'] },
+        { name: '商品状态', list: ['已上架', '已售罄'] },
+        { name: '店铺状态', list: ['正常营业', '闭店中', '未开店'] },
+        { name: '订单类型', list: ['现货交易订单', '预售交易订单', '供求交易订单', '竞价交易订单'] },
+        { name: '现货/预售', list: ['现货', '预售'] },
+        { name: '待审核通用', list: ['待审核', '已上架', '已下架'] }
+      ];
+
+      for (const fg of fallbackGroups) {
+        if (fg.list.some(s => text === s || text.includes(s))) {
+          domainName = fg.name;
+          targetGroup = fg.list;
+          break;
+        }
+      }
+    }
+
+    if (!targetGroup || targetGroup.length === 0) return;
+
+    // 3. 计算下一状态
+    const matchIndex = targetGroup.findIndex(s => text === s || text.includes(s));
+    const nextState = matchIndex !== -1 ? targetGroup[(matchIndex + 1) % targetGroup.length] : targetGroup[0];
+
+    // 4. 更新文本与样式
+    el.innerText = nextState;
+
+    // 清除原有状态样式类与行内样式
+    el.className = el.className.replace(/tag-\w+|badge-\w+/g, '').trim();
+    el.style.backgroundColor = '';
+    el.style.color = '';
+    el.style.borderColor = '';
+
+    // 统一样式分类
+    const successStates = ['正常营业', '已上架', '已完结', '已完成', '已通过', '已开具', '已认证', '生效中', '现货交易订单', '现货'];
+    const infoStates = ['待发货', '待签收', '展示中', '竞价中', '预售交易订单', '供求交易订单'];
+    const warningStates = ['待签约', '待付款', '待审核', '审核中', '等待公布', '待开具', '待提交', '预售', '竞价交易订单'];
+    
+    if (successStates.includes(nextState)) {
+      el.classList.add('tag-success');
+    } else if (infoStates.includes(nextState)) {
+      el.classList.add('tag-info');
+    } else if (warningStates.includes(nextState)) {
+      el.classList.add('tag-warning');
+    } else {
+      el.classList.add('tag-danger');
+    }
+
+    UI.toast(`[演示切换 - ${domainName}] 已切换为: ${nextState}`, 'info');
+    e.preventDefault();
+    e.stopPropagation();
   });
 });
 

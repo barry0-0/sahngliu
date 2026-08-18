@@ -161,13 +161,13 @@ ul, ol {
 }
 .btn-danger {
   background-color: var(--danger-color);
-  color: #fff;
-  border-color: var(--danger-color);
+  color: #fff !important;
+  border: 1px solid var(--danger-color);
 }
 .btn-danger:hover {
   background-color: #ff7875;
   border-color: #ff7875;
-  color: #fff;
+  color: #fff !important;
 }
 .btn-text {
   background: transparent;

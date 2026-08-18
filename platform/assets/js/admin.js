@@ -1366,8 +1366,11 @@ const AdminApp = {
                          <div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">拒审原因：${a.rejectReason || '起拍底价设置过低'}</div>`;
           btn = '';
         } else if (aStatus === '已撤回' || aStatus === '已下架') {
+          const reasonTip = a.offlineReason 
+            ? `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(强制下架原因：${a.offlineReason})</div>`
+            : `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
           combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已下架</span>
-                         <div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
+                         ${reasonTip}`;
           btn = '';
         } else {
           // 已通过
@@ -1972,11 +1975,21 @@ const AdminApp = {
 
   forceOfflineBiddingAnn(id) {
     const a = MockData.biddingAnnouncements.find(x => x.id === id);
-    if (a) {
-      a.auditStatus = '已撤回';
-      UI.toast(`公告 ${id} 已强行下架并变更为已撤回状态`, 'info');
-      this.renderBidding();
+    if (!a) return;
+    const reason = prompt("确定要强制下架该竞价公告吗？请输入强制下架原因：");
+    if (reason === null) return; // User cancelled
+    const cleanReason = reason.trim();
+    if (!cleanReason) {
+      UI.toast("请输入强制下架原因！", "warning");
+      return;
     }
+    a.auditStatus = '已下架';
+    a.offlineReason = cleanReason;
+    delete a.rejectReason;
+    const now = new Date();
+    a.updateTime = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    UI.toast(`已强制下架该竞价公告: ${a.title || id}`, "error");
+    this.renderBidding();
   },
 
   showBiddingDetail(bidId) {
@@ -1991,7 +2004,7 @@ const AdminApp = {
     let html = '';
     
     if (offers.length === 0) {
-      html = `<tr><td colspan="7" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
+      html = `<tr><td colspan="5" style="text-align:center; padding: 20px;">暂无买家出价</td></tr>`;
     } else {
       // Sort offers desc by price
       offers.sort((x, y) => {
@@ -2001,42 +2014,17 @@ const AdminApp = {
       });
       
       offers.forEach((o, idx) => {
-        let tag = '';
-        if (ann.status === 4) { // 已结束
-          if (o.status === 1 || ann.winner === o.buyerName) {
-            tag = `<span class="tag tag-success">已中标</span>`;
-          } else {
-            tag = `<span class="tag tag-secondary">未中标</span>`;
-          }
-        } else {
-          tag = `<span class="tag tag-primary">出价中</span>`;
-        }
-
-        // Look up buyer phone from MockData.users or synthesize
-        const user = MockData.users.find(u => u.name && u.name.includes(o.buyerName)) || MockData.users.find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
-        let phone = '--';
-        if (user && user.mobile) {
+        const user = (MockData.users || []).find(u => u.name && u.name.includes(o.buyerName)) || (MockData.users || []).find(u => u.name && o.buyerName.includes(u.name.split(' ')[0]));
+        let phone = o.buyerPhone || '--';
+        if (phone === '--' && user && user.mobile) {
           phone = user.mobile.slice(0, 3) + '****' + user.mobile.slice(7);
-        } else {
+        } else if (phone === '--') {
           let hash = 0;
           for (let i = 0; i < o.buyerName.length; i++) {
             hash = o.buyerName.charCodeAt(i) + ((hash << 5) - hash);
           }
           const middle = String(Math.abs(hash) % 9000 + 1000);
           phone = `137****${middle}`;
-        }
-
-        // Synthesize registration time (1 day before bid time)
-        let regTime = '2026-07-18 09:00:00';
-        if (o.time) {
-          const d = new Date(o.time.replace(/-/g, '/'));
-          if (!isNaN(d.getTime())) {
-            d.setDate(d.getDate() - 1);
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const dateStr = String(d.getDate()).padStart(2, '0');
-            regTime = `${y}-${m}-${dateStr} 09:00`;
-          }
         }
         
         html += `
@@ -2465,6 +2453,10 @@ window.forceOfflineProduct = (prodId) => {
     UI.toast(`已强制下架该商品: ${prod.name}`, "error");
     AdminApp.renderMerchantProducts();
   }
+};
+
+window.forceOfflineBiddingAnn = (annId) => {
+  AdminApp.forceOfflineBiddingAnn(annId);
 };
 
 window.openAuditBiddingAnnModal = (annId) => {

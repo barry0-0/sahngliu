@@ -1,10 +1,40 @@
 /**
  * PRD 需求数据 - merchant
- * 本地实时保存于: 2026/8/18 11:19:47
+ * 本地实时保存于: 2026/8/18 14:57:45
  */
 window.INITIAL_PRD_DATA = [
   {
     "id": 1,
+    "title": "顶部卡片-竞拍累计出价",
+    "type": "数据口径",
+    "desc": "- 记录本月的累计出价次数\n\n下方是对于本月的最高出价记录次数",
+    "selector": "#page-merchant-dashboard > div:nth-of-type(2) > div:nth-of-type(4)",
+    "version": "v1.0.0",
+    "pageKey": "merchant.html",
+    "pageTitle": "商家端后台"
+  },
+  {
+    "id": 2,
+    "title": "顶部卡片-累计成交额",
+    "type": "数据口径",
+    "desc": "- 展示本月已完成的成交订单的总金额",
+    "selector": "#page-merchant-dashboard > div:nth-of-type(2) > div:nth-of-type(1)",
+    "version": "v1.0.0",
+    "pageKey": "merchant.html",
+    "pageTitle": "商家端后台"
+  },
+  {
+    "id": 3,
+    "title": "顶部卡片-发布竞价标",
+    "type": "数据口径",
+    "desc": "首要展示当月发布竞价标的数量，可以切换月/季度/全年\n\n竞价中：根据当月发布的竞价进行展示数量\n\n已成交：本月成交的竞价标",
+    "selector": "#page-merchant-dashboard > div:nth-of-type(2) > div:nth-of-type(3)",
+    "version": "v1.0.0",
+    "pageKey": "merchant.html",
+    "pageTitle": "商家端后台"
+  },
+  {
+    "id": 4,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-merchant-dashboard",
@@ -14,7 +44,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 2,
+    "id": 5,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-shop",
@@ -24,7 +54,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 3,
+    "id": 6,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-prod-all",
@@ -34,7 +64,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 4,
+    "id": 7,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-add-product",
@@ -44,7 +74,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 5,
+    "id": 8,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-prod-listed",
@@ -54,7 +84,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 6,
+    "id": 9,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-add-listed-product",
@@ -64,7 +94,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 7,
+    "id": 10,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-orders",
@@ -74,7 +104,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 8,
+    "id": 11,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-order-detail",
@@ -84,7 +114,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 9,
+    "id": 12,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-contract-signing",
@@ -94,7 +124,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 10,
+    "id": 13,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-ship",
@@ -104,7 +134,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 11,
+    "id": 14,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#merchant-invoice-modal-overlay",
@@ -114,7 +144,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 12,
+    "id": 15,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-bidding-res",
@@ -124,7 +154,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 13,
+    "id": 16,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#page-bidding-ann",
@@ -134,7 +164,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 14,
+    "id": 17,
     "pageKey": "merchant.html",
     "pageTitle": "商家端后台",
     "selector": "#modal-bid-award",

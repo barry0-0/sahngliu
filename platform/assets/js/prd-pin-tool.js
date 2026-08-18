@@ -15,14 +15,456 @@
   // 当前页面标识
   const pageKey = window.location.pathname.split('/').pop() || 'admin.html';
   
-  const PAGE_TITLES = {
-    'admin.html': '平台运营端后台',
-    'mall.html': 'PC 商城端',
-    'merchant.html': '商家端后台',
-    'h5.html': '买家移动端 H5',
-    'merchant-h5.html': '商家移动端 H5'
+  // 0. 全局多语言国际化字典 (Multi-Language I18N Dictionary: 中 / 英 / 日 / 韩)
+  const I18N = {
+    'zh-CN': {
+      langName: '简体中文',
+      edgeText: '📌 需求打点',
+      drawerTitle: '需求规约',
+      manageOrder: '⚙️ 排序管理',
+      doneManage: '✓ 完成退出',
+      manageModeBanner: '🔧 排序与删除管理模式中...',
+      versionPill: '🏷️ 当前版本',
+      newVersion: '➕ 新建空白版本...',
+      copyVersion: '📋 复制当前版本副本...',
+      uploadVersion: '📂 上传版本数据...',
+      deleteVersion: '🗑️ 删除当前版本...',
+      searchPlaceholder: '🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)...',
+      addPinBtn: '📍 新增打点',
+      viewFullPrdBtn: '📑 查看完整PRD',
+      openNewTabBtn: '↗️ 在新网页打开',
+      exportMdBtn: '📥 导出 Markdown',
+      exportJsBtn: '💾 导出 JS 数据',
+      importVersionBtn: '📂 上传/导入版本',
+      printBtn: '🖨️ 打印 / 导出 PDF',
+      closePageBtn: '✕ 关闭网页',
+      locateBtn: '🎯 定位',
+      editBtn: '✏️ 编辑',
+      deleteBtn: '🗑️ 删除',
+      moveToBtn: '🔢 移至',
+      boundComp: '已绑定组件',
+      unbound: '未绑定',
+      noPinsEmptyTip: '当前版本暂无需求点',
+      noSearchMatchTip: '未搜索到匹配的需求标题',
+      searchKeywordTip: '关键词',
+      clearSearchBtn: '清空搜索条件',
+      tocTitle: '📑 目录大纲',
+      docHeroTitleSuffix: '· 产品需求规格说明书 (PRD)',
+      docMetaPage: '页面文件',
+      docMetaVersion: '规格版本',
+      docMetaCount: '规格条目',
+      docMetaTime: '生成时间',
+      noDocContentTip: '当前版本尚未录入任何 PRD 规格',
+      editModalTitle: '编辑需求规格',
+      createModalTitle: '新建需求规格',
+      tabLive: '✨ 可视化即时直编',
+      tabRaw: '📄 纯文本源码',
+      minimizeBtn: '➖ 最小化/看页面',
+      reqTitleLabel: '需求名称',
+      reqTitlePlaceholder: '输入需求标题 (必填)',
+      reqTypeLabel: '需求类型',
+      reqTypes: {
+        '业务规则': '业务规则',
+        '交互逻辑': '交互逻辑',
+        '数据口径': '数据口径',
+        '权限规则': '权限规则',
+        '异常流': '异常流',
+        'UI规范': 'UI规范'
+      },
+      tableDropdown: '📊 插入可视化表格...',
+      mermaidDropdown: '🔄 插入流程图 (Mermaid)...',
+      templateDropdown: '📑 插入业务规约模板...',
+      tableToolbarTip: '📊 可视化表格（可直接多行打字，Shift+Enter单元格换行，Enter/Tab换行换格）',
+      addRow: '➕ 加一行',
+      addCol: '➕ 加一列',
+      delRow: '➖ 删末行',
+      delCol: '➖ 删末列',
+      delTable: '🗑️ 删表格',
+      editFlowchart: '✏️ 编辑流程图',
+      editingFlowchartCode: '🔄 正在编辑 Mermaid 流程图代码：',
+      finishRender: '✓ 完成渲染',
+      rePickBtn: '🎯 重新拾取元素',
+      tempSaveBtn: '👀 暂存并看页面',
+      cancelBtn: '取消',
+      saveBtn: '💾 保存需求',
+      editingDraftPrefix: '编辑中',
+      draftStashedTip: '草稿已暂存 · 点击继续编辑',
+      restoreEditBtn: '恢复编辑',
+      discardDraftPrompt: '确认放弃当前正在编辑的草稿吗？',
+      saveSuccessToast: '✅ 需求规约已成功保存并写入本地 JS 文件！',
+      saveFailToast: '❌ 保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！',
+      pinDeletedToast: '✅ 需求点已删除并同步至本地文件！',
+      reorderSuccessToast: '✅ 需求序号已成功调整并同步！',
+      rePickTip: '请在页面上点击要重新绑定的新组件！',
+      rePickSuccessToast: '组件重新绑定成功！',
+      deleteVersionConfirm: '⚠️ 危险操作：确认永久删除当前版本及其所有打点数据吗？',
+      cannotDeleteOnlyVersion: '无法删除：必须保留至少一个 PRD 规格版本！',
+      importModalTitle: '📂 导入 PRD 规格版本数据',
+      importFileLabel: '导入文件',
+      importVersionNameLabel: '指定导入版本号：',
+      conflictOverwrite: '🔴 覆盖现有版本（清空旧打点，完全替换为上传文件内容）',
+      conflictAppend: '🟢 追加合并（保留旧打点，将上传打点追加至末尾）',
+      conflictNewVer: '🔵 另存为新版本（输入新版本名称，不影响当前版本）',
+      confirmImportBtn: '确认导入并应用'
+    },
+    'en': {
+      langName: 'English',
+      edgeText: '📌 PRD Pins',
+      drawerTitle: 'PRD Specs',
+      manageOrder: '⚙️ Reorder Mode',
+      doneManage: '✓ Done & Exit',
+      manageModeBanner: '🔧 Reorder & Delete Management Mode Active...',
+      versionPill: '🏷️ Version',
+      newVersion: '➕ New Blank Version...',
+      copyVersion: '📋 Duplicate Current Version...',
+      uploadVersion: '📂 Upload Version Data...',
+      deleteVersion: '🗑️ Delete Current Version...',
+      searchPlaceholder: '🔍 Fuzzy search requirement title (e.g. Order / Modal / Bid)...',
+      addPinBtn: '📍 Add Pin',
+      viewFullPrdBtn: '📑 Full PRD View',
+      openNewTabBtn: '↗️ Open in New Tab',
+      exportMdBtn: '📥 Export Markdown',
+      exportJsBtn: '💾 Export JS Data',
+      importVersionBtn: '📂 Upload/Import Version',
+      printBtn: '🖨️ Print / Export PDF',
+      closePageBtn: '✕ Close Window',
+      locateBtn: '🎯 Locate',
+      editBtn: '✏️ Edit',
+      deleteBtn: '🗑️ Delete',
+      moveToBtn: '🔢 Move to',
+      boundComp: 'Bound Component',
+      unbound: 'Unbound',
+      noPinsEmptyTip: 'No requirements in current version',
+      noSearchMatchTip: 'No matching requirement title found',
+      searchKeywordTip: 'Keyword',
+      clearSearchBtn: 'Clear Search Filter',
+      tocTitle: '📑 Table of Contents',
+      docHeroTitleSuffix: '· Product Requirement Document (PRD)',
+      docMetaPage: 'Page File',
+      docMetaVersion: 'PRD Version',
+      docMetaCount: 'Total Specs',
+      docMetaTime: 'Generated At',
+      noDocContentTip: 'No PRD specifications recorded in this version yet',
+      editModalTitle: 'Edit Specification',
+      createModalTitle: 'New Specification',
+      tabLive: '✨ Visual Live Editor',
+      tabRaw: '📄 Raw Markdown',
+      minimizeBtn: '➖ Minimize / View Page',
+      reqTitleLabel: 'Requirement Title',
+      reqTitlePlaceholder: 'Enter requirement title (Required)',
+      reqTypeLabel: 'Requirement Type',
+      reqTypes: {
+        '业务规则': 'Business Rule',
+        '交互逻辑': 'Interaction Logic',
+        '数据口径': 'Data Metric / Spec',
+        '权限规则': 'Permission Rule',
+        '异常流': 'Exception Flow',
+        'UI规范': 'UI Specification'
+      },
+      tableDropdown: '📊 Insert Visual Table...',
+      mermaidDropdown: '🔄 Insert Flowchart (Mermaid)...',
+      templateDropdown: '📑 Insert Spec Template...',
+      tableToolbarTip: '📊 Visual Table (Direct typing, Shift+Enter for newline, Enter/Tab for next cell)',
+      addRow: '➕ Add Row',
+      addCol: '➕ Add Col',
+      delRow: '➖ Del Last Row',
+      delCol: '➖ Del Last Col',
+      delTable: '🗑️ Delete Table',
+      editFlowchart: '✏️ Edit Flowchart',
+      editingFlowchartCode: '🔄 Editing Mermaid Flowchart Code:',
+      finishRender: '✓ Finish Render',
+      rePickBtn: '🎯 Re-pick Element',
+      tempSaveBtn: '👀 Stash & View Page',
+      cancelBtn: 'Cancel',
+      saveBtn: '💾 Save Spec',
+      editingDraftPrefix: 'Editing',
+      draftStashedTip: 'Draft Stashed · Click to Resume',
+      restoreEditBtn: 'Resume Editing',
+      discardDraftPrompt: 'Are you sure you want to discard the current draft?',
+      saveSuccessToast: '✅ PRD specification saved and written to local disk JS file!',
+      saveFailToast: '❌ Save failed: Local server API not detected, cannot write to disk!',
+      pinDeletedToast: '✅ Requirement pin deleted and synced to local file!',
+      reorderSuccessToast: '✅ Requirement order successfully updated!',
+      rePickTip: 'Click any component on the page to re-bind!',
+      rePickSuccessToast: 'Component re-bound successfully!',
+      deleteVersionConfirm: '⚠️ Danger: Are you sure you want to permanently delete this version and all its pins?',
+      cannotDeleteOnlyVersion: 'Cannot delete: At least one PRD version must be retained!',
+      importModalTitle: '📂 Import PRD Specification Version Data',
+      importFileLabel: 'Import File',
+      importVersionNameLabel: 'Target Version Name:',
+      conflictOverwrite: '🔴 Overwrite existing version (Clear old pins & replace with file content)',
+      conflictAppend: '🟢 Append & merge (Keep existing pins & append imported items)',
+      conflictNewVer: '🔵 Save as new version (Enter new version name without affecting existing data)',
+      confirmImportBtn: 'Confirm Import & Apply'
+    },
+    'ja': {
+      langName: '日本語',
+      edgeText: '📌 要件ピン',
+      drawerTitle: '要件仕様書',
+      manageOrder: '⚙️ 並び替え管理',
+      doneManage: '✓ 完了',
+      manageModeBanner: '🔧 並び替え・削除管理モード中...',
+      versionPill: '🏷️ バージョン',
+      newVersion: '➕ 新規空白バージョン...',
+      copyVersion: '📋 現在のバージョンを複製...',
+      uploadVersion: '📂 バージョンデータをアップロード...',
+      deleteVersion: '🗑️ 現在のバージョンを削除...',
+      searchPlaceholder: '🔍 要件タイトルをあいまい検索 (例: 注文 / ポップアップ / 入札)...',
+      addPinBtn: '📍 ピン追加',
+      viewFullPrdBtn: '📑 完全PRDを表示',
+      openNewTabBtn: '↗️ 新しいタブで開く',
+      exportMdBtn: '📥 Markdown出力',
+      exportJsBtn: '💾 JSデータ保存',
+      importVersionBtn: '📂 バージョンインポート',
+      printBtn: '🖨️ 印刷 / PDF出力',
+      closePageBtn: '✕ 閉じる',
+      locateBtn: '🎯 移動',
+      editBtn: '✏️ 編集',
+      deleteBtn: '🗑️ 削除',
+      moveToBtn: '🔢 移動',
+      boundComp: 'コンポーネント連携済',
+      unbound: '未連携',
+      noPinsEmptyTip: 'このバージョンには要件がありません',
+      noSearchMatchTip: '一致する要件タイトルが見つかりません',
+      searchKeywordTip: 'キーワード',
+      clearSearchBtn: '検索条件をクリア',
+      tocTitle: '📑 目次大綱',
+      docHeroTitleSuffix: '· 製品要件仕様書 (PRD)',
+      docMetaPage: 'ページファイル',
+      docMetaVersion: '要件バージョン',
+      docMetaCount: '要件総数',
+      docMetaTime: '生成日時',
+      noDocContentTip: 'このバージョンにはまだPRD要件が登録されていません',
+      editModalTitle: '要件仕様を編集',
+      createModalTitle: '新規要件仕様',
+      tabLive: '✨ ビジュアル直接編集',
+      tabRaw: '📄 原文マークダウン',
+      minimizeBtn: '➖ 最小化 / ページ確認',
+      reqTitleLabel: '要件名',
+      reqTitlePlaceholder: '要件名を入力 (必須)',
+      reqTypeLabel: '要件タイプ',
+      reqTypes: {
+        '业务规则': 'ビジネスルール',
+        '交互逻辑': 'インタラクション',
+        '数据口径': 'データ定義・基準',
+        '权限规则': '権限ルール',
+        '异常流': '例外フロー',
+        'UI规范': 'UI仕様'
+      },
+      tableDropdown: '📊 ビジュアル表を挿入...',
+      mermaidDropdown: '🔄 フローチャート挿入 (Mermaid)...',
+      templateDropdown: '📑 仕様テンプレート挿入...',
+      tableToolbarTip: '📊 ビジュアル表（直接入力、Shift+Enterでセル内改行、Enter/Tabで次のセル）',
+      addRow: '➕ 行追加',
+      addCol: '➕ 列追加',
+      delRow: '➖ 末尾行削除',
+      delCol: '➖ 末尾列削除',
+      delTable: '🗑️ 表を削除',
+      editFlowchart: '✏️ フローチャート編集',
+      editingFlowchartCode: '🔄 Mermaidフローチャートコード編集：',
+      finishRender: '✓ レンダリング完了',
+      rePickBtn: '🎯 要素を再選択',
+      tempSaveBtn: '👀 一時保存して画面確認',
+      cancelBtn: 'キャンセル',
+      saveBtn: '💾 要件を保存',
+      editingDraftPrefix: '編集中',
+      draftStashedTip: '下書き保存済 · クリックして編集再開',
+      restoreEditBtn: '編集を再開',
+      discardDraftPrompt: '現在の下書きを破棄してもよろしいですか？',
+      saveSuccessToast: '✅ PRD要件仕様が保存され、ローカルJSファイルに書き込まれました！',
+      saveFailToast: '❌ 保存失敗：ローカルサーバーAPIが検出されません！',
+      pinDeletedToast: '✅ 要件ピンが削除され、同期されました！',
+      reorderSuccessToast: '✅ 要件の並び順が正常に更新されました！',
+      rePickTip: 'ページ上のコンポーネントをクリックして再連携してください！',
+      rePickSuccessToast: 'コンポーネントが正常に再連携されました！',
+      deleteVersionConfirm: '⚠️ 危険：現在のバージョンとすべてのピンを完全に削除しますか？',
+      cannotDeleteOnlyVersion: '削除できません：少なくとも1つのバージョンを保持する必要があります！',
+      importModalTitle: '📂 PRD仕様バージョンデータのインポート',
+      importFileLabel: 'ファイル',
+      importVersionNameLabel: 'インポート先バージョン名：',
+      conflictOverwrite: '🔴 既存バージョンを上書き（古いピンをクリアして置換）',
+      conflictAppend: '🟢 末尾に追加統合（既存ピンを保持して追加）',
+      conflictNewVer: '🔵 新規バージョンとして保存（既存データに影響なし）',
+      confirmImportBtn: 'インポートを確定して適用'
+    },
+    'ko': {
+      langName: '한국어',
+      edgeText: '📌 요구사항 핀',
+      drawerTitle: '요구사항 명세',
+      manageOrder: '⚙️ 순서 관리',
+      doneManage: '✓ 완료',
+      manageModeBanner: '🔧 순서 변경 및 삭제 관리 모드...',
+      versionPill: '🏷️ 버전',
+      newVersion: '➕ 새 빈 버전...',
+      copyVersion: '📋 현재 버전 복제...',
+      uploadVersion: '📂 버전 데이터 업로드...',
+      deleteVersion: '🗑️ 현재 버전 삭제...',
+      searchPlaceholder: '🔍 요구사항 제목 검색 (예: 주문 / 팝업 / 입찰)...',
+      addPinBtn: '📍 핀 추가',
+      viewFullPrdBtn: '📑 전체 PRD 보기',
+      openNewTabBtn: '↗️ 새 탭에서 열기',
+      exportMdBtn: '📥 Markdown 내보내기',
+      exportJsBtn: '💾 JS 데이터 저장',
+      importVersionBtn: '📂 버전 가져오기',
+      printBtn: '🖨️ 인쇄 / PDF 내보내기',
+      closePageBtn: '✕ 창 닫기',
+      locateBtn: '🎯 위치',
+      editBtn: '✏️ 수정',
+      deleteBtn: '🗑️ 삭제',
+      moveToBtn: '🔢 이동',
+      boundComp: '컴포넌트 연결됨',
+      unbound: '연결 안 됨',
+      noPinsEmptyTip: '현재 버전에 요구사항이 없습니다',
+      noSearchMatchTip: '일치하는 요구사항 제목이 없습니다',
+      searchKeywordTip: '키워드',
+      clearSearchBtn: '검색 초기화',
+      tocTitle: '📑 목차 개요',
+      docHeroTitleSuffix: '· 제품 요구사항 명세서 (PRD)',
+      docMetaPage: '페이지 파일',
+      docMetaVersion: '명세 버전',
+      docMetaCount: '총 요구사항 수',
+      docMetaTime: '생성 일시',
+      noDocContentTip: '현재 버전에 등록된 PRD 요구사항이 없습니다',
+      editModalTitle: '요구사항 명세 수정',
+      createModalTitle: '새 요구사항 명세',
+      tabLive: '✨ 시각적 실시간 편집',
+      tabRaw: '📄 원본 마크다운',
+      minimizeBtn: '➖ 최소화 / 화면 확인',
+      reqTitleLabel: '요구사항 제목',
+      reqTitlePlaceholder: '요구사항 제목 입력 (필수)',
+      reqTypeLabel: '요구사항 유형',
+      reqTypes: {
+        '业务规则': '비즈니스 규칙',
+        '交互逻辑': '인터랙션 로직',
+        '数据口径': '데이터 정의/기준',
+        '权限规则': '권한 규칙',
+        '异常流': '예외 흐름',
+        'UI规范': 'UI 규격'
+      },
+      tableDropdown: '📊 시각적 표 삽입...',
+      mermaidDropdown: '🔄 플로우차트 삽입 (Mermaid)...',
+      templateDropdown: '📑 명세 템플릿 삽입...',
+      tableToolbarTip: '📊 시각적 표 (직접 입력, Shift+Enter 셀 내 줄바꿈, Enter/Tab 셀 이동)',
+      addRow: '➕ 행 추가',
+      addCol: '➕ 열 추가',
+      delRow: '➖ 마지막 행 삭제',
+      delCol: '➖ 마지막 열 삭제',
+      delTable: '🗑️ 표 삭제',
+      editFlowchart: '✏️ 플로우차트 수정',
+      editingFlowchartCode: '🔄 Mermaid 플로우차트 코드 수정:',
+      finishRender: '✓ 렌더링 완료',
+      rePickBtn: '🎯 요소 다시 선택',
+      tempSaveBtn: '👀 임시저장 후 화면 확인',
+      cancelBtn: '취소',
+      saveBtn: '💾 요구사항 저장',
+      editingDraftPrefix: '수정 중',
+      draftStashedTip: '임시저장됨 · 클릭하여 계속 작성',
+      restoreEditBtn: '작성 계속하기',
+      discardDraftPrompt: '현재 작성 중인 임시저장 내용을 취소하시겠습니까?',
+      saveSuccessToast: '✅ PRD 요구사항이 저장되어 로컬 JS 파일에 기록되었습니다!',
+      saveFailToast: '❌ 저장 실패: 로컬 서버 API를 감지할 수 없습니다!',
+      pinDeletedToast: '✅ 요구사항 핀이 삭제되었습니다!',
+      reorderSuccessToast: '✅ 요구사항 순서가 성공적으로 변경되었습니다!',
+      rePickTip: '페이지에서 다시 연결할 컴포넌트를 클릭하세요!',
+      rePickSuccessToast: '컴포넌트가 성공적으로 다시 연결되었습니다!',
+      deleteVersionConfirm: '⚠️ 경고: 현재 버전과 모든 핀을 영구 삭제하시겠습니까?',
+      cannotDeleteOnlyVersion: '삭제 불가: 최소 하나의 버전은 유지되어야 합니다!',
+      importModalTitle: '📂 PRD 명세 버전 데이터 가져오기',
+      importFileLabel: '가져올 파일',
+      importVersionNameLabel: '대상 버전 이름:',
+      conflictOverwrite: '🔴 기존 버전 덮어쓰기 (기존 핀 삭제 후 파일 내용으로 대체)',
+      conflictAppend: '🟢 추가 병합 (기존 핀 유지 및 가져온 항목 추가)',
+      conflictNewVer: '🔵 새 버전으로 저장 (기존 데이터에 영향 없이 새 버전 생성)',
+      confirmImportBtn: '가져오기 확인 및 적용'
+    }
   };
-  const currentPageTitle = PAGE_TITLES[pageKey] || pageKey;
+
+  let currentLang = window.PRD_DEFAULT_LANG || localStorage.getItem('prd_ui_lang') || (document.documentElement.lang && document.documentElement.lang.startsWith('en') ? 'en' : document.documentElement.lang && document.documentElement.lang.startsWith('ja') ? 'ja' : document.documentElement.lang && document.documentElement.lang.startsWith('ko') ? 'ko' : 'zh-CN');
+  if (!I18N[currentLang]) currentLang = 'zh-CN';
+
+  function t(key, fallback = '') {
+    if (I18N[currentLang] && I18N[currentLang][key] !== undefined) {
+      return I18N[currentLang][key];
+    }
+    if (I18N['en'] && I18N['en'][key] !== undefined) {
+      return I18N['en'][key];
+    }
+    if (I18N['zh-CN'] && I18N['zh-CN'][key] !== undefined) {
+      return I18N['zh-CN'][key];
+    }
+    return fallback || key;
+  }
+
+  const PAGE_TITLES = {
+    'zh-CN': {
+      'admin.html': '平台运营端后台',
+      'mall.html': 'PC 商城端',
+      'merchant.html': '商家端后台',
+      'h5.html': '买家移动端 H5',
+      'merchant-h5.html': '商家移动端 H5'
+    },
+    'en': {
+      'admin.html': 'Admin Console',
+      'mall.html': 'PC Marketplace',
+      'merchant.html': 'Merchant Console',
+      'h5.html': 'Buyer Mobile H5',
+      'merchant-h5.html': 'Merchant Mobile H5'
+    },
+    'ja': {
+      'admin.html': '運営管理コンソール',
+      'mall.html': 'PC モール',
+      'merchant.html': '加盟店管理画面',
+      'h5.html': '購入者モバイル H5',
+      'merchant-h5.html': '加盟店モバイル H5'
+    },
+    'ko': {
+      'admin.html': '운영 관리자 콘솔',
+      'mall.html': 'PC 쇼핑몰',
+      'merchant.html': '판매자 관리자 콘솔',
+      'h5.html': '구매자 모바일 H5',
+      'merchant-h5.html': '판매자 모바일 H5'
+    }
+  };
+
+  function getCurrentPageTitle() {
+    const dict = PAGE_TITLES[currentLang] || PAGE_TITLES['en'] || PAGE_TITLES['zh-CN'];
+    return (dict && dict[pageKey]) || pageKey;
+  }
+
+  window.setPRDLanguage = function(lang) {
+    if (!I18N[lang]) return;
+    currentLang = lang;
+    try {
+      localStorage.setItem('prd_ui_lang', lang);
+    } catch (e) {}
+
+    updateVersionBarUI();
+    renderRightDrawerList();
+    renderPinMarkers();
+
+    const edgeText = document.querySelector('.prd-edge-text');
+    if (edgeText) edgeText.innerHTML = `${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)`;
+
+    const drawerTitleEl = document.querySelector('.prd-drawer-header span:first-child');
+    if (drawerTitleEl) drawerTitleEl.innerHTML = `${t('drawerTitle')} · ${getCurrentPageTitle()}`;
+
+    const orderBtn = document.getElementById('prd-manage-order-btn');
+    if (orderBtn) orderBtn.innerText = isManageOrderMode ? t('doneManage') : t('manageOrder');
+
+    const searchInput = document.getElementById('prd-drawer-search-input');
+    if (searchInput) searchInput.placeholder = t('searchPlaceholder');
+
+    const addBtn = document.querySelector('#prd-right-drawer .prd-btn-primary');
+    if (addBtn) addBtn.innerText = t('addPinBtn');
+
+    const fullPrdBtn = document.querySelector('#prd-right-drawer .prd-btn-outline');
+    if (fullPrdBtn) fullPrdBtn.innerText = t('viewFullPrdBtn');
+
+    if (activeDocModal) window.openCurrentPagePRDDoc();
+    if (activeEditorEl && activeDraft) renderEditorModal(activeDraft);
+    showToast(`🌐 ${I18N[lang].langName}`, 'info');
+  };
+
   const PRD_CACHE_VERSION = 'full-spec-v12';
 
   // 1. 多版本数据注册表初始化与向后兼容
@@ -68,7 +510,7 @@
     pins.forEach((pin, index) => {
       pin.id = index + 1;
       pin.pageKey = pageKey;
-      pin.pageTitle = currentPageTitle;
+      pin.pageTitle = getCurrentPageTitle();
       pin.version = currentVersion;
       pin.type = pin.type || '业务规则';
     });
@@ -168,7 +610,7 @@
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: #ffffff;
       border-radius: 8px 0 0 8px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -177,6 +619,9 @@
       border-right: none;
       transition: all 0.2s;
       z-index: 1000017;
+    }
+    #prd-drawer.open .prd-drawer-left-arrow, .prd-right-drawer.open .prd-drawer-left-arrow {
+      display: flex !important;
     }
     .prd-drawer-left-arrow:hover {
       background: #ef4444;
@@ -225,7 +670,7 @@
       gap: 8px;
     }
 
-    /* 需求卡片样式 */
+    /* 需求卡片样式 (100% 绝对统一卡片高度 136px) */
     .prd-card-item {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -233,11 +678,17 @@
       padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      height: 136px !important;
+      min-height: 136px !important;
+      max-height: 136px !important;
+      box-sizing: border-box;
       cursor: pointer;
       transition: all 0.15s ease-in-out;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
       position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
     }
     .prd-card-item:hover {
       border-color: #93c5fd;
@@ -261,13 +712,23 @@
       font-size: 13px;
       font-weight: 700;
       color: #0f172a;
+      height: 22px;
+      flex-shrink: 0;
     }
     .prd-num-title {
       display: flex;
       align-items: center;
       gap: 6px;
       flex: 1;
+      min-width: 0;
       overflow: hidden;
+      white-space: nowrap;
+    }
+    .prd-num-title span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
     }
     .prd-pin-num-pill {
       background: #ef4444;
@@ -293,19 +754,28 @@
     .prd-card-desc {
       font-size: 12px;
       color: #64748b;
-      line-height: 1.5;
+      line-height: 18px;
+      height: 36px !important;
+      min-height: 36px !important;
+      max-height: 36px !important;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
+      margin: 4px 0;
+      flex-shrink: 0;
     }
     .prd-card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px dashed #f1f5f9;
-      padding-top: 6px;
-      margin-top: 2px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 4px;
+      margin-top: 0;
+      height: 24px;
+      flex-shrink: 0;
     }
 
     .prd-tag {
@@ -350,8 +820,8 @@
     .prd-btn-primary:hover {
       background: var(--prd-primary-hover);
     }
-    .btn-danger { color: #ef4444 !important; border-color: #fecaca !important; }
-    .btn-danger:hover { background: #fef2f2 !important; border-color: #ef4444 !important; }
+    .prd-panel .btn-danger, .prd-btn-danger { color: #ef4444 !important; border-color: #fecaca !important; }
+    .prd-panel .btn-danger:hover, .prd-btn-danger:hover { background: #fef2f2 !important; border-color: #ef4444 !important; }
 
     /* 页面大头针 */
     .prd-pin-marker {
@@ -411,6 +881,154 @@
     }
 
     /* 悬浮 Popover 气泡 */
+
+    /* 严格保障所有环境下的 Markdown 列表小圆点与序号排版 */
+    ul.prd-md-list, .prd-live-blocks-container ul, .prd-doc-content ul, .prd-drawer-content ul, .prd-inspect-bubble ul, .prd-live-block ul {
+      list-style-type: disc !important;
+      padding-left: 24px !important;
+      margin: 6px 0 !important;
+      display: block !important;
+    }
+    ol.prd-md-list, .prd-live-blocks-container ol, .prd-doc-content ol, .prd-drawer-content ol, .prd-inspect-bubble ol, .prd-live-block ol {
+      list-style-type: decimal !important;
+      padding-left: 24px !important;
+      margin: 6px 0 !important;
+      display: block !important;
+    }
+    ul.prd-md-list li, ol.prd-md-list li, .prd-live-blocks-container li, .prd-doc-content li, .prd-drawer-content li, .prd-inspect-bubble li, .prd-live-block li {
+      display: list-item !important;
+      list-style-type: inherit !important;
+      margin-bottom: 4px !important;
+      line-height: 1.65 !important;
+    }
+    .prd-live-block ul li::marker, .prd-doc-content ul li::marker {
+      color: #2563eb !important;
+    }
+
+    /* 抽屉全展开 (400px) / 半收起 (56px 标号竖条) / 全收起 状态体系 */
+    #prd-drawer, .prd-right-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -4px 0 25px rgba(0, 0, 0, 0.12);
+      z-index: 1000008;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease;
+      box-sizing: border-box;
+      border-left: 1px solid #e2e8f0;
+    }
+    #prd-drawer.open, .prd-right-drawer.open {
+      transform: translateX(0) !important;
+      width: 400px !important;
+    }
+    #prd-drawer.semi-open, .prd-right-drawer.semi-open {
+      transform: translateX(0) !important;
+      width: 56px !important;
+      overflow: visible !important;
+    }
+    #prd-drawer.semi-open .prd-drawer-full-content, .prd-right-drawer.semi-open .prd-drawer-full-content {
+      display: none !important;
+    }
+    #prd-drawer.semi-open .prd-drawer-mini-rail, .prd-right-drawer.semi-open .prd-drawer-mini-rail {
+      display: flex !important;
+    }
+    .prd-drawer-full-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .prd-drawer-mini-rail {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      background: #f8fafc;
+      align-items: center;
+      padding: 10px 0;
+      box-sizing: border-box;
+      user-select: none;
+      overflow-y: auto;
+      overflow-x: visible;
+    }
+    .prd-mini-badge-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: transform 0.15s, background 0.15s;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .prd-mini-badge-btn:hover {
+      transform: scale(1.18);
+      background: #dc2626;
+      z-index: 1000020;
+    }
+    .prd-mini-badge-btn::after {
+      content: attr(data-title);
+      position: absolute;
+      right: 44px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1e293b;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      z-index: 1000030;
+    }
+    .prd-mini-badge-btn:hover::after {
+      opacity: 1;
+    }
+    
+    /* 抽屉左侧折叠把手 */
+    .prd-drawer-edge-handle {
+      position: absolute;
+      left: -24px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 48px;
+      background: #1e293b;
+      color: #ffffff;
+      border-radius: 6px 0 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+      z-index: 1000009;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .prd-drawer-edge-handle:hover {
+      background: #2563eb;
+    }
+
     .prd-inspect-bubble {
       position: fixed;
       background: #ffffff;
@@ -948,6 +1566,7 @@
     }
   };
 
+  window.parseMarkdown = parseMarkdown;
   function parseMarkdown(md) {
     if (!md) return '';
     let text = md.trim();
@@ -1223,6 +1842,7 @@
 
     renderPinMarkers();
     renderRightDrawerList();
+    renderMiniRailList();
     updateVersionBarUI();
 
     if (activeDocModal) {
@@ -2045,10 +2665,10 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <!-- 逐行实时可视化 / 纯源码模式瞬切 -->
           <div style="display:flex; background:rgba(255,255,255,0.15); padding:2px; border-radius:6px;">
-            <button class="prd-md-tool-btn ${editorWorkbenchMode === 'live' ? 'active' : ''}" id="prd-btn-tab-live" style="border:none; padding:2px 10px; font-size:11.5px;" onclick="window.switchEditorWorkbenchMode('live')" title="行内即时可视化 (支持表格单元格直接打字编辑)">✨ 可视化即时直编</button>
-            <button class="prd-md-tool-btn ${editorWorkbenchMode === 'raw' ? 'active' : ''}" id="prd-btn-tab-raw" style="border:none; padding:2px 10px; font-size:11.5px;" onclick="window.switchEditorWorkbenchMode('raw')" title="全文本纯代码模式">📄 纯文本源码</button>
+            <button class="prd-md-tool-btn ${editorWorkbenchMode === 'live' ? 'active' : ''}" id="prd-btn-tab-live" style="border:none; padding:2px 10px; font-size:11.5px;" onclick="window.switchEditorWorkbenchMode('live')" title="行内即时可视化 (支持表格单元格直接打字编辑)">${t('tabLive')}</button>
+            <button class="prd-md-tool-btn ${editorWorkbenchMode === 'raw' ? 'active' : ''}" id="prd-btn-tab-raw" style="border:none; padding:2px 10px; font-size:11.5px;" onclick="window.switchEditorWorkbenchMode('raw')" title="全文本纯代码模式">${t('tabRaw')}</button>
           </div>
-          <button class="prd-btn-action" style="color:#ffffff; font-size:13px; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2);" onclick="window.minimizeEditor()" title="暂存最小化至右下角胶囊 (保留草稿并查看底层页面)">➖ 最小化/看页面</button>
+          <button class="prd-btn-action" style="color:#ffffff; font-size:13px; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2);" onclick="window.minimizeEditor()" title="暂存最小化至右下角胶囊 (保留草稿并查看底层页面)">${t('minimizeBtn')}</button>
           <button class="prd-btn-action" style="color:#ffffff; font-size:16px; background:none; border:none;" onclick="window.closeEditorModal()" title="关闭">&times;</button>
         </div>
       </div>
@@ -2092,7 +2712,7 @@
 
           <!-- 📊 可视化表格插入下拉 -->
           <select class="prd-tool-select" onchange="window.insertMarkdownTable(this.value); this.value='';">
-            <option value="">📊 插入可视化表格...</option>
+            <option value="">${t('tableDropdown')}</option>
             <option value="field-spec">📋 字段字典规格表 (字段/类型/规范/校验/动作)</option>
             <option value="auth-matrix">🛡️ 多角色操作权限表 (状态/买家/商家/运营)</option>
             <option value="state-flow">🔄 状态机流转说明表 (源状态/触发/目标/系统动作)</option>
@@ -2101,7 +2721,7 @@
 
           <!-- 🔄 Mermaid 流程图下拉 -->
           <select class="prd-tool-select" onchange="window.insertMermaidTemplate(this.value); this.value='';">
-            <option value="">🔄 插入流程图 (Mermaid)...</option>
+            <option value="">${t('mermaidDropdown')}</option>
             <option value="state-chart">🔄 业务状态机流转图 (State Flow)</option>
             <option value="sequence">👥 多角色协同与审批时序图 (Sequence)</option>
             <option value="flowchart">🔀 业务决策与分支流程图 (Flowchart)</option>
@@ -2109,7 +2729,7 @@
 
           <!-- 📑 业务规约模板下拉 -->
           <select class="prd-tool-select" onchange="window.insertMarkdownTemplate(this.value); this.value='';">
-            <option value="">📑 插入业务规约模板...</option>
+            <option value="">${t('templateDropdown')}</option>
             <option value="rule">📋 业务规则与流转规约 (前置/逻辑/异常)</option>
             <option value="metric">🔢 数据口径与计算公式 (范围/口径/刷新)</option>
             <option value="modal">🪟 弹窗与表单交互规约 (字段/校验/提交)</option>
@@ -2127,13 +2747,13 @@
         <!-- 底部操作与选择器绑定 -->
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:10px; flex-shrink:0;">
           <div style="display:flex; align-items:center; gap:6px;">
-            <button class="prd-btn-action" style="background:#eff6ff; color:#1d4ed8; padding:4px 10px; border-radius:6px; font-weight:600;" onclick="window.rePickElementFromModal()">🎯 重新拾取元素</button>
+            <button class="prd-btn-action" style="background:#eff6ff; color:#1d4ed8; padding:4px 10px; border-radius:6px; font-weight:600;" onclick="window.rePickElementFromModal()">${t('rePickBtn')}</button>
             <span style="font-size:11px; color:#64748b; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; background:#f1f5f9; padding:2px 8px; border-radius:4px;">${draft.selector || '未绑定页面元素'}</span>
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="prd-btn-action" style="padding:6px 12px;" onclick="window.minimizeEditor()">👀 暂存并看页面</button>
-            <button class="prd-btn-action" style="padding:6px 14px; background:#f1f5f9;" onclick="window.closeEditorModal()">取消</button>
-            <button class="prd-btn-primary" style="padding:6px 18px;" onclick="window.saveEditorModal()">💾 保存需求</button>
+            <button class="prd-btn-action" style="padding:6px 12px;" onclick="window.minimizeEditor()">${t('tempSaveBtn')}</button>
+            <button class="prd-btn-action" style="padding:6px 14px; background:#f1f5f9;" onclick="window.closeEditorModal()">${t('cancelBtn')}</button>
+            <button class="prd-btn-primary" style="padding:6px 18px;" onclick="window.saveEditorModal()">${t('saveBtn')}</button>
           </div>
         </div>
       </div>
@@ -2249,7 +2869,7 @@
       } else {
         const rendered = parseMarkdown(block.text);
         html += `
-          <div class="prd-live-block rendered" data-index="${idx}" onclick="window.activateBlockForEdit(${idx})" title="点击编辑此段落">
+          <div class="prd-live-block rendered" data-index="${idx}" onclick="window.activateBlockForEdit(${idx}, event)" title="点击编辑此段落">
             ${rendered || '<p style="color:#94a3b8; font-style:italic; margin:0;">点击输入内容...</p>'}
           </div>
         `;
@@ -2489,10 +3109,58 @@
     }
   };
 
-  window.activateBlockForEdit = function(idx) {
+  window.activateBlockForEdit = function(idx, event) {
     activeEditingBlockIndex = idx;
     lastFocusedBlockIndex = idx;
+
+    let targetCharOffset = null;
+    if (event && (event.clientX !== undefined && event.clientY !== undefined)) {
+      let range = null;
+      if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(event.clientX, event.clientY);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+        if (pos) {
+          range = document.createRange();
+          range.setStart(pos.offsetNode, pos.offset);
+        }
+      }
+      if (range) {
+        const blockEl = document.querySelector(`.prd-live-block[data-index="${idx}"]`);
+        if (blockEl) {
+          const preRange = range.cloneRange();
+          preRange.selectNodeContents(blockEl);
+          preRange.setEnd(range.endContainer, range.endOffset);
+          const rawText = preRange.toString();
+          targetCharOffset = rawText.length;
+        }
+      }
+    }
+
     renderLiveBlocksUI();
+
+    setTimeout(() => {
+      const input = document.getElementById(`prd-block-input-${idx}`);
+      if (input) {
+        input.focus();
+        if (targetCharOffset !== null) {
+          const lineText = input.value || '';
+          let finalOffset = targetCharOffset;
+          if (lineText.startsWith('- ') || lineText.startsWith('* ')) {
+            finalOffset = Math.min(lineText.length, targetCharOffset + 2);
+          } else if (lineText.startsWith('### ')) {
+            finalOffset = Math.min(lineText.length, targetCharOffset + 4);
+          } else if (lineText.startsWith('## ')) {
+            finalOffset = Math.min(lineText.length, targetCharOffset + 3);
+          } else if (lineText.startsWith('# ')) {
+            finalOffset = Math.min(lineText.length, targetCharOffset + 2);
+          } else {
+            finalOffset = Math.min(lineText.length, targetCharOffset);
+          }
+          input.setSelectionRange(finalOffset, finalOffset);
+        }
+      }
+    }, 0);
   };
 
   window.handleBlockFocus = function(idx, textarea) {
@@ -2968,6 +3636,21 @@
     }
   };
 
+  // 纯文本摘要提取算法（保障卡片高度 100% 绝对统一）
+  function stripMarkdownSnippet(md) {
+    if (!md || typeof md !== 'string') return '暂无详细业务描述';
+    let text = md.replace(/```[\s\S]*?```/g, ' [图表/代码] ');
+    text = text.replace(/\|[^\n]+\|/g, ' [表格] ');
+    text = text.replace(/#{1,6}\s+/g, '');
+    text = text.replace(/[-*]\s+/g, '');
+    text = text.replace(/\d+\.\s+/g, '');
+    text = text.replace(/[*_~`]/g, '');
+    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    text = text.replace(/<[^>]+>/g, ' ');
+    text = text.replace(/\s+/g, ' ').trim();
+    return text || '暂无详细业务描述';
+  }
+
   function renderRightDrawerList() {
     const container = document.getElementById('prd-drawer-list');
     if (!container) return;
@@ -3033,8 +3716,8 @@
             <span class="prd-tag prd-tag-type">${escapeHtml(pin.type || '业务规则')}</span>
           </div>
 
-          <div class="prd-card-desc">
-            ${parseMarkdown(pin.desc) || '暂无描述'}
+          <div class="prd-card-desc" title="${escapeHtml(stripMarkdownSnippet(pin.desc))}">
+            ${escapeHtml(stripMarkdownSnippet(pin.desc))}
           </div>
 
           <div class="prd-card-footer">
@@ -3152,30 +3835,76 @@
 
   window.setPRDMode = function(mode) {
     currentMode = mode;
-    const drawer = document.getElementById('prd-drawer');
+    const drawer = document.getElementById('prd-right-drawer') || document.getElementById('prd-drawer');
     const edgeTab = document.getElementById('prd-drawer-edge-tab');
 
-    if (mode === 'edit') {
+    if (mode === 'pick' || mode === 'edit') {
       document.body.style.cursor = 'crosshair';
       bindPickListeners();
-      if (drawer) drawer.classList.add('open');
-      if (edgeTab) edgeTab.style.display = 'none';
+      // 打标时自动收起右侧抽屉，完全暴露底层页面组件
+      if (drawer) {
+        drawer.classList.remove('open', 'semi-open');
+      }
+      if (edgeTab) {
+        edgeTab.style.display = 'flex';
+        edgeTab.innerHTML = `<span class="prd-edge-text" style="color:#ef4444; font-weight:700;">📍 点击页面组件打标 (ESC退出)</span>`;
+      }
       renderPinMarkers();
-      renderRightDrawerList();
-      showToast('✏️ 编辑打点模式已激活：直接点击页面元素即可！', 'info');
+      showToast('📍 点击页面任意组件即可完成打标并呼出规约编辑窗', 'info');
     } else if (mode === 'show') {
       unbindPickListeners();
-      if (drawer) drawer.classList.add('open');
+      if (drawer) {
+        drawer.classList.remove('semi-open');
+        drawer.classList.add('open');
+      }
       if (edgeTab) edgeTab.style.display = 'none';
       renderPinMarkers();
       renderRightDrawerList();
+    } else if (mode === 'semi') {
+      unbindPickListeners();
+      if (drawer) {
+        drawer.classList.remove('open');
+        drawer.classList.add('semi-open');
+      }
+      if (edgeTab) edgeTab.style.display = 'none';
+      renderPinMarkers();
+      renderMiniRailList();
     } else if (mode === 'hide') {
       unbindPickListeners();
-      if (drawer) drawer.classList.remove('open');
-      if (edgeTab) edgeTab.style.display = 'flex';
+      if (drawer) drawer.classList.remove('open', 'semi-open');
+      if (edgeTab) {
+        edgeTab.style.display = 'flex';
+        edgeTab.innerHTML = `<span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>`;
+      }
       renderPinMarkers();
     }
   };
+
+  window.toggleDrawerSemiMode = function() {
+    const drawer = document.getElementById('prd-right-drawer') || document.getElementById('prd-drawer');
+    if (!drawer) return;
+    if (drawer.classList.contains('semi-open')) {
+      window.setPRDMode('show');
+    } else {
+      window.setPRDMode('semi');
+    }
+  };
+
+  function renderMiniRailList() {
+    const miniRailContainer = document.getElementById('prd-mini-rail-pins');
+    if (!miniRailContainer) return;
+
+    let html = '';
+    savedPins.forEach((pin) => {
+      html += `
+        <button class="prd-mini-badge-btn" data-title="#${pin.id} ${escapeHtml(pin.title)}" onclick="window.locateAndHighlight(${pin.id})">
+          ${pin.id}
+        </button>
+      `;
+    });
+    miniRailContainer.innerHTML = html;
+  }
+
 
   // 16. 当前页面 PRD 可视化 Markdown 文档大屏与新标签页独立打开
   let activeDocModal = null;
@@ -3187,7 +3916,7 @@
       return;
     }
 
-    const docTitle = `${currentPageTitle} · 产品需求规格说明书 (PRD) - ${currentVersion}`;
+    const docTitle = `${getCurrentPageTitle()} ${t('docHeroTitleSuffix')} - ${currentVersion}`;
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -3427,14 +4156,14 @@
       <span>${escapeHtml(docTitle)}</span>
     </div>
     <div class="prd-header-actions">
-      <button class="prd-btn" onclick="window.print()">🖨️ 打印 / 导出 PDF</button>
+      <button class="prd-btn" onclick="window.print()">${t('printBtn')}</button>
       <button class="prd-btn" onclick="window.close()">✕ 关闭网页</button>
     </div>
   </header>
 
   <div class="prd-layout">
     <aside class="prd-toc">
-      <div class="prd-toc-title">📑 目录大纲 (TOC)</div>
+      <div class="prd-toc-title">${t('tocTitle')} (TOC)</div>
       ${savedPins.map(pin => `
         <a class="prd-toc-link" href="#sec-pin-${pin.id}" title="${escapeHtml(pin.title || '')}">
           <span class="prd-toc-badge">${pin.id}</span>
@@ -3447,11 +4176,11 @@
       <div class="prd-doc-hero">
         <h1>${escapeHtml(docTitle)}</h1>
         <div class="prd-meta">
-          <span>📄 页面文件: <code>${pageKey}</code></span>
+          <span>📄 ${t('docMetaPage')}: <code>${pageKey}</code></span>
           <span>·</span>
-          <span>🏷️ 规格版本: <strong>${escapeHtml(currentVersion)}</strong></span>
+          <span>🏷️ ${t('docMetaVersion')}: <strong>${escapeHtml(currentVersion)}</strong></span>
           <span>·</span>
-          <span>📌 规格条目: 共 <strong>${savedPins.length}</strong> 项</span>
+          <span>📌 ${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
           <span>·</span>
           <span>⏱️ 生成时间: ${new Date().toLocaleString()}</span>
         </div>
@@ -3511,7 +4240,7 @@
         <div class="prd-doc-header">
           <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:17px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">
-              <span>📑 ${currentPageTitle}</span>
+              <span>📑 ${getCurrentPageTitle()}</span>
               <span style="font-size:13px; color:#64748b; font-weight:normal;">产品需求规格说明书 (PRD)</span>
             </span>
             <span class="prd-tag prd-tag-version" style="font-size:11px; padding:2px 8px;">${escapeHtml(currentVersion)}</span>
@@ -3520,10 +4249,10 @@
             </span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="prd-btn-action" style="background:#2563eb; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">↗️ 在新网页打开</button>
-            <button class="prd-btn-action" style="background:#10b981; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDMarkdown()">📥 导出 Markdown</button>
-            <button class="prd-btn-action" style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">💾 导出 JS 数据</button>
-            <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">📂 上传/导入版本</button>
+            <button class="prd-btn-action" style="background:#2563eb; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
+            <button class="prd-btn-action" style="background:#10b981; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDMarkdown()">${t('exportMdBtn')}</button>
+            <button class="prd-btn-action" style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
+            <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">${t('importVersionBtn')}</button>
             <input type="file" id="prd-file-import-input" accept=".js,.json,.txt" style="display:none;" onchange="window.handleImportJS(this)">
             <button class="prd-btn-action" style="font-size:22px; padding:4px 8px;" onclick="window.closeCurrentPagePRDDoc()">&times;</button>
           </div>
@@ -3532,7 +4261,7 @@
         <div class="prd-doc-content-layout">
           <div class="prd-doc-toc">
             <div class="prd-toc-title">
-              <span>📑 目录大纲</span>
+              <span>${t('tocTitle')}</span>
               <span style="font-size:10px;">TOC</span>
             </div>
             <div style="display:flex; flex-direction:column; gap:2px;">
@@ -3549,14 +4278,14 @@
             <div class="prd-doc-paper">
               <div class="prd-doc-hero">
                 <h1 class="prd-doc-hero-title">
-                  <span>${currentPageTitle} · 产品需求规格说明书 (PRD)</span>
+                  <span>${getCurrentPageTitle()} ${t('docHeroTitleSuffix')}</span>
                 </h1>
                 <div class="prd-doc-hero-meta">
-                  <span>📄 页面文件: <code>${pageKey}</code></span>
+                  <span>📄 ${t('docMetaPage')}: <code>${pageKey}</code></span>
                   <span>·</span>
                   <span>🏷️ 版本: <strong>${escapeHtml(currentVersion)}</strong></span>
                   <span>·</span>
-                  <span>📌 规格条目: 共 <strong>${savedPins.length}</strong> 项</span>
+                  <span>📌 ${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
                 </div>
               </div>
 
@@ -3625,7 +4354,7 @@
   // 17. 导出与导入 (JS / Markdown & 多版本冲突模态处理)
   window.exportPRDJS = function() {
     const dataFileName = `prd-data-${pageKey.replace('.html', '')}.js`;
-    const jsContent = `/**\n * PRD 需求数据 - ${currentPageTitle} (${currentVersion})\n * 导出时间: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
+    const jsContent = `/**\n * PRD 需求数据 - ${getCurrentPageTitle()} (${currentVersion})\n * 导出时间: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
     const blob = new Blob([jsContent], { type: 'application/javascript;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -3639,7 +4368,7 @@
   };
 
   window.exportPRDMarkdown = function() {
-    let md = `# ${currentPageTitle} - 产品需求规格说明书 (PRD) [${currentVersion}]\n\n`;
+    let md = `# ${getCurrentPageTitle()} - 产品需求规格说明书 (PRD) [${currentVersion}]\n\n`;
     md += `> **生成时间**：${new Date().toLocaleString()}  \n`;
     md += `> **关联页面**：\`${pageKey}\`  \n`;
     md += `> **规格版本**：\`${currentVersion}\`  \n\n---\n\n`;
@@ -3771,7 +4500,7 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid #f1f5f9; padding-top:10px;">
-          <button class="prd-btn-action" onclick="document.getElementById('prd-version-import-modal').remove()">取消</button>
+          <button class="prd-btn-action" onclick="document.getElementById('prd-version-import-modal').remove()">${t('cancelBtn')}</button>
           <button class="prd-btn-primary" onclick="window.confirmImportVersionData()">确认导入并应用</button>
         </div>
       </div>
@@ -3849,7 +4578,7 @@
     edgeTab.onclick = window.togglePRDDrawer;
     edgeTab.innerHTML = `
       <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
-      <span class="prd-edge-text">📌 需求打点 (<span id="prd-edge-count">${savedPins.length}</span>)</span>
+      <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
     `;
     document.body.appendChild(edgeTab);
 
@@ -3858,49 +4587,75 @@
     drawer.className = 'prd-right-drawer';
     drawer.id = 'prd-drawer';
     drawer.innerHTML = `
-      <!-- 左边缘快捷收起箭头按钮 -->
-      <div class="prd-drawer-left-arrow" id="prd-drawer-left-arrow" onclick="window.setPRDMode('hide')" title="点击收起需求面板">
-        <span>›</span>
+      <!-- 左边缘快捷展开/收起/半收起把手 -->
+      <div class="prd-drawer-left-arrow" id="prd-drawer-left-arrow" onclick="window.setPRDMode('hide')" title="点击完全收起抽屉">
+        <span>◀</span>
       </div>
 
-      <!-- 抽屉头部 -->
-      <div class="prd-drawer-header">
-        <div style="font-size:14px; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:6px;">
-          <span>📋 ${currentPageTitle}</span>
-          <span style="background:#e0f2fe; color:#0284c7; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
+      <!-- 1. 全展开完整面板 (400px) -->
+      <div class="prd-drawer-full-content" style="display:flex; flex-direction:column; height:100%; width:100%; overflow:hidden;">
+        <!-- 抽屉头部 -->
+        <div class="prd-drawer-header">
+          <div style="font-size:14px; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:6px;">
+            <span>📋 ${getCurrentPageTitle()}</span>
+            <span style="background:#e0f2fe; color:#0284c7; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <select id="prd-lang-select" onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#334155; font-weight:600;" title="切换语言 (Language)">
+              <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>🇨🇳 中文</option>
+              <option value="en" ${currentLang==='en'?'selected':''}>🇺🇸 EN</option>
+              <option value="ja" ${currentLang==='ja'?'selected':''}>🇯🇵 日本語</option>
+              <option value="ko" ${currentLang==='ko'?'selected':''}>🇰🇷 한국어</option>
+            </select>
+            <button class="prd-btn-action" style="font-size:11px; padding:3px 6px;" onclick="window.setPRDMode('semi')" title="半收起为紧凑标号竖条">➖ 半收起</button>
+            <button class="prd-btn-action" style="font-size:11px; background:#eff6ff; color:#1d4ed8; padding:3px 6px;" onclick="window.toggleDrawerManageMode()" title="开启/关闭排序与删除管理模式">⚙️ 排序管理</button>
+            <button class="prd-btn-action" style="font-size:16px; padding:0 6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
+          </div>
         </div>
-        <div style="display:flex; align-items:center; gap:4px;">
-          <button class="prd-btn-action" style="font-size:11px; background:#eff6ff; color:#1d4ed8;" onclick="window.toggleDrawerManageMode()" title="开启/关闭排序与删除管理模式">⚙️ 排序管理</button>
-          <button class="prd-btn-action" style="font-size:16px;" onclick="window.setPRDMode('hide')" title="收起抽屉">&times;</button>
+
+        <!-- 多版本切换工具栏 -->
+        <div class="prd-version-bar">
+          <select class="prd-version-select" id="prd-version-select" onchange="window.handleVersionSelectChange(this.value)">
+            <!-- 动态版本列表 -->
+          </select>
+          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">➕</button>
+          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">📂</button>
+        </div>
+
+        <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
+        <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
+          <div style="position:relative; flex:1; display:flex; align-items:center;">
+            <input type="text" id="prd-drawer-search-input" placeholder="🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
+            <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
+          </div>
+        </div>
+
+        <!-- 需求列表主体 -->
+        <div class="prd-drawer-body" id="prd-drawer-list" style="flex:1; overflow-y:auto;">
+          <!-- 动态渲染卡片 -->
+        </div>
+
+        <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
+        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
+          <button class="prd-btn-primary" style="flex:1;" onclick="window.setPRDMode('edit')">📍 新增打点</button>
+          <button class="prd-btn-action" style="background:#f1f5f9; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">📑 查看完整PRD</button>
         </div>
       </div>
 
-      <!-- 多版本切换工具栏 -->
-      <div class="prd-version-bar">
-        <select class="prd-version-select" id="prd-version-select" onchange="window.handleVersionSelectChange(this.value)">
-          <!-- 动态版本列表 -->
-        </select>
-        <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">➕</button>
-        <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">📂</button>
-      </div>
-
-      <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
-      <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
-        <div style="position:relative; flex:1; display:flex; align-items:center;">
-          <input type="text" id="prd-drawer-search-input" placeholder="🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
-          <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
+      <!-- 2. 半收起紧凑标号竖条 (56px Mini Rail) -->
+      <div class="prd-drawer-mini-rail" style="display:none; flex-direction:column; height:100%; width:100%; background:#f8fafc; align-items:center; padding:10px 0; box-sizing:border-box; user-select:none;">
+        <button class="prd-btn-action" style="width:36px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:12px;" onclick="window.setPRDMode('show')" title="展开完整抽屉">
+          ▶
+        </button>
+        <div style="font-size:10px; font-weight:800; color:#64748b; margin-bottom:10px; text-align:center;">
+          ${escapeHtml(currentVersion)}
         </div>
-      </div>
-
-      <!-- 需求列表主体 -->
-      <div class="prd-drawer-body" id="prd-drawer-list">
-        <!-- 动态渲染卡片 -->
-      </div>
-
-      <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
-      <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
-        <button class="prd-btn-primary" style="flex:1;" onclick="window.setPRDMode('edit')">📍 新增打点</button>
-        <button class="prd-btn-action" style="background:#f1f5f9; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">📑 查看完整PRD</button>
+        <div id="prd-mini-rail-pins" style="display:flex; flex-direction:column; align-items:center; flex:1; overflow-y:auto; overflow-x:visible; width:100%;">
+          <!-- 由 renderMiniRailList 动态填充 -->
+        </div>
+        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(37,99,235,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
+          📍
+        </button>
       </div>
     `;
     document.body.appendChild(drawer);
