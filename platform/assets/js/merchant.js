@@ -105,25 +105,30 @@ const MerchantApp = {
         }
       }
 
-      if (shop.status === '闭店中' || shop.status === '已关停' || shop.status === '已禁用' || shop.status === '审核未通过') {
+      const isClosed = (shop.status === '闭店中' || shop.status === '已关停' || shop.status === '已禁用' || shop.status === '未开店' || shop.status === '暂未开通店铺' || shop.status === '审核未通过');
+      if (isClosed) {
         if (warningBox) warningBox.style.display = 'block';
 
-        let forcedReason = shop.suspendReason || shop.rejectReason || '资质证明扫描件不够清晰，主体印章模糊，请重新拍清晰上传。';
+        const isUnopened = (shop.status === '未开店' || shop.status === '暂未开通店铺' || shop.suspendReason === '暂未开通店铺' || (!shop.suspendReason && !shop.rejectReason));
+        const reasonLabelEl = document.getElementById('pc-suspend-reason-label');
 
-        if (statusText) statusText.innerText = '您的店铺资料审核未通过，处于关闭状态，请根据下架原因修改后重新提交！';
-        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">闭店中 (审核未通过)</span>';
-        if (reasonText) reasonText.innerText = forcedReason;
+        if (isUnopened) {
+          // 情况二：暂未开通店铺 -> 闭店中（灰色）+ 理由显示暂未开通店铺
+          if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-secondary" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px; background:#f1f5f9; color:#64748b;">闭店中</span>';
+          if (reasonText) reasonText.innerText = '暂未开通店铺';
+          if (reasonLabelEl) reasonLabelEl.innerText = '闭店原因：';
+        } else {
+          // 情况一：强制下架原因 -> 闭店中（红色）+ 强制下架原因
+          const forcedReason = shop.suspendReason || shop.rejectReason || '资质证明扫描件不够清晰，主体印章模糊，请重新拍照上传。';
+          if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">闭店中</span>';
+          if (reasonText) reasonText.innerText = forcedReason;
+          if (reasonLabelEl) reasonLabelEl.innerText = '强制下架原因：';
+        }
       } else if (shop.status === '待审核') {
-        if (statusText) statusText.innerText = '店铺基本资料及装潢信息已提交审核，预计在1-2个工作日内完成审核。';
         if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-warning" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">待审核</span>';
-        if (warningBox) warningBox.style.display = 'none';
-      } else if (shop.status === '未开店' || !shop.status) {
-        if (statusText) statusText.innerText = '您的账号尚未完成开店，请在下方在线填写商户基本信息与装潢提交审核。';
-        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-secondary" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px; background:#f1f5f9; color:#64748b;">未开店</span>';
         if (warningBox) warningBox.style.display = 'none';
       } else {
         // 正常营业 / 正常
-        if (statusText) statusText.innerText = '您的店铺处于正常对外营业状态，各渠道货源及现货市场展现正常。';
         if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-success" style="font-size: 13px; padding: 4px 12px; font-weight: bold; border-radius: 12px;">正常营业</span>';
         if (warningBox) warningBox.style.display = 'none';
       }
@@ -1407,6 +1412,8 @@ const MerchantApp = {
             <td><div class="font-bold">${a.title}</div></td>
             <td>${a.resId}</td>
             <td class="text-slate-700 font-bold">${a.startPrice}</td>
+            <td><div style="max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#475569;" title="${a.inspectAddress || '--'}">${a.inspectAddress || '--'}</div></td>
+            <td><span style="font-family:monospace; color:#0284c7; font-weight:500;">${a.contactPhone || '--'}</span></td>
             <td class="text-danger font-bold">${curMax}</td>
             <td>${tag}</td>
             <td class="text-secondary" style="font-size:12px;">${createTime}</td>
@@ -1414,7 +1421,7 @@ const MerchantApp = {
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="9" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="11" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
       this._appendPagination(tbody, myAnn.length);
     }
   },
@@ -1710,6 +1717,10 @@ const MerchantApp = {
 
     document.getElementById('add-ann-bid-end').value = formatDate(sevenDaysLater);
     document.getElementById('add-ann-start-price').value = '';
+    const addrEl = document.getElementById('add-ann-inspect-address');
+    if (addrEl) addrEl.value = '浙江省杭州市萧山区临江高新产业园远大钢铁1号库';
+    const phoneEl = document.getElementById('add-ann-contact-phone');
+    if (phoneEl) phoneEl.value = '13800138000';
 
     UI.showModal('modal-add-ann');
   },
@@ -1735,6 +1746,10 @@ const MerchantApp = {
     title = title.replace(/^【看货报名阶段】|^【现场看货阶段】|^【竞价出价阶段】|^【等待公布阶段】|^【已结束】|^【待审核测试】|^【已拒绝测试】|^【已撤回测试】/, '');
     document.getElementById('add-ann-title').value = title;
     document.getElementById('add-ann-start-price').value = parseFloat((a.startPrice || '').replace(/[^\d\.]/g, '')) || 0;
+    const addrEl = document.getElementById('add-ann-inspect-address');
+    if (addrEl) addrEl.value = a.inspectAddress || '';
+    const phoneEl = document.getElementById('add-ann-contact-phone');
+    if (phoneEl) phoneEl.value = a.contactPhone || '';
 
     const formatDateForInput = (str) => {
       if (!str) return '';
@@ -1789,10 +1804,12 @@ const MerchantApp = {
     const resId = document.getElementById('add-ann-resource-select').value;
     const title = document.getElementById('add-ann-title').value.trim();
     const priceVal = parseFloat(document.getElementById('add-ann-start-price').value);
+    const inspectAddress = (document.getElementById('add-ann-inspect-address')?.value || '').trim();
+    const contactPhone = (document.getElementById('add-ann-contact-phone')?.value || '').trim();
     const bidEnd = document.getElementById('add-ann-bid-end').value;
 
-    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !bidEnd) {
-      UI.toast('请填写完整且合法的竞价公告信息！', 'error');
+    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !bidEnd || !inspectAddress || !contactPhone) {
+      UI.toast('请填写完整且合法的竞价公告信息（看货地址和联系电话为必填项）！', 'error');
       return;
     }
 
@@ -1808,6 +1825,8 @@ const MerchantApp = {
         a.image = res ? res.image : a.image;
         a.title = title;
         a.startPrice = priceStr;
+        a.inspectAddress = inspectAddress;
+        a.contactPhone = contactPhone;
         a.bidEndTime = bidEnd.replace('T', ' ');
         a.status = 0;
         a.auditStatus = targetAuditStatus;
@@ -1824,6 +1843,8 @@ const MerchantApp = {
         shopName: '远大钢铁官方直营店',
         title: title,
         startPrice: priceStr,
+        inspectAddress: inspectAddress,
+        contactPhone: contactPhone,
         bidEndTime: bidEnd.replace('T', ' '),
         status: 0,
         currentMaxOffer: '-',
@@ -2084,9 +2105,16 @@ window.cycleMerchantShopStatus = () => {
     delete shop.suspendReason;
     delete shop.suspendRemark;
   } else if (shop.status === '待审核') {
+    // 情况一：强制下架原因 (红色 闭店中)
     shop.status = '闭店中';
     shop.suspendReason = '资质证明扫描件不够清晰，主体印章模糊，请重新拍照上传。';
     shop.suspendRemark = '经平台核查，营业执照副本公章防伪模糊，请于3个工作日内补全提交加盖清晰印章的高清材料。';
+  } else if (shop.status === '闭店中' && shop.suspendReason !== '暂未开通店铺') {
+    // 情况二：暂未开通店铺 (灰色 闭店中)
+    shop.status = '闭店中';
+    shop.suspendReason = '暂未开通店铺';
+    delete shop.suspendRemark;
+    delete shop.rejectReason;
   } else {
     shop.status = '正常营业';
     delete shop.rejectReason;
@@ -2094,7 +2122,10 @@ window.cycleMerchantShopStatus = () => {
     delete shop.suspendRemark;
   }
 
-  UI.toast(`[演示] 店铺状态已切换，当前主状态: ${shop.status}`, 'info');
+  const desc = shop.status === '闭店中'
+    ? (shop.suspendReason === '暂未开通店铺' ? '闭店中 (灰色 · 暂未开通店铺)' : '闭店中 (红色 · 强制下架原因)')
+    : shop.status;
+  UI.toast(`[演示] 店铺状态已切换: ${desc}`, 'info');
   MerchantApp.renderShopInfo();
 };
 
@@ -2364,26 +2395,42 @@ MerchantApp.showOrderDetailPage = function(orderId) {
       <span style="width:4px; height:16px; background:var(--primary-color); border-radius:2px; display:inline-block;"></span>
       支付凭证与付款审核存证
     </h3>`;
+    voucherCard.style.display = 'block';
+
     if (o.status === 0) {
-      voucherCard.style.display = 'none';
+      voucherCard.innerHTML = voucherTitle + `
+        <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+          ⏳ 订单尚未进入付款阶段，等待双方合同签署完成及平台审核。
+        </div>
+      `;
     } else if (o.status === 4) {
-      if (o.paymentAuditStatus === 'pending' || o.paymentVoucher) {
-        voucherCard.style.display = 'block';
+      if (o.paymentAuditStatus === 'pending' || (o.paymentVoucher && o.paymentAuditStatus !== 'rejected')) {
         const uploadedVoucher = o.paymentVoucher || '买家对公转账凭证.jpg';
         voucherCard.innerHTML = voucherTitle + `
           <div style="padding:14px; background:#fffbebf0; border:1px solid #fde68a; border-radius:8px; font-size:13px; margin-bottom:10px;">
             <div style="color:#b45309; font-weight:bold; margin-bottom:6px;">⏳ 买家对公打款凭证已提交，待平台运营人员审核入账...</div>
             <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #fef3c7;">
               <span style="font-family:monospace; font-weight:bold; color:#0f172a;">📄 ${uploadedVoucher}</span>
-              <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${uploadedVoucher}', 'voucher', '${o.paymentVoucher || ('TXN-PAY-' + o.id)}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="${o.paymentAuditStatus === 'passed' ? '' : 'display:none;'}">【点击预览凭证】</button>
+              <button class="btn btn-outline btn-xs" onclick="UI.previewDocument('${uploadedVoucher}', 'voucher', '${o.paymentVoucher || ('TXN-PAY-' + o.id)}', '${o.amount}', '${o.buyerName}', '${o.shopName}')">【点击预览凭证】</button>
             </div>
           </div>
         `;
+      } else if (o.paymentAuditStatus === 'rejected' || o.paymentRejectReason) {
+        voucherCard.innerHTML = voucherTitle + `
+          <div style="padding:14px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:13px; color:#991b1b; margin-bottom:10px;">
+            <div style="font-weight:bold; margin-bottom:4px;">❌ 买家打款凭证被打回重审</div>
+            <div style="font-size:12px; margin-bottom:4px;">驳回原因：${o.paymentRejectReason || '金额不符'}</div>
+            <div style="font-size:11px; color:#64748b;">买家尚未重新上传付款凭证。</div>
+          </div>
+        `;
       } else {
-        voucherCard.style.display = 'none';
+        voucherCard.innerHTML = voucherTitle + `
+          <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+            ⏳ 买家尚未上传对公打款凭证。
+          </div>
+        `;
       }
     } else {
-      voucherCard.style.display = 'block';
       const voucherNo = o.paymentVoucher || ('TXN-PAY-' + o.id);
       const voucherImages = (o.voucherImages || [
         { label: '1. 银行对公转账电子回单', name: '《中国工商银行电子对公转账汇款单》', type: 'voucher' },
@@ -2397,7 +2444,7 @@ MerchantApp.showOrderDetailPage = function(orderId) {
           ${voucherImages.map((vImg, i) => `
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
               <span style="font-weight:bold; color:#166534; font-size:12px;">${vImg.label}</span>
-              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;${o.paymentAuditStatus === 'passed' ? '' : 'display:none;'}">【预览】</button>
+              <button class="btn btn-outline btn-xs" id="merchant-detail-preview-voucher-btn-${i}" style="border-radius:4px; padding:3px 8px; font-size:11px; color:#166534; border-color:#bbf7d0; background:#fff;">【预览】</button>
             </div>
           `).join('')}
         </div>

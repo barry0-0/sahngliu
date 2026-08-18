@@ -938,13 +938,15 @@ window.MallApp = {
     const currentBuyer = this.currentBuyerName || '万通建材采购部';
     const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部' || b.winner === 'H5买家用户';
     let buyerStepIndex = 0;
-    if (b.userOffered) {
-      if (b.status === 4) buyerStepIndex = isWinner ? 4 : 3;
-      else if (b.status === 3) buyerStepIndex = 3;
-      else buyerStepIndex = 2;
+    if (b.status === 4) {
+      buyerStepIndex = isWinner ? 4 : 3;
+    } else if (b.status === 3) {
+      buyerStepIndex = 3;
     } else if (b.userInspected) {
-      buyerStepIndex = 1;
+      buyerStepIndex = 2;
     } else if (b.userApplied) {
+      buyerStepIndex = 1;
+    } else {
       buyerStepIndex = 0;
     }
 
@@ -1015,7 +1017,11 @@ window.MallApp = {
       actionCardHTML = `
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:16px; box-sizing:border-box; color:#1e40af;">
           <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">📋 竞拍报名须知</h4>
-          <p style="margin:0 0 12px 0; font-size:12px; color:#3b82f6;">该项目需先完成看货报名，现场看货后方可录入报价。</p>
+          <p style="margin:0 0 8px 0; font-size:12px; color:#3b82f6;">该项目需先完成看货报名，前往现场看货核验后方可录入报价。</p>
+          <div style="font-size:12px; color:#1e3a8a; background:#dbeafe; padding:8px 12px; border-radius:8px; margin-bottom:12px;">
+            <div>📍 <strong>看货地点：</strong>${b.inspectAddress || '现场自提仓'}</div>
+            <div style="margin-top:4px;">📞 <strong>联系电话：</strong>${b.contactPhone || '联系商家'}</div>
+          </div>
           <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 24px; font-weight:bold;" onclick="MallApp.signUpForBiddingInspection('${b.id}')">立即看货报名</button>
         </div>
       `;
@@ -1023,7 +1029,11 @@ window.MallApp = {
       actionCardHTML = `
         <div style="background:#fefce8; border:1px solid #fef08a; border-radius:12px; padding:16px; box-sizing:border-box; color:#854d0e;">
           <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px;">🔍 现场看货拍照</h4>
-          <p style="margin:0 0 10px 0; font-size:12px;">您已报名！请联系商家进行现场看货，并上传看货现场照片，即可解锁报价竞拍。</p>
+          <p style="margin:0 0 8px 0; font-size:12px;">您已报名！请前往看货地址联系现场负责人完成实物看货，并拍照上传凭证解锁报价。</p>
+          <div style="font-size:12px; color:#713f12; background:#fef9c3; padding:8px 12px; border-radius:8px; margin-bottom:12px;">
+            <div>📍 <strong>看货地点：</strong>${b.inspectAddress || '现场自提仓'}</div>
+            <div style="margin-top:4px;">📞 <strong>联系电话：</strong>${b.contactPhone || '联系商家'}</div>
+          </div>
           <div style="display:flex; gap:12px; align-items:center;">
             <input type="file" id="bid-inspection-file" accept="image/*" style="display:none;" onchange="MallApp.handleBidPhotoSelected(this)">
             <button class="btn btn-outline" style="border-radius:18px; padding:6px 16px; font-size:12px;" onclick="document.getElementById('bid-inspection-file').click()">📷 上传现场看货拍照凭证</button>
@@ -1035,49 +1045,35 @@ window.MallApp = {
     } else if (b.status === 2) {
       const isReoffer = b.userOffered;
       const startVal = parseFloat(b.startPrice.replace(/[^\d\.]/g, '')) || 0;
-      const currentMaxVal = b.currentMaxOffer === '-' ? 0 : parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, ''));
-      const minRecommendPrice = (currentMaxVal > 0 ? currentMaxVal : startVal) + 5000;
+      const curMaxVal = (b.currentMaxOffer && b.currentMaxOffer !== '-') ? (parseFloat(b.currentMaxOffer.replace(/[^\d\.]/g, '')) || startVal) : startVal;
+      const minStep = 1000;
+      const suggestOffer = curMaxVal + minStep;
 
       actionCardHTML = `
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; box-sizing:border-box;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; color:#0f172a; font-weight:bold; font-size:14px;">⚡ ${isReoffer ? '加价竞拍出价' : '首次报价竞拍'}</h4>
-            <span style="font-size:10px; background:#fff7ed; color:#ea580c; padding:2px 8px; border-radius:10px; font-weight:bold;">竞拍火热中</span>
-          </div>
-
-          <div style="display:flex; gap:16px; background:#fff; padding:12px 16px; border-radius:10px; border:1px solid #f1f5f9; margin-bottom:12px;">
-            <div>
-              <div style="font-size:11px; color:#94a3b8;">起拍底价</div>
-              <div style="font-size:14px; font-weight:bold; color:#475569; font-family:monospace; margin-top:2px;">${b.startPrice}</div>
+          <h4 style="margin:0 0 6px 0; font-weight:bold; font-size:14px; color:#0f172a;">🔨 ${isReoffer ? '追加竞价出价' : '参与现场竞标出价'}</h4>
+          <p style="margin:0 0 12px 0; font-size:12px; color:#64748b;">${isReoffer ? '您已出价，可继续加价以保持竞价优势。' : '您已完成看货核验，请录入您的竞标报价：'}</p>
+          <div class="flex gap-2 items-center" style="display:flex; gap:8px;">
+            <div style="position:relative; flex:1;">
+              <span style="position:absolute; left:12px; top:8px; font-weight:bold; color:#64748b;">¥</span>
+              <input type="number" id="mall-bid-offer-input" class="form-control" style="padding-left:26px; height:38px; font-weight:bold; font-size:16px; color:#ef4444;" placeholder="${suggestOffer}" value="${suggestOffer}">
             </div>
-            <div style="margin-left:auto; text-align:right;">
-              <div style="font-size:11px; color:#94a3b8;">当前最高报价</div>
-              <div style="font-size:16px; font-weight:800; color:#ef4444; font-family:monospace; margin-top:2px;">${b.currentMaxOffer === '-' ? b.startPrice : b.currentMaxOffer}</div>
-            </div>
+            <button class="btn btn-primary" style="height:38px; border-radius:19px; padding:0 20px; font-weight:bold;" onclick="MallApp.submitBidOffer('${b.id}')">${isReoffer ? '立即加价' : '提交出价'}</button>
           </div>
-
-          <p style="margin:0 0 8px 0; font-size:12px; color:#64748b;">您已具备竞买资格，请输入您的${isReoffer ? '新加价金额' : '竞拍报价'}。</p>
-          <div style="display:flex; gap:10px;">
-            <input type="number" id="bid-price-input" placeholder="建议不低于 ¥${minRecommendPrice}" value="${minRecommendPrice}" class="form-control" style="flex:1; height:36px; border-radius:18px; font-family:monospace; font-weight:bold; font-size:14px; padding: 0 16px;">
-            <button class="btn btn-primary" style="height:36px; border-radius:18px; padding:0 24px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none;" onclick="MallApp.submitBidPrice('${b.id}')">${isReoffer ? '提交加价' : '确认报价'}</button>
-          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:6px;">* 出价需高于当前最高出价 ¥${curMaxVal.toLocaleString()}，加价幅度不低于 ¥${minStep.toLocaleString()}</div>
         </div>
       `;
     }
 
     const cleanedTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
 
-    // 我的历史报价记录 (仅在已报价时展示, 与H5逻辑一致)
-    const buyerName = this.currentBuyerName || '万通建材采购部';
+    // 我的历史报价记录
     let myOffersHTML = '';
-    if (b.userOffered) {
-      const myOnlyOffers = (b.offers || []).filter(o => o.merchantName === buyerName || o.merchantName === 'H5买家用户' || o.shopName === buyerName);
+    const myOnlyOffers = MockData.biddingOffers.filter(o => o.bidId === b.id && o.buyerName === (this.currentBuyerName || '万通建材采购部'));
+    if (myOnlyOffers.length > 0) {
       myOffersHTML = `
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-top:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-weight:bold; font-size:14px; color:#0f172a;">📜 我的历史报价记录</h4>
-            <span style="font-size:11px; color:#94a3b8;">共 ${myOnlyOffers.length} 笔</span>
-          </div>
+        <div class="mt-4 pt-3 border-t">
+          <h4 style="font-size:13px; font-weight:bold; color:#0f172a; margin-bottom:8px;">📊 我的竞价记录 (${myOnlyOffers.length}条)</h4>
           <div style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;">
             ${myOnlyOffers.map(o => `
               <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 14px; border-radius:10px; border:1px solid #f1f5f9;">
@@ -1733,9 +1729,14 @@ window.MallApp = {
         支付凭证与付款审核存证
       </h3>`;
       const hasPaymentVoucher = !!(o.paymentVoucher);
+      voucherCard.style.display = 'block';
 
       if (o.status === 0) {
-        voucherCard.style.display = 'none';
+        voucherCard.innerHTML = voucherTitle + `
+          <div style="padding:16px; text-align:center; color:#94a3b8; font-size:13px; background:#f8fafc; border-radius:8px; border:1px dashed #e2e8f0;">
+            ⏳ 订单尚未进入付款阶段，等待双方合同签署完成及平台审核。
+          </div>
+        `;
       } else if (o.status === 4) {
         voucherCard.style.display = 'block';
         if (o.paymentAuditStatus === 'pending' || hasPaymentVoucher) {

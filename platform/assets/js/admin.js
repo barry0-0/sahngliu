@@ -1400,6 +1400,8 @@ const AdminApp = {
             <td>${companyName}</td>
             <td>${a.resId}</td>
             <td style="font-weight:bold; color:#475569;">${a.startPrice}</td>
+            <td><div style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#475569;" title="${a.inspectAddress || '--'}">${a.inspectAddress || '--'}</div></td>
+            <td><span style="font-family:monospace; color:#0284c7; font-weight:500;">${a.contactPhone || '--'}</span></td>
             <td style="font-weight:bold; color:#ef4444;">${a.currentMaxOffer || a.startPrice}</td>
             <td>${combinedTag}</td>
             <td>${formatTimeSec(a.createdAt || a.createTime || '2026-07-01 09:00:00')}</td>
@@ -2465,6 +2467,20 @@ window.openAuditBiddingAnnModal = (annId) => {
   document.getElementById('audit-bidding-ann-target-id').value = annId;
   const titleEl = document.getElementById('audit-modal-bidding-ann-title');
   if (titleEl) titleEl.innerText = `竞价公告审核 - ${ann.title}`;
+  
+  const infoEl = document.getElementById('audit-bidding-ann-info');
+  if (infoEl) {
+    infoEl.innerHTML = `
+      <div><strong>公告编号：</strong>${ann.id}</div>
+      <div><strong>公告标题：</strong>${ann.title}</div>
+      <div><strong>发布商家：</strong>${ann.shopName} (${ann.companyName || '--'})</div>
+      <div><strong>起拍底价：</strong><span style="color:#ef4444; font-weight:bold;">${ann.startPrice}</span></div>
+      <div><strong>看货地址：</strong>${ann.inspectAddress || '未填写'}</div>
+      <div><strong>联系电话：</strong>${ann.contactPhone || '未填写'}</div>
+      <div><strong>截止时间：</strong>${ann.bidEndTime || '--'}</div>
+    `;
+  }
+
   const inputEl = document.getElementById('audit-bidding-ann-reject-input');
   if (inputEl) inputEl.value = '';
   const counterEl = inputEl?.parentElement?.querySelector('.char-counter');

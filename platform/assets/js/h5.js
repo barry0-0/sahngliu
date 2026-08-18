@@ -847,13 +847,15 @@ const H5App = {
     // 计算买家实际到达的步骤节点 (0:看货报名, 1:现场看货, 2:参加竞价, 3:等待公布, 4:中标付款)
     const isWinner = b.winner === 'H5买家用户' || b.winner === '万通建材采购部';
     let buyerStepIndex = 0;
-    if (b.userOffered) {
-      if (b.status === 4) buyerStepIndex = isWinner ? 4 : 3;
-      else if (b.status === 3) buyerStepIndex = 3;
-      else buyerStepIndex = 2;
+    if (b.status === 4) {
+      buyerStepIndex = isWinner ? 4 : 3;
+    } else if (b.status === 3) {
+      buyerStepIndex = 3;
     } else if (b.userInspected) {
-      buyerStepIndex = 1;
+      buyerStepIndex = 2;
     } else if (b.userApplied) {
+      buyerStepIndex = 1;
+    } else {
       buyerStepIndex = 0;
     }
 
@@ -916,6 +918,10 @@ const H5App = {
         <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
           <div style="font-weight:bold; font-size:13px; color:#0f172a;">📋 看货报名说明</div>
           <div style="font-size:12px; color:#64748b; line-height:1.4;">本项目需先完成现场看货报名，看货后解锁正式竞拍报价权。</div>
+          <div style="font-size:11px; color:#1e40af; background:#eff6ff; padding:10px; border-radius:10px; border:1px solid #bfdbfe; line-height:1.5;">
+            <div>📍 <strong>看货地址：</strong>${b.inspectAddress || '详见公告'}</div>
+            <div style="margin-top:4px;">📞 <strong>联系电话：</strong>${b.contactPhone || '联系商家'}</div>
+          </div>
           <button class="btn btn-primary w-full" style="height:40px; border-radius:20px; background:#1677ff; border:none; color:#fff; font-weight:bold; font-size:13px;" onclick="H5App.signUpForBidInspection('${b.id}')">立即看货报名</button>
         </div>
       `;
@@ -924,6 +930,10 @@ const H5App = {
         <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
           <div style="font-weight:bold; font-size:13px; color:#0f172a;">🔍 现场看货拍照</div>
           <div style="font-size:11px; color:#64748b;">请前往现场看货拍照，并上传看货现场照片以激活报价。</div>
+          <div style="font-size:11px; color:#854d0e; background:#fefce8; padding:10px; border-radius:10px; border:1px solid #fef08a; line-height:1.5;">
+            <div>📍 <strong>看货地址：</strong>${b.inspectAddress || '详见公告'}</div>
+            <div style="margin-top:4px;">📞 <strong>联系电话：</strong>${b.contactPhone || '联系商家'}</div>
+          </div>
           <div style="display:flex; gap:10px;">
             <input type="file" id="h5-bid-photo-picker" accept="image/*" style="display:none;" onchange="H5App.handleBidPhotoSelected(this)">
             <button class="btn btn-outline" style="border-radius:20px; font-size:12px; padding:6px 14px;" onclick="document.getElementById('h5-bid-photo-picker').click()">📷 拍照/选择文件</button>
@@ -994,12 +1004,12 @@ const H5App = {
     if (content) {
       content.innerHTML = `
         <!-- 头部货品全景卡片 -->
-        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; gap:12px; align-items:center;">
-          <img src="${b.image}" style="width:70px; height:70px; border-radius:12px; object-fit:cover; background:#f8fafc;">
+        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; gap:12px; align-items:flex-start;">
+          <img src="${b.image}" style="width:70px; height:70px; border-radius:12px; object-fit:cover; background:#f8fafc; flex-shrink:0;">
           <div style="flex:1;">
             <div style="font-size:13px; font-weight:bold; color:#0f172a; line-height:1.4;">${cleanedTitle}</div>
             <div style="font-size:11px; color:#64748b; margin-top:4px;">发布企业: ${b.companyName || b.shopName}</div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:2px; font-family:monospace;">编号: ${b.id}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:4px; font-family:monospace;">编号: ${b.id}</div>
           </div>
         </div>
 
@@ -1757,26 +1767,33 @@ const H5App = {
     // Payment Voucher Section (最多5张)
     const voucherSection = document.getElementById('h5-detail-payment-voucher-section');
     if (voucherSection) {
+      voucherSection.style.display = 'block';
       if (o.status === 0) {
-        voucherSection.style.display = 'none';
+        voucherSection.innerHTML = `
+          <div style="padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; font-size:11px; color:#94a3b8; text-align:center;">
+            ⏳ 订单尚未进入付款阶段，等待合同签署完成。
+          </div>
+        `;
       } else if (o.status === 4) {
-        if (o.paymentAuditStatus === 'pending') {
-          voucherSection.style.display = 'block';
+        if (o.paymentAuditStatus === 'pending' || (o.paymentVoucher && o.paymentAuditStatus !== 'rejected')) {
           voucherSection.innerHTML = `
             <div style="padding:10px; background:#fffbebf0; border:1px solid #fde68a; border-radius:8px; font-size:11px; color:#b45309; font-weight:bold;">
               ⏳ 对公打款凭证已提交，待平台运营人员审核入账...
             </div>
           `;
-        } else if (o.paymentRejectReason) {
-          voucherSection.style.display = 'block';
+        } else if (o.paymentAuditStatus === 'rejected' || o.paymentRejectReason) {
           voucherSection.innerHTML = `
             <div style="padding:10px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:11px; color:#991b1b;">
-              <div style="font-weight:bold;">❌ 付款凭证打回原因：${o.paymentRejectReason}</div>
+              <div style="font-weight:bold;">❌ 付款凭证打回原因：${o.paymentRejectReason || '金额不符'}</div>
               <button class="btn btn-danger btn-xs" onclick="UI.showPaymentModal('${o.id}', () => H5App.showH5OrderDetail('${o.id}'))" style="margin-top:6px; border-radius:12px; font-weight:bold;">重新上传打款凭证</button>
             </div>
           `;
         } else {
-          voucherSection.style.display = 'none';
+          voucherSection.innerHTML = `
+            <div style="padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; font-size:11px; color:#94a3b8; text-align:center;">
+              ⏳ 尚未上传对公打款凭证。
+            </div>
+          `;
         }
       } else {
         voucherSection.style.display = 'block';

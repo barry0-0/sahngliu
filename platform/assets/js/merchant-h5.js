@@ -61,10 +61,14 @@ const MH5App = {
       const warningBox = document.getElementById('mh5-shop-warning-box');
       const reasonText = document.getElementById('mh5-suspend-reason-text');
 
-      if (shop.status === '已关停' || shop.status === '已禁用') {
-        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-danger" style="border-radius:10px; padding: 2px 8px; font-size:10px;">已下架</span>';
+      if (shop.status === '闭店中' || shop.status === '已关停' || shop.status === '已禁用' || shop.status === '审核未通过') {
+        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-secondary" style="border-radius:10px; padding: 2px 8px; font-size:10px; background:#f1f5f9; color:#64748b; font-weight:bold;">闭店中</span>';
         if (warningBox) warningBox.style.display = 'block';
-        if (reasonText) reasonText.innerText = shop.suspendReason || '违规操作，请检查资质及货源合规性';
+        if (reasonText) reasonText.innerText = shop.suspendReason || shop.rejectReason || '暂未开通店铺';
+      } else if (shop.status === '待审核') {
+        if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-warning" style="border-radius:10px; padding: 2px 8px; font-size:10px;">待审核</span>';
+        if (warningBox) warningBox.style.display = 'block';
+        if (reasonText) reasonText.innerText = shop.suspendReason || shop.rejectReason || '违规操作，请检查资质及货源合规性';
       } else {
         if (statusBadge) statusBadge.innerHTML = '<span class="tag tag-success" style="border-radius:10px; padding: 2px 8px; font-size:10px;">正常营业</span>';
         if (warningBox) warningBox.style.display = 'none';
@@ -483,6 +487,10 @@ const MH5App = {
     document.getElementById('mh5-add-ann-view-end').value = formatDate(threeDaysLater);
     document.getElementById('mh5-add-ann-bid-end').value = formatDate(sevenDaysLater);
     document.getElementById('mh5-add-ann-start-price').value = '';
+    const addrEl = document.getElementById('mh5-add-ann-inspect-address');
+    if (addrEl) addrEl.value = '浙江省杭州市萧山区临江高新产业园远大钢铁1号库';
+    const phoneEl = document.getElementById('mh5-add-ann-contact-phone');
+    if (phoneEl) phoneEl.value = '13800138000';
 
     UI.showModal('modal-mh5-add-ann');
   },
@@ -509,6 +517,10 @@ const MH5App = {
     
     document.getElementById('mh5-add-ann-title').value = title;
     document.getElementById('mh5-add-ann-start-price').value = parseFloat((a.startPrice || '').replace(/[^\d\.]/g, '')) || 0;
+    const addrEl = document.getElementById('mh5-add-ann-inspect-address');
+    if (addrEl) addrEl.value = a.inspectAddress || '';
+    const phoneEl = document.getElementById('mh5-add-ann-contact-phone');
+    if (phoneEl) phoneEl.value = a.contactPhone || '';
 
     const formatDateForInput = (str) => {
       if (!str) return '';
@@ -556,11 +568,13 @@ const MH5App = {
     const resId = document.getElementById('mh5-add-ann-resource-select').value;
     const title = document.getElementById('mh5-add-ann-title').value.trim();
     const priceVal = parseFloat(document.getElementById('mh5-add-ann-start-price').value);
+    const inspectAddress = (document.getElementById('mh5-add-ann-inspect-address')?.value || '').trim();
+    const contactPhone = (document.getElementById('mh5-add-ann-contact-phone')?.value || '').trim();
     const viewEnd = document.getElementById('mh5-add-ann-view-end').value;
     const bidEnd = document.getElementById('mh5-add-ann-bid-end').value;
 
-    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !viewEnd || !bidEnd) {
-      UI.toast('请填写完整且合法的竞价公告信息！', 'error');
+    if (!resId || !title || isNaN(priceVal) || priceVal <= 0 || !viewEnd || !bidEnd || !inspectAddress || !contactPhone) {
+      UI.toast('请填写完整且合法的竞价公告信息（看货地址和联系电话为必填项）！', 'error');
       return;
     }
 
@@ -580,6 +594,8 @@ const MH5App = {
         a.image = res ? res.image : a.image;
         a.title = `【看货报名阶段】${title}`;
         a.startPrice = priceStr;
+        a.inspectAddress = inspectAddress;
+        a.contactPhone = contactPhone;
         a.viewEndTime = viewEnd.replace('T', ' ');
         a.bidEndTime = bidEnd.replace('T', ' ');
         a.status = 0;
@@ -597,6 +613,8 @@ const MH5App = {
         shopName: '远大钢铁官方直营店',
         title: `【看货报名阶段】${title}`,
         startPrice: priceStr,
+        inspectAddress: inspectAddress,
+        contactPhone: contactPhone,
         bidEndTime: bidEnd.replace('T', ' '),
         viewEndTime: viewEnd.replace('T', ' '),
         status: 0, // 看货报名阶段
@@ -904,6 +922,9 @@ const MH5App = {
     this.renderShelfAnnouncements();
   }
 };
+
+window.MH5App = MH5App;
+window.MerchantH5App = MH5App;
 
 document.addEventListener('DOMContentLoaded', () => {
   MH5App.init();

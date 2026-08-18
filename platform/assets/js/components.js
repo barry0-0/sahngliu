@@ -642,23 +642,25 @@ window.UI = {
               <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px;">财务确认入账</span>
             </div>
             <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #bbf7d0; font-size:12px;">
-              ${o.status === 0 || o.status === 4 
-                ? `<span style="color:#fa8c16; font-weight:bold;">⏳ 订单尚未付款</span>`
-                : o.paymentVoucher 
-                  ? `<div style="display:flex; justify-content:space-between; align-items:center;">
-                       <div>
-                         <div style="font-weight:bold; color:#0f172a;">线下汇款回执：${o.paymentVoucher}</div>
-                         <div style="color:#64748b; font-size:11px; margin-top:2px;">付款金额: ${o.amount} | 汇款方式: 银行公对公转账</div>
-                       </div>
-                       <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('线下对公转账凭证', 'voucher', '${o.paymentVoucher}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看凭证</button>
-                     </div>`
-                  : `<div style="display:flex; justify-content:space-between; align-items:center;">
-                       <div>
-                         <div style="font-weight:bold; color:#15803d;">在线支付：担保结算已结清</div>
-                         <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 付款状态: 待审核</div>
-                       </div>
-                       <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
-                     </div>`
+              ${o.status === 0 
+                ? `<div style="text-align:center; color:#94a3b8; padding:8px 0;">⏳ 订单尚未进入付款阶段，等待合同签署完成。</div>`
+                : (o.status === 4 && !o.paymentVoucher)
+                  ? `<div style="text-align:center; color:#94a3b8; padding:8px 0;">⏳ 买家尚未上传对公打款凭证。</div>`
+                  : o.paymentVoucher 
+                    ? `<div style="display:flex; justify-content:space-between; align-items:center;">
+                         <div>
+                           <div style="font-weight:bold; color:#0f172a;">线下汇款回执：${o.paymentVoucher}</div>
+                           <div style="color:#64748b; font-size:11px; margin-top:2px;">付款金额: ${o.amount} | 汇款方式: 银行公对公转账</div>
+                         </div>
+                         <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('线下对公转账凭证', 'voucher', '${o.paymentVoucher}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看凭证</button>
+                       </div>`
+                    : `<div style="display:flex; justify-content:space-between; align-items:center;">
+                         <div>
+                           <div style="font-weight:bold; color:#15803d;">在线支付：担保结算已结清</div>
+                           <div style="color:#64748b; font-size:11px; margin-top:2px;">支付流水号: TXN-PAY-${o.id} | 付款状态: 待审核</div>
+                         </div>
+                         <button class="btn btn-outline btn-sm" onclick="UI.previewDocument('在线支付电子回单', 'voucher', 'TXN-PAY-${o.id}', '${o.amount}', '${o.buyerName}', '${o.shopName}')" style="border-radius:6px; font-size:11px; padding:4px 10px; background:#fff; cursor:pointer;">查看电子回单</button>
+                       </div>`
               }
             </div>
           </div>
