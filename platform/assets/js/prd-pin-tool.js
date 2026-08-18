@@ -1362,6 +1362,51 @@
     return path.join(' > ');
   }
 
+  // 需求标题完全模糊搜索匹配算法
+  function matchFuzzyTitle(title, query) {
+    if (!query) return true;
+    if (!title) return false;
+    const cleanTitle = String(title).toLowerCase();
+    const cleanQuery = String(query).toLowerCase().trim();
+
+    // 1. 直接包含子串
+    if (cleanTitle.includes(cleanQuery)) return true;
+
+    // 2. 空格分词全匹配 (如 "订单 履约")
+    const words = cleanQuery.split(/\s+/).filter(w => w.length > 0);
+    if (words.length > 1 && words.every(w => cleanTitle.includes(w))) return true;
+
+    // 3. 字符流顺序模糊匹配
+    let tIdx = 0;
+    for (let i = 0; i < cleanQuery.length; i++) {
+      const char = cleanQuery[i];
+      const foundIdx = cleanTitle.indexOf(char, tIdx);
+      if (foundIdx === -1) return false;
+      tIdx = foundIdx + 1;
+    }
+    return true;
+  }
+
+  window.handlePRDSearchInput = function(query) {
+    searchKeyword = (query || '').trim().toLowerCase();
+    const clearBtn = document.getElementById('prd-search-clear-btn');
+    if (clearBtn) {
+      clearBtn.style.display = searchKeyword ? 'inline-flex' : 'none';
+    }
+    renderPinMarkers();
+    renderRightDrawerList();
+  };
+
+  window.clearPRDSearch = function() {
+    searchKeyword = '';
+    const input = document.getElementById('prd-drawer-search-input');
+    if (input) input.value = '';
+    const clearBtn = document.getElementById('prd-search-clear-btn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    renderPinMarkers();
+    renderRightDrawerList();
+  };
+
   // 7. 大头针徽标渲染
   const pinsOverlay = document.createElement('div');
   pinsOverlay.id = 'prd-pins-overlay';
@@ -1373,7 +1418,7 @@
     if (currentMode === 'hide') return;
 
     savedPins.forEach((pin) => {
-      if (searchKeyword && !pin.title.toLowerCase().includes(searchKeyword) && !pin.desc.toLowerCase().includes(searchKeyword)) return;
+      if (searchKeyword && !matchFuzzyTitle(pin.title, searchKeyword)) return;
       if (!pin.selector || typeof pin.selector !== 'string' || !pin.selector.trim()) return;
 
       let el = null;
@@ -2928,7 +2973,7 @@
     if (!container) return;
 
     let filtered = savedPins.filter(p => {
-      if (searchKeyword && !p.title.toLowerCase().includes(searchKeyword) && !p.desc.toLowerCase().includes(searchKeyword)) return false;
+      if (searchKeyword && !matchFuzzyTitle(p.title, searchKeyword)) return false;
       return true;
     });
 
@@ -2943,13 +2988,25 @@
     }
 
     if (filtered.length === 0) {
-      container.innerHTML = `
-        ${headerBannerHtml}
-        <div style="text-align:center; color:#94a3b8; padding:40px 10px;">
-          <div style="font-size:28px; margin-bottom:6px;">📌</div>
-          <div style="font-size:12px;">当前版本 [${escapeHtml(currentVersion)}] 暂无需求点</div>
-        </div>
-      `;
+      if (searchKeyword) {
+        container.innerHTML = `
+          ${headerBannerHtml}
+          <div style="text-align:center; color:#94a3b8; padding:40px 10px;">
+            <div style="font-size:28px; margin-bottom:6px;">🔍</div>
+            <div style="font-size:13px; font-weight:600; color:#475569; margin-bottom:4px;">未搜索到匹配的需求标题</div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:12px;">关键词: "${escapeHtml(searchKeyword)}"</div>
+            <button class="prd-btn-action" style="font-size:11px; padding:4px 12px;" onclick="window.clearPRDSearch()">清空搜索条件</button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          ${headerBannerHtml}
+          <div style="text-align:center; color:#94a3b8; padding:40px 10px;">
+            <div style="font-size:28px; margin-bottom:6px;">📌</div>
+            <div style="font-size:12px;">当前版本 [${escapeHtml(currentVersion)}] 暂无需求点</div>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -3827,9 +3884,12 @@
         <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">📂</button>
       </div>
 
-      <!-- 搜索过滤栏 -->
-      <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9;">
-        <input type="text" placeholder="🔍 搜索需求标题或业务逻辑..." style="width:100%; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff;" oninput="searchKeyword=this.value.toLowerCase().trim(); renderRightDrawerList(); renderPinMarkers();">
+      <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
+      <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
+        <div style="position:relative; flex:1; display:flex; align-items:center;">
+          <input type="text" id="prd-drawer-search-input" placeholder="🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
+          <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
+        </div>
       </div>
 
       <!-- 需求列表主体 -->
