@@ -36,6 +36,12 @@
   // 0. 全局多语言国际化字典 (Multi-Language I18N Dictionary: 中 / 英 / 日 / 韩)
   const I18N = {
     "zh-CN": {
+        "apiCheckFailedTitle": "⚠️ 未检测到本地持久化服务接口",
+        "apiCheckFailedDesc": "当前原型处于【静态只读预览模式】，未检测到本地后端持久化服务（<code>POST /api/save-prd</code>）。<br><br>在此模式下无法执行<strong>【新增打点 / 排序管理 / 规约编辑】</strong>并写入本地磁盘 JS 数据文件。<br><br>如需编辑或新增，请先在终端启动本地持久化服务：",
+        "apiCheckCmdGuide": "node server.js",
+        "apiCheckCopyCmd": "📋 复制启动命令",
+        "apiCheckCopySuccess": "✅ 已复制启动命令: node server.js",
+        "apiCheckGotIt": "知道了",
         "langName": "🇨🇳 简体中文",
         "edgeText": "📌 需求打点",
         "drawerTitle": "需求规约",
@@ -160,6 +166,12 @@
         "itemCountUnit": "项"
     },
     "en": {
+        "apiCheckFailedTitle": "⚠️ Local Persistence API Not Detected",
+        "apiCheckFailedDesc": "The prototype is currently in [Static Read-Only Preview Mode]. Local persistence API (<code>POST /api/save-prd</code>) is not accessible.<br><br>Adding pins, managing order, or editing specifications cannot be saved to local disk JS files in this mode.<br><br>To enable editing, please start the local server in your terminal:",
+        "apiCheckCmdGuide": "node server.js",
+        "apiCheckCopyCmd": "📋 Copy Start Command",
+        "apiCheckCopySuccess": "✅ Copied command: node server.js",
+        "apiCheckGotIt": "Got it",
         "langName": "🇺🇸 English",
         "edgeText": "📌 PRD Pins",
         "drawerTitle": "PRD Specs",
@@ -284,6 +296,12 @@
         "itemCountUnit": "items"
     },
     "ja": {
+        "apiCheckFailedTitle": "⚠️ ローカル永続化サービスが未検出です",
+        "apiCheckFailedDesc": "現在は【静的読み取り専用プレビューモード】です。ローカル永続化API（<code>POST /api/save-prd</code>）が検出されませんでした。<br><br>このモードでは、ピンの新規追加、並び替え、仕様の編集をローカルディスクのJSファイルに保存できません。<br><br>編集を行うには、ターミナルでローカルサーバーを起動してください：",
+        "apiCheckCmdGuide": "node server.js",
+        "apiCheckCopyCmd": "📋 起動コマンドをコピー",
+        "apiCheckCopySuccess": "✅ コマンドをコピーしました: node server.js",
+        "apiCheckGotIt": "了解",
         "langName": "🇯🇵 日本語",
         "edgeText": "📌 要件ピン",
         "drawerTitle": "要件仕様 (PRD)",
@@ -408,6 +426,12 @@
         "itemCountUnit": "件"
     },
     "ko": {
+        "apiCheckFailedTitle": "⚠️ 로컬 지속성 서비스를 찾을 수 없습니다",
+        "apiCheckFailedDesc": "현재 [정적 읽기 전용 미리보기 모드]입니다. 로컬 지속성 API(<code>POST /api/save-prd</code>)를 감지할 수 없습니다.<br><br>이 모드에서는 핀 추가, 순서 변경, 사양 편집 내용을 로컬 디스크 JS 파일에 저장할 수 없습니다.<br><br>편집하려면 터미널에서 로컬 서버를 먼저 시작하세요:",
+        "apiCheckCmdGuide": "node server.js",
+        "apiCheckCopyCmd": "📋 시작 명령 복사",
+        "apiCheckCopySuccess": "✅ 명령이 복사되었습니다: node server.js",
+        "apiCheckGotIt": "확인",
         "langName": "🇰🇷 한국어",
         "edgeText": "📌 요구사항 핀",
         "drawerTitle": "요구사항 규격 (PRD)",
@@ -551,6 +575,104 @@
     }
     return fallback || key;
   }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // ==========================================
+  // 前置服务健康检查与只读阻断弹窗 (Pre-Action API Health Check)
+  // ==========================================
+  let isBackendApiCached = null;
+
+  async function checkBackendApiAvailable(force = false) {
+    if (!force && isBackendApiCached !== null) {
+      return isBackendApiCached;
+    }
+    if (window.location.protocol === 'file:') {
+      isBackendApiCached = false;
+      return false;
+    }
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch('/api/get-all-prd', {
+        method: 'GET',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        isBackendApiCached = true;
+        return true;
+      }
+    } catch (e) {}
+    isBackendApiCached = false;
+    return false;
+  }
+
+  window.showNoBackendAlertModal = function(actionType = 'edit') {
+    const existing = document.getElementById('prd-no-backend-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'prd-no-backend-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 10000050;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: prd-fade-in 0.2s ease-out;
+      font-family: var(--prd-font);
+    `;
+
+    modal.innerHTML = `
+      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:#fff1f2; border-bottom:1px solid #fecdd3; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:15px; color:#be123c;">
+            <span>⚠️</span>
+            <span>${escapeHtml(t('apiCheckFailedTitle'))}</span>
+          </div>
+          <button style="background:none; border:none; font-size:18px; color:#9f1239; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
+        </div>
+        <div style="padding:20px; font-size:13px; line-height:1.65; color:#334155;">
+          <div>${t('apiCheckFailedDesc')}</div>
+          <div style="margin:14px 0 6px 0; background:#0f172a; color:#38bdf8; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between; border:1px solid #1e293b;">
+            <span>$ ${escapeHtml(t('apiCheckCmdGuide'))}</span>
+            <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${escapeHtml(t('apiCheckCopyCmd'))}</button>
+          </div>
+          <div style="font-size:11.5px; color:#64748b; margin-top:8px;">
+            💡 提示：在终端启动后刷新页面，即可解锁打点与排序编辑功能并自动落盘磁盘文件。
+          </div>
+        </div>
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end; gap:10px;">
+          <button class="prd-btn-primary" style="background:#0f172a; border-color:#0f172a; padding:6px 20px;" onclick="window.closeNoBackendModal()">${escapeHtml(t('apiCheckGotIt'))}</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  };
+
+  window.closeNoBackendModal = function() {
+    const modal = document.getElementById('prd-no-backend-modal');
+    if (modal) modal.remove();
+  };
+
+  window.copyStartCommand = function(btn) {
+    const cmd = t('apiCheckCmdGuide') || 'node server.js';
+    navigator.clipboard.writeText(cmd).then(() => {
+      showToast(t('apiCheckCopySuccess'), 'success');
+      if (btn) btn.innerText = '✅ Copied';
+      setTimeout(() => { if (btn) btn.innerText = t('apiCheckCopyCmd'); }, 2000);
+    }).catch(() => {
+      showToast('Command: ' + cmd, 'info');
+    });
+  };
 
   const PAGE_TITLES = {
     'zh-CN': {
@@ -2054,6 +2176,8 @@
   };
 
   window.promptCreateVersion = async function() {
+    const isApiOk = await checkBackendApiAvailable();
+    if (!isApiOk) { window.showNoBackendAlertModal('version'); return; }
     const input = prompt('【新建空白 PRD 规格版本】\n请输入新版本号（例如 v2.0.0 或 v1.1.0）：');
     if (!input || !input.trim()) return;
     const ver = input.trim();
@@ -2070,6 +2194,8 @@
   };
 
   window.promptCopyVersion = async function() {
+    const isApiOk = await checkBackendApiAvailable();
+    if (!isApiOk) { window.showNoBackendAlertModal('version'); return; }
     const defaultName = `${currentVersion}_copy`;
     const input = prompt(`【复制当前版本 [${currentVersion}]】\n请输入副本版本名称：`, defaultName);
     if (!input || !input.trim()) return;
@@ -2822,7 +2948,12 @@
     return editorBlocks.map(b => b.text).join('\n\n');
   }
 
-  window.openEditorForPin = function(id) {
+  window.openEditorForPin = async function(id) {
+    const isApiOk = await checkBackendApiAvailable();
+    if (!isApiOk) {
+      window.showNoBackendAlertModal('edit');
+      return;
+    }
     window.closeInspectBubble();
     const pin = savedPins.find(p => p.id === id) || {
       id: null,
@@ -3209,7 +3340,14 @@ window.saveEditorModal = async function() {
   // 13. 右侧抽屉列表渲染与安全管理锁模式
   let draggedPinId = null;
 
-  window.toggleDrawerManageMode = function() {
+  window.toggleDrawerManageMode = async function() {
+    if (!isDrawerManageMode) {
+      const isApiOk = await checkBackendApiAvailable();
+      if (!isApiOk) {
+        window.showNoBackendAlertModal('reorder');
+        return;
+      }
+    }
     isDrawerManageMode = !isDrawerManageMode;
     renderRightDrawerList();
     showToast(isDrawerManageMode ? '🔧 已开启排序与删除管理模式（可拖拽或调整序号）' : '🔒 已退出管理模式（列表已安全锁定）', 'info');
@@ -3531,7 +3669,14 @@ window.saveEditorModal = async function() {
     }
   };
 
-  window.setPRDMode = function(mode) {
+  window.setPRDMode = async function(mode) {
+    if (mode === 'edit' || mode === 'pick') {
+      const isApiOk = await checkBackendApiAvailable();
+      if (!isApiOk) {
+        window.showNoBackendAlertModal('add');
+        return;
+      }
+    }
     currentMode = mode;
     const drawer = document.getElementById('prd-right-drawer') || document.getElementById('prd-drawer');
     const edgeTab = document.getElementById('prd-drawer-edge-tab');
