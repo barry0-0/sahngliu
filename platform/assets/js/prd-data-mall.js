@@ -1,6 +1,6 @@
 /**
  * PRD 需求数据 - mall.html
- * GitHub Pages 实时保存于: 2026/8/21 16:35:53
+ * GitHub Pages 实时保存于: 2026/8/21 16:37:23
  */
 window.INITIAL_PRD_DATA = [
   {
