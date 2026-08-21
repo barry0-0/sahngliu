@@ -712,7 +712,7 @@
            <div class="card-body table-wrapper" style="background:#fff; padding:20px;">
              <div class="flex justify-between mb-4 items-center">
                 <div class="text-secondary text-sm">抽佣规则支持【按特定商家】、【按特定商品类别】模式。</div>
-                <button class="btn btn-primary" onclick="UI.showModal('modal-add-commission')">新增抽佣规则</button>
+                <button class="btn btn-primary" onclick="AdminApp.openAddCommissionModal()">新增抽佣规则</button>
              </div>
              <table class="table" id="table-admin-commission">
                <thead><tr style="background: #f4f6f8;"><th>序号</th><th>规则编号</th><th>规则名称</th><th>抽佣模式</th><th>针对目标</th><th>抽佣比例(%)</th><th>创建时间</th><th>操作</th></tr></thead>
@@ -858,21 +858,26 @@
 <div class="modal-overlay" id="modal-add-commission" style="display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); position: fixed; inset: 0; z-index: 110000;" onclick="if(event.target===this) UI.closeModal('modal-add-commission')">
   <div class="modal" style="width: 520px; background:#fff; border-radius: 16px; overflow:hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
     <div class="modal-header" style="border-bottom: 1px solid var(--border-light); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-      <div class="modal-title font-bold" style="font-size:16px; margin:0; color:#0f172a;">配置抽佣规则</div>
+      <div class="modal-title font-bold" id="modal-comm-title" style="font-size:16px; margin:0; color:#0f172a;">配置抽佣规则</div>
       <button class="modal-close" style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="UI.closeModal('modal-add-commission')">&times;</button>
     </div>
     <div class="modal-body" style="padding:20px; font-size:13px; display:flex; flex-direction:column; gap:16px;">
-      <div class="form-group mb-0">
+      <!-- 抽佣模式选择 -->
+      <div class="form-group mb-0" id="comm-rule-type-group">
         <label class="form-label font-bold mb-1 block">抽佣模式选择 <span class="text-danger">*</span></label>
         <select id="comm-rule-type" class="form-control" style="width:100%; padding:8px;" onchange="AdminApp.toggleCommissionRuleType()">
           <option value="merchant">按特定商家 (关联具体店铺)</option>
           <option value="category">按特定商品类别 (关联分类数据字典)</option>
         </select>
       </div>
-      <div class="form-group mb-0">
+
+      <!-- 规则名称 -->
+      <div class="form-group mb-0" id="comm-rule-name-group">
         <label class="form-label font-bold mb-1 block">规则名称 <span class="text-danger">*</span></label>
-        <input type="text" id="comm-rule-name" class="form-control" style="width:100%; padding:8px;" placeholder="如: 全局默认基础抽点 / 核心大客户优惠抽费">
+        <input type="text" id="comm-rule-name" class="form-control" style="width:100%; padding:8px;" placeholder="如: 核心大客户优惠抽费 / 粮油谷物特惠费率">
       </div>
+
+      <!-- 针对目标选择 -->
       <div class="form-group mb-0" id="comm-rule-target-group" style="display:none; position:relative;">
         <label class="form-label font-bold mb-1 block" id="comm-rule-target-label">针对目标选择 <span class="text-danger">*</span></label>
         
@@ -908,7 +913,7 @@
                 <div id="comm-cat-l3-list" style="font-size:12px; color:#94a3b8; padding:12px; text-align:center;">请选择二/三级</div>
               </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; pt-2; border-top:1px solid #f1f5f9;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid #f1f5f9; padding-top:10px;">
               <span style="font-size:12px; color:#94a3b8;">已勾选多个品类将进行联合抽佣配置</span>
               <div style="display:flex; gap:8px;">
                 <button type="button" class="btn btn-outline btn-sm" style="padding:4px 14px; border-radius:6px;" onclick="AdminApp.clearCommCatPicked()">清空</button>
@@ -918,9 +923,11 @@
           </div>
         </div>
       </div>
-      <div class="form-group mb-0">
+
+      <!-- 抽佣比例 -->
+      <div class="form-group mb-0" id="comm-rule-rate-group">
         <label class="form-label font-bold mb-1 block">平台抽佣比例 (%) <span class="text-danger">*</span></label>
-        <input type="number" id="comm-rule-rate" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 0.60 (代表 0.6%)" value="0.60" step="0.01">
+        <input type="number" id="comm-rule-rate" class="form-control" style="width:100%; padding:8px;" placeholder="例如: 0.60 (代表 0.6%)" value="0.60" step="0.01" min="0" max="100">
       </div>
     </div>
     <div class="modal-footer" style="background:#f9fafb; padding:16px 20px; border-top: 1px solid var(--border-light); display:flex; justify-content:end; gap:12px;">

@@ -36,6 +36,44 @@
   // 0. 全局多语言国际化字典 (Multi-Language I18N Dictionary: 中 / 英 / 日 / 韩)
   const I18N = {
     "zh-CN": {
+        "envTitle": "🔒 编辑权限校验与环境感知",
+        "envGhBadge": "☁️ GitHub Pages 云端环境",
+        "envLocalBadge": "💻 本地离线/静态预览环境",
+        "envGhDesc": "当前页面部署在 <strong>GitHub Pages 云端环境</strong>，默认处于【👁️ 访客只读模式】。<br><br>为防止原型被外部访客随意篡改，<strong>只有本仓库的创立人/协作者</strong>在完成身份鉴权后，才可解锁在线新增打点、排序管理与实时 Commit 保存权限。",
+        "envGhHowToUnlock": "💡 如何解锁编辑权限：",
+        "envGhUnlockStep": "点击下方按钮输入您为本仓库生成的 GitHub Fine-Grained Token，系统将自动校验 <code>push</code> 权限并为您解锁专属编辑工作台。",
+        "envGhUnlockBtn": "👑 立即认证创立人 (解锁编辑)",
+        "envGhContinueVisitor": "👁️ 继续以访客身份浏览",
+        "envLocalDesc": "当前页面处于<strong>本地静态预览模式</strong>，未检测到本地后端写入服务（<code>POST /api/save-prd</code>）。<br><br>在此模式下无法将【新增打点/排序管理/规约编辑】实时写入本地磁盘 JS 文件。",
+        "envLocalHowToUnlock": "💡 解锁编辑与保存的两种方式：",
+        "envLocalOpt1": "<strong>方式 1（推荐本地）</strong>：在项目终端启动本地持久化服务：",
+        "envLocalOpt2": "<strong>方式 2（云端直写）</strong>：点击配置 GitHub 创立人 Token，直接将打点提交至云端仓库。",
+        "envLocalCopyCmd": "📋 复制启动命令",
+        "envLocalCopied": "✅ 已复制命令: node server.js",
+        "envLocalConfigGh": "☁️ 配置 GitHub 云端直写",
+        "envLocalGotIt": "知道了",
+              ghModalTitle: '👑 GitHub Pages 创立人认证与实时同步配置',
+      ghModalDesc: '为当前 GitHub Pages 原型配置专属访问令牌（Fine-Grained PAT），即可解锁<strong>【零服务器、纯前端直写 GitHub 仓库】</strong>的实时云端保存能力。',
+      ghOwnerLabel: '📦 仓库所有者 (Owner)',
+      ghRepoLabel: '📂 仓库名称 (Repo)',
+      ghBranchLabel: '🌿 目标分支 (Branch)',
+      ghTokenLabel: '🔑 GitHub 访问令牌 (Token)',
+      ghTokenPlaceholder: '粘贴 github_pat_xxxx 或 ghp_xxxx',
+      ghTokenGuideTitle: '💡 如何生成您的专属 Token（仅需 3 步）：',
+      ghTokenStep1: '1. 点击右侧直达链接生成 Fine-Grained Token；',
+      ghTokenStep2: '2. <strong>Repository access</strong> 选择当前原型仓库，<strong>Permissions</strong> 找到 <strong>Contents</strong> 勾选 <strong>Read and write</strong>；',
+      ghTokenStep3: '3. 点击底部 Generate Token，将生成的密钥粘贴到上方输入框即可。',
+      ghGenTokenLink: '🔗 直达 GitHub 生成 Token 页面',
+      ghVerifyBtn: '🔌 验证创立人身份',
+      ghSaveConfigBtn: '💾 保存配置并解锁编辑',
+      ghClearConfigBtn: '🗑️ 清除授权 (切换为只读模式)',
+      ghVerifySuccess: '✅ 创立人身份验证通过！已获得本仓库写入权限。',
+      ghVerifyFailed: '❌ 鉴权失败：当前 Token 无效或对本仓库没有写入权限 (push: false)！',
+      ghSavingToGithub: '☁️ 正在提交 Commit 至 GitHub 仓库...',
+      ghSaveSuccess: '✅ 需求规约已成功提交 Commit 并同步至 GitHub 仓库！',
+      ghBadgeOwner: '👑 创立人已认证',
+      ghBadgeVisitor: '👁️ 访客只读',
+      ghBadgeLocal: '🟢 本地服务',
         "apiCheckFailedTitle": "⚠️ 未检测到本地持久化服务接口",
         "apiCheckFailedDesc": "当前原型处于【静态只读预览模式】，未检测到本地后端持久化服务（<code>POST /api/save-prd</code>）。<br><br>在此模式下无法执行<strong>【新增打点 / 排序管理 / 规约编辑】</strong>并写入本地磁盘 JS 数据文件。<br><br>如需编辑或新增，请先在终端启动本地持久化服务：",
         "apiCheckCmdGuide": "node server.js",
@@ -166,6 +204,44 @@
         "itemCountUnit": "项"
     },
     "en": {
+        "envTitle": "🔒 Edit Permission Check & Environment Guidance",
+        "envGhBadge": "☁️ GitHub Pages Cloud Mode",
+        "envLocalBadge": "💻 Local Offline / Static Preview",
+        "envGhDesc": "This prototype is hosted on <strong>GitHub Pages</strong> and is currently in [👁️ Visitor Read-Only Mode].<br><br>To prevent unauthorized modifications, <strong>only the Repository Owner / Collaborator</strong> can unlock editing and Git Commit saving.",
+        "envGhHowToUnlock": "💡 How to unlock editing access:",
+        "envGhUnlockStep": "Click the button below to configure your GitHub Fine-Grained Token for this repository. The system will verify <code>push</code> permissions and unlock your editor.",
+        "envGhUnlockBtn": "👑 Verify Owner (Unlock Editing)",
+        "envGhContinueVisitor": "👁️ Continue as Visitor",
+        "envLocalDesc": "Currently in <strong>Local Static Preview Mode</strong>. Local persistence API (<code>POST /api/save-prd</code>) is not running.<br><br>Adding pins, managing order, or editing specifications cannot be saved to local disk JS files in this mode.",
+        "envLocalHowToUnlock": "💡 Two ways to enable editing & saving:",
+        "envLocalOpt1": "<strong>Option 1 (Recommended for Local)</strong>: Start the local server in your terminal:",
+        "envLocalOpt2": "<strong>Option 2 (Direct Cloud)</strong>: Configure your GitHub Token to commit directly to the repository.",
+        "envLocalCopyCmd": "📋 Copy Start Command",
+        "envLocalCopied": "✅ Copied command: node server.js",
+        "envLocalConfigGh": "☁️ Configure GitHub Cloud Sync",
+        "envLocalGotIt": "Got it",
+              ghModalTitle: '👑 GitHub Pages Owner Authentication & Cloud Sync',
+      ghModalDesc: 'Configure a Fine-Grained Personal Access Token (PAT) for this prototype to unlock <strong>[Serverless, Direct Commit to GitHub]</strong> real-time cloud persistence.',
+      ghOwnerLabel: '📦 Repository Owner',
+      ghRepoLabel: '📂 Repository Name',
+      ghBranchLabel: '🌿 Target Branch',
+      ghTokenLabel: '🔑 GitHub Access Token (PAT)',
+      ghTokenPlaceholder: 'Paste github_pat_xxxx or ghp_xxxx',
+      ghTokenGuideTitle: '💡 How to generate your Token (3 steps):',
+      ghTokenStep1: '1. Click the direct link to open GitHub Token creation page;',
+      ghTokenStep2: '2. In <strong>Repository access</strong>, select this repository. Under <strong>Permissions -> Contents</strong>, select <strong>Read and write</strong>;',
+      ghTokenStep3: '3. Click Generate Token at the bottom, and paste the generated token above.',
+      ghGenTokenLink: '🔗 Direct Link: Create GitHub Token',
+      ghVerifyBtn: '🔌 Verify Owner Access',
+      ghSaveConfigBtn: '💾 Save & Unlock Editing',
+      ghClearConfigBtn: '🗑️ Clear Auth (Switch to Read-Only)',
+      ghVerifySuccess: '✅ Owner verified! Write permissions confirmed for this repository.',
+      ghVerifyFailed: '❌ Verification failed: Token is invalid or lacks write permissions (push: false)!',
+      ghSavingToGithub: '☁️ Committing changes to GitHub repository...',
+      ghSaveSuccess: '✅ Specification committed and synced to GitHub repository!',
+      ghBadgeOwner: '👑 Owner Verified',
+      ghBadgeVisitor: '👁️ Read-Only',
+      ghBadgeLocal: '🟢 Local Server',
         "apiCheckFailedTitle": "⚠️ Local Persistence API Not Detected",
         "apiCheckFailedDesc": "The prototype is currently in [Static Read-Only Preview Mode]. Local persistence API (<code>POST /api/save-prd</code>) is not accessible.<br><br>Adding pins, managing order, or editing specifications cannot be saved to local disk JS files in this mode.<br><br>To enable editing, please start the local server in your terminal:",
         "apiCheckCmdGuide": "node server.js",
@@ -296,6 +372,44 @@
         "itemCountUnit": "items"
     },
     "ja": {
+        "envTitle": "🔒 編集権限の確認と環境ガイダンス",
+        "envGhBadge": "☁️ GitHub Pages クラウド環境",
+        "envLocalBadge": "💻 ローカル静的プレビュー環境",
+        "envGhDesc": "このページは <strong>GitHub Pages クラウド環境</strong> にデプロイされており、現在は【👁️ 閲覧専用モード】です。<br><br>不正な改ざんを防ぐため、<strong>リポジトリの作成者/管理者</strong>のみがオンライン編集およびリアルタイム保存を行えます。",
+        "envGhHowToUnlock": "💡 編集権限を解除する方法：",
+        "envGhUnlockStep": "下のボタンから GitHub Fine-Grained トークンを設定してください。システムが <code>push</code> 権限を確認し、編集機能をアンロックします。",
+        "envGhUnlockBtn": "👑 作成者認証を行う (編集解除)",
+        "envGhContinueVisitor": "👁️ 閲覧モードを継続",
+        "envLocalDesc": "現在は<strong>ローカル静的プレビューモード</strong>です。ローカル永続化サービス（<code>POST /api/save-prd</code>）が起動していません。<br><br>ピンの新規追加や編集内容をローカルディスクのJSファイルに保存できません。",
+        "envLocalHowToUnlock": "💡 編集と保存を有効にする2つの方法：",
+        "envLocalOpt1": "<strong>方法 1（ローカル推奨）</strong>：ターミナルでローカルサーバーを起動：",
+        "envLocalOpt2": "<strong>方法 2（クラウド直結）</strong>：GitHub トークンを設定してリポジトリに直接保存。",
+        "envLocalCopyCmd": "📋 起動コマンドをコピー",
+        "envLocalCopied": "✅ コマンドをコピーしました: node server.js",
+        "envLocalConfigGh": "☁️ GitHub クラウド同期を設定",
+        "envLocalGotIt": "了解",
+              ghModalTitle: '👑 GitHub Pages 作成者認証とリアルタイム同期設定',
+      ghModalDesc: 'Fine-Grained PAT（個人アクセストークン）を設定することで、<strong>【サーバーレス・GitHubリポジトリ直接書き込み】</strong>によるリアルタイム保存を有効化します。',
+      ghOwnerLabel: '📦 リポジトリ所有者 (Owner)',
+      ghRepoLabel: '📂 リポジトリ名 (Repo)',
+      ghBranchLabel: '🌿 対象ブランチ (Branch)',
+      ghTokenLabel: '🔑 GitHub アクセストークン (Token)',
+      ghTokenPlaceholder: 'github_pat_xxxx または ghp_xxxx を貼り付け',
+      ghTokenGuideTitle: '💡 トークン生成手順（簡単3ステップ）：',
+      ghTokenStep1: '1. リンクをクリックして GitHub トークン生成画面を開きます；',
+      ghTokenStep2: '2. <strong>Repository access</strong> で対象リポジトリを選択、<strong>Permissions -> Contents</strong> で <strong>Read and write</strong> を選択；',
+      ghTokenStep3: '3. ページ下部の Generate Token を押し、生成されたトークンを上に貼り付けます。',
+      ghGenTokenLink: '🔗 GitHub トークン生成ページを開く',
+      ghVerifyBtn: '🔌 作成者権限を検証',
+      ghSaveConfigBtn: '💾 設定を保存して編集を解除',
+      ghClearConfigBtn: '🗑️ 認証を解除 (読み取り専用へ)',
+      ghVerifySuccess: '✅ 作成者認証成功！リポジトリへの書き込み権限を確認しました。',
+      ghVerifyFailed: '❌ 認証失敗：トークンが無効であるか、書き込み権限がありません。',
+      ghSavingToGithub: '☁️ GitHub へコミットを送信中...',
+      ghSaveSuccess: '✅ 仕様が GitHub リポジトリへコミット＆保存されました！',
+      ghBadgeOwner: '👑 作成者認証済',
+      ghBadgeVisitor: '👁️ 閲覧のみ',
+      ghBadgeLocal: '🟢 ローカル',
         "apiCheckFailedTitle": "⚠️ ローカル永続化サービスが未検出です",
         "apiCheckFailedDesc": "現在は【静的読み取り専用プレビューモード】です。ローカル永続化API（<code>POST /api/save-prd</code>）が検出されませんでした。<br><br>このモードでは、ピンの新規追加、並び替え、仕様の編集をローカルディスクのJSファイルに保存できません。<br><br>編集を行うには、ターミナルでローカルサーバーを起動してください：",
         "apiCheckCmdGuide": "node server.js",
@@ -426,6 +540,44 @@
         "itemCountUnit": "件"
     },
     "ko": {
+        "envTitle": "🔒 편집 권한 확인 및 환경 안내",
+        "envGhBadge": "☁️ GitHub Pages 클라우드 환경",
+        "envLocalBadge": "💻 로컬 정적 미리보기 환경",
+        "envGhDesc": "이 페이지는 <strong>GitHub Pages 클라우드 환경</strong>에 배포되어 있으며 현재 [👁️ 방문자 읽기 전용 모드]입니다.<br><br>무단 수정을 방지하기 위해 <strong>저장소 소유자/관리자</strong>만 편집 및 실시간 커밋 권한을 가집니다.",
+        "envGhHowToUnlock": "💡 편집 권한을 얻는 방법:",
+        "envGhUnlockStep": "아래 버튼을 눌러 GitHub Fine-Grained 토큰을 입력하면, <code>push</code> 권한을 확인하고 편집 워크벤치를 잠금 해제합니다.",
+        "envGhUnlockBtn": "👑 소유자 인증하기 (편집 활성화)",
+        "envGhContinueVisitor": "👁️ 방문자 모드로 계속 탐색",
+        "envLocalDesc": "현재 <strong>로컬 정적 미리보기 모드</strong>입니다. 로컬 지속성 서비스(<code>POST /api/save-prd</code>)가 실행되지 않았습니다.<br><br>핀 추가 및 사양 편집 내용을 로컬 디스크 JS 파일에 저장할 수 없습니다.",
+        "envLocalHowToUnlock": "💡 편집 및 저장을 활성화하는 두 가지 방법:",
+        "envLocalOpt1": "<strong>방법 1 (로컬 권장)</strong>: 터미널에서 로컬 서버를 실행하세요:",
+        "envLocalOpt2": "<strong>방법 2 (클라우드 직접 연결)</strong>: GitHub 토큰을 설정하여 저장소에 직접 커밋하세요.",
+        "envLocalCopyCmd": "📋 시작 명령 복사",
+        "envLocalCopied": "✅ 명령이 복사되었습니다: node server.js",
+        "envLocalConfigGh": "☁️ GitHub 클라우드 동기화 설정",
+        "envLocalGotIt": "확인",
+              ghModalTitle: '👑 GitHub Pages 소유자 인증 및 클라우드 실시간 동기화',
+      ghModalDesc: 'Fine-Grained PAT 토큰을 설정하여 <strong>[서버리스 GitHub 저장소 직접 커밋]</strong> 실시간 클라우드 저장을 활성화합니다.',
+      ghOwnerLabel: '📦 저장소 소유자 (Owner)',
+      ghRepoLabel: '📂 저장소 이름 (Repo)',
+      ghBranchLabel: '🌿 대상 브랜치 (Branch)',
+      ghTokenLabel: '🔑 GitHub 액세스 토큰 (Token)',
+      ghTokenPlaceholder: 'github_pat_xxxx 또는 ghp_xxxx 붙여넣기',
+      ghTokenGuideTitle: '💡 토큰 생성 방법 (간단한 3단계):',
+      ghTokenStep1: '1. 링크를 클릭하여 GitHub 토큰 생성 페이지로 이동합니다;',
+      ghTokenStep2: '2. <strong>Repository access</strong>에서 대상 저장소를 선택하고, <strong>Permissions -> Contents</strong>에서 <strong>Read and write</strong>를 선택합니다;',
+      ghTokenStep3: '3. 하단의 Generate Token을 클릭하고 생성된 키를 위에 붙여넣습니다.',
+      ghGenTokenLink: '🔗 GitHub 토큰 생성 페이지 바로가기',
+      ghVerifyBtn: '🔌 소유자 권한 확인',
+      ghSaveConfigBtn: '💾 저장하고 편집 잠금 해제',
+      ghClearConfigBtn: '🗑️ 인증 해제 (읽기 전용 모드)',
+      ghVerifySuccess: '✅ 소유자 인증 성공! 저장소 쓰기 권한이 확인되었습니다.',
+      ghVerifyFailed: '❌ 인증 실패: 토큰이 유효하지 않거나 쓰기 권한이 없습니다.',
+      ghSavingToGithub: '☁️ GitHub 저장소로 커밋 전송 중...',
+      ghSaveSuccess: '✅ 사양이 GitHub 저장소에 성공적으로 커밋되었습니다!',
+      ghBadgeOwner: '👑 소유자 인증됨',
+      ghBadgeVisitor: '👁️ 읽기 전용',
+      ghBadgeLocal: '🟢 로컬 서버',
         "apiCheckFailedTitle": "⚠️ 로컬 지속성 서비스를 찾을 수 없습니다",
         "apiCheckFailedDesc": "현재 [정적 읽기 전용 미리보기 모드]입니다. 로컬 지속성 API(<code>POST /api/save-prd</code>)를 감지할 수 없습니다.<br><br>이 모드에서는 핀 추가, 순서 변경, 사양 편집 내용을 로컬 디스크 JS 파일에 저장할 수 없습니다.<br><br>편집하려면 터미널에서 로컬 서버를 먼저 시작하세요:",
         "apiCheckCmdGuide": "node server.js",
@@ -582,47 +734,153 @@
   }
 
   // ==========================================
-  // 前置服务健康检查与只读阻断弹窗 (Pre-Action API Health Check)
+  // 🌐 GitHub Pages 零后端云端直写与创立人鉴权模块
   // ==========================================
-  let isBackendApiCached = null;
+  const GH_CONFIG_KEY = `prd_gh_config_${projectScope}`;
 
-  async function checkBackendApiAvailable(force = false) {
-    if (!force && isBackendApiCached !== null) {
-      return isBackendApiCached;
-    }
-    if (window.location.protocol === 'file:') {
-      isBackendApiCached = false;
-      return false;
-    }
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch('/api/get-all-prd', {
-        method: 'GET',
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        isBackendApiCached = true;
-        return true;
+  function getAutoDetectedRepoInfo() {
+    let owner = 'barry0-0';
+    let repo = 'pm-proto-prd-pin';
+    const host = window.location.hostname || '';
+    const pathname = window.location.pathname || '';
+
+    if (host.includes('.github.io')) {
+      owner = host.split('.github.io')[0];
+      const segments = pathname.split('/').filter(Boolean);
+      if (segments.length > 0) repo = segments[0];
+    } else {
+      // 尝试从项目路径推断
+      const segments = pathname.split('/').filter(Boolean);
+      if (segments.length >= 2) {
+        repo = segments[segments.length - 2] || repo;
       }
-    } catch (e) {}
-    isBackendApiCached = false;
-    return false;
+    }
+    return { owner, repo, branch: 'main' };
   }
 
-  window.showNoBackendAlertModal = function(actionType = 'edit') {
-    const existing = document.getElementById('prd-no-backend-modal');
+  function getGitHubConfig() {
+    try {
+      const cached = localStorage.getItem(GH_CONFIG_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.token) return parsed;
+      }
+    } catch (e) {}
+    const auto = getAutoDetectedRepoInfo();
+    return { owner: auto.owner, repo: auto.repo, branch: auto.branch, token: '', verifiedUser: null };
+  }
+
+  function setGitHubConfig(config) {
+    try {
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(config));
+    } catch (e) {}
+  }
+
+  function clearGitHubConfig() {
+    try {
+      localStorage.removeItem(GH_CONFIG_KEY);
+    } catch (e) {}
+  }
+
+  async function verifyGitHubTokenAccess(token, owner, repo) {
+    if (!token || !owner || !repo) return { success: false, message: 'Missing parameters' };
+    try {
+      const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (!resp.ok) {
+        return { success: false, message: `HTTP ${resp.status}: Repo access denied` };
+      }
+      const repoData = await resp.json();
+      const hasPush = repoData.permissions && (repoData.permissions.push === true || repoData.permissions.admin === true);
+      if (!hasPush) {
+        return { success: false, message: 'Token lacks push/write permissions' };
+      }
+
+      // 获取用户名
+      let username = owner;
+      try {
+        const userResp = await fetch('https://api.github.com/user', {
+          headers: {
+            'Authorization': `Bearer ${token.trim()}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (userResp.ok) {
+          const userData = await userResp.json();
+          username = userData.login || owner;
+        }
+      } catch (err) {}
+
+      return { success: true, username, repoName: repoData.full_name };
+    } catch (e) {
+      return { success: false, message: e.toString() };
+    }
+  }
+
+  async function saveToGitHubApi(owner, repo, branch, filePath, token, jsContent) {
+    // 1. 获取现有文件的 sha
+    let sha = null;
+    try {
+      const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`, {
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        sha = data.sha;
+      }
+    } catch (e) {}
+
+    // 2. 将 Unicode 字符串安全转为 Base64
+    const utf8Bytes = new TextEncoder().encode(jsContent);
+    let binary = '';
+    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const base64Content = btoa(binary);
+
+    // 3. 直接通过 PUT 请求向 GitHub 提交 Commit
+    const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token.trim()}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `docs(prd): update annotations for ${pageKey} [skip ci]`,
+        content: base64Content,
+        sha: sha || undefined,
+        branch: branch
+      })
+    });
+
+    if (!putRes.ok) {
+      const errData = await putRes.json().catch(() => ({}));
+      throw new Error(errData.message || `GitHub API error ${putRes.status}`);
+    }
+
+    return await putRes.json();
+  }
+
+  window.showGitHubConfigModal = function() {
+    const existing = document.getElementById('prd-gh-config-modal');
     if (existing) existing.remove();
 
+    const config = getGitHubConfig();
+
     const modal = document.createElement('div');
-    modal.id = 'prd-no-backend-modal';
+    modal.id = 'prd-gh-config-modal';
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      z-index: 10000050;
+      backdrop-filter: blur(5px);
+      z-index: 10000060;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -631,29 +889,256 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
-        <div style="background:#fff1f2; border-bottom:1px solid #fecdd3; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:15px; color:#be123c;">
-            <span>⚠️</span>
-            <span>${escapeHtml(t('apiCheckFailedTitle'))}</span>
+      <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <!-- Header -->
+        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+            <span>👑</span>
+            <span>${escapeHtml(t('ghModalTitle'))}</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#9f1239; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeGitHubConfigModal()">&times;</button>
         </div>
-        <div style="padding:20px; font-size:13px; line-height:1.65; color:#334155;">
-          <div>${t('apiCheckFailedDesc')}</div>
-          <div style="margin:14px 0 6px 0; background:#0f172a; color:#38bdf8; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between; border:1px solid #1e293b;">
-            <span>$ ${escapeHtml(t('apiCheckCmdGuide'))}</span>
-            <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${escapeHtml(t('apiCheckCopyCmd'))}</button>
+
+        <!-- Body -->
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:12px;">
+          <div>${t('ghModalDesc')}</div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+              <input type="text" id="prd-gh-owner" value="${escapeHtml(config.owner)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+              <input type="text" id="prd-gh-repo" value="${escapeHtml(config.repo)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
           </div>
-          <div style="font-size:11.5px; color:#64748b; margin-top:8px;">
-            💡 提示：在终端启动后刷新页面，即可解锁打点与排序编辑功能并自动落盘磁盘文件。
+
+          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghBranchLabel')}</label>
+              <input type="text" id="prd-gh-branch" value="${escapeHtml(config.branch || 'main')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(config.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
           </div>
+
+          <!-- Guide -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
+            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('ghTokenGuideTitle')}</div>
+            <div style="margin-bottom:2px;">${t('ghTokenStep1')} <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">${t('ghGenTokenLink')} &nearr;</a></div>
+            <div style="margin-bottom:2px;">${t('ghTokenStep2')}</div>
+            <div>${t('ghTokenStep3')}</div>
+          </div>
+
+          <div id="prd-gh-verify-status" style="font-size:12px; min-height:18px;"></div>
         </div>
-        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end; gap:10px;">
-          <button class="prd-btn-primary" style="background:#0f172a; border-color:#0f172a; padding:6px 20px;" onclick="window.closeNoBackendModal()">${escapeHtml(t('apiCheckGotIt'))}</button>
+
+        <!-- Footer -->
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearGitHubConfig()">${t('ghClearConfigBtn')}</button>
+          <div style="display:flex; gap:8px;">
+            <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestGitHubConfig()">${t('ghVerifyBtn')}</button>
+            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px;" onclick="window.handleSaveGitHubConfig()">${t('ghSaveConfigBtn')}</button>
+          </div>
         </div>
       </div>
     `;
+
+    document.body.appendChild(modal);
+  };
+
+  window.closeGitHubConfigModal = function() {
+    const modal = document.getElementById('prd-gh-config-modal');
+    if (modal) modal.remove();
+  };
+
+  window.handleTestGitHubConfig = async function() {
+    const owner = (document.getElementById('prd-gh-owner')?.value || '').trim();
+    const repo = (document.getElementById('prd-gh-repo')?.value || '').trim();
+    const token = (document.getElementById('prd-gh-token')?.value || '').trim();
+    const statusEl = document.getElementById('prd-gh-verify-status');
+
+    if (!token) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 GitHub Token</span>`;
+      return false;
+    }
+    if (statusEl) statusEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在连接 GitHub API 校验权限...</span>`;
+
+    const result = await verifyGitHubTokenAccess(token, owner, repo);
+    if (result.success) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#059669; font-weight:700;">${t('ghVerifySuccess')} (账号: ${escapeHtml(result.username)})</span>`;
+      return true;
+    } else {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">${t('ghVerifyFailed')} (${escapeHtml(result.message)})</span>`;
+      return false;
+    }
+  };
+
+  window.handleSaveGitHubConfig = async function() {
+    const owner = (document.getElementById('prd-gh-owner')?.value || '').trim();
+    const repo = (document.getElementById('prd-gh-repo')?.value || '').trim();
+    const branch = (document.getElementById('prd-gh-branch')?.value || 'main').trim();
+    const token = (document.getElementById('prd-gh-token')?.value || '').trim();
+
+    if (!token) {
+      showToast('请先输入 GitHub Token', 'error');
+      return;
+    }
+
+    const testOk = await window.handleTestGitHubConfig();
+    if (!testOk) return;
+
+    setGitHubConfig({ owner, repo, branch, token, verifiedUser: owner, verifiedAt: new Date().toISOString() });
+    showToast(t('ghVerifySuccess'), 'success');
+    setTimeout(() => {
+      window.closeGitHubConfigModal();
+      updateVersionBarUI();
+      renderRightDrawerList();
+    }, 600);
+  };
+
+  window.handleClearGitHubConfig = function() {
+    clearGitHubConfig();
+    showToast('已清除 GitHub 授权，当前切换为访客只读模式', 'info');
+    window.closeGitHubConfigModal();
+    updateVersionBarUI();
+    renderRightDrawerList();
+  };
+
+
+  // ==========================================
+  // 前置服务健康检查与只读阻断弹窗 (Pre-Action API Health Check)
+  // ==========================================
+  let isBackendApiCached = null;
+
+  async function checkBackendApiAvailable(force = false) {
+    if (!force && isBackendApiCached !== null) {
+      return isBackendApiCached;
+    }
+
+    // 1. 优先探测本地 Node.js 持久化服务
+    if (window.location.protocol !== 'file:') {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1200);
+        const res = await fetch('/api/get-all-prd', {
+          method: 'GET',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          isBackendApiCached = true;
+          return true;
+        }
+      } catch (e) {}
+    }
+
+    // 2. 探测是否配置了有效的 GitHub 创立人 Token
+    const gh = getGitHubConfig();
+    if (gh && gh.token) {
+      isBackendApiCached = true;
+      return true;
+    }
+
+    isBackendApiCached = false;
+    return false;
+  }
+
+  window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null) {
+    const existing = document.getElementById('prd-no-backend-modal');
+    if (existing) existing.remove();
+
+    const isGithubPages = forceEnv === 'GITHUB_PAGES' || window.location.hostname.includes('.github.io') || (window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'));
+
+    const modal = document.createElement('div');
+    modal.id = 'prd-no-backend-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 10000050;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: prd-fade-in 0.2s ease-out;
+      font-family: var(--prd-font);
+    `;
+
+    if (isGithubPages) {
+      // 1. GitHub Pages 云端环境弹窗
+      modal.innerHTML = `
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+          <!-- Header -->
+          <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+              <span>${t('envTitle')}</span>
+              <span style="background:#0284c7; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
+            </div>
+            <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#334155; display:flex; flex-direction:column; gap:12px;">
+            <div>${t('envGhDesc')}</div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px;">
+              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('envGhHowToUnlock')}</div>
+              <div style="color:#475569;">${t('envGhUnlockStep')}</div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeNoBackendModal()">${t('envGhContinueVisitor')}</button>
+            <button class="prd-btn-primary" style="padding:7px 18px; font-size:12px; background:#0284c7; border-color:#0284c7;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envGhUnlockBtn')}</button>
+          </div>
+        </div>
+      `;
+    } else {
+      // 2. 本地静态 / 离线环境弹窗
+      modal.innerHTML = `
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+          <!-- Header -->
+          <div style="background:#fff1f2; border-bottom:1px solid #fecdd3; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#be123c;">
+              <span>⚠️</span>
+              <span>${t('envTitle')}</span>
+              <span style="background:#ffe4e6; color:#9f1239; font-size:10.5px; padding:2px 8px; border-radius:10px; font-weight:600;">${t('envLocalBadge')}</span>
+            </div>
+            <button style="background:none; border:none; font-size:18px; color:#9f1239; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#334155; display:flex; flex-direction:column; gap:12px;">
+            <div>${t('envLocalDesc')}</div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+              <div style="font-weight:700; color:#0f172a;">${t('envLocalHowToUnlock')}</div>
+              <div>
+                <div>${t('envLocalOpt1')}</div>
+                <div style="margin:6px 0; background:#0f172a; color:#38bdf8; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12.5px; display:flex; align-items:center; justify-content:space-between;">
+                  <span>$ node server.js</span>
+                  <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${t('envLocalCopyCmd')}</button>
+                </div>
+              </div>
+              <div style="border-top:1px dashed #cbd5e1; padding-top:6px;">
+                <div>${t('envLocalOpt2')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="prd-btn-action" style="font-size:12px; color:#2563eb;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envLocalConfigGh')}</button>
+            <button class="prd-btn-primary" style="background:#0f172a; border-color:#0f172a; padding:6px 20px; font-size:12px;" onclick="window.closeNoBackendModal()">${t('envLocalGotIt')}</button>
+          </div>
+        </div>
+      `;
+    }
 
     document.body.appendChild(modal);
   };
@@ -2121,17 +2606,35 @@
       window.PRD_VERSION_REGISTRY = versionRegistry;
     } catch (e) {}
 
-    try {
-      const resp = await fetch('/api/save-prd', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page: pageKey, data: savedPins, versionRegistry: versionRegistry })
-      });
-      if (resp.ok) {
-        const resJson = await resp.json();
-        if (resJson && resJson.success) return true;
+    // 1. 尝试通过本地 Node.js 接口写入磁盘
+    if (window.location.protocol !== 'file:') {
+      try {
+        const resp = await fetch('/api/save-prd', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ page: pageKey, data: savedPins, versionRegistry: versionRegistry })
+        });
+        if (resp.ok) {
+          const resJson = await resp.json();
+          if (resJson && resJson.success) return true;
+        }
+      } catch (e) {}
+    }
+
+    // 2. 尝试通过 GitHub Contents REST API 直接提交 Commit 持久化
+    const gh = getGitHubConfig();
+    if (gh && gh.token && gh.owner && gh.repo) {
+      try {
+        showToast(t('ghSavingToGithub'), 'info');
+        const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
+        const filePath = `assets/js/prd-data-${pageKey.replace('.html', '')}.js`;
+        await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
+        showToast(t('ghSaveSuccess'), 'success');
+        return true;
+      } catch (ghErr) {
+        showToast(`❌ GitHub 同步失败: ${ghErr.message}`, 'error');
       }
-    } catch (e) {}
+    }
 
     return false;
   }
@@ -4449,7 +4952,10 @@ window.saveEditorModal = async function() {
             <span style="background:#e0f2fe; color:#0284c7; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
-            <select id="prd-lang-select" onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#334155; font-weight:600;" title="切换语言 (Language)">
+            <button id="prd-gh-sync-btn" class="prd-btn-action" style="padding:3px 6px; font-size:11px; display:flex; align-items:center; gap:3px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;" onclick="window.showGitHubConfigModal()" title="GitHub Pages 创立人认证与实时同步配置">
+              <span>☁️</span>
+            </button>
+            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#334155; font-weight:600;" title="切换语言 (Language)">
               <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>🇨🇳 中文</option>
               <option value="en" ${currentLang==='en'?'selected':''}>🇺🇸 EN</option>
               <option value="ja" ${currentLang==='ja'?'selected':''}>🇯🇵 日本語</option>

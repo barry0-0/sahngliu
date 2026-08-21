@@ -1459,9 +1459,9 @@ const AdminApp = {
     let html = '';
     filtered.forEach((c, idx) => {
       let btn = c.type === 'global'
-        ? `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑全局默认规则', 'info')">修改</button>`
-        : `<button class="btn btn-text btn-sm text-primary" onclick="UI.toast('编辑抽佣规则', 'info')">编辑</button>
-           <button class="btn btn-text btn-sm text-danger" onclick="UI.toast('规则已删除', 'info')">删除</button>`;
+        ? `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.openEditCommissionModal('${c.id}')">修改</button>`
+        : `<button class="btn btn-text btn-sm text-primary" onclick="AdminApp.openEditCommissionModal('${c.id}')">编辑</button>
+           <button class="btn btn-text btn-sm text-danger" onclick="AdminApp.deleteCommissionRule('${c.id}')">删除</button>`;
       
       let typeBadge = '';
       if (c.type === 'global') typeBadge = `<span class="tag" style="background:#e6f7ff;color:#1890ff;border-color:#91d5ff;">全局模式</span>`;
@@ -1493,6 +1493,126 @@ const AdminApp = {
     if (nameEl) nameEl.value = '';
     if (targetEl) targetEl.value = '';
     this.renderConfig();
+  },
+
+  _currentEditCommId: null,
+
+  openAddCommissionModal() {
+    this._currentEditCommId = null;
+    const titleEl = document.getElementById('modal-comm-title');
+    if (titleEl) titleEl.innerText = '新增抽佣规则';
+
+    const typeGroup = document.getElementById('comm-rule-type-group');
+    if (typeGroup) typeGroup.style.display = 'block';
+
+    const nameGroup = document.getElementById('comm-rule-name-group');
+    if (nameGroup) nameGroup.style.display = 'block';
+
+    const typeEl = document.getElementById('comm-rule-type');
+    if (typeEl) {
+      typeEl.value = 'merchant';
+      typeEl.disabled = false;
+    }
+
+    const nameEl = document.getElementById('comm-rule-name');
+    if (nameEl) {
+      nameEl.value = '';
+      nameEl.disabled = false;
+    }
+
+    const rateEl = document.getElementById('comm-rule-rate');
+    if (rateEl) rateEl.value = '0.60';
+
+    this.toggleCommissionRuleType();
+    UI.showModal('modal-add-commission');
+  },
+
+  openEditCommissionModal(ruleId) {
+    const rule = MockData.commissionRules.find(r => r.id === ruleId);
+    if (!rule) {
+      UI.toast('未找到该抽佣规则', 'error');
+      return;
+    }
+
+    this._currentEditCommId = ruleId;
+    const titleEl = document.getElementById('modal-comm-title');
+    const typeGroup = document.getElementById('comm-rule-type-group');
+    const nameGroup = document.getElementById('comm-rule-name-group');
+    const targetGroup = document.getElementById('comm-rule-target-group');
+    const rateEl = document.getElementById('comm-rule-rate');
+    const nameEl = document.getElementById('comm-rule-name');
+    const typeEl = document.getElementById('comm-rule-type');
+
+    // 解析已有费率
+    const rateNum = parseFloat(rule.rate) || 0.60;
+    if (rateEl) rateEl.value = rateNum.toFixed(2);
+
+    if (rule.type === 'global') {
+      // 全局模式：仅允许修改比例
+      if (titleEl) titleEl.innerText = `修改全局默认抽佣规则 (${rule.id})`;
+      if (typeGroup) typeGroup.style.display = 'none';
+      if (nameGroup) nameGroup.style.display = 'none';
+      if (targetGroup) targetGroup.style.display = 'none';
+    } else {
+      // 非全局规则：完整编辑
+      if (titleEl) titleEl.innerText = `编辑抽佣规则 (${rule.id})`;
+      if (typeGroup) typeGroup.style.display = 'block';
+      if (nameGroup) nameGroup.style.display = 'block';
+
+      if (typeEl) {
+        typeEl.value = rule.type;
+        typeEl.disabled = false;
+      }
+      if (nameEl) {
+        nameEl.value = rule.name;
+        nameEl.disabled = false;
+      }
+
+      this.toggleCommissionRuleType();
+
+      // 回填目标
+      if (rule.type === 'merchant') {
+        const targetSelect = document.getElementById('comm-rule-target-select');
+        if (targetSelect) {
+          for (let opt of targetSelect.options) {
+            if (opt.value === rule.target || opt.text.includes(rule.target)) {
+              opt.selected = true;
+              break;
+            }
+          }
+        }
+      } else if (rule.type === 'category') {
+        const catNames = rule.target.split(/、|,|\//).map(s => s.trim()).filter(Boolean);
+        this._commPickedCatNames = catNames.length > 0 ? catNames : [rule.target];
+        this.renderCommL3();
+        const txt = document.getElementById('comm-cat-trigger-text');
+        if (txt) {
+          txt.innerText = `已选择 (${this._commPickedCatNames.length}项): ` + this._commPickedCatNames.join('、');
+          txt.style.color = '#7c3aed';
+          txt.style.fontWeight = 'bold';
+        }
+      }
+    }
+
+    UI.showModal('modal-add-commission');
+    setTimeout(() => {
+      if (rateEl) rateEl.focus();
+    }, 150);
+  },
+
+  deleteCommissionRule(ruleId) {
+    const rule = MockData.commissionRules.find(r => r.id === ruleId);
+    if (!rule) return;
+    if (rule.type === 'global') {
+      UI.toast('全局默认抽佣规则不可删除！', 'warning');
+      return;
+    }
+
+    if (confirm(`确定要删除抽佣规则【${rule.name}】(${rule.id}) 吗？`)) {
+      MockData.commissionRules = MockData.commissionRules.filter(r => r.id !== ruleId);
+      UI.toast('抽佣规则已成功删除！', 'success');
+      this.renderConfig();
+    }
   },
 
   toggleCommissionRuleType() {
@@ -1640,38 +1760,90 @@ const AdminApp = {
   },
 
   saveCommissionRule() {
-    const type = document.getElementById('comm-rule-type')?.value || 'global';
-    const name = document.getElementById('comm-rule-name')?.value.trim();
     const rateVal = document.getElementById('comm-rule-rate')?.value;
-    const targetSelect = document.getElementById('comm-rule-target-select');
-    
-    if (!name || !rateVal) {
-      UI.toast('请填写完整规则名称与抽佣比例！', 'warning');
+    if (rateVal === '' || isNaN(parseFloat(rateVal)) || parseFloat(rateVal) < 0 || parseFloat(rateVal) > 100) {
+      UI.toast('请输入合法的抽佣比例 (0 ~ 100)！', 'warning');
       return;
     }
 
-    let target = '全平台通用';
-    if (type === 'merchant') target = targetSelect ? targetSelect.value : '特定商家店铺';
-    if (type === 'category') {
-      if (this._commPickedCatNames.length > 0) {
-        target = this._commPickedCatNames.join('、');
-      } else {
-        target = '建材-金属-螺纹钢/盘螺类';
+    const rateStr = `${parseFloat(rateVal).toFixed(2)}%`;
+
+    if (this._currentEditCommId) {
+      // 编辑已有规则
+      const rule = MockData.commissionRules.find(r => r.id === this._currentEditCommId);
+      if (!rule) {
+        UI.toast('规则不存在！', 'error');
+        return;
       }
+
+      if (rule.type === 'global') {
+        // 全局模式：仅允许修改比例
+        rule.rate = rateStr;
+        UI.toast(`全局默认抽佣比例已更新为 ${rateStr}！`, 'success');
+      } else {
+        // 非全局规则
+        const name = document.getElementById('comm-rule-name')?.value.trim();
+        const type = document.getElementById('comm-rule-type')?.value || 'merchant';
+        const targetSelect = document.getElementById('comm-rule-target-select');
+
+        if (!name) {
+          UI.toast('请填写规则名称！', 'warning');
+          return;
+        }
+
+        let target = '全平台通用';
+        if (type === 'merchant') {
+          target = targetSelect ? targetSelect.value : '特定商家店铺';
+        } else if (type === 'category') {
+          if (this._commPickedCatNames.length > 0) {
+            target = this._commPickedCatNames.join('、');
+          } else {
+            target = rule.target || '建材-金属-螺纹钢/盘螺类';
+          }
+        }
+
+        rule.name = name;
+        rule.type = type;
+        rule.target = target;
+        rule.rate = rateStr;
+        UI.toast('抽佣规则配置已更新！', 'success');
+      }
+    } else {
+      // 新增规则
+      const type = document.getElementById('comm-rule-type')?.value || 'merchant';
+      const name = document.getElementById('comm-rule-name')?.value.trim();
+      const targetSelect = document.getElementById('comm-rule-target-select');
+
+      if (!name) {
+        UI.toast('请填写完整规则名称！', 'warning');
+        return;
+      }
+
+      let target = '全平台通用';
+      if (type === 'merchant') target = targetSelect ? targetSelect.value : '特定商家店铺';
+      if (type === 'category') {
+        if (this._commPickedCatNames.length > 0) {
+          target = this._commPickedCatNames.join('、');
+        } else {
+          target = '建材-金属-螺纹钢/盘螺类';
+        }
+      }
+
+      const newRule = {
+        id: 'CR-' + (MockData.commissionRules.length + 1).toString().padStart(3, '0'),
+        type: type,
+        name: name,
+        target: target,
+        rate: rateStr,
+        status: 1,
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+      };
+
+      MockData.commissionRules.push(newRule);
+      UI.toast('新增抽佣规则成功！', 'success');
     }
 
-    const newRule = {
-      id: 'CR-' + (MockData.commissionRules.length + 1).toString().padStart(3, '0'),
-      type: type,
-      name: name,
-      target: target,
-      rate: `${parseFloat(rateVal).toFixed(2)}%`,
-      status: 1
-    };
-
-    MockData.commissionRules.push(newRule);
     UI.closeModal('modal-add-commission');
-    UI.toast('抽佣规则配置保存成功！', 'success');
     this.renderConfig();
   },
 
