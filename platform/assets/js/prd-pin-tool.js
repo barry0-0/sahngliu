@@ -736,11 +736,9 @@
   // ==========================================
   // 🌐 GitHub Pages 零后端云端直写与创立人鉴权模块
   // ==========================================
-  const GH_CONFIG_KEY = `prd_gh_config_${projectScope}`;
-
   function getAutoDetectedRepoInfo() {
     let owner = 'barry0-0';
-    let repo = 'pm-proto-prd-pin';
+    let repo = 'sahngliu';
     const host = window.location.hostname || '';
     const pathname = window.location.pathname || '';
 
@@ -749,7 +747,6 @@
       const segments = pathname.split('/').filter(Boolean);
       if (segments.length > 0) repo = segments[0];
     } else {
-      // 尝试从项目路径推断
       const segments = pathname.split('/').filter(Boolean);
       if (segments.length >= 2) {
         repo = segments[segments.length - 2] || repo;
@@ -758,64 +755,88 @@
     return { owner, repo, branch: 'main' };
   }
 
+  function getGHStorageKey(owner, repo) {
+    return `prd_gh_config_${owner}_${repo}`;
+  }
+
   function getGitHubConfig() {
+    const auto = getAutoDetectedRepoInfo();
     try {
-      const cached = localStorage.getItem(GH_CONFIG_KEY);
+      // 优先读取当前仓库的 Token 配置
+      const repoKey = getGHStorageKey(auto.owner, auto.repo);
+      const cached = localStorage.getItem(repoKey) || localStorage.getItem('prd_gh_config_global') || localStorage.getItem(`prd_gh_config_${projectScope}`);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed && parsed.token) return parsed;
+        if (parsed && parsed.token) {
+          return {
+            owner: parsed.owner || auto.owner,
+            repo: parsed.repo || auto.repo,
+            branch: parsed.branch || auto.branch || 'main',
+            token: parsed.token,
+            verifiedUser: parsed.verifiedUser || auto.owner
+          };
+        }
       }
     } catch (e) {}
-    const auto = getAutoDetectedRepoInfo();
     return { owner: auto.owner, repo: auto.repo, branch: auto.branch, token: '', verifiedUser: null };
   }
 
   function setGitHubConfig(config) {
     try {
-      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(config));
+      const auto = getAutoDetectedRepoInfo();
+      const repoKey = getGHStorageKey(config.owner || auto.owner, config.repo || auto.repo);
+      const dataStr = JSON.stringify(config);
+      localStorage.setItem(repoKey, dataStr);
+      localStorage.setItem('prd_gh_config_global', dataStr);
     } catch (e) {}
   }
 
   function clearGitHubConfig() {
     try {
-      localStorage.removeItem(GH_CONFIG_KEY);
+      const auto = getAutoDetectedRepoInfo();
+      localStorage.removeItem(getGHStorageKey(auto.owner, auto.repo));
+      localStorage.removeItem('prd_gh_config_global');
+      localStorage.removeItem(`prd_gh_config_${projectScope}`);
     } catch (e) {}
   }
 
   async function verifyGitHubTokenAccess(token, owner, repo) {
-    if (!token || !owner || !repo) return { success: false, message: 'Missing parameters' };
+    if (!token || !owner || !repo) return { success: false, message: '请完整输入 Token 与仓库信息' };
     try {
+      const cleanToken = token.trim();
       const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
         headers: {
-          'Authorization': `Bearer ${token.trim()}`,
+          'Authorization': `Bearer ${cleanToken}`,
           'Accept': 'application/vnd.github.v3+json'
         }
       });
       if (!resp.ok) {
-        return { success: false, message: `HTTP ${resp.status}: Repo access denied` };
+        const errJson = await resp.json().catch(() => ({}));
+        return { success: false, message: errJson.message || `HTTP ${resp.status}: 无法访问仓库 ${owner}/${repo}` };
       }
       const repoData = await resp.json();
-      const hasPush = repoData.permissions && (repoData.permissions.push === true || repoData.permissions.admin === true);
-      if (!hasPush) {
-        return { success: false, message: 'Token lacks push/write permissions' };
+
+      // 若 permissions 字段存在 (Classic Token)，校验 push 权限；若不存在 (Fine-Grained PAT)，200 OK 即代表授权该仓库成功！
+      if (repoData.permissions && repoData.permissions.push === false && repoData.permissions.admin === false) {
+        return { success: false, message: 'Token 权限不足 (需勾选 Contents: Read and write 权限)' };
       }
 
-      // 获取用户名
+      // 尝试读取用户名
       let username = owner;
       try {
         const userResp = await fetch('https://api.github.com/user', {
           headers: {
-            'Authorization': `Bearer ${token.trim()}`,
+            'Authorization': `Bearer ${cleanToken}`,
             'Accept': 'application/vnd.github.v3+json'
           }
         });
         if (userResp.ok) {
           const userData = await userResp.json();
-          username = userData.login || owner;
+          if (userData.login) username = userData.login;
         }
       } catch (err) {}
 
-      return { success: true, username, repoName: repoData.full_name };
+      return { success: true, username, repoName: repoData.full_name || `${owner}/${repo}` };
     } catch (e) {
       return { success: false, message: e.toString() };
     }
@@ -992,16 +1013,18 @@
     if (!testOk) return;
 
     setGitHubConfig({ owner, repo, branch, token, verifiedUser: owner, verifiedAt: new Date().toISOString() });
+    isBackendApiCached = true; // 立即刷新内存探测状态，无缝解锁编辑
     showToast(t('ghVerifySuccess'), 'success');
     setTimeout(() => {
       window.closeGitHubConfigModal();
       updateVersionBarUI();
       renderRightDrawerList();
-    }, 600);
+    }, 300);
   };
 
   window.handleClearGitHubConfig = function() {
     clearGitHubConfig();
+    isBackendApiCached = null; // 重置内存状态
     showToast('已清除 GitHub 授权，当前切换为访客只读模式', 'info');
     window.closeGitHubConfigModal();
     updateVersionBarUI();
