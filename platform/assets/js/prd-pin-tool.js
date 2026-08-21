@@ -4792,7 +4792,13 @@ window.saveEditorModal = async function() {
     showToast('Markdown PRD 文档导出成功！', 'success');
   };
 
-  window.triggerImportJS = function() {
+  window.triggerImportJS = async function() {
+    const isApiOk = await checkBackendApiAvailable();
+    if (!isApiOk) {
+      window.showNoBackendAlertModal('import');
+      return;
+    }
+
     let input = document.getElementById('prd-file-import-input');
     if (!input) {
       input = document.createElement('input');
