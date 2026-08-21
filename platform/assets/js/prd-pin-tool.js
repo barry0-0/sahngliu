@@ -755,6 +755,35 @@
     return { owner, repo, branch: 'main' };
   }
 
+  function getGitHubTargetFilePath(page) {
+    const cleanPage = page.replace('.html', '');
+    const pathname = window.location.pathname || '';
+    const host = window.location.hostname || '';
+
+    if (host.includes('.github.io')) {
+      const parts = pathname.split('/').filter(Boolean);
+      if (parts.length > 0) parts.shift(); // 移除 repo 名字
+      if (parts.length > 0) parts.pop();   // 移除 当前 html 页面名
+      const subdir = parts.length > 0 ? (parts.join('/') + '/') : '';
+      return `${subdir}assets/js/prd-data-${cleanPage}.js`;
+    }
+
+    // 本地或非 github.io 环境：通过引入的 script 标签动态探测真实相对路径
+    try {
+      const scripts = document.querySelectorAll('script');
+      for (let s of scripts) {
+        if (s.src && s.src.includes(`prd-data-${cleanPage}`)) {
+          const u = new URL(s.src, window.location.href);
+          let p = u.pathname;
+          if (p.startsWith('/')) p = p.substring(1);
+          return p;
+        }
+      }
+    } catch (e) {}
+
+    return `assets/js/prd-data-${cleanPage}.js`;
+  }
+
   function getGHStorageKey(owner, repo) {
     return `prd_gh_config_${owner}_${repo}`;
   }
@@ -2650,7 +2679,7 @@
       try {
         showToast(t('ghSavingToGithub'), 'info');
         const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
-        const filePath = `assets/js/prd-data-${pageKey.replace('.html', '')}.js`;
+        const filePath = getGitHubTargetFilePath(pageKey);
         await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
         showToast(t('ghSaveSuccess'), 'success');
         return true;
@@ -3859,9 +3888,11 @@ window.saveEditorModal = async function() {
     window.minimizeEditor();
     rePickModeActive = true;
     document.body.style.cursor = 'crosshair';
-    showToast('请在页面上点击要重新绑定的新组件！', 'info');
+    showToast(t('rePickTip') || '请在页面上点击要重新绑定的新组件！', 'info');
     bindPickListeners();
   };
+
+  window.rePickElementForDraft = window.rePickElementFromModal;
 
   // 13. 右侧抽屉列表渲染与安全管理锁模式
   let draggedPinId = null;
