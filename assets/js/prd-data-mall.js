@@ -1,10 +1,20 @@
 /**
  * PRD 需求数据 - mall.html
- * GitHub Pages 实时保存于: 2026/8/21 15:51:43
+ * GitHub Pages 实时保存于: 2026/8/21 15:54:25
  */
 window.INITIAL_PRD_DATA = [
   {
     "id": 1,
+    "title": "1111",
+    "type": "业务规则",
+    "desc": "111111",
+    "selector": "",
+    "version": "v1.0.0",
+    "pageKey": "mall.html",
+    "pageTitle": "PC 商城端"
+  },
+  {
+    "id": 2,
     "title": "1",
     "type": "业务规则",
     "desc": "- 1",
@@ -14,7 +24,7 @@ window.INITIAL_PRD_DATA = [
     "pageTitle": "PC 商城端"
   },
   {
-    "id": 2,
+    "id": 3,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "[data-target='mall-home']",
@@ -24,7 +34,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 3,
+    "id": 4,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#mall-home > div:nth-of-type(1) > div:nth-of-type(3)",
@@ -34,7 +44,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 4,
+    "id": 5,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#shop-banner-display",
@@ -44,7 +54,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 5,
+    "id": 6,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#grid-spot-products",
@@ -54,7 +64,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 6,
+    "id": 7,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-product-detail",
@@ -64,7 +74,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 7,
+    "id": 8,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#grid-mall-bids",
@@ -74,7 +84,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 8,
+    "id": 9,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-bidding-detail",
@@ -84,7 +94,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 9,
+    "id": 10,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#grid-mall-demands",
@@ -94,7 +104,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 10,
+    "id": 11,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-publish-demand",
@@ -104,7 +114,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 11,
+    "id": 12,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-quote",
@@ -114,7 +124,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 12,
+    "id": 13,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-demand-quotes-runtime",
@@ -124,7 +134,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 13,
+    "id": 14,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#uc-cart",
@@ -134,7 +144,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 14,
+    "id": 15,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#uc-orders",
@@ -144,7 +154,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 15,
+    "id": 16,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-contract-signing",
@@ -154,7 +164,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 16,
+    "id": 17,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-payment",
@@ -164,7 +174,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 17,
+    "id": 18,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#uc-bids",
@@ -174,7 +184,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 18,
+    "id": 19,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#uc-invoices",
@@ -184,7 +194,7 @@ window.INITIAL_PRD_DATA = [
     "version": "v1.0.0"
   },
   {
-    "id": 19,
+    "id": 20,
     "pageKey": "mall.html",
     "pageTitle": "PC 商城端",
     "selector": "#modal-apply-invoice",
@@ -200,6 +210,16 @@ window.PRD_VERSION_REGISTRY = {
     "v1.0.0": [
       {
         "id": 1,
+        "title": "1111",
+        "type": "业务规则",
+        "desc": "111111",
+        "selector": "",
+        "version": "v1.0.0",
+        "pageKey": "mall.html",
+        "pageTitle": "PC 商城端"
+      },
+      {
+        "id": 2,
         "title": "1",
         "type": "业务规则",
         "desc": "- 1",
@@ -209,7 +229,7 @@ window.PRD_VERSION_REGISTRY = {
         "pageTitle": "PC 商城端"
       },
       {
-        "id": 2,
+        "id": 3,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "[data-target='mall-home']",
@@ -219,7 +239,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 3,
+        "id": 4,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#mall-home > div:nth-of-type(1) > div:nth-of-type(3)",
@@ -229,7 +249,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 4,
+        "id": 5,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#shop-banner-display",
@@ -239,7 +259,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 5,
+        "id": 6,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#grid-spot-products",
@@ -249,7 +269,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 6,
+        "id": 7,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-product-detail",
@@ -259,7 +279,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 7,
+        "id": 8,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#grid-mall-bids",
@@ -269,7 +289,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 8,
+        "id": 9,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-bidding-detail",
@@ -279,7 +299,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 9,
+        "id": 10,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#grid-mall-demands",
@@ -289,7 +309,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 10,
+        "id": 11,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-publish-demand",
@@ -299,7 +319,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 11,
+        "id": 12,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-quote",
@@ -309,7 +329,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 12,
+        "id": 13,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-demand-quotes-runtime",
@@ -319,7 +339,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 13,
+        "id": 14,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#uc-cart",
@@ -329,7 +349,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 14,
+        "id": 15,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#uc-orders",
@@ -339,7 +359,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 15,
+        "id": 16,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-contract-signing",
@@ -349,7 +369,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 16,
+        "id": 17,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-payment",
@@ -359,7 +379,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 17,
+        "id": 18,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#uc-bids",
@@ -369,7 +389,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 18,
+        "id": 19,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#uc-invoices",
@@ -379,7 +399,7 @@ window.PRD_VERSION_REGISTRY = {
         "version": "v1.0.0"
       },
       {
-        "id": 19,
+        "id": 20,
         "pageKey": "mall.html",
         "pageTitle": "PC 商城端",
         "selector": "#modal-apply-invoice",
