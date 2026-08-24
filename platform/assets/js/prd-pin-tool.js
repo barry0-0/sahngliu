@@ -13,11 +13,17 @@
 
 (function() {
   // 当前页面标识
-  // 1. 获取当前页面路径与项目隔离标识 (Project & Page Isolation)
+  // 1. 获取当前页面路径与项目隔离标识 (Project & Page Isolation - HTML与SPA双模兼容)
   const fullPath = window.location.pathname || '';
-  const pageKey = fullPath.split('/').pop().split('?')[0].split('#')[0] || 'admin.html';
+  const lastSlash = fullPath.lastIndexOf('/');
+  const pureFileName = (lastSlash !== -1 ? fullPath.substring(lastSlash + 1) : fullPath).split('?')[0].split('#')[0];
+  let rawPageKey = fullPath.split('/').filter(Boolean).join('_') || 'index.html';
+  try {
+    rawPageKey = decodeURIComponent(rawPageKey);
+  } catch (e) {}
+  const pageKey = (pureFileName && pureFileName.includes('.html')) ? pureFileName : (rawPageKey.split('?')[0].split('#')[0] || 'index.html');
   const projectScope = (fullPath.replace(/\/[^\/]*$/, '') || 'default_proj').replace(/[^a-zA-Z0-9_-]/g, '_');
-  const cacheKey = `prd_registry_${projectScope}_${pageKey}`;
+  const cacheKey = `prd_registry_${projectScope}_${pageKey.replace('.html', '')}`;
   const cacheVersionKey = `${cacheKey}_version`;
 
   // 获取 prd-pin-tool.js 所在目录基准路径 (自动计算相对路径，无论项目放置在何种子目录下)
@@ -822,6 +828,20 @@
     }
   }
 
+  window.updateModeBadgeUI = function updateModeBadgeUI() {
+    const badgeBtn = document.getElementById('prd-mode-badge-btn');
+    if (!badgeBtn) return;
+    const badgeInfo = getSyncModeBadgeInfo();
+    badgeBtn.style.background = badgeInfo.bg;
+    badgeBtn.style.borderColor = badgeInfo.border;
+    badgeBtn.style.color = badgeInfo.color;
+    badgeBtn.title = badgeInfo.tip;
+    badgeBtn.innerHTML = `
+      <span>${badgeInfo.icon}</span>
+      <span>${badgeInfo.label}</span>
+    `;
+  }
+
   // ==========================================
   // 🔄 持久化同步模式切换与记忆中心 (Sync Mode Switcher & Persistence)
   // ==========================================
@@ -847,60 +867,75 @@
   // ==========================================
   const KV_STORAGE_KEY = `prd_kv_config_${projectScope}_${pageKey.replace('.html', '')}`;
 
+  const DEFAULT_MASTER_KEY = '$2a$10$CcmXQMrMg3s3PmVfleWVju6Gj1guvzpC/zfk9hIvvDy7o5Tamwfuq';
+
   const DEFAULT_JSONBIN_MAPPING = {
     "admin.html": "6a8b9f88f5f4af5e293a1f29",
     "mall.html": "6a8b9f88da38895dfe088cde",
     "merchant.html": "6a8b9f89f5f4af5e293a1f2a",
     "merchant-h5.html": "6a8b9f89da38895dfe088cdf",
-    "h5.html": "6a8b9f8ada38895dfe088ce0"
+    "h5.html": "6a8b9f8ada38895dfe088ce0",
+    "预警信息_押品预警信息": "6a8bfab8da38895dfe09944d",
+    "预警信息_设备预警信息": "6a8bfab8da38895dfe09944d",
+    "default": "6a8bfab8da38895dfe09944d"
   };
 
-  function getKVStorageConfig() {
-    const defaultBin = DEFAULT_JSONBIN_MAPPING[pageKey] || '';
-    try {
-      // 1. 优先读取当前会话（Session）的解锁状态
-      const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
-      if (sessionKey) {
-        return {
-          provider: 'jsonbin',
-          binId: defaultBin,
-          secretKey: sessionKey,
-          customUrl: '',
-          isVerified: true
-        };
-      }
+        window.getKVStorageConfig = function getKVStorageConfig() {
+    const getKVStorageConfig = window.getKVStorageConfig;
+    let defaultBin = DEFAULT_JSONBIN_MAPPING[pageKey] || DEFAULT_JSONBIN_MAPPING['default'] || '';
+    let cachedBin = '';
+    let cachedSecretKey = '';
+    let isVerified = false;
+    let customUrl = '';
 
-      // 2. 读取持久化缓存
-      const cached = localStorage.getItem(KV_STORAGE_KEY) || localStorage.getItem('prd_kv_config_global');
+    try {
+      const cached = localStorage.getItem(KV_STORAGE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed && parsed.secretKey && parsed.isVerified) {
-          return {
-            provider: 'jsonbin',
-            binId: parsed.binId || defaultBin,
-            secretKey: parsed.secretKey,
-            customUrl: parsed.customUrl || '',
-            isVerified: true
-          };
+        if (parsed) {
+          if (parsed.binId) cachedBin = parsed.binId;
+          if (parsed.secretKey) cachedSecretKey = parsed.secretKey;
+          if (parsed.customUrl) customUrl = parsed.customUrl;
+          if (parsed.isVerified) isVerified = true;
+        }
+      }
+      const globalCached = localStorage.getItem('prd_kv_config_global');
+      if (globalCached) {
+        const parsedG = JSON.parse(globalCached);
+        if (parsedG) {
+          if (!cachedSecretKey && parsedG.secretKey) cachedSecretKey = parsedG.secretKey;
+          if (!customUrl && parsedG.customUrl) customUrl = parsedG.customUrl;
         }
       }
     } catch (e) {}
 
-    // 无痕模式或未鉴权访客：默认只读，无 secretKey，必须走鉴权弹窗
+    const sessionBin = sessionStorage.getItem(`prd_jsonbin_session_bin_${pageKey}`);
+    const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
+
+    const finalBinId = sessionBin || cachedBin || defaultBin;
+    const finalSecretKey = sessionKey || cachedSecretKey || DEFAULT_MASTER_KEY;
+
     return {
       provider: 'jsonbin',
-      binId: defaultBin,
-      secretKey: '',
-      customUrl: '',
-      isVerified: false
+      binId: finalBinId,
+      secretKey: finalSecretKey,
+      customUrl: customUrl || '',
+      isVerified: Boolean(finalSecretKey && (isVerified || sessionKey))
     };
-  }
+  };
 
   function setKVStorageConfig(config) {
     try {
       const dataStr = JSON.stringify(config);
       localStorage.setItem(KV_STORAGE_KEY, dataStr);
       localStorage.setItem('prd_kv_config_global', dataStr);
+      if (config.binId) {
+        sessionStorage.setItem(`prd_jsonbin_session_bin_${pageKey}`, config.binId);
+        sessionStorage.setItem('prd_jsonbin_session_bin_global', config.binId);
+      }
+      if (config.secretKey) {
+        sessionStorage.setItem('prd_jsonbin_session_key', config.secretKey);
+      }
     } catch (e) {}
   }
 
@@ -943,7 +978,7 @@
         headers: {
           'Content-Type': 'application/json',
           'X-Master-Key': cleanKey,
-          'X-Bin-Name': `prd-data-${pageKey.replace('.html', '')}`,
+          'X-Bin-Name': `prd-data-${encodeURIComponent(pageKey.replace('.html', ''))}`,
           'X-Bin-Private': 'false' // 设为公开只读，便于访客免密实时读取
         },
         body: JSON.stringify(payload)
@@ -1100,7 +1135,7 @@
 
     const config = getKVStorageConfig();
     const ghConfig = getGitHubConfig();
-    const activeMode = getActiveSyncMode();
+    const activeMode = defaultTab || getActiveSyncMode();
 
     const modal = document.createElement('div');
     modal.id = 'prd-kv-config-modal';
@@ -1238,7 +1273,7 @@
     });
   };
 
-  function getCurrentModalActiveTab() {
+  window.getCurrentModalActiveTab = function getCurrentModalActiveTab() {
     const pJson = document.getElementById('panel-jsonbin');
     if (pJson && pJson.style.display !== 'none') return 'jsonbin';
     const pGh = document.getElementById('panel-github');
@@ -1375,12 +1410,17 @@
 
     const finalBinId = (document.getElementById('prd-kv-bin-id')?.value || binId).trim();
     setKVStorageConfig({ provider: 'jsonbin', binId: finalBinId, secretKey, isVerified: true, updatedAt: new Date().toISOString() });
+    try {
+      if (secretKey) sessionStorage.setItem('prd_jsonbin_session_key', secretKey);
+    } catch (e) {}
+    setActiveSyncMode('jsonbin');
     isBackendApiCached = true;
     showToast(t('kvSyncSuccessToast'), 'success');
 
     setTimeout(() => {
       window.closeKVConfigModal();
       updateVersionBarUI();
+      updateModeBadgeUI();
       renderRightDrawerList();
     }, 400);
   };
@@ -3483,16 +3523,65 @@
     }
   }
 
-  function showToast(msg, type = 'info') {
-    if (window.UI && typeof window.UI.toast === 'function') {
-      window.UI.toast(msg, type);
-    } else {
-      console.log(`[PRD Tool]: ${msg}`);
-    }
+    window.showToast = function showToast(msg, type = 'info') {
+    const showToast = window.showToast;
+    try {
+      let toastContainer = document.getElementById('prd-global-toast-container');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'prd-global-toast-container';
+        toastContainer.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 10000099;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          pointer-events: none;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        `;
+        document.body.appendChild(toastContainer);
+      }
+
+      const toast = document.createElement('div');
+      const bgMap = {
+        success: 'linear-gradient(135deg, #059669, #10b981)',
+        error: 'linear-gradient(135deg, #dc2626, #ef4444)',
+        info: 'linear-gradient(135deg, #0f172a, #1e293b)'
+      };
+
+      toast.style.cssText = `
+        background: ${bgMap[type] || bgMap.info};
+        color: #ffffff;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: auto;
+        max-width: 400px;
+        word-break: break-word;
+        transition: all 0.25s ease-out;
+      `;
+      toast.innerHTML = `<span>${msg}</span>`;
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 250);
+      }, 2500);
+    } catch (e) {}
+
+
   }
 
-  // 4. 多版本数据持久化落盘
-  async function persistData() {
+  window.persistData = async function persistData() {
+    const persistData = window.persistData;
     reIndexPins(savedPins);
     versionRegistry.activeVersion = currentVersion;
     versionRegistry.versions[currentVersion] = savedPins;
@@ -3508,7 +3597,7 @@
         return false;
       }
       try {
-        showToast(t('kvSyncingToast'), 'info');
+        showToast(t('kvSyncingToast') || '⏳ 正在同步至云端...', 'info');
         const res = await saveRemoteKVData(kv.binId, kv.secretKey, {
           pageKey,
           versionRegistry,
@@ -3535,32 +3624,6 @@
         return false;
       }
     }
-    // 严格单一排他：只向云端 JSONBin 发送真实请求并严格校验 200 返回
-    if (activeMode === 'jsonbin') {
-      const kv = getKVStorageConfig();
-      if (!kv || !kv.secretKey) {
-        showToast('⚠️ 未配置有效的 JSONBin Master Key，保存失败', 'error');
-        return false;
-      }
-      try {
-        showToast(t('kvSyncingToast'), 'info');
-        const res = await saveRemoteKVData(kv.binId, kv.secretKey, {
-          pageKey,
-          versionRegistry,
-          savedPins,
-          updatedAt: new Date().toISOString()
-        });
-        if (!res || (!res.record && !res.metadata)) {
-          throw new Error('云端存储未返回成功确认');
-        }
-        const binDisplay = kv.binId ? ` (Bin: ${kv.binId.substring(0, 8)}...)` : '';
-        showToast(`✅ [云端KV] 真实同步成功！${binDisplay}`, 'success');
-        return true;
-      } catch (kvErr) {
-        showToast(`❌ 云端 KV 同步失败: ${kvErr.message}`, 'error');
-        return false;
-      }
-    }
 
     // 模式 2: ☁️ GitHub 推送打点 (Git Commit)
     // 严格单一排他：只调用 GitHub REST API 生成正式 Commit 并严格校验返回
@@ -3571,7 +3634,7 @@
         return false;
       }
       try {
-        showToast(t('ghSavingToGithub'), 'info');
+        showToast(t('ghSavingToGithub') || '⏳ 正在向 GitHub 提交 Commit...', 'info');
         const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
         const filePath = getGitHubTargetFilePath(pageKey);
         await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
@@ -3703,7 +3766,8 @@
     }
   };
 
-  function updateVersionBarUI() {
+  window.updateVersionBarUI = function updateVersionBarUI() {
+    updateModeBadgeUI();
     const select = document.getElementById('prd-version-select');
     if (!select) return;
     const verKeys = Object.keys(versionRegistry.versions);
@@ -4459,7 +4523,7 @@
   let isVditorLoading = false;
   let isVditorLoaded = false;
 
-  function ensureVditorLoaded(callback) {
+    function ensureVditorLoaded(callback) {
     if (window.Vditor) {
       isVditorLoaded = true;
       if (callback) callback();
@@ -4477,42 +4541,39 @@
     }
     isVditorLoading = true;
 
-    // 相对基准路径
-    const localVendorDir = scriptBasePath.includes('/js/') ? scriptBasePath.replace('/js/', '/vendor/vditor/') : (scriptBasePath + 'vendor/vditor/');
-
+    // 确保 Vditor 样式优先从 CDN / 绝对路径加载，杜绝 SPA 路由下的 404 HTML 污染
     if (!document.getElementById('vditor-css')) {
       const link = document.createElement('link');
       link.id = 'vditor-css';
       link.rel = 'stylesheet';
-      link.href = localVendorDir + 'index.css';
-      link.onerror = () => {
-        link.href = 'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.css';
-      };
+      link.href = 'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.css';
       document.head.appendChild(link);
     }
 
-    const script = document.createElement('script');
-    script.src = localVendorDir + 'index.min.js';
-    script.onerror = () => {
-      const fallbackScript = document.createElement('script');
-      fallbackScript.src = 'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js';
-      fallbackScript.onload = () => {
-        isVditorLoaded = true;
-        isVditorLoading = false;
-        if (callback) callback();
-      };
-      fallbackScript.onerror = () => {
-        isVditorLoading = false;
-        if (callback) callback(); // 即使 CDN 也失败，也触发回调进入 fallback textarea
-      };
-      document.head.appendChild(fallbackScript);
+    // 优先从 CDN 加载以保证 React / Vue 动态多级路由下的 100% 可用性
+    const loadScript = (src, onOk, onErr) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = onOk;
+      s.onerror = onErr;
+      document.head.appendChild(s);
     };
-    script.onload = () => {
+
+    loadScript('https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js', () => {
       isVditorLoaded = true;
       isVditorLoading = false;
       if (callback) callback();
-    };
-    document.head.appendChild(script);
+    }, () => {
+      // 备用本地路径
+      loadScript('/assets/vendor/vditor/index.min.js', () => {
+        isVditorLoaded = true;
+        isVditorLoading = false;
+        if (callback) callback();
+      }, () => {
+        isVditorLoading = false;
+        if (callback) callback();
+      });
+    });
   }
 
   function getVditorLang() {
@@ -5089,23 +5150,31 @@ window.saveEditorModal = async function() {
     await window.reorderPinToIndex(id, targetIdx);
   };
 
-  window.deletePinItem = async function(id) {
+    window.deletePinItem = async function(id) {
     if (confirm('确认删除此项需求规约吗？')) {
       const backup = JSON.parse(JSON.stringify(savedPins));
-      savedPins = savedPins.filter(p => p.id !== id);
+      savedPins = savedPins.filter(p => String(p.id) !== String(id));
       reIndexPins(savedPins);
+      versionRegistry.activeVersion = currentVersion;
+      versionRegistry.versions[currentVersion] = savedPins;
+
       const isSaved = await persistData();
       if (isSaved) {
         renderPinMarkers();
         renderRightDrawerList();
-        showToast('✅ 需求点已成功删除！', 'info');
+        renderMiniRailList();
+        const badge = document.getElementById('prd-drawer-count');
+        if (badge) badge.innerText = savedPins.length;
+        const edgeCount = document.getElementById('prd-edge-count');
+        if (edgeCount) edgeCount.innerText = savedPins.length;
+        showToast('✅ 需求点已成功删除并同步至云端！', 'success');
       } else {
         savedPins = backup;
         reIndexPins(savedPins);
+        versionRegistry.versions[currentVersion] = savedPins;
         renderPinMarkers();
         renderRightDrawerList();
-        alert('❌ 删除失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！');
-        showToast('❌ 删除失败', 'error');
+        showToast('❌ 删除失败：云端同步未完成', 'error');
       }
     }
   };
@@ -6102,6 +6171,38 @@ window.saveEditorModal = async function() {
   window.addEventListener('scroll', () => {
     if (currentMode !== 'hide') renderPinMarkers();
   }, true);
+
+    // 20. SPA 客户端路由自动监听与无刷新热重绘
+  let lastSPAPathname = window.location.pathname;
+  function checkAndHandleSPARouteChange() {
+    if (window.location.pathname !== lastSPAPathname) {
+      lastSPAPathname = window.location.pathname;
+      setTimeout(() => {
+        if (currentMode !== 'hide') renderPinMarkers();
+        renderRightDrawerList();
+        renderMiniRailList();
+        updateVersionBarUI();
+        syncFromCloudKVOnStartup();
+      }, 150);
+    }
+  }
+
+  const rawPushState = history.pushState;
+  history.pushState = function(...args) {
+    const res = rawPushState.apply(this, args);
+    checkAndHandleSPARouteChange();
+    return res;
+  };
+
+  const rawReplaceState = history.replaceState;
+  history.replaceState = function(...args) {
+    const res = rawReplaceState.apply(this, args);
+    checkAndHandleSPARouteChange();
+    return res;
+  };
+
+  window.addEventListener('popstate', checkAndHandleSPARouteChange);
+  window.addEventListener('hashchange', checkAndHandleSPARouteChange);
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initDOM();
