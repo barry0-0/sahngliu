@@ -52,7 +52,30 @@
         "envLocalCopied": "✅ 已复制命令: node server.js",
         "envLocalConfigGh": "☁️ 配置 GitHub 云端直写",
         "envLocalGotIt": "知道了",
-              ghModalTitle: '👑 GitHub Pages 创立人认证与实时同步配置',
+                          onlineAuthTitle: '🔒 创立人身份鉴权 (输入 API Key 解锁编辑)',
+      onlineAuthDesc: '当前页面处于线上托管环境，为防止外部人员随意篡改原型规约，<strong>必须输入在本地配置的相同 API Key (或 Secret Key)</strong> 以解锁增删改查与导入权限。',
+      onlineAuthKeyLabel: '🔑 创立人专属 API Key (与本地配置一致)',
+      onlineAuthKeyPlaceholder: '请输入本地配置的相同 API Key / Master Key',
+      onlineAuthSubmitBtn: '🔓 验证 Key 并解锁编辑权限',
+      onlineAuthSuccessToast: '✅ 创立人身份验证通过，已解锁全量编辑工作台！',
+      onlineAuthFailedToast: '❌ 验证失败：输入的 API Key 与当前项目不匹配或无效',
+      kvModalTitle: '🔑 云端 KV 存储与恒久 Key 授权配置',
+      kvModalDesc: '配置云端 Key-Value 中间存储（如 JSONBin.io 或自定义 KV 接口），即可实现<strong>【零服务器、跨端秒级同步、恒久 Key 写入授权】</strong>的云端持久化能力。',
+      kvProviderLabel: '📦 存储服务提供商',
+      kvBinIdLabel: '🆔 恒久公共读取 ID (Bin ID / App ID)',
+      kvSecretKeyLabel: '🔑 创立人专属授权密钥 (Secret Master Key)',
+      kvSecretKeyPlaceholder: '粘贴您的专属 Master Key 以解锁写入权限',
+      kvGuideTitle: '💡 如何免费获取您的专属恒久 Key：',
+      kvGuideStep1: '1. 访问 <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> 注册/登录；',
+      kvGuideStep2: '2. 在 Dashboard -> API Keys 中复制您的 <strong>Master Key</strong> 粘贴在上方；',
+      kvGuideStep3: '3. 点击下方【🔌 测试并自动创建/绑定】，系统将自动生成恒久 Bin ID 并解锁实时云端同步！',
+      kvVerifyBtn: '🔌 测试并验证授权',
+      kvSaveBtn: '💾 保存配置并解锁同步',
+      kvClearBtn: '🗑️ 清除云端授权',
+      kvSyncingToast: '☁️ 正在实时同步至云端 KV 存储...',
+      kvSyncSuccessToast: '✅ 需求规约已成功实时持久化至云端 KV 存储！',
+      kvPullSuccessToast: '☁️ 已从云端获取最新打点规约并完成同步！',
+      ghModalTitle: '👑 GitHub Pages 创立人认证与实时同步配置',
       ghModalDesc: '为当前 GitHub Pages 原型配置专属访问令牌（Fine-Grained PAT），即可解锁<strong>【零服务器、纯前端直写 GitHub 仓库】</strong>的实时云端保存能力。',
       ghOwnerLabel: '📦 仓库所有者 (Owner)',
       ghRepoLabel: '📂 仓库名称 (Repo)',
@@ -220,7 +243,30 @@
         "envLocalCopied": "✅ Copied command: node server.js",
         "envLocalConfigGh": "☁️ Configure GitHub Cloud Sync",
         "envLocalGotIt": "Got it",
-              ghModalTitle: '👑 GitHub Pages Owner Authentication & Cloud Sync',
+                          onlineAuthTitle: '🔒 Creator Authentication (Enter API Key)',
+      onlineAuthDesc: 'This prototype is online. To prevent unauthorized modifications, <strong>you must enter the same API Key configured in your local environment</strong> to unlock editing, reordering, and importing.',
+      onlineAuthKeyLabel: '🔑 Creator API Key (Same as local config)',
+      onlineAuthKeyPlaceholder: 'Enter the same API Key / Master Key configured locally',
+      onlineAuthSubmitBtn: '🔓 Verify Key & Unlock Editing',
+      onlineAuthSuccessToast: '✅ Creator authenticated! Editing workbench unlocked.',
+      onlineAuthFailedToast: '❌ Verification failed: Invalid API Key or mismatch',
+      kvModalTitle: '🔑 Serverless KV Cloud Storage & Permanent Key Auth',
+      kvModalDesc: 'Configure an intermediate Key-Value cloud store (JSONBin.io or custom KV API) for <strong>[Zero-Server, Instant Cross-Device Sync, Permanent Key Auth]</strong>.',
+      kvProviderLabel: '📦 Cloud KV Provider',
+      kvBinIdLabel: '🆔 Permanent Public Read ID (Bin ID)',
+      kvSecretKeyLabel: '🔑 Creator Secret Master Key',
+      kvSecretKeyPlaceholder: 'Paste your secret Master Key to unlock write permissions',
+      kvGuideTitle: '💡 How to get your free permanent key:',
+      kvGuideStep1: '1. Visit <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> to register/login;',
+      kvGuideStep2: '2. In Dashboard -> API Keys, copy your <strong>Master Key</strong> and paste above;',
+      kvGuideStep3: '3. Click [🔌 Test & Auto-Bind], the system will automatically create/bind a permanent Bin ID and unlock cloud sync!',
+      kvVerifyBtn: '🔌 Test & Verify Key',
+      kvSaveBtn: '💾 Save & Unlock Sync',
+      kvClearBtn: '🗑️ Clear Cloud Key',
+      kvSyncingToast: '☁️ Syncing real-time to cloud KV store...',
+      kvSyncSuccessToast: '✅ Specifications persisted to cloud KV store in real-time!',
+      kvPullSuccessToast: '☁️ Pulled and synced latest specifications from cloud KV!',
+      ghModalTitle: '👑 GitHub Pages Owner Authentication & Cloud Sync',
       ghModalDesc: 'Configure a Fine-Grained Personal Access Token (PAT) for this prototype to unlock <strong>[Serverless, Direct Commit to GitHub]</strong> real-time cloud persistence.',
       ghOwnerLabel: '📦 Repository Owner',
       ghRepoLabel: '📂 Repository Name',
@@ -388,7 +434,23 @@
         "envLocalCopied": "✅ コマンドをコピーしました: node server.js",
         "envLocalConfigGh": "☁️ GitHub クラウド同期を設定",
         "envLocalGotIt": "了解",
-              ghModalTitle: '👑 GitHub Pages 作成者認証とリアルタイム同期設定',
+                    kvModalTitle: '🔑 クラウドKVストレージと恒久Key認証設定',
+      kvModalDesc: 'Key-Valueクラウドストレージ（JSONBin.io等）を設定し、<strong>【サーバーレス・端末間リアルタイム同期・恒久Key認証】</strong>を実現します。',
+      kvProviderLabel: '📦 ストレージプロバイダー',
+      kvBinIdLabel: '🆔 恒久パブリック読み取りID (Bin ID)',
+      kvSecretKeyLabel: '🔑 作成者専用マスターキー (Secret Key)',
+      kvSecretKeyPlaceholder: '書き込み権限を解除するマスターキーを貼り付け',
+      kvGuideTitle: '💡 恒久キーの無料取得手順：',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> で登録/ログイン；',
+      kvGuideStep2: '2. Dashboard -> API Keys で <strong>Master Key</strong> をコピーして上に貼り付け；',
+      kvGuideStep3: '3. 【🔌 テストしてバインド】を押すと、恒久Bin IDが自動生成され同期が有効化されます！',
+      kvVerifyBtn: '🔌 接続テストと検証',
+      kvSaveBtn: '💾 保存して同期を有効化',
+      kvClearBtn: '🗑️ 認証解除',
+      kvSyncingToast: '☁️ クラウドKVへリアルタイム同期中...',
+      kvSyncSuccessToast: '✅ 仕様がクラウドKVへ保存されました！',
+      kvPullSuccessToast: '☁️ クラウドから最新の仕様データを取得しました！',
+      ghModalTitle: '👑 GitHub Pages 作成者認証とリアルタイム同期設定',
       ghModalDesc: 'Fine-Grained PAT（個人アクセストークン）を設定することで、<strong>【サーバーレス・GitHubリポジトリ直接書き込み】</strong>によるリアルタイム保存を有効化します。',
       ghOwnerLabel: '📦 リポジトリ所有者 (Owner)',
       ghRepoLabel: '📂 リポジトリ名 (Repo)',
@@ -556,7 +618,23 @@
         "envLocalCopied": "✅ 명령이 복사되었습니다: node server.js",
         "envLocalConfigGh": "☁️ GitHub 클라우드 동기화 설정",
         "envLocalGotIt": "확인",
-              ghModalTitle: '👑 GitHub Pages 소유자 인증 및 클라우드 실시간 동기화',
+                    kvModalTitle: '🔑 클라우드 KV 스토리지 및 영구 Key 인증 설정',
+      kvModalDesc: 'Key-Value 클라우드 스토리지(JSONBin.io 등)를 설정하여 <strong>[서버리스, 기기 간 실시간 동기화, 영구 Key 인증]</strong>을 활성화합니다.',
+      kvProviderLabel: '📦 스토리지 제공업체',
+      kvBinIdLabel: '🆔 영구 공개 읽기 ID (Bin ID)',
+      kvSecretKeyLabel: '🔑 소유자 전용 마스터 키 (Secret Key)',
+      kvSecretKeyPlaceholder: '쓰기 권한을 잠금 해제할 마스터 키를 붙여넣으세요',
+      kvGuideTitle: '💡 무료 영구 키 발급 방법:',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a>에 가입/로그인합니다;',
+      kvGuideStep2: '2. Dashboard -> API Keys에서 <strong>Master Key</strong>를 복사하여 위에 붙여넣습니다;',
+      kvGuideStep3: '3. [🔌 테스트 및 연결]을 클릭하면 영구 Bin ID가 생성되고 실시간 동기화가 활성화됩니다!',
+      kvVerifyBtn: '🔌 연결 테스트 및 확인',
+      kvSaveBtn: '💾 저장하고 동기화 활성화',
+      kvClearBtn: '🗑️ 인증 해제',
+      kvSyncingToast: '☁️ 클라우드 KV로 실시간 동기화 중...',
+      kvSyncSuccessToast: '✅ 사양이 클라우드 KV에 실시간으로 저장되었습니다!',
+      kvPullSuccessToast: '☁️ 클라우드에서 최신 사양을 가져왔습니다!',
+      ghModalTitle: '👑 GitHub Pages 소유자 인증 및 클라우드 실시간 동기화',
       ghModalDesc: 'Fine-Grained PAT 토큰을 설정하여 <strong>[서버리스 GitHub 저장소 직접 커밋]</strong> 실시간 클라우드 저장을 활성화합니다.',
       ghOwnerLabel: '📦 저장소 소유자 (Owner)',
       ghRepoLabel: '📂 저장소 이름 (Repo)',
@@ -732,6 +810,627 @@
     if (!str) return '';
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
+
+  function getSyncModeBadgeInfo() {
+    const mode = getActiveSyncMode();
+    if (mode === 'jsonbin') {
+      return { icon: '🔑', label: '云端KV', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd', tip: '当前模式：🔑 JSONBin.io 云端存储打点 (点击切换模式)' };
+    } else if (mode === 'github') {
+      return { icon: '☁️', label: 'GitHub', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：☁️ GitHub 推送打点 (点击切换模式)' };
+    } else {
+      return { icon: '💻', label: '本地服务', color: '#475569', bg: '#f8fafc', border: '#cbd5e1', tip: '当前模式：💻 本地 Node.js 服务模式 (点击切换模式)' };
+    }
+  }
+
+  // ==========================================
+  // 🔄 持久化同步模式切换与记忆中心 (Sync Mode Switcher & Persistence)
+  // ==========================================
+  const SYNC_MODE_KEY = 'prd_active_sync_mode';
+
+  function getActiveSyncMode() {
+    try {
+      const mode = localStorage.getItem(SYNC_MODE_KEY);
+      if (mode && ['jsonbin', 'github', 'local', 'auto'].includes(mode)) return mode;
+    } catch (e) {}
+    return 'jsonbin'; // 默认统一锁定为云端 JSONBin.io 实时同步模式
+  }
+
+  function setActiveSyncMode(mode) {
+    try {
+      localStorage.setItem(SYNC_MODE_KEY, mode);
+      isBackendApiCached = null; // 重置缓存以重新探测
+    } catch (e) {}
+  }
+
+  // ==========================================
+  // 🔑 云端 KV 中间存储适配器与恒久 Key 授权系统 (Remote KV Storage Adapter)
+  // ==========================================
+  const KV_STORAGE_KEY = `prd_kv_config_${projectScope}_${pageKey.replace('.html', '')}`;
+
+  const DEFAULT_JSONBIN_MAPPING = {
+    "admin.html": "6a8b9f88f5f4af5e293a1f29",
+    "mall.html": "6a8b9f88da38895dfe088cde",
+    "merchant.html": "6a8b9f89f5f4af5e293a1f2a",
+    "merchant-h5.html": "6a8b9f89da38895dfe088cdf",
+    "h5.html": "6a8b9f8ada38895dfe088ce0"
+  };
+
+  function getKVStorageConfig() {
+    const defaultBin = DEFAULT_JSONBIN_MAPPING[pageKey] || '';
+    try {
+      // 1. 优先读取当前会话（Session）的解锁状态
+      const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
+      if (sessionKey) {
+        return {
+          provider: 'jsonbin',
+          binId: defaultBin,
+          secretKey: sessionKey,
+          customUrl: '',
+          isVerified: true
+        };
+      }
+
+      // 2. 读取持久化缓存
+      const cached = localStorage.getItem(KV_STORAGE_KEY) || localStorage.getItem('prd_kv_config_global');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.secretKey && parsed.isVerified) {
+          return {
+            provider: 'jsonbin',
+            binId: parsed.binId || defaultBin,
+            secretKey: parsed.secretKey,
+            customUrl: parsed.customUrl || '',
+            isVerified: true
+          };
+        }
+      }
+    } catch (e) {}
+
+    // 无痕模式或未鉴权访客：默认只读，无 secretKey，必须走鉴权弹窗
+    return {
+      provider: 'jsonbin',
+      binId: defaultBin,
+      secretKey: '',
+      customUrl: '',
+      isVerified: false
+    };
+  }
+
+  function setKVStorageConfig(config) {
+    try {
+      const dataStr = JSON.stringify(config);
+      localStorage.setItem(KV_STORAGE_KEY, dataStr);
+      localStorage.setItem('prd_kv_config_global', dataStr);
+    } catch (e) {}
+  }
+
+  function clearKVStorageConfig() {
+    try {
+      localStorage.removeItem(KV_STORAGE_KEY);
+      localStorage.removeItem('prd_kv_config_global');
+    } catch (e) {}
+  }
+
+  // 从云端拉取最新数据 (带抗缓存时间戳与请求头)
+  async function fetchRemoteKVData(binId, secretKey = '') {
+    if (!binId) return null;
+    try {
+      const headers = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      };
+      if (secretKey) headers['X-Master-Key'] = secretKey.trim();
+
+      const resp = await fetch(`https://api.jsonbin.io/v3/b/${binId.trim()}/latest?_t=${Date.now()}`, { headers });
+      if (resp.ok) {
+        const json = await resp.json();
+        return json.record || json;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  // 提交数据至云端
+  async function saveRemoteKVData(binId, secretKey, payload) {
+    if (!secretKey) throw new Error('缺少 Secret Key 写入授权');
+
+    const cleanKey = secretKey.trim();
+
+    // 若尚无 Bin ID，先自动创建新的永久 Bin
+    if (!binId) {
+      const createResp = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': cleanKey,
+          'X-Bin-Name': `prd-data-${pageKey.replace('.html', '')}`,
+          'X-Bin-Private': 'false' // 设为公开只读，便于访客免密实时读取
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!createResp.ok) {
+        const errJson = await createResp.json().catch(() => ({}));
+        throw new Error(errJson.message || `HTTP ${createResp.status}: 创建云端 Bin 失败`);
+      }
+      const createData = await createResp.json();
+      const newBinId = createData.metadata?.id;
+      if (newBinId) {
+        const curCfg = getKVStorageConfig();
+        curCfg.binId = newBinId;
+        curCfg.isVerified = true;
+        setKVStorageConfig(curCfg);
+      }
+      return createData;
+    }
+
+    // 已有 Bin ID，执行 PUT 更新
+    const updateResp = await fetch(`https://api.jsonbin.io/v3/b/${binId.trim()}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': cleanKey
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!updateResp.ok) {
+      const errJson = await updateResp.json().catch(() => ({}));
+      throw new Error(errJson.message || `HTTP ${updateResp.status}: 更新云端 KV 数据失败`);
+    }
+
+    return await updateResp.json();
+  }
+
+    let pendingModeSwitchData = null;
+
+  window.showModeSwitchConfirmModal = function(oldMode, newMode, executeCallback) {
+    const existing = document.getElementById('prd-mode-switch-confirm-modal');
+    if (existing) existing.remove();
+
+    pendingModeSwitchData = executeCallback;
+
+    const modeNames = {
+      jsonbin: '🔑 云端 KV 模式 (JSONBin.io)',
+      github: '☁️ GitHub Commit 模式',
+      local: '💻 本地 Node.js 服务模式'
+    };
+
+    const oldName = modeNames[oldMode] || oldMode;
+    const newName = modeNames[newMode] || newMode;
+
+    const modal = document.createElement('div');
+    modal.id = 'prd-mode-switch-confirm-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 10000095;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: prd-fade-in 0.2s ease-out;
+      font-family: var(--prd-font);
+    `;
+
+    modal.innerHTML = `
+      <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <!-- Header -->
+        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+            <span>🔄</span>
+            <span>模式切换与数据无缝迁移决策</span>
+          </div>
+          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeModeSwitchModal()">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:14px;">
+          <div>您即将把当前项目的持久化引擎从 <span style="color:#b45309; font-weight:700;">【${escapeHtml(oldName)}】</span> 切换为 <span style="color:#0284c7; font-weight:700;">【${escapeHtml(newName)}】</span>。</div>
+
+          <!-- 迁移选择卡片组 -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:2px solid #0284c7; background:#f0f9ff; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-sync">
+              <input type="radio" name="prd_switch_sync_choice" value="migrate" checked style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
+              <div style="display:flex; flex-direction:column; gap:2px;">
+                <strong style="color:#0369a1; font-size:13px;">🚀 同步迁移当前数据到新方案 (推荐)</strong>
+                <span style="color:#475569; font-size:11.5px;">将当前已编辑的全部打点与版本（共 ${savedPins.length} 项规约）即刻同步写入到新的持久化数据源中，实现零断点无缝过渡！</span>
+              </div>
+            </label>
+
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid #e2e8f0; background:#f8fafc; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-clean">
+              <input type="radio" name="prd_switch_sync_choice" value="clean" style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
+              <div style="display:flex; flex-direction:column; gap:2px;">
+                <strong style="color:#334155; font-size:13px;">📥 不同步现有数据 (从新数据源拉取)</strong>
+                <span style="color:#64748b; font-size:11.5px;">仅切换底层模式配置，不覆盖新目标存储，切换后直接从新数据源拉取最新或保持空白。</span>
+              </div>
+            </label>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#64748b; display:flex; align-items:center; justify-content:space-between;">
+            <span>🛡️ 数据安全建议：切换前可先备份一份本地 JSON</span>
+            <button class="prd-btn-action" style="padding:3px 10px; font-size:11px; background:#ffffff; border:1px solid #cbd5e1; border-radius:4px; color:#0f172a; cursor:pointer;" onclick="window.downloadLocalBackupJSON()">💾 下载本地备份 (.json)</button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end; gap:8px;">
+          <button class="prd-btn-action" style="padding:6px 14px; font-size:12px; border:1px solid #cbd5e1; background:#ffffff; border-radius:6px; cursor:pointer;" onclick="window.closeModeSwitchModal()">取消</button>
+          <button class="prd-btn-primary" style="background:#0284c7; border-color:#0284c7; font-size:12px; padding:6px 18px; border-radius:6px; font-weight:700;" onclick="window.confirmExecuteModeSwitch()">✅ 确认执行模式切换</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  };
+
+  window.updateSwitchCardStyles = function() {
+    const selected = document.querySelector('input[name="prd_switch_sync_choice"]:checked')?.value;
+    const syncCard = document.getElementById('prd-migrate-card-sync');
+    const cleanCard = document.getElementById('prd-migrate-card-clean');
+    if (selected === 'migrate') {
+      if (syncCard) { syncCard.style.border = '2px solid #0284c7'; syncCard.style.background = '#f0f9ff'; }
+      if (cleanCard) { cleanCard.style.border = '1px solid #e2e8f0'; cleanCard.style.background = '#f8fafc'; }
+    } else {
+      if (syncCard) { syncCard.style.border = '1px solid #e2e8f0'; syncCard.style.background = '#f8fafc'; }
+      if (cleanCard) { cleanCard.style.border = '2px solid #0284c7'; cleanCard.style.background = '#f0f9ff'; }
+    }
+  };
+
+  window.closeModeSwitchModal = function() {
+    const modal = document.getElementById('prd-mode-switch-confirm-modal');
+    if (modal) modal.remove();
+    pendingModeSwitchData = null;
+  };
+
+  window.confirmExecuteModeSwitch = async function() {
+    const selected = document.querySelector('input[name="prd_switch_sync_choice"]:checked')?.value || 'migrate';
+    const shouldMigrate = (selected === 'migrate');
+    const callback = pendingModeSwitchData;
+    window.closeModeSwitchModal();
+
+    if (typeof callback === 'function') {
+      await callback(shouldMigrate);
+    }
+  };
+
+  window.showKVConfigModal = function(defaultTab = null) {
+    const existing = document.getElementById('prd-kv-config-modal');
+    if (existing) existing.remove();
+
+    const config = getKVStorageConfig();
+    const ghConfig = getGitHubConfig();
+    const activeMode = getActiveSyncMode();
+
+    const modal = document.createElement('div');
+    modal.id = 'prd-kv-config-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 10000070;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: prd-fade-in 0.2s ease-out;
+      font-family: var(--prd-font);
+    `;
+
+    modal.innerHTML = `
+      <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <!-- Header -->
+        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+            <span>☁️</span>
+            <span>持久化同步中心与模式切换</span>
+          </div>
+          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeKVConfigModal()">&times;</button>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div style="background:#f1f5f9; padding:8px 16px; border-bottom:1px solid #e2e8f0; display:flex; gap:6px;">
+          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #cbd5e1':'none'}; color:${activeMode==='jsonbin'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('jsonbin')">
+            🔑 JSONBin.io 模式 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">●生效中</span>':''}
+          </button>
+          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #cbd5e1':'none'}; color:${activeMode==='github'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('github')">
+            ☁️ GitHub Commit 模式 ${activeMode==='github'?'<span style=\"color:#059669;\">●生效中</span>':''}
+          </button>
+          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #cbd5e1':'none'}; color:${activeMode==='local'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('local')">
+            💻 本地服务 ${activeMode==='local'?'<span style=\"color:#059669;\">●生效中</span>':''}
+          </button>
+        </div>
+
+        <!-- Body Content -->
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155;">
+          <!-- Tab Panel 1: JSONBin -->
+          <div id="panel-jsonbin" style="display:${activeMode==='jsonbin'||activeMode==='auto'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#475569;">${t('kvModalDesc')}</div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('kvSecretKeyLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-kv-secret-key" value="${escapeHtml(config.secretKey || '')}" placeholder="${escapeHtml(t('kvSecretKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('kvBinIdLabel')}</label>
+              <input type="text" id="prd-kv-bin-id" value="${escapeHtml(config.binId || '')}" placeholder="留空则自动创建新的永久 Bin ID" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+            </div>
+
+            <!-- Guide -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
+              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('kvGuideTitle')}</div>
+              <div style="margin-bottom:2px;">${t('kvGuideStep1')}</div>
+              <div style="margin-bottom:2px;">${t('kvGuideStep2')}</div>
+              <div>${t('kvGuideStep3')}</div>
+            </div>
+
+            <div id="prd-kv-status-tip" style="font-size:12px; min-height:18px;"></div>
+          </div>
+
+          <!-- Tab Panel 2: GitHub -->
+          <div id="panel-github" style="display:${activeMode==='github'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#475569;">${t('ghModalDesc')}</div>
+
+            <div style="display:flex; gap:10px;">
+              <div style="flex:1;">
+                <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+                <input type="text" id="prd-gh-owner" value="${escapeHtml(ghConfig.owner || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              </div>
+              <div style="flex:1;">
+                <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+                <input type="text" id="prd-gh-repo" value="${escapeHtml(ghConfig.repo || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(ghConfig.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+
+            <!-- Guide -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
+              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('ghGuideTitle')}</div>
+              <div style="margin-bottom:2px;">${t('ghGuideStep1')}</div>
+              <div style="margin-bottom:2px;">${t('ghGuideStep2')}</div>
+              <div>${t('ghGuideStep3')}</div>
+            </div>
+
+            <div id="prd-gh-verify-status" style="font-size:12px; min-height:18px;"></div>
+          </div>
+
+          <!-- Tab Panel 3: Local -->
+          <div id="panel-local" style="display:${activeMode==='local'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#475569;">本地 Node.js 服务模式直接将打点数据写入本地磁盘的 <code>assets/js/prd-data-*.js</code> 文件中。</div>
+            <div style="background:#0f172a; color:#38bdf8; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
+              <span>$ node server.js</span>
+              <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.copyStartCommand(this)">📋 复制命令</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearCurrentModeConfig()">${t('kvClearBtn')}</button>
+          <div style="display:flex; gap:8px;">
+            <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestCurrentModeConfig()">${t('kvVerifyBtn')}</button>
+            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px; background:#0284c7; border-color:#0284c7;" onclick="window.handleSaveCurrentModeConfig()">${t('kvSaveBtn')}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  };
+
+  window.switchSyncConfigTab = function(mode) {
+    ['jsonbin', 'github', 'local'].forEach(m => {
+      const btn = document.getElementById(`tab-btn-${m}`);
+      const panel = document.getElementById(`panel-${m}`);
+      if (btn) {
+        btn.style.background = m === mode ? '#ffffff' : 'transparent';
+        btn.style.border = m === mode ? '1px solid #cbd5e1' : 'none';
+        btn.style.color = m === mode ? '#0284c7' : '#64748b';
+      }
+      if (panel) {
+        panel.style.display = m === mode ? 'flex' : 'none';
+      }
+    });
+  };
+
+  function getCurrentModalActiveTab() {
+    const pJson = document.getElementById('panel-jsonbin');
+    if (pJson && pJson.style.display !== 'none') return 'jsonbin';
+    const pGh = document.getElementById('panel-github');
+    if (pGh && pGh.style.display !== 'none') return 'github';
+    return 'local';
+  }
+
+  window.handleTestCurrentModeConfig = async function() {
+    const tab = getCurrentModalActiveTab();
+    if (tab === 'jsonbin') {
+      return await window.handleTestKVConfig();
+    } else if (tab === 'github') {
+      return await window.handleTestGitHubConfig();
+    } else {
+      showToast('本地模式无需验证，只需在终端运行 node server.js', 'info');
+      return true;
+    }
+  };
+
+  window.handleSaveCurrentModeConfig = async function() {
+    const currentActive = getActiveSyncMode();
+    const tab = getCurrentModalActiveTab();
+
+    const doApplySave = async () => {
+      if (tab === 'jsonbin') {
+        const secretKey = (document.getElementById('prd-kv-secret-key')?.value || '').trim();
+        if (!secretKey) {
+          showToast('请先输入 Secret Master Key', 'error');
+          return;
+        }
+        const testOk = await window.handleTestKVConfig();
+        if (!testOk) return;
+        const binId = (document.getElementById('prd-kv-bin-id')?.value || '').trim();
+        setKVStorageConfig({ provider: 'jsonbin', binId, secretKey, isVerified: true, updatedAt: new Date().toISOString() });
+        setActiveSyncMode('jsonbin');
+        isBackendApiCached = true;
+        showToast('✅ 已成功保存并切换为【🔑 JSONBin.io 实时同步模式】！', 'success');
+      } else if (tab === 'github') {
+        const testOk = await window.handleTestGitHubConfig();
+        if (!testOk) return;
+        const owner = (document.getElementById('prd-gh-owner')?.value || '').trim();
+        const repo = (document.getElementById('prd-gh-repo')?.value || '').trim();
+        const token = (document.getElementById('prd-gh-token')?.value || '').trim();
+        setGitHubConfig({ owner, repo, branch: 'main', token, verifiedUser: owner, verifiedAt: new Date().toISOString() });
+        setActiveSyncMode('github');
+        isBackendApiCached = true;
+        showToast('✅ 已成功保存并切换为【☁️ GitHub Commit 直连模式】！', 'success');
+      } else {
+        setActiveSyncMode('local');
+        isBackendApiCached = true;
+        showToast('✅ 已切换为【💻 本地 Node.js 模式】！', 'success');
+      }
+
+      setTimeout(() => {
+        window.closeKVConfigModal();
+        updateVersionBarUI();
+        renderRightDrawerList();
+      }, 400);
+    };
+
+    // 若模式发生改变，弹出备份与确认提醒
+    if (tab !== currentActive) {
+      window.showModeSwitchConfirmModal(currentActive, tab, doApplySave);
+    } else {
+      await doApplySave();
+    }
+  };
+  window.handleClearCurrentModeConfig = function() {
+    const tab = getCurrentModalActiveTab();
+    if (tab === 'jsonbin') {
+      clearKVStorageConfig();
+      showToast('已清除 JSONBin 授权', 'info');
+    } else if (tab === 'github') {
+      clearGitHubConfig();
+      showToast('已清除 GitHub 授权', 'info');
+    }
+    setActiveSyncMode('auto');
+    isBackendApiCached = null;
+    window.closeKVConfigModal();
+    updateVersionBarUI();
+    renderRightDrawerList();
+  };
+
+  window.showGitHubConfigModal = function() {
+    window.showKVConfigModal();
+    window.switchSyncConfigTab('github');
+  };
+  window.closeKVConfigModal = function() {
+    const modal = document.getElementById('prd-kv-config-modal');
+    if (modal) modal.remove();
+  };
+
+  window.handleTestKVConfig = async function() {
+    const secretKey = (document.getElementById('prd-kv-secret-key')?.value || '').trim();
+    const binId = (document.getElementById('prd-kv-bin-id')?.value || '').trim();
+    const tipEl = document.getElementById('prd-kv-status-tip');
+
+    if (!secretKey) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 Secret Master Key</span>`;
+      return false;
+    }
+    if (tipEl) tipEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在连接云端 KV 验证授权...</span>`;
+
+    try {
+      const payload = {
+        pageKey,
+        versionRegistry,
+        savedPins,
+        updatedAt: new Date().toISOString()
+      };
+      const res = await saveRemoteKVData(binId, secretKey, payload);
+      const activeBin = res.metadata?.id || binId;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#059669; font-weight:700;">✅ 授权成功！永久 Bin ID: <code>${escapeHtml(activeBin)}</code></span>`;
+      const binInput = document.getElementById('prd-kv-bin-id');
+      if (binInput && !binInput.value && activeBin) binInput.value = activeBin;
+      return true;
+    } catch (err) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ 校验失败: ${escapeHtml(err.message)}</span>`;
+      return false;
+    }
+  };
+
+  window.handleSaveKVConfig = async function() {
+    const secretKey = (document.getElementById('prd-kv-secret-key')?.value || '').trim();
+    const binId = (document.getElementById('prd-kv-bin-id')?.value || '').trim();
+
+    if (!secretKey) {
+      showToast('请先输入 Secret Master Key', 'error');
+      return;
+    }
+
+    const testOk = await window.handleTestKVConfig();
+    if (!testOk) return;
+
+    const finalBinId = (document.getElementById('prd-kv-bin-id')?.value || binId).trim();
+    setKVStorageConfig({ provider: 'jsonbin', binId: finalBinId, secretKey, isVerified: true, updatedAt: new Date().toISOString() });
+    isBackendApiCached = true;
+    showToast(t('kvSyncSuccessToast'), 'success');
+
+    setTimeout(() => {
+      window.closeKVConfigModal();
+      updateVersionBarUI();
+      renderRightDrawerList();
+    }, 400);
+  };
+
+  window.handleClearKVConfig = function() {
+    clearKVStorageConfig();
+    isBackendApiCached = null;
+    showToast('已清除云端 KV 授权', 'info');
+    window.closeKVConfigModal();
+    updateVersionBarUI();
+    renderRightDrawerList();
+  };
+
+  // 页面初始化时静默从云端拉取最新数据并热替换
+  async function syncFromCloudKVOnStartup() {
+    const kv = getKVStorageConfig();
+    if (!kv || !kv.binId) return;
+
+    try {
+      const remoteData = await fetchRemoteKVData(kv.binId, kv.secretKey);
+      if (remoteData && (remoteData.versionRegistry || Array.isArray(remoteData.savedPins))) {
+        if (remoteData.versionRegistry) {
+          versionRegistry = remoteData.versionRegistry;
+        } else if (Array.isArray(remoteData.savedPins)) {
+          versionRegistry = { activeVersion: 'v1.0.0', versions: { 'v1.0.0': remoteData.savedPins } };
+        }
+        currentVersion = versionRegistry.activeVersion || Object.keys(versionRegistry.versions)[0] || 'v1.0.0';
+        savedPins = versionRegistry.versions[currentVersion] || [];
+        reIndexPins(savedPins);
+        window.INITIAL_PRD_DATA = savedPins;
+        window.PRD_VERSION_REGISTRY = versionRegistry;
+
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(versionRegistry));
+          localStorage.setItem(cacheVersionKey, PRD_CACHE_VERSION);
+        } catch (e) {}
+
+        renderPinMarkers();
+        renderRightDrawerList();
+        renderMiniRailList();
+        updateVersionBarUI();
+        const badge = document.getElementById('prd-drawer-count');
+        if (badge) badge.innerText = savedPins.length;
+        const edgeCount = document.getElementById('prd-edge-count');
+        if (edgeCount) edgeCount.innerText = savedPins.length;
+        showToast(t('kvPullSuccessToast') || '☁️ 已从云端获取最新打点规约并完成同步！', 'info');
+      }
+    } catch (e) {}
+  }
+
 
   // ==========================================
   // 🌐 GitHub Pages 零后端云端直写与创立人鉴权模块
@@ -1066,33 +1765,173 @@
   // ==========================================
   let isBackendApiCached = null;
 
-  async function checkBackendApiAvailable(force = false) {
-    if (!force && isBackendApiCached !== null) {
-      return isBackendApiCached;
+  // ==========================================
+  // 🔒 线上统一 API Key 鉴权系统 (Online Unified API Key Authentication)
+  // ==========================================
+  function isLocalEnvironment() {
+    const host = window.location.hostname || '';
+    const protocol = window.location.protocol || '';
+    return protocol === 'file:' || host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
+  }
+
+  window.showOnlineAuthModal = function(actionType = 'edit', callback = null) {
+    const existing = document.getElementById('prd-online-auth-modal');
+    if (existing) existing.remove();
+
+    const activeMode = getActiveSyncMode();
+    const modeName = activeMode === 'jsonbin' ? '🔑 云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? '☁️ GitHub 推送打点' : '💻 本地服务模式');
+
+    const modal = document.createElement('div');
+    modal.id = 'prd-online-auth-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 10000080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: prd-fade-in 0.2s ease-out;
+      font-family: var(--prd-font);
+    `;
+
+    modal.innerHTML = `
+      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <!-- Header -->
+        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+            <span>🔒</span>
+            <span>${escapeHtml(t('onlineAuthTitle'))}</span>
+          </div>
+          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeOnlineAuthModal()">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:14px;">
+          <div>${t('onlineAuthDesc')}</div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#64748b;">当前项目锁定模式：</span>
+              <span style="font-weight:700; color:#0284c7;">${escapeHtml(modeName)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:6px; font-family:monospace; font-size:11.5px;">
+              <span style="color:#64748b;">绑定云端数据源：</span>
+              <span style="color:#0f172a; font-weight:700;">${activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`}</span>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
+            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
+          </div>
+
+          <div id="prd-online-auth-tip" style="font-size:12px; min-height:18px;"></div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeOnlineAuthModal()">👁️ 保持访客只读</button>
+          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#0284c7; border-color:#0284c7;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => {
+      const input = document.getElementById('prd-online-auth-key-input');
+      if (input) input.focus();
+    }, 100);
+  };
+
+  window.closeOnlineAuthModal = function() {
+    const modal = document.getElementById('prd-online-auth-modal');
+    if (modal) modal.remove();
+  };
+
+  window.handleVerifyOnlineKey = async function() {
+    const inputKey = (document.getElementById('prd-online-auth-key-input')?.value || '').trim();
+    const tipEl = document.getElementById('prd-online-auth-tip');
+    const activeMode = getActiveSyncMode();
+
+    if (!inputKey) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 API Key</span>`;
+      return;
     }
 
-    // 1. 优先探测本地 Node.js 持久化服务
-    if (window.location.protocol !== 'file:') {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1200);
-        const res = await fetch('/api/get-all-prd', {
-          method: 'GET',
-          signal: controller.signal
+    if (tipEl) tipEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在校验 Key 有效性...</span>`;
+
+    try {
+      if (activeMode === 'jsonbin') {
+        const kv = getKVStorageConfig();
+        const testRes = await saveRemoteKVData(kv.binId, inputKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
         });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-          isBackendApiCached = true;
-          return true;
-        }
-      } catch (e) {}
+        const activeBin = testRes.metadata?.id || kv.binId;
+        try {
+          sessionStorage.setItem('prd_jsonbin_session_key', inputKey);
+        } catch (e) {}
+        setKVStorageConfig({ provider: 'jsonbin', binId: activeBin, secretKey: inputKey, isVerified: true, updatedAt: new Date().toISOString() });
+        isBackendApiCached = true;
+      } else if (activeMode === 'github') {
+        const gh = getGitHubConfig();
+        const testRes = await verifyGitHubTokenAccess(inputKey, gh.owner, gh.repo);
+        if (!testRes.success) throw new Error(testRes.message);
+        setGitHubConfig({ owner: gh.owner, repo: gh.repo, branch: gh.branch || 'main', token: inputKey, verifiedUser: gh.owner, verifiedAt: new Date().toISOString() });
+      }
+
+      isBackendApiCached = true;
+      showToast(t('onlineAuthSuccessToast'), 'success');
+      window.closeOnlineAuthModal();
+      updateVersionBarUI();
+      renderRightDrawerList();
+    } catch (err) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ 校验失败: ${escapeHtml(err.message)}</span>`;
+      showToast(t('onlineAuthFailedToast'), 'error');
+    }
+  };
+
+  async function checkBackendApiAvailable(force = false) {
+    if (!force && isBackendApiCached !== null) return isBackendApiCached;
+
+    const activeMode = getActiveSyncMode();
+
+    if (activeMode === 'jsonbin') {
+      const kv = getKVStorageConfig();
+      const isOk = !!(kv && kv.secretKey);
+      isBackendApiCached = isOk;
+      return isOk;
     }
 
-    // 2. 探测是否配置了有效的 GitHub 创立人 Token
-    const gh = getGitHubConfig();
-    if (gh && gh.token) {
-      isBackendApiCached = true;
-      return true;
+    if (activeMode === 'github') {
+      const gh = getGitHubConfig();
+      const isOk = !!(gh && gh.token);
+      isBackendApiCached = isOk;
+      return isOk;
+    }
+
+    if (activeMode === 'local') {
+      if (window.location.protocol !== 'file:') {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 1200);
+          const res = await fetch('/api/get-all-prd', {
+            method: 'GET',
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            isBackendApiCached = true;
+            return true;
+          }
+        } catch (e) {}
+      }
+      isBackendApiCached = false;
+      return false;
     }
 
     isBackendApiCached = false;
@@ -1100,10 +1939,17 @@
   }
 
   window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null) {
+    const activeMode = getActiveSyncMode();
+    if (activeMode === 'jsonbin' || activeMode === 'github') {
+      // 云端模式下（无论文件打开还是线上）统一唤起【🔒 创立人 API Key 鉴权】
+      window.showOnlineAuthModal(actionType);
+      return;
+    }
+
     const existing = document.getElementById('prd-no-backend-modal');
     if (existing) existing.remove();
 
-    const isGithubPages = forceEnv === 'GITHUB_PAGES' || window.location.hostname.includes('.github.io') || (window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'));
+    const isGithubPages = false;
 
     const modal = document.createElement('div');
     modal.id = 'prd-no-backend-modal';
@@ -2651,15 +3497,99 @@
     versionRegistry.activeVersion = currentVersion;
     versionRegistry.versions[currentVersion] = savedPins;
 
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify(versionRegistry));
-      localStorage.setItem(cacheVersionKey, PRD_CACHE_VERSION);
-      window.INITIAL_PRD_DATA = savedPins;
-      window.PRD_VERSION_REGISTRY = versionRegistry;
-    } catch (e) {}
+    const activeMode = getActiveSyncMode();
 
-    // 1. 尝试通过本地 Node.js 接口写入磁盘
-    if (window.location.protocol !== 'file:') {
+    // 模式 1: 🔑 云端 KV 存储打点 (JSONBin.io)
+    // 严格单一排他：只向云端 JSONBin 发送真实请求，云端成功后才更新本地缓存镜像
+    if (activeMode === 'jsonbin') {
+      const kv = getKVStorageConfig();
+      if (!kv || !kv.secretKey) {
+        showToast('⚠️ 未配置有效的 JSONBin Master Key，保存失败', 'error');
+        return false;
+      }
+      try {
+        showToast(t('kvSyncingToast'), 'info');
+        const res = await saveRemoteKVData(kv.binId, kv.secretKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        if (!res || (!res.record && !res.metadata)) {
+          throw new Error('云端存储未返回成功确认');
+        }
+
+        // 云端真实写入确认后，同步更新内存与本地镜像
+        window.INITIAL_PRD_DATA = savedPins;
+        window.PRD_VERSION_REGISTRY = versionRegistry;
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(versionRegistry));
+          localStorage.setItem(cacheVersionKey, PRD_CACHE_VERSION);
+        } catch (e) {}
+
+        const binDisplay = kv.binId ? ` (Bin: ${kv.binId.substring(0, 8)}...)` : '';
+        showToast(`✅ [云端KV] 真实同步成功！${binDisplay}`, 'success');
+        return true;
+      } catch (kvErr) {
+        showToast(`❌ 云端 KV 同步失败: ${kvErr.message}`, 'error');
+        return false;
+      }
+    }
+    // 严格单一排他：只向云端 JSONBin 发送真实请求并严格校验 200 返回
+    if (activeMode === 'jsonbin') {
+      const kv = getKVStorageConfig();
+      if (!kv || !kv.secretKey) {
+        showToast('⚠️ 未配置有效的 JSONBin Master Key，保存失败', 'error');
+        return false;
+      }
+      try {
+        showToast(t('kvSyncingToast'), 'info');
+        const res = await saveRemoteKVData(kv.binId, kv.secretKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        if (!res || (!res.record && !res.metadata)) {
+          throw new Error('云端存储未返回成功确认');
+        }
+        const binDisplay = kv.binId ? ` (Bin: ${kv.binId.substring(0, 8)}...)` : '';
+        showToast(`✅ [云端KV] 真实同步成功！${binDisplay}`, 'success');
+        return true;
+      } catch (kvErr) {
+        showToast(`❌ 云端 KV 同步失败: ${kvErr.message}`, 'error');
+        return false;
+      }
+    }
+
+    // 模式 2: ☁️ GitHub 推送打点 (Git Commit)
+    // 严格单一排他：只调用 GitHub REST API 生成正式 Commit 并严格校验返回
+    if (activeMode === 'github') {
+      const gh = getGitHubConfig();
+      if (!gh || !gh.token || !gh.owner || !gh.repo) {
+        showToast('⚠️ 未配置有效的 GitHub Token，保存失败', 'error');
+        return false;
+      }
+      try {
+        showToast(t('ghSavingToGithub'), 'info');
+        const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
+        const filePath = getGitHubTargetFilePath(pageKey);
+        await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
+        showToast(`✅ [GitHub] Commit 提交成功！(${filePath})`, 'success');
+        return true;
+      } catch (ghErr) {
+        showToast(`❌ GitHub 同步失败: ${ghErr.message}`, 'error');
+        return false;
+      }
+    }
+
+    // 模式 3: 💻 本地 Node.js 服务模式
+    // 严格单一排他：只调用本地 /api/save-prd 写入磁盘，并严格校验返回
+    if (activeMode === 'local') {
+      if (window.location.protocol === 'file:') {
+        showToast('❌ file:// 静态协议下无法使用本地服务模式，请在终端运行 node server.js', 'error');
+        return false;
+      }
       try {
         const resp = await fetch('/api/save-prd', {
           method: 'POST',
@@ -2668,24 +3598,14 @@
         });
         if (resp.ok) {
           const resJson = await resp.json();
-          if (resJson && resJson.success) return true;
+          if (resJson && resJson.success) {
+            showToast('✅ [本地服务] 需求规约已成功写入本地磁盘 JS 文件！', 'success');
+            return true;
+          }
         }
       } catch (e) {}
-    }
-
-    // 2. 尝试通过 GitHub Contents REST API 直接提交 Commit 持久化
-    const gh = getGitHubConfig();
-    if (gh && gh.token && gh.owner && gh.repo) {
-      try {
-        showToast(t('ghSavingToGithub'), 'info');
-        const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
-        const filePath = getGitHubTargetFilePath(pageKey);
-        await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
-        showToast(t('ghSaveSuccess'), 'success');
-        return true;
-      } catch (ghErr) {
-        showToast(`❌ GitHub 同步失败: ${ghErr.message}`, 'error');
-      }
+      showToast('❌ 本地 Node.js 写入服务未连接 (请检查 node server.js)', 'error');
+      return false;
     }
 
     return false;
@@ -2720,6 +3640,11 @@
   };
 
   window.createPRDVersion = async function(ver) {
+    const isApiOk = await checkBackendApiAvailable();
+    if (!isApiOk) {
+      window.showOnlineAuthModal('version');
+      return false;
+    }
     if (!ver || !ver.trim()) return false;
     ver = ver.trim();
     if (versionRegistry.versions[ver]) {
@@ -3503,22 +4428,28 @@
     return editorBlocks.map(b => b.text).join('\n\n');
   }
 
-  window.openEditorForPin = async function(id) {
+  window.openEditorForPin = async function(id, initialSelector = '') {
     const isApiOk = await checkBackendApiAvailable();
     if (!isApiOk) {
       window.showNoBackendAlertModal('edit');
       return;
     }
     window.closeInspectBubble();
+    unbindPickListeners();
+    rePickModeActive = false;
+    currentMode = 'show';
     const pin = savedPins.find(p => p.id === id) || {
       id: null,
       title: '',
       type: '业务规则',
       desc: '',
-      selector: ''
+      selector: initialSelector || ''
     };
 
     activeDraft = JSON.parse(JSON.stringify(pin));
+    if (initialSelector && !activeDraft.selector) {
+      activeDraft.selector = initialSelector;
+    }
     editorBlocks = splitMarkdownIntoBlocks(activeDraft.desc || '');
     activeEditingBlockIndex = null;
     renderEditorModal(activeDraft);
@@ -3841,9 +4772,22 @@ window.saveEditorModal = async function() {
     const titleInput = document.getElementById('prd-modal-title');
     const typeSelect = document.getElementById('prd-modal-type');
 
-    const title = titleInput ? titleInput.value.trim() : activeDraft.title;
-    const desc = (window.vditorInstance && typeof window.vditorInstance.getValue === 'function') ? window.vditorInstance.getValue().trim() : ((document.getElementById('prd-fallback-textarea')?.value || activeDraft.desc || '').trim());
-    const type = typeSelect ? typeSelect.value : activeDraft.type;
+    const title = titleInput ? titleInput.value.trim() : (activeDraft.title || '');
+    let desc = '';
+    if (window.vditorInstance && typeof window.vditorInstance.getValue === 'function') {
+      try {
+        desc = window.vditorInstance.getValue().trim();
+      } catch (e) {}
+    }
+    if (!desc) {
+      const fallback = document.getElementById('prd-fallback-textarea');
+      if (fallback) desc = fallback.value.trim();
+    }
+    if (!desc && activeDraft.desc) {
+      desc = activeDraft.desc.trim();
+    }
+
+    const type = typeSelect ? typeSelect.value : (activeDraft.type || '业务规则');
 
     if (!title) {
       alert('请输入需求名称！');
@@ -3861,26 +4805,33 @@ window.saveEditorModal = async function() {
       const idx = savedPins.findIndex(p => p.id === activeDraft.id);
       if (idx !== -1) {
         savedPins[idx] = activeDraft;
+      } else {
+        savedPins.unshift(activeDraft);
       }
     } else {
       savedPins.unshift(activeDraft);
     }
 
     reIndexPins(savedPins);
+
+    // 执行持久化保存
     const isSaved = await persistData();
 
     if (isSaved) {
       window.closeEditorModal();
       renderPinMarkers();
       renderRightDrawerList();
-      showToast('✅ 需求规约已成功保存并写入本地 JS 文件！', 'success');
+      renderMiniRailList();
+      const badge = document.getElementById('prd-drawer-count');
+      if (badge) badge.innerText = savedPins.length;
+      const edgeCount = document.getElementById('prd-edge-count');
+      if (edgeCount) edgeCount.innerText = savedPins.length;
     } else {
       savedPins = backup;
       reIndexPins(savedPins);
       renderPinMarkers();
       renderRightDrawerList();
-      alert('❌ 保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！\n请先启动本地服务（./start.sh）后再试。');
-      showToast('❌ 保存失败', 'error');
+      showToast('❌ 保存失败：云端/后端同步未完成，已自动回滚', 'error');
     }
   };
 
@@ -4147,7 +5098,7 @@ window.saveEditorModal = async function() {
       if (isSaved) {
         renderPinMarkers();
         renderRightDrawerList();
-        showToast('✅ 需求点已删除并同步至本地文件！', 'info');
+        showToast('✅ 需求点已成功删除！', 'info');
       } else {
         savedPins = backup;
         reIndexPins(savedPins);
@@ -4175,6 +5126,14 @@ window.saveEditorModal = async function() {
       highlightedElement = null;
     }
     document.body.style.cursor = 'default';
+    const edgeTab = document.getElementById('prd-drawer-edge-tab');
+    if (edgeTab && currentMode !== 'pick' && !rePickModeActive) {
+      edgeTab.title = '点击展开/收起需求打点面板';
+      edgeTab.innerHTML = `
+        <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
+        <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
+      `;
+    }
   }
 
   function handlePickOver(e) {
@@ -4191,7 +5150,7 @@ window.saveEditorModal = async function() {
     }
   }
 
-  function handlePickClick(e) {
+  async function handlePickClick(e) {
     if (e.target.closest('.prd-right-drawer, .prd-inspect-bubble, .prd-editor-modal, .prd-doc-overlay, .prd-editor-mini-dock, .prd-drawer-edge-tab')) return;
     e.preventDefault();
     e.stopPropagation();
@@ -4205,13 +5164,9 @@ window.saveEditorModal = async function() {
       const oldDock = document.getElementById('prd-editor-mini-dock');
       if (oldDock) oldDock.remove();
       renderEditorModal(activeDraft);
-      showToast('组件重新绑定成功！', 'success');
+      showToast(t('rePickSuccessToast') || '组件重新绑定成功！', 'success');
     } else {
-      window.openEditorForPin(null);
-      if (activeDraft) {
-        activeDraft.selector = selector;
-        renderEditorModal(activeDraft);
-      }
+      await window.openEditorForPin(null, selector);
     }
   }
 
@@ -4247,7 +5202,8 @@ window.saveEditorModal = async function() {
       }
       if (edgeTab) {
         edgeTab.style.display = 'flex';
-        edgeTab.innerHTML = `<span class="prd-edge-text" style="color:#ef4444; font-weight:700;">📍 点击页面组件打标 (ESC退出)</span>`;
+        edgeTab.title = '点击退出打标模式 (或按 ESC 退出)';
+        edgeTab.innerHTML = `<span class="prd-edge-arrow" style="color:#ef4444; font-size:12px; font-weight:800;">✕</span><span class="prd-edge-text" style="color:#ef4444; font-weight:700;">📍 点击组件打标 (点击或ESC退出)</span>`;
       }
       renderPinMarkers();
       showToast('📍 点击页面任意组件即可完成打标并呼出规约编辑窗', 'info');
@@ -4981,7 +5937,16 @@ window.saveEditorModal = async function() {
     edgeTab.className = 'prd-drawer-edge-tab';
     edgeTab.id = 'prd-drawer-edge-tab';
     edgeTab.title = '点击展开/收起需求打点面板';
-    edgeTab.onclick = window.togglePRDDrawer;
+    edgeTab.onclick = function() {
+      if (currentMode === 'pick' || rePickModeActive) {
+        rePickModeActive = false;
+        unbindPickListeners();
+        window.setPRDMode('show');
+        showToast('已退出打标模式', 'info');
+        return;
+      }
+      window.togglePRDDrawer();
+    };
     edgeTab.innerHTML = `
       <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
       <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
@@ -5012,8 +5977,10 @@ window.saveEditorModal = async function() {
             <span style="background:#e0f2fe; color:#0284c7; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
-            <button id="prd-gh-sync-btn" class="prd-btn-action" style="padding:3px 6px; font-size:11px; display:flex; align-items:center; gap:3px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;" onclick="window.showGitHubConfigModal()" title="GitHub Pages 创立人认证与实时同步配置">
-              <span>☁️</span>
+            <!-- 统一模式切换与状态徽标 -->
+            <button id="prd-mode-badge-btn" class="prd-btn-action" style="padding:2px 7px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; background:${getSyncModeBadgeInfo().bg}; border:1px solid ${getSyncModeBadgeInfo().border}; color:${getSyncModeBadgeInfo().color}; border-radius:6px; cursor:pointer;" onclick="window.showKVConfigModal()" title="${getSyncModeBadgeInfo().tip}">
+              <span>${getSyncModeBadgeInfo().icon}</span>
+              <span>${getSyncModeBadgeInfo().label}</span>
             </button>
             <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#334155; font-weight:600;" title="切换语言 (Language)">
               <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>🇨🇳 中文</option>
@@ -5102,6 +6069,33 @@ window.saveEditorModal = async function() {
   });
   observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style', 'hidden'] });
 
+    // 全局 ESC 按键监听：退出打标模式 / 关闭气泡 / 退出模态框
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      // 1. 若处于打标拾取模式，按 ESC 退出
+      if (currentMode === 'pick' || rePickModeActive) {
+        e.preventDefault();
+        rePickModeActive = false;
+        unbindPickListeners();
+        window.setPRDMode('show');
+        showToast('已退出打标模式', 'info');
+        return;
+      }
+      // 2. 若有打开的气泡，按 ESC 关闭
+      const inspectBubble = document.getElementById('prd-inspect-popover');
+      if (inspectBubble) {
+        window.closeInspectBubble();
+        return;
+      }
+      // 3. 若有打开的鉴权弹窗，按 ESC 关闭
+      const authModal = document.getElementById('prd-online-auth-modal');
+      if (authModal) {
+        window.closeOnlineAuthModal();
+        return;
+      }
+    }
+  }, true);
+
   window.addEventListener('resize', () => {
     if (currentMode !== 'hide') renderPinMarkers();
   });
@@ -5111,7 +6105,11 @@ window.saveEditorModal = async function() {
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initDOM();
+    syncFromCloudKVOnStartup();
   } else {
-    document.addEventListener('DOMContentLoaded', initDOM);
+    document.addEventListener('DOMContentLoaded', () => {
+      initDOM();
+      syncFromCloudKVOnStartup();
+    });
   }
 })();
