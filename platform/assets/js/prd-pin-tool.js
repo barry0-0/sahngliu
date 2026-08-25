@@ -42,107 +42,107 @@
   // 0. 全局多语言国际化字典 (Multi-Language I18N Dictionary: 中 / 英 / 日 / 韩)
   const I18N = {
     "zh-CN": {
-        "envTitle": "🔒 编辑权限校验与环境感知",
-        "envGhBadge": "☁️ GitHub Pages 云端环境",
-        "envLocalBadge": "💻 本地离线/静态预览环境",
-        "envGhDesc": "当前页面部署在 <strong>GitHub Pages 云端环境</strong>，默认处于【👁️ 访客只读模式】。<br><br>为防止原型被外部访客随意篡改，<strong>只有本仓库的创立人/协作者</strong>在完成身份鉴权后，才可解锁在线新增打点、排序管理与实时 Commit 保存权限。",
-        "envGhHowToUnlock": "💡 如何解锁编辑权限：",
+        "envTitle": "编辑权限校验与环境感知",
+        "envGhBadge": "GitHub Pages 云端环境",
+        "envLocalBadge": "本地离线/静态预览环境",
+        "envGhDesc": "当前页面部署在 <strong>GitHub Pages 云端环境</strong>，默认处于【访客只读模式】。<br><br>为防止原型被外部访客随意篡改，<strong>只有本仓库的创立人/协作者</strong>在完成身份鉴权后，才可解锁在线新增打点、排序管理与实时 Commit 保存权限。",
+        "envGhHowToUnlock": "如何解锁编辑权限：",
         "envGhUnlockStep": "点击下方按钮输入您为本仓库生成的 GitHub Fine-Grained Token，系统将自动校验 <code>push</code> 权限并为您解锁专属编辑工作台。",
-        "envGhUnlockBtn": "👑 立即认证创立人 (解锁编辑)",
-        "envGhContinueVisitor": "👁️ 继续以访客身份浏览",
+        "envGhUnlockBtn": "立即认证创立人 (解锁编辑)",
+        "envGhContinueVisitor": "继续以访客身份浏览",
         "envLocalDesc": "当前页面处于<strong>本地静态预览模式</strong>，未检测到本地后端写入服务（<code>POST /api/save-prd</code>）。<br><br>在此模式下无法将【新增打点/排序管理/规约编辑】实时写入本地磁盘 JS 文件。",
-        "envLocalHowToUnlock": "💡 解锁编辑与保存的两种方式：",
+        "envLocalHowToUnlock": "解锁编辑与保存的两种方式：",
         "envLocalOpt1": "<strong>方式 1（推荐本地）</strong>：在项目终端启动本地持久化服务：",
         "envLocalOpt2": "<strong>方式 2（云端直写）</strong>：点击配置 GitHub 创立人 Token，直接将打点提交至云端仓库。",
-        "envLocalCopyCmd": "📋 复制启动命令",
-        "envLocalCopied": "✅ 已复制命令: node server.js",
-        "envLocalConfigGh": "☁️ 配置 GitHub 云端直写",
+        "envLocalCopyCmd": "复制启动命令",
+        "envLocalCopied": "已复制命令: node server.js",
+        "envLocalConfigGh": "配置 GitHub 云端直写",
         "envLocalGotIt": "知道了",
-                          onlineAuthTitle: '🔒 创立人身份鉴权 (输入 API Key 解锁编辑)',
+                          onlineAuthTitle: '创立人身份鉴权 (输入 API Key 解锁编辑)',
       onlineAuthDesc: '当前页面处于线上托管环境，为防止外部人员随意篡改原型规约，<strong>必须输入在本地配置的相同 API Key (或 Secret Key)</strong> 以解锁增删改查与导入权限。',
-      onlineAuthKeyLabel: '🔑 创立人专属 API Key (与本地配置一致)',
+      onlineAuthKeyLabel: '创立人专属 API Key (与本地配置一致)',
       onlineAuthKeyPlaceholder: '请输入本地配置的相同 API Key / Master Key',
       onlineAuthSubmitBtn: '🔓 验证 Key 并解锁编辑权限',
-      onlineAuthSuccessToast: '✅ 创立人身份验证通过，已解锁全量编辑工作台！',
-      onlineAuthFailedToast: '❌ 验证失败：输入的 API Key 与当前项目不匹配或无效',
-      kvModalTitle: '🔑 云端 KV 存储与恒久 Key 授权配置',
+      onlineAuthSuccessToast: '创立人身份验证通过，已解锁全量编辑工作台！',
+      onlineAuthFailedToast: '验证失败：输入的 API Key 与当前项目不匹配或无效',
+      kvModalTitle: '云端 KV 存储与恒久 Key 授权配置',
       kvModalDesc: '配置云端 Key-Value 中间存储（如 JSONBin.io 或自定义 KV 接口），即可实现<strong>【零服务器、跨端秒级同步、恒久 Key 写入授权】</strong>的云端持久化能力。',
-      kvProviderLabel: '📦 存储服务提供商',
-      kvBinIdLabel: '🆔 恒久公共读取 ID (Bin ID / App ID)',
-      kvSecretKeyLabel: '🔑 创立人专属授权密钥 (Secret Master Key)',
+      kvProviderLabel: '存储服务提供商',
+      kvBinIdLabel: '恒久公共读取 ID (Bin ID / App ID)',
+      kvSecretKeyLabel: '创立人专属授权密钥 (Secret Master Key)',
       kvSecretKeyPlaceholder: '粘贴您的专属 Master Key 以解锁写入权限',
-      kvGuideTitle: '💡 如何免费获取您的专属恒久 Key：',
-      kvGuideStep1: '1. 访问 <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> 注册/登录；',
+      kvGuideTitle: '如何免费获取您的专属恒久 Key：',
+      kvGuideStep1: '1. 访问 <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> 注册/登录；',
       kvGuideStep2: '2. 在 Dashboard -> API Keys 中复制您的 <strong>Master Key</strong> 粘贴在上方；',
-      kvGuideStep3: '3. 点击下方【🔌 测试并自动创建/绑定】，系统将自动生成恒久 Bin ID 并解锁实时云端同步！',
-      kvVerifyBtn: '🔌 测试并验证授权',
-      kvSaveBtn: '💾 保存配置并解锁同步',
-      kvClearBtn: '🗑️ 清除云端授权',
-      kvSyncingToast: '☁️ 正在实时同步至云端 KV 存储...',
-      kvSyncSuccessToast: '✅ 需求规约已成功实时持久化至云端 KV 存储！',
-      kvPullSuccessToast: '☁️ 已从云端获取最新打点规约并完成同步！',
-      ghModalTitle: '👑 GitHub Pages 创立人认证与实时同步配置',
+      kvGuideStep3: '3. 点击下方【测试并自动创建/绑定】，系统将自动生成恒久 Bin ID 并解锁实时云端同步！',
+      kvVerifyBtn: '测试并验证授权',
+      kvSaveBtn: '保存配置并解锁同步',
+      kvClearBtn: '清除云端授权',
+      kvSyncingToast: '正在实时同步至云端 KV 存储...',
+      kvSyncSuccessToast: '需求规约已成功实时持久化至云端 KV 存储！',
+      kvPullSuccessToast: '已从云端获取最新打点规约并完成同步！',
+      ghModalTitle: 'GitHub Pages 创立人认证与实时同步配置',
       ghModalDesc: '为当前 GitHub Pages 原型配置专属访问令牌（Fine-Grained PAT），即可解锁<strong>【零服务器、纯前端直写 GitHub 仓库】</strong>的实时云端保存能力。',
-      ghOwnerLabel: '📦 仓库所有者 (Owner)',
-      ghRepoLabel: '📂 仓库名称 (Repo)',
-      ghBranchLabel: '🌿 目标分支 (Branch)',
-      ghTokenLabel: '🔑 GitHub 访问令牌 (Token)',
+      ghOwnerLabel: '仓库所有者 (Owner)',
+      ghRepoLabel: '仓库名称 (Repo)',
+      ghBranchLabel: '目标分支 (Branch)',
+      ghTokenLabel: 'GitHub 访问令牌 (Token)',
       ghTokenPlaceholder: '粘贴 github_pat_xxxx 或 ghp_xxxx',
-      ghTokenGuideTitle: '💡 如何生成您的专属 Token（仅需 3 步）：',
+      ghTokenGuideTitle: '如何生成您的专属 Token（仅需 3 步）：',
       ghTokenStep1: '1. 点击右侧直达链接生成 Fine-Grained Token；',
       ghTokenStep2: '2. <strong>Repository access</strong> 选择当前原型仓库，<strong>Permissions</strong> 找到 <strong>Contents</strong> 勾选 <strong>Read and write</strong>；',
       ghTokenStep3: '3. 点击底部 Generate Token，将生成的密钥粘贴到上方输入框即可。',
-      ghGenTokenLink: '🔗 直达 GitHub 生成 Token 页面',
-      ghVerifyBtn: '🔌 验证创立人身份',
-      ghSaveConfigBtn: '💾 保存配置并解锁编辑',
-      ghClearConfigBtn: '🗑️ 清除授权 (切换为只读模式)',
-      ghVerifySuccess: '✅ 创立人身份验证通过！已获得本仓库写入权限。',
-      ghVerifyFailed: '❌ 鉴权失败：当前 Token 无效或对本仓库没有写入权限 (push: false)！',
-      ghSavingToGithub: '☁️ 正在提交 Commit 至 GitHub 仓库...',
-      ghSaveSuccess: '✅ 需求规约已成功提交 Commit 并同步至 GitHub 仓库！',
-      ghBadgeOwner: '👑 创立人已认证',
-      ghBadgeVisitor: '👁️ 访客只读',
-      ghBadgeLocal: '🟢 本地服务',
-        "apiCheckFailedTitle": "⚠️ 未检测到本地持久化服务接口",
+      ghGenTokenLink: '直达 GitHub 生成 Token 页面',
+      ghVerifyBtn: '验证创立人身份',
+      ghSaveConfigBtn: '保存配置并解锁编辑',
+      ghClearConfigBtn: '清除授权 (切换为只读模式)',
+      ghVerifySuccess: '创立人身份验证通过！已获得本仓库写入权限。',
+      ghVerifyFailed: '鉴权失败：当前 Token 无效或对本仓库没有写入权限 (push: false)！',
+      ghSavingToGithub: '正在提交 Commit 至 GitHub 仓库...',
+      ghSaveSuccess: '需求规约已成功提交 Commit 并同步至 GitHub 仓库！',
+      ghBadgeOwner: '创立人已认证',
+      ghBadgeVisitor: '访客只读',
+      ghBadgeLocal: '本地服务',
+        "apiCheckFailedTitle": "未检测到本地持久化服务接口",
         "apiCheckFailedDesc": "当前原型处于【静态只读预览模式】，未检测到本地后端持久化服务（<code>POST /api/save-prd</code>）。<br><br>在此模式下无法执行<strong>【新增打点 / 排序管理 / 规约编辑】</strong>并写入本地磁盘 JS 数据文件。<br><br>如需编辑或新增，请先在终端启动本地持久化服务：",
         "apiCheckCmdGuide": "node server.js",
-        "apiCheckCopyCmd": "📋 复制启动命令",
-        "apiCheckCopySuccess": "✅ 已复制启动命令: node server.js",
+        "apiCheckCopyCmd": "复制启动命令",
+        "apiCheckCopySuccess": "已复制启动命令: node server.js",
         "apiCheckGotIt": "知道了",
-        "langName": "🇨🇳 简体中文",
-        "edgeText": "📌 需求打点",
+        "langName": "简体中文",
+        "edgeText": "需求打点",
         "drawerTitle": "需求规约",
-        "manageOrder": "⚙️ 排序管理",
-        "doneManage": "✓ 完成退出",
-        "manageModeBanner": "🔧 排序与删除管理模式中...",
-        "versionPill": "🏷️ 当前版本",
-        "newVersion": "➕ 新建空白版本...",
-        "copyVersion": "📋 复制当前版本副本...",
-        "uploadVersion": "📂 上传版本数据...",
-        "deleteVersion": "🗑️ 删除当前版本...",
-        "searchPlaceholder": "🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)...",
-        "addPinBtn": "📍 新增打点",
-        "viewFullPrdBtn": "📑 查看完整PRD",
-        "openNewTabBtn": "↗️ 在新网页打开",
-        "exportMdBtn": "📥 导出 Markdown",
-        "exportJsBtn": "💾 导出 JS 数据",
-        "importVersionBtn": "📂 上传/导入版本",
-        "printBtn": "🖨️ 打印 / 导出 PDF",
-        "closePageBtn": "✕ 关闭网页",
-        "locateBtn": "🎯 定位",
-        "editBtn": "✏️ 编辑",
-        "deleteBtn": "🗑️ 删除",
-        "moveToBtn": "🔢 移至",
-        "moveToTopBtn": "🔝 置顶",
-        "moveUpBtn": "▲ 上移",
-        "moveDownBtn": "▼ 下移",
+        "manageOrder": "排序管理",
+        "doneManage": "完成退出",
+        "manageModeBanner": "排序与删除管理模式中...",
+        "versionPill": "当前版本",
+        "newVersion": "新建空白版本...",
+        "copyVersion": "复制当前版本副本...",
+        "uploadVersion": "上传版本数据...",
+        "deleteVersion": "删除当前版本...",
+        "searchPlaceholder": "模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)...",
+        "addPinBtn": "新增打点",
+        "viewFullPrdBtn": "查看完整PRD",
+        "openNewTabBtn": "在新网页打开",
+        "exportMdBtn": "导出 Markdown",
+        "exportJsBtn": "导出 JS 数据",
+        "importVersionBtn": "上传/导入版本",
+        "printBtn": "打印 / 导出 PDF",
+        "closePageBtn": "关闭网页",
+        "locateBtn": "定位",
+        "editBtn": "编辑",
+        "deleteBtn": "删除",
+        "moveToBtn": "移至",
+        "moveToTopBtn": "置顶",
+        "moveUpBtn": "上移",
+        "moveDownBtn": "下移",
         "boundComp": "已绑定组件",
         "unbound": "未绑定",
         "noPinsEmptyTip": "当前版本暂无需求点",
         "noSearchMatchTip": "未搜索到匹配的需求标题",
         "searchKeywordTip": "关键词",
         "clearSearchBtn": "清空搜索条件",
-        "tocTitle": "📑 目录大纲",
+        "tocTitle": "目录大纲",
         "docHeroTitleSuffix": "· 产品需求规格说明书 (PRD)",
         "docMetaPage": "页面文件",
         "docMetaVersion": "规格版本",
@@ -151,9 +151,9 @@
         "noDocContentTip": "当前版本尚未录入任何 PRD 规格",
         "editModalTitle": "编辑需求规格",
         "createModalTitle": "新建需求规格",
-        "tabLive": "✨ 可视化即时直编",
-        "tabRaw": "📄 纯文本源码",
-        "minimizeBtn": "➖ 最小化/看页面",
+        "tabLive": "可视化即时直编",
+        "tabRaw": "纯文本源码",
+        "minimizeBtn": "最小化/看页面",
         "reqTitleLabel": "需求名称",
         "reqTitlePlaceholder": "输入需求标题 (必填)",
         "reqTypeLabel": "需求类型",
@@ -165,42 +165,42 @@
             "异常流": "异常流",
             "UI规范": "UI规范"
         },
-        "tableDropdown": "📊 插入可视化表格...",
-        "mermaidDropdown": "🔄 插入流程图 (Mermaid)...",
-        "templateDropdown": "📑 插入业务规约模板...",
-        "tableToolbarTip": "📊 可视化表格（可直接多行打字，Shift+Enter单元格换行，Enter/Tab换行换格）",
-        "addRow": "➕ 加一行",
-        "addCol": "➕ 加一列",
-        "delRow": "➖ 删末行",
-        "delCol": "➖ 删末列",
-        "delTable": "🗑️ 删表格",
-        "editFlowchart": "✏️ 编辑流程图",
-        "editingFlowchartCode": "🔄 正在编辑 Mermaid 流程图代码：",
-        "finishRender": "✓ 完成渲染",
-        "rePickBtn": "🎯 重新拾取元素",
-        "tempSaveBtn": "👀 暂存并看页面",
+        "tableDropdown": "插入可视化表格...",
+        "mermaidDropdown": "插入流程图 (Mermaid)...",
+        "templateDropdown": "插入业务规约模板...",
+        "tableToolbarTip": "可视化表格（可直接多行打字，Shift+Enter单元格换行，Enter/Tab换行换格）",
+        "addRow": "加一行",
+        "addCol": "加一列",
+        "delRow": "删末行",
+        "delCol": "删末列",
+        "delTable": "删表格",
+        "editFlowchart": "编辑流程图",
+        "editingFlowchartCode": "正在编辑 Mermaid 流程图代码：",
+        "finishRender": "完成渲染",
+        "rePickBtn": "重新拾取元素",
+        "tempSaveBtn": "暂存并看页面",
         "cancelBtn": "取消",
-        "saveBtn": "💾 保存需求",
+        "saveBtn": "保存需求",
         "editingDraftPrefix": "编辑中",
         "draftStashedTip": "草稿已暂存 · 点击继续编辑",
         "restoreEditBtn": "恢复编辑",
         "discardDraftPrompt": "确认放弃当前正在编辑的草稿吗？",
-        "saveSuccessToast": "✅ 需求规约已成功保存并写入本地 JS 文件！",
-        "saveFailToast": "❌ 保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！",
-        "pinDeletedToast": "✅ 需求点已删除并同步至本地文件！",
-        "reorderSuccessToast": "✅ 需求序号已成功调整并同步！",
+        "saveSuccessToast": "需求规约已成功保存并写入本地 JS 文件！",
+        "saveFailToast": "保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！",
+        "pinDeletedToast": "需求点已删除并同步至本地文件！",
+        "reorderSuccessToast": "需求序号已成功调整并同步！",
         "rePickTip": "请在页面上点击要重新绑定的新组件！",
         "rePickSuccessToast": "组件重新绑定成功！",
-        "deleteVersionConfirm": "⚠️ 危险操作：确认永久删除当前版本及其所有打点数据吗？",
+        "deleteVersionConfirm": "危险操作：确认永久删除当前版本及其所有打点数据吗？",
         "cannotDeleteOnlyVersion": "无法删除：必须保留至少一个 PRD 规格版本！",
-        "importModalTitle": "📂 导入 PRD 规格版本数据",
+        "importModalTitle": "导入 PRD 规格版本数据",
         "importFileLabel": "导入文件",
         "importVersionNameLabel": "指定导入版本号：",
-        "conflictOverwrite": "🔴 覆盖现有版本（清空旧打点，完全替换为上传文件内容）",
-        "conflictAppend": "🟢 追加合并（保留旧打点，将上传打点追加至末尾）",
-        "conflictNewVer": "🔵 另存为新版本（输入新版本名称，不影响当前版本）",
+        "conflictOverwrite": "覆盖现有版本（清空旧打点，完全替换为上传文件内容）",
+        "conflictAppend": "追加合并（保留旧打点，将上传打点追加至末尾）",
+        "conflictNewVer": "另存为新版本（输入新版本名称，不影响当前版本）",
         "confirmImportBtn": "确认导入并应用",
-        "pickingTip": "📍 点击页面组件打标 (ESC退出)",
+        "pickingTip": "点击页面组件打标 (ESC退出)",
         "fullCollapseTip": "完全收起抽屉",
         "semiCollapseTip": "半收起为标号竖条",
         "expandDrawerTip": "展开完整抽屉",
@@ -212,8 +212,8 @@
         "moveToTopTip": "直接瞬移置顶到第 1 项",
         "moveUpTip": "上移一位",
         "moveDownTip": "下移一位",
-        "collapseSidebarBtn": "📁 收起侧边栏",
-        "expandSidebarBtn": "📂 展开侧边栏",
+        "collapseSidebarBtn": "收起侧边栏",
+        "expandSidebarBtn": "展开侧边栏",
         "closeInspectBubble": "关闭当前需求框",
         "reqDoc": "需求",
         "unboundElementTip": "未绑定页面元素",
@@ -233,107 +233,107 @@
         "itemCountUnit": "项"
     },
     "en": {
-        "envTitle": "🔒 Edit Permission Check & Environment Guidance",
-        "envGhBadge": "☁️ GitHub Pages Cloud Mode",
-        "envLocalBadge": "💻 Local Offline / Static Preview",
-        "envGhDesc": "This prototype is hosted on <strong>GitHub Pages</strong> and is currently in [👁️ Visitor Read-Only Mode].<br><br>To prevent unauthorized modifications, <strong>only the Repository Owner / Collaborator</strong> can unlock editing and Git Commit saving.",
-        "envGhHowToUnlock": "💡 How to unlock editing access:",
+        "envTitle": "Edit Permission Check & Environment Guidance",
+        "envGhBadge": "GitHub Pages Cloud Mode",
+        "envLocalBadge": "Local Offline / Static Preview",
+        "envGhDesc": "This prototype is hosted on <strong>GitHub Pages</strong> and is currently in [Visitor Read-Only Mode].<br><br>To prevent unauthorized modifications, <strong>only the Repository Owner / Collaborator</strong> can unlock editing and Git Commit saving.",
+        "envGhHowToUnlock": "How to unlock editing access:",
         "envGhUnlockStep": "Click the button below to configure your GitHub Fine-Grained Token for this repository. The system will verify <code>push</code> permissions and unlock your editor.",
-        "envGhUnlockBtn": "👑 Verify Owner (Unlock Editing)",
-        "envGhContinueVisitor": "👁️ Continue as Visitor",
+        "envGhUnlockBtn": "Verify Owner (Unlock Editing)",
+        "envGhContinueVisitor": "Continue as Visitor",
         "envLocalDesc": "Currently in <strong>Local Static Preview Mode</strong>. Local persistence API (<code>POST /api/save-prd</code>) is not running.<br><br>Adding pins, managing order, or editing specifications cannot be saved to local disk JS files in this mode.",
-        "envLocalHowToUnlock": "💡 Two ways to enable editing & saving:",
+        "envLocalHowToUnlock": "Two ways to enable editing & saving:",
         "envLocalOpt1": "<strong>Option 1 (Recommended for Local)</strong>: Start the local server in your terminal:",
         "envLocalOpt2": "<strong>Option 2 (Direct Cloud)</strong>: Configure your GitHub Token to commit directly to the repository.",
-        "envLocalCopyCmd": "📋 Copy Start Command",
-        "envLocalCopied": "✅ Copied command: node server.js",
-        "envLocalConfigGh": "☁️ Configure GitHub Cloud Sync",
+        "envLocalCopyCmd": "Copy Start Command",
+        "envLocalCopied": "Copied command: node server.js",
+        "envLocalConfigGh": "Configure GitHub Cloud Sync",
         "envLocalGotIt": "Got it",
-                          onlineAuthTitle: '🔒 Creator Authentication (Enter API Key)',
+                          onlineAuthTitle: 'Creator Authentication (Enter API Key)',
       onlineAuthDesc: 'This prototype is online. To prevent unauthorized modifications, <strong>you must enter the same API Key configured in your local environment</strong> to unlock editing, reordering, and importing.',
-      onlineAuthKeyLabel: '🔑 Creator API Key (Same as local config)',
+      onlineAuthKeyLabel: 'Creator API Key (Same as local config)',
       onlineAuthKeyPlaceholder: 'Enter the same API Key / Master Key configured locally',
       onlineAuthSubmitBtn: '🔓 Verify Key & Unlock Editing',
-      onlineAuthSuccessToast: '✅ Creator authenticated! Editing workbench unlocked.',
-      onlineAuthFailedToast: '❌ Verification failed: Invalid API Key or mismatch',
-      kvModalTitle: '🔑 Serverless KV Cloud Storage & Permanent Key Auth',
+      onlineAuthSuccessToast: 'Creator authenticated! Editing workbench unlocked.',
+      onlineAuthFailedToast: 'Verification failed: Invalid API Key or mismatch',
+      kvModalTitle: 'Serverless KV Cloud Storage & Permanent Key Auth',
       kvModalDesc: 'Configure an intermediate Key-Value cloud store (JSONBin.io or custom KV API) for <strong>[Zero-Server, Instant Cross-Device Sync, Permanent Key Auth]</strong>.',
-      kvProviderLabel: '📦 Cloud KV Provider',
-      kvBinIdLabel: '🆔 Permanent Public Read ID (Bin ID)',
-      kvSecretKeyLabel: '🔑 Creator Secret Master Key',
+      kvProviderLabel: 'Cloud KV Provider',
+      kvBinIdLabel: 'Permanent Public Read ID (Bin ID)',
+      kvSecretKeyLabel: 'Creator Secret Master Key',
       kvSecretKeyPlaceholder: 'Paste your secret Master Key to unlock write permissions',
-      kvGuideTitle: '💡 How to get your free permanent key:',
-      kvGuideStep1: '1. Visit <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> to register/login;',
+      kvGuideTitle: 'How to get your free permanent key:',
+      kvGuideStep1: '1. Visit <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> to register/login;',
       kvGuideStep2: '2. In Dashboard -> API Keys, copy your <strong>Master Key</strong> and paste above;',
-      kvGuideStep3: '3. Click [🔌 Test & Auto-Bind], the system will automatically create/bind a permanent Bin ID and unlock cloud sync!',
-      kvVerifyBtn: '🔌 Test & Verify Key',
-      kvSaveBtn: '💾 Save & Unlock Sync',
-      kvClearBtn: '🗑️ Clear Cloud Key',
-      kvSyncingToast: '☁️ Syncing real-time to cloud KV store...',
-      kvSyncSuccessToast: '✅ Specifications persisted to cloud KV store in real-time!',
-      kvPullSuccessToast: '☁️ Pulled and synced latest specifications from cloud KV!',
-      ghModalTitle: '👑 GitHub Pages Owner Authentication & Cloud Sync',
+      kvGuideStep3: '3. Click [Test & Auto-Bind], the system will automatically create/bind a permanent Bin ID and unlock cloud sync!',
+      kvVerifyBtn: 'Test & Verify Key',
+      kvSaveBtn: 'Save & Unlock Sync',
+      kvClearBtn: 'Clear Cloud Key',
+      kvSyncingToast: 'Syncing real-time to cloud KV store...',
+      kvSyncSuccessToast: 'Specifications persisted to cloud KV store in real-time!',
+      kvPullSuccessToast: 'Pulled and synced latest specifications from cloud KV!',
+      ghModalTitle: 'GitHub Pages Owner Authentication & Cloud Sync',
       ghModalDesc: 'Configure a Fine-Grained Personal Access Token (PAT) for this prototype to unlock <strong>[Serverless, Direct Commit to GitHub]</strong> real-time cloud persistence.',
-      ghOwnerLabel: '📦 Repository Owner',
-      ghRepoLabel: '📂 Repository Name',
-      ghBranchLabel: '🌿 Target Branch',
-      ghTokenLabel: '🔑 GitHub Access Token (PAT)',
+      ghOwnerLabel: 'Repository Owner',
+      ghRepoLabel: 'Repository Name',
+      ghBranchLabel: 'Target Branch',
+      ghTokenLabel: 'GitHub Access Token (PAT)',
       ghTokenPlaceholder: 'Paste github_pat_xxxx or ghp_xxxx',
-      ghTokenGuideTitle: '💡 How to generate your Token (3 steps):',
+      ghTokenGuideTitle: 'How to generate your Token (3 steps):',
       ghTokenStep1: '1. Click the direct link to open GitHub Token creation page;',
       ghTokenStep2: '2. In <strong>Repository access</strong>, select this repository. Under <strong>Permissions -> Contents</strong>, select <strong>Read and write</strong>;',
       ghTokenStep3: '3. Click Generate Token at the bottom, and paste the generated token above.',
-      ghGenTokenLink: '🔗 Direct Link: Create GitHub Token',
-      ghVerifyBtn: '🔌 Verify Owner Access',
-      ghSaveConfigBtn: '💾 Save & Unlock Editing',
-      ghClearConfigBtn: '🗑️ Clear Auth (Switch to Read-Only)',
-      ghVerifySuccess: '✅ Owner verified! Write permissions confirmed for this repository.',
-      ghVerifyFailed: '❌ Verification failed: Token is invalid or lacks write permissions (push: false)!',
-      ghSavingToGithub: '☁️ Committing changes to GitHub repository...',
-      ghSaveSuccess: '✅ Specification committed and synced to GitHub repository!',
-      ghBadgeOwner: '👑 Owner Verified',
-      ghBadgeVisitor: '👁️ Read-Only',
-      ghBadgeLocal: '🟢 Local Server',
-        "apiCheckFailedTitle": "⚠️ Local Persistence API Not Detected",
+      ghGenTokenLink: 'Direct Link: Create GitHub Token',
+      ghVerifyBtn: 'Verify Owner Access',
+      ghSaveConfigBtn: 'Save & Unlock Editing',
+      ghClearConfigBtn: 'Clear Auth (Switch to Read-Only)',
+      ghVerifySuccess: 'Owner verified! Write permissions confirmed for this repository.',
+      ghVerifyFailed: 'Verification failed: Token is invalid or lacks write permissions (push: false)!',
+      ghSavingToGithub: 'Committing changes to GitHub repository...',
+      ghSaveSuccess: 'Specification committed and synced to GitHub repository!',
+      ghBadgeOwner: 'Owner Verified',
+      ghBadgeVisitor: 'Read-Only',
+      ghBadgeLocal: 'Local Server',
+        "apiCheckFailedTitle": "Local Persistence API Not Detected",
         "apiCheckFailedDesc": "The prototype is currently in [Static Read-Only Preview Mode]. Local persistence API (<code>POST /api/save-prd</code>) is not accessible.<br><br>Adding pins, managing order, or editing specifications cannot be saved to local disk JS files in this mode.<br><br>To enable editing, please start the local server in your terminal:",
         "apiCheckCmdGuide": "node server.js",
-        "apiCheckCopyCmd": "📋 Copy Start Command",
-        "apiCheckCopySuccess": "✅ Copied command: node server.js",
+        "apiCheckCopyCmd": "Copy Start Command",
+        "apiCheckCopySuccess": "Copied command: node server.js",
         "apiCheckGotIt": "Got it",
-        "langName": "🇺🇸 English",
-        "edgeText": "📌 PRD Pins",
+        "langName": "English",
+        "edgeText": "PRD Pins",
         "drawerTitle": "PRD Specs",
-        "manageOrder": "⚙️ Reorder Mode",
-        "doneManage": "✓ Done & Exit",
-        "manageModeBanner": "🔧 Reorder & Delete Management Mode Active...",
-        "versionPill": "🏷️ Version",
-        "newVersion": "➕ New Blank Version...",
-        "copyVersion": "📋 Duplicate Version...",
-        "uploadVersion": "📂 Upload Version Data...",
-        "deleteVersion": "🗑️ Delete Version...",
-        "searchPlaceholder": "🔍 Search PRD titles (e.g. Order / Modal / Bid)...",
-        "addPinBtn": "📍 Add Pin",
-        "viewFullPrdBtn": "📑 View Full PRD",
-        "openNewTabBtn": "↗️ Open in New Tab",
-        "exportMdBtn": "📥 Export Markdown",
-        "exportJsBtn": "💾 Export JS Data",
-        "importVersionBtn": "📂 Upload / Import Version",
-        "printBtn": "🖨️ Print / PDF",
-        "closePageBtn": "✕ Close Page",
-        "locateBtn": "🎯 Locate",
-        "editBtn": "✏️ Edit",
-        "deleteBtn": "🗑️ Delete",
-        "moveToBtn": "🔢 Move To",
-        "moveToTopBtn": "🔝 Top",
-        "moveUpBtn": "▲ Up",
-        "moveDownBtn": "▼ Down",
+        "manageOrder": "Reorder Mode",
+        "doneManage": "Done & Exit",
+        "manageModeBanner": "Reorder & Delete Management Mode Active...",
+        "versionPill": "Version",
+        "newVersion": "New Blank Version...",
+        "copyVersion": "Duplicate Version...",
+        "uploadVersion": "Upload Version Data...",
+        "deleteVersion": "Delete Version...",
+        "searchPlaceholder": "Search PRD titles (e.g. Order / Modal / Bid)...",
+        "addPinBtn": "Add Pin",
+        "viewFullPrdBtn": "View Full PRD",
+        "openNewTabBtn": "Open in New Tab",
+        "exportMdBtn": "Export Markdown",
+        "exportJsBtn": "Export JS Data",
+        "importVersionBtn": "Upload / Import Version",
+        "printBtn": "Print / PDF",
+        "closePageBtn": "Close Page",
+        "locateBtn": "Locate",
+        "editBtn": "Edit",
+        "deleteBtn": "Delete",
+        "moveToBtn": "Move To",
+        "moveToTopBtn": "Top",
+        "moveUpBtn": "Up",
+        "moveDownBtn": "Down",
         "boundComp": "Element Bound",
         "unbound": "Unbound",
         "noPinsEmptyTip": "No PRD pins found in this version",
         "noSearchMatchTip": "No matching PRD spec titles found",
         "searchKeywordTip": "Keyword",
         "clearSearchBtn": "Clear Search Filter",
-        "tocTitle": "📑 Table of Contents",
+        "tocTitle": "Table of Contents",
         "docHeroTitleSuffix": "· Product Requirement Document (PRD)",
         "docMetaPage": "Page File",
         "docMetaVersion": "Spec Version",
@@ -342,9 +342,9 @@
         "noDocContentTip": "No PRD specifications recorded in this version yet",
         "editModalTitle": "Edit PRD Spec",
         "createModalTitle": "New PRD Spec",
-        "tabLive": "✨ Visual Live Editor",
-        "tabRaw": "📄 Raw Markdown",
-        "minimizeBtn": "➖ Minimize / View UI",
+        "tabLive": "Visual Live Editor",
+        "tabRaw": "Raw Markdown",
+        "minimizeBtn": "Minimize / View UI",
         "reqTitleLabel": "Requirement Title",
         "reqTitlePlaceholder": "Enter requirement title (Required)",
         "reqTypeLabel": "Requirement Type",
@@ -356,42 +356,42 @@
             "异常流": "Exception Flow",
             "UI规范": "UI Specification"
         },
-        "tableDropdown": "📊 Insert Visual Table...",
-        "mermaidDropdown": "🔄 Insert Flowchart (Mermaid)...",
-        "templateDropdown": "📑 Insert Spec Template...",
-        "tableToolbarTip": "📊 Visual Table (Direct cell typing, Shift+Enter for new line, Enter/Tab to navigate)",
-        "addRow": "➕ Add Row",
-        "addCol": "➕ Add Col",
-        "delRow": "➖ Del Row",
-        "delCol": "➖ Del Col",
-        "delTable": "🗑️ Del Table",
-        "editFlowchart": "✏️ Edit Flowchart",
-        "editingFlowchartCode": "🔄 Editing Mermaid Flowchart Code:",
-        "finishRender": "✓ Render Chart",
-        "rePickBtn": "🎯 Re-pick Element",
-        "tempSaveBtn": "👀 Stash & View Page",
+        "tableDropdown": "Insert Visual Table...",
+        "mermaidDropdown": "Insert Flowchart (Mermaid)...",
+        "templateDropdown": "Insert Spec Template...",
+        "tableToolbarTip": "Visual Table (Direct cell typing, Shift+Enter for new line, Enter/Tab to navigate)",
+        "addRow": "Add Row",
+        "addCol": "Add Col",
+        "delRow": "Del Row",
+        "delCol": "Del Col",
+        "delTable": "Del Table",
+        "editFlowchart": "Edit Flowchart",
+        "editingFlowchartCode": "Editing Mermaid Flowchart Code:",
+        "finishRender": "Render Chart",
+        "rePickBtn": "Re-pick Element",
+        "tempSaveBtn": "Stash & View Page",
         "cancelBtn": "Cancel",
-        "saveBtn": "💾 Save Spec",
+        "saveBtn": "Save Spec",
         "editingDraftPrefix": "Editing",
         "draftStashedTip": "Draft Stashed · Click to Resume",
         "restoreEditBtn": "Resume Edit",
         "discardDraftPrompt": "Are you sure you want to discard the active draft?",
-        "saveSuccessToast": "✅ PRD specification saved and written to disk JS file!",
-        "saveFailToast": "❌ Save failed: Local server not reachable!",
-        "pinDeletedToast": "✅ PRD pin deleted and synced to local file!",
-        "reorderSuccessToast": "✅ PRD pin reordered and synced!",
+        "saveSuccessToast": "PRD specification saved and written to disk JS file!",
+        "saveFailToast": "Save failed: Local server not reachable!",
+        "pinDeletedToast": "PRD pin deleted and synced to local file!",
+        "reorderSuccessToast": "PRD pin reordered and synced!",
         "rePickTip": "Click on the page element you want to bind!",
         "rePickSuccessToast": "Element re-bound successfully!",
-        "deleteVersionConfirm": "⚠️ Dangerous: Permanently delete this version and all its pins?",
+        "deleteVersionConfirm": "Dangerous: Permanently delete this version and all its pins?",
         "cannotDeleteOnlyVersion": "Cannot delete: At least one PRD version must be kept!",
-        "importModalTitle": "📂 Import PRD Version Data",
+        "importModalTitle": "Import PRD Version Data",
         "importFileLabel": "Import File",
         "importVersionNameLabel": "Target Version Name:",
-        "conflictOverwrite": "🔴 Overwrite (Wipe existing pins and replace completely)",
-        "conflictAppend": "🟢 Append & Merge (Keep old pins and append new ones)",
-        "conflictNewVer": "🔵 Save as New Version (Create new version without affecting current)",
+        "conflictOverwrite": "Overwrite (Wipe existing pins and replace completely)",
+        "conflictAppend": "Append & Merge (Keep old pins and append new ones)",
+        "conflictNewVer": "Save as New Version (Create new version without affecting current)",
         "confirmImportBtn": "Confirm & Apply Import",
-        "pickingTip": "📍 Click page element to pin (ESC to cancel)",
+        "pickingTip": "Click page element to pin (ESC to cancel)",
         "fullCollapseTip": "Fully collapse drawer",
         "semiCollapseTip": "Semi-collapse to mini badge rail",
         "expandDrawerTip": "Expand full drawer",
@@ -403,8 +403,8 @@
         "moveToTopTip": "Jump directly to #1",
         "moveUpTip": "Move up 1 rank",
         "moveDownTip": "Move down 1 rank",
-        "collapseSidebarBtn": "📁 Collapse Sidebar",
-        "expandSidebarBtn": "📂 Expand Sidebar",
+        "collapseSidebarBtn": "Collapse Sidebar",
+        "expandSidebarBtn": "Expand Sidebar",
         "closeInspectBubble": "Close inspect bubble",
         "reqDoc": "Spec",
         "unboundElementTip": "No element bound",
@@ -424,100 +424,100 @@
         "itemCountUnit": "items"
     },
     "ja": {
-        "envTitle": "🔒 編集権限の確認と環境ガイダンス",
-        "envGhBadge": "☁️ GitHub Pages クラウド環境",
-        "envLocalBadge": "💻 ローカル静的プレビュー環境",
-        "envGhDesc": "このページは <strong>GitHub Pages クラウド環境</strong> にデプロイされており、現在は【👁️ 閲覧専用モード】です。<br><br>不正な改ざんを防ぐため、<strong>リポジトリの作成者/管理者</strong>のみがオンライン編集およびリアルタイム保存を行えます。",
-        "envGhHowToUnlock": "💡 編集権限を解除する方法：",
+        "envTitle": "編集権限の確認と環境ガイダンス",
+        "envGhBadge": "GitHub Pages クラウド環境",
+        "envLocalBadge": "ローカル静的プレビュー環境",
+        "envGhDesc": "このページは <strong>GitHub Pages クラウド環境</strong> にデプロイされており、現在は【閲覧専用モード】です。<br><br>不正な改ざんを防ぐため、<strong>リポジトリの作成者/管理者</strong>のみがオンライン編集およびリアルタイム保存を行えます。",
+        "envGhHowToUnlock": "編集権限を解除する方法：",
         "envGhUnlockStep": "下のボタンから GitHub Fine-Grained トークンを設定してください。システムが <code>push</code> 権限を確認し、編集機能をアンロックします。",
-        "envGhUnlockBtn": "👑 作成者認証を行う (編集解除)",
-        "envGhContinueVisitor": "👁️ 閲覧モードを継続",
+        "envGhUnlockBtn": "作成者認証を行う (編集解除)",
+        "envGhContinueVisitor": "閲覧モードを継続",
         "envLocalDesc": "現在は<strong>ローカル静的プレビューモード</strong>です。ローカル永続化サービス（<code>POST /api/save-prd</code>）が起動していません。<br><br>ピンの新規追加や編集内容をローカルディスクのJSファイルに保存できません。",
-        "envLocalHowToUnlock": "💡 編集と保存を有効にする2つの方法：",
+        "envLocalHowToUnlock": "編集と保存を有効にする2つの方法：",
         "envLocalOpt1": "<strong>方法 1（ローカル推奨）</strong>：ターミナルでローカルサーバーを起動：",
         "envLocalOpt2": "<strong>方法 2（クラウド直結）</strong>：GitHub トークンを設定してリポジトリに直接保存。",
-        "envLocalCopyCmd": "📋 起動コマンドをコピー",
-        "envLocalCopied": "✅ コマンドをコピーしました: node server.js",
-        "envLocalConfigGh": "☁️ GitHub クラウド同期を設定",
+        "envLocalCopyCmd": "起動コマンドをコピー",
+        "envLocalCopied": "コマンドをコピーしました: node server.js",
+        "envLocalConfigGh": "GitHub クラウド同期を設定",
         "envLocalGotIt": "了解",
-                    kvModalTitle: '🔑 クラウドKVストレージと恒久Key認証設定',
+                    kvModalTitle: 'クラウドKVストレージと恒久Key認証設定',
       kvModalDesc: 'Key-Valueクラウドストレージ（JSONBin.io等）を設定し、<strong>【サーバーレス・端末間リアルタイム同期・恒久Key認証】</strong>を実現します。',
-      kvProviderLabel: '📦 ストレージプロバイダー',
-      kvBinIdLabel: '🆔 恒久パブリック読み取りID (Bin ID)',
-      kvSecretKeyLabel: '🔑 作成者専用マスターキー (Secret Key)',
+      kvProviderLabel: 'ストレージプロバイダー',
+      kvBinIdLabel: '恒久パブリック読み取りID (Bin ID)',
+      kvSecretKeyLabel: '作成者専用マスターキー (Secret Key)',
       kvSecretKeyPlaceholder: '書き込み権限を解除するマスターキーを貼り付け',
-      kvGuideTitle: '💡 恒久キーの無料取得手順：',
-      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> で登録/ログイン；',
+      kvGuideTitle: '恒久キーの無料取得手順：',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> で登録/ログイン；',
       kvGuideStep2: '2. Dashboard -> API Keys で <strong>Master Key</strong> をコピーして上に貼り付け；',
-      kvGuideStep3: '3. 【🔌 テストしてバインド】を押すと、恒久Bin IDが自動生成され同期が有効化されます！',
-      kvVerifyBtn: '🔌 接続テストと検証',
-      kvSaveBtn: '💾 保存して同期を有効化',
-      kvClearBtn: '🗑️ 認証解除',
-      kvSyncingToast: '☁️ クラウドKVへリアルタイム同期中...',
-      kvSyncSuccessToast: '✅ 仕様がクラウドKVへ保存されました！',
-      kvPullSuccessToast: '☁️ クラウドから最新の仕様データを取得しました！',
-      ghModalTitle: '👑 GitHub Pages 作成者認証とリアルタイム同期設定',
+      kvGuideStep3: '3. 【テストしてバインド】を押すと、恒久Bin IDが自動生成され同期が有効化されます！',
+      kvVerifyBtn: '接続テストと検証',
+      kvSaveBtn: '保存して同期を有効化',
+      kvClearBtn: '認証解除',
+      kvSyncingToast: 'クラウドKVへリアルタイム同期中...',
+      kvSyncSuccessToast: '仕様がクラウドKVへ保存されました！',
+      kvPullSuccessToast: 'クラウドから最新の仕様データを取得しました！',
+      ghModalTitle: 'GitHub Pages 作成者認証とリアルタイム同期設定',
       ghModalDesc: 'Fine-Grained PAT（個人アクセストークン）を設定することで、<strong>【サーバーレス・GitHubリポジトリ直接書き込み】</strong>によるリアルタイム保存を有効化します。',
-      ghOwnerLabel: '📦 リポジトリ所有者 (Owner)',
-      ghRepoLabel: '📂 リポジトリ名 (Repo)',
-      ghBranchLabel: '🌿 対象ブランチ (Branch)',
-      ghTokenLabel: '🔑 GitHub アクセストークン (Token)',
+      ghOwnerLabel: 'リポジトリ所有者 (Owner)',
+      ghRepoLabel: 'リポジトリ名 (Repo)',
+      ghBranchLabel: '対象ブランチ (Branch)',
+      ghTokenLabel: 'GitHub アクセストークン (Token)',
       ghTokenPlaceholder: 'github_pat_xxxx または ghp_xxxx を貼り付け',
-      ghTokenGuideTitle: '💡 トークン生成手順（簡単3ステップ）：',
+      ghTokenGuideTitle: 'トークン生成手順（簡単3ステップ）：',
       ghTokenStep1: '1. リンクをクリックして GitHub トークン生成画面を開きます；',
       ghTokenStep2: '2. <strong>Repository access</strong> で対象リポジトリを選択、<strong>Permissions -> Contents</strong> で <strong>Read and write</strong> を選択；',
       ghTokenStep3: '3. ページ下部の Generate Token を押し、生成されたトークンを上に貼り付けます。',
-      ghGenTokenLink: '🔗 GitHub トークン生成ページを開く',
-      ghVerifyBtn: '🔌 作成者権限を検証',
-      ghSaveConfigBtn: '💾 設定を保存して編集を解除',
-      ghClearConfigBtn: '🗑️ 認証を解除 (読み取り専用へ)',
-      ghVerifySuccess: '✅ 作成者認証成功！リポジトリへの書き込み権限を確認しました。',
-      ghVerifyFailed: '❌ 認証失敗：トークンが無効であるか、書き込み権限がありません。',
-      ghSavingToGithub: '☁️ GitHub へコミットを送信中...',
-      ghSaveSuccess: '✅ 仕様が GitHub リポジトリへコミット＆保存されました！',
-      ghBadgeOwner: '👑 作成者認証済',
-      ghBadgeVisitor: '👁️ 閲覧のみ',
-      ghBadgeLocal: '🟢 ローカル',
-        "apiCheckFailedTitle": "⚠️ ローカル永続化サービスが未検出です",
+      ghGenTokenLink: 'GitHub トークン生成ページを開く',
+      ghVerifyBtn: '作成者権限を検証',
+      ghSaveConfigBtn: '設定を保存して編集を解除',
+      ghClearConfigBtn: '認証を解除 (読み取り専用へ)',
+      ghVerifySuccess: '作成者認証成功！リポジトリへの書き込み権限を確認しました。',
+      ghVerifyFailed: '認証失敗：トークンが無効であるか、書き込み権限がありません。',
+      ghSavingToGithub: 'GitHub へコミットを送信中...',
+      ghSaveSuccess: '仕様が GitHub リポジトリへコミット＆保存されました！',
+      ghBadgeOwner: '作成者認証済',
+      ghBadgeVisitor: '閲覧のみ',
+      ghBadgeLocal: 'ローカル',
+        "apiCheckFailedTitle": "ローカル永続化サービスが未検出です",
         "apiCheckFailedDesc": "現在は【静的読み取り専用プレビューモード】です。ローカル永続化API（<code>POST /api/save-prd</code>）が検出されませんでした。<br><br>このモードでは、ピンの新規追加、並び替え、仕様の編集をローカルディスクのJSファイルに保存できません。<br><br>編集を行うには、ターミナルでローカルサーバーを起動してください：",
         "apiCheckCmdGuide": "node server.js",
-        "apiCheckCopyCmd": "📋 起動コマンドをコピー",
-        "apiCheckCopySuccess": "✅ コマンドをコピーしました: node server.js",
+        "apiCheckCopyCmd": "起動コマンドをコピー",
+        "apiCheckCopySuccess": "コマンドをコピーしました: node server.js",
         "apiCheckGotIt": "了解",
-        "langName": "🇯🇵 日本語",
-        "edgeText": "📌 要件ピン",
+        "langName": "日本語",
+        "edgeText": "要件ピン",
         "drawerTitle": "要件仕様 (PRD)",
-        "manageOrder": "⚙️ 順序管理",
-        "doneManage": "✓ 完了・終了",
-        "manageModeBanner": "🔧 並べ替え・削除管理モード実行中...",
-        "versionPill": "🏷️ バージョン",
-        "newVersion": "➕ 新規空白バージョン...",
-        "copyVersion": "📋 バージョンを複製...",
-        "uploadVersion": "📂 バージョンデータをアップロード...",
-        "deleteVersion": "🗑️ バージョンを削除...",
-        "searchPlaceholder": "🔍 要件タイトルを曖昧検索 (注文 / モーダル / 入札)...",
-        "addPinBtn": "📍 ピンを追加",
-        "viewFullPrdBtn": "📑 完全PRDを表示",
-        "openNewTabBtn": "↗️ 新規タブで開く",
-        "exportMdBtn": "📥 Markdown出力",
-        "exportJsBtn": "💾 JSデータ出力",
-        "importVersionBtn": "📂 バージョンをインポート",
-        "printBtn": "🖨️ 印刷 / PDF出力",
-        "closePageBtn": "✕ 閉じる",
-        "locateBtn": "🎯 移動",
-        "editBtn": "✏️ 編集",
-        "deleteBtn": "🗑️ 削除",
-        "moveToBtn": "🔢 移動先",
-        "moveToTopBtn": "🔝 先頭へ",
-        "moveUpBtn": "▲ 上へ",
-        "moveDownBtn": "▼ 下へ",
+        "manageOrder": "順序管理",
+        "doneManage": "完了・終了",
+        "manageModeBanner": "並べ替え・削除管理モード実行中...",
+        "versionPill": "バージョン",
+        "newVersion": "新規空白バージョン...",
+        "copyVersion": "バージョンを複製...",
+        "uploadVersion": "バージョンデータをアップロード...",
+        "deleteVersion": "バージョンを削除...",
+        "searchPlaceholder": "要件タイトルを曖昧検索 (注文 / モーダル / 入札)...",
+        "addPinBtn": "ピンを追加",
+        "viewFullPrdBtn": "完全PRDを表示",
+        "openNewTabBtn": "新規タブで開く",
+        "exportMdBtn": "Markdown出力",
+        "exportJsBtn": "JSデータ出力",
+        "importVersionBtn": "バージョンをインポート",
+        "printBtn": "印刷 / PDF出力",
+        "closePageBtn": "閉じる",
+        "locateBtn": "移動",
+        "editBtn": "編集",
+        "deleteBtn": "削除",
+        "moveToBtn": "移動先",
+        "moveToTopBtn": "先頭へ",
+        "moveUpBtn": "上へ",
+        "moveDownBtn": "下へ",
         "boundComp": "要素バインド済",
         "unbound": "未バインド",
         "noPinsEmptyTip": "このバージョンには要件ピンがありません",
         "noSearchMatchTip": "一致する要件タイトルが見つかりません",
         "searchKeywordTip": "キーワード",
         "clearSearchBtn": "検索をクリア",
-        "tocTitle": "📑 目次アウトライン",
+        "tocTitle": "目次アウトライン",
         "docHeroTitleSuffix": "· 製品要件仕様書 (PRD)",
         "docMetaPage": "ページファイル",
         "docMetaVersion": "仕様バージョン",
@@ -526,9 +526,9 @@
         "noDocContentTip": "このバージョンにはまだPRD仕様が記録されていません",
         "editModalTitle": "要件仕様を編集",
         "createModalTitle": "新規要件仕様を作成",
-        "tabLive": "✨ リアルタイム視覚編集",
-        "tabRaw": "📄 Markdownソース",
-        "minimizeBtn": "➖ 最小化 / 画面確認",
+        "tabLive": "リアルタイム視覚編集",
+        "tabRaw": "Markdownソース",
+        "minimizeBtn": "最小化 / 画面確認",
         "reqTitleLabel": "要件タイトル",
         "reqTitlePlaceholder": "要件タイトルを入力 (必須)",
         "reqTypeLabel": "要件タイプ",
@@ -540,42 +540,42 @@
             "异常流": "例外フロー",
             "UI规范": "UI仕様"
         },
-        "tableDropdown": "📊 表を挿入...",
-        "mermaidDropdown": "🔄 フローチャート挿入 (Mermaid)...",
-        "templateDropdown": "📑 テンプレート挿入...",
-        "tableToolbarTip": "📊 ビジュアルテーブル（セル内直接入力、Shift+Enterで改行、Enter/Tabで移動）",
-        "addRow": "➕ 行追加",
-        "addCol": "➕ 列追加",
-        "delRow": "➖ 行削除",
-        "delCol": "➖ 列削除",
-        "delTable": "🗑️ 表削除",
-        "editFlowchart": "✏️ 図を編集",
-        "editingFlowchartCode": "🔄 Mermaidコードを編集中：",
-        "finishRender": "✓ レンダリング完了",
-        "rePickBtn": "🎯 要素を再選択",
-        "tempSaveBtn": "👀 一時保存して確認",
+        "tableDropdown": "表を挿入...",
+        "mermaidDropdown": "フローチャート挿入 (Mermaid)...",
+        "templateDropdown": "テンプレート挿入...",
+        "tableToolbarTip": "ビジュアルテーブル（セル内直接入力、Shift+Enterで改行、Enter/Tabで移動）",
+        "addRow": "行追加",
+        "addCol": "列追加",
+        "delRow": "行削除",
+        "delCol": "列削除",
+        "delTable": "表削除",
+        "editFlowchart": "図を編集",
+        "editingFlowchartCode": "Mermaidコードを編集中：",
+        "finishRender": "レンダリング完了",
+        "rePickBtn": "要素を再選択",
+        "tempSaveBtn": "一時保存して確認",
         "cancelBtn": "キャンセル",
-        "saveBtn": "💾 保存",
+        "saveBtn": "保存",
         "editingDraftPrefix": "編集中",
         "draftStashedTip": "下書き保存済 · クリックして再開",
         "restoreEditBtn": "編集を再開",
         "discardDraftPrompt": "現在の下書きを破棄してもよろしいですか？",
-        "saveSuccessToast": "✅ 要件仕様が保存され、ローカルJSファイルに書き込まれました！",
-        "saveFailToast": "❌ 保存失敗：ローカルサーバーに接続できません！",
-        "pinDeletedToast": "✅ 要件ピンが削除され、同期されました！",
-        "reorderSuccessToast": "✅ 要件の順序が更新されました！",
+        "saveSuccessToast": "要件仕様が保存され、ローカルJSファイルに書き込まれました！",
+        "saveFailToast": "保存失敗：ローカルサーバーに接続できません！",
+        "pinDeletedToast": "要件ピンが削除され、同期されました！",
+        "reorderSuccessToast": "要件の順序が更新されました！",
         "rePickTip": "バインドする画面要素をクリックしてください！",
         "rePickSuccessToast": "要素の再バインドが完了しました！",
-        "deleteVersionConfirm": "⚠️ 警告：このバージョンとすべてのピンを完全に削除しますか？",
+        "deleteVersionConfirm": "警告：このバージョンとすべてのピンを完全に削除しますか？",
         "cannotDeleteOnlyVersion": "削除不可：少なくとも1つのバージョンを保持する必要があります！",
-        "importModalTitle": "📂 PRDバージョンデータをインポート",
+        "importModalTitle": "PRDバージョンデータをインポート",
         "importFileLabel": "インポートファイル",
         "importVersionNameLabel": "対象バージョン名：",
-        "conflictOverwrite": "🔴 上書き（既存ピンを消去して完全置換）",
-        "conflictAppend": "🟢 追加マージ（既存ピンを保持し末尾に追加）",
-        "conflictNewVer": "🔵 新規バージョンとして保存（既存に影響なし）",
+        "conflictOverwrite": "上書き（既存ピンを消去して完全置換）",
+        "conflictAppend": "追加マージ（既存ピンを保持し末尾に追加）",
+        "conflictNewVer": "新規バージョンとして保存（既存に影響なし）",
         "confirmImportBtn": "インポートを適用",
-        "pickingTip": "📍 画面要素をクリックしてピン留め (ESCで終了)",
+        "pickingTip": "画面要素をクリックしてピン留め (ESCで終了)",
         "fullCollapseTip": "ドロワーを完全に折りたたむ",
         "semiCollapseTip": "番号バーに折りたたむ",
         "expandDrawerTip": "完全なドロワーを展開",
@@ -587,8 +587,8 @@
         "moveToTopTip": "先頭（第1位）へ移動",
         "moveUpTip": "1つ上へ移動",
         "moveDownTip": "1つ下へ移動",
-        "collapseSidebarBtn": "📁 サイドバーを閉じる",
-        "expandSidebarBtn": "📂 サイドバーを開く",
+        "collapseSidebarBtn": "サイドバーを閉じる",
+        "expandSidebarBtn": "サイドバーを開く",
         "closeInspectBubble": "要件ポップアップを閉じる",
         "reqDoc": "要件",
         "unboundElementTip": "要素未バインド",
@@ -608,100 +608,100 @@
         "itemCountUnit": "件"
     },
     "ko": {
-        "envTitle": "🔒 편집 권한 확인 및 환경 안내",
-        "envGhBadge": "☁️ GitHub Pages 클라우드 환경",
-        "envLocalBadge": "💻 로컬 정적 미리보기 환경",
-        "envGhDesc": "이 페이지는 <strong>GitHub Pages 클라우드 환경</strong>에 배포되어 있으며 현재 [👁️ 방문자 읽기 전용 모드]입니다.<br><br>무단 수정을 방지하기 위해 <strong>저장소 소유자/관리자</strong>만 편집 및 실시간 커밋 권한을 가집니다.",
-        "envGhHowToUnlock": "💡 편집 권한을 얻는 방법:",
+        "envTitle": "편집 권한 확인 및 환경 안내",
+        "envGhBadge": "GitHub Pages 클라우드 환경",
+        "envLocalBadge": "로컬 정적 미리보기 환경",
+        "envGhDesc": "이 페이지는 <strong>GitHub Pages 클라우드 환경</strong>에 배포되어 있으며 현재 [방문자 읽기 전용 모드]입니다.<br><br>무단 수정을 방지하기 위해 <strong>저장소 소유자/관리자</strong>만 편집 및 실시간 커밋 권한을 가집니다.",
+        "envGhHowToUnlock": "편집 권한을 얻는 방법:",
         "envGhUnlockStep": "아래 버튼을 눌러 GitHub Fine-Grained 토큰을 입력하면, <code>push</code> 권한을 확인하고 편집 워크벤치를 잠금 해제합니다.",
-        "envGhUnlockBtn": "👑 소유자 인증하기 (편집 활성화)",
-        "envGhContinueVisitor": "👁️ 방문자 모드로 계속 탐색",
+        "envGhUnlockBtn": "소유자 인증하기 (편집 활성화)",
+        "envGhContinueVisitor": "방문자 모드로 계속 탐색",
         "envLocalDesc": "현재 <strong>로컬 정적 미리보기 모드</strong>입니다. 로컬 지속성 서비스(<code>POST /api/save-prd</code>)가 실행되지 않았습니다.<br><br>핀 추가 및 사양 편집 내용을 로컬 디스크 JS 파일에 저장할 수 없습니다.",
-        "envLocalHowToUnlock": "💡 편집 및 저장을 활성화하는 두 가지 방법:",
+        "envLocalHowToUnlock": "편집 및 저장을 활성화하는 두 가지 방법:",
         "envLocalOpt1": "<strong>방법 1 (로컬 권장)</strong>: 터미널에서 로컬 서버를 실행하세요:",
         "envLocalOpt2": "<strong>방법 2 (클라우드 직접 연결)</strong>: GitHub 토큰을 설정하여 저장소에 직접 커밋하세요.",
-        "envLocalCopyCmd": "📋 시작 명령 복사",
-        "envLocalCopied": "✅ 명령이 복사되었습니다: node server.js",
-        "envLocalConfigGh": "☁️ GitHub 클라우드 동기화 설정",
+        "envLocalCopyCmd": "시작 명령 복사",
+        "envLocalCopied": "명령이 복사되었습니다: node server.js",
+        "envLocalConfigGh": "GitHub 클라우드 동기화 설정",
         "envLocalGotIt": "확인",
-                    kvModalTitle: '🔑 클라우드 KV 스토리지 및 영구 Key 인증 설정',
+                    kvModalTitle: '클라우드 KV 스토리지 및 영구 Key 인증 설정',
       kvModalDesc: 'Key-Value 클라우드 스토리지(JSONBin.io 등)를 설정하여 <strong>[서버리스, 기기 간 실시간 동기화, 영구 Key 인증]</strong>을 활성화합니다.',
-      kvProviderLabel: '📦 스토리지 제공업체',
-      kvBinIdLabel: '🆔 영구 공개 읽기 ID (Bin ID)',
-      kvSecretKeyLabel: '🔑 소유자 전용 마스터 키 (Secret Key)',
+      kvProviderLabel: '스토리지 제공업체',
+      kvBinIdLabel: '영구 공개 읽기 ID (Bin ID)',
+      kvSecretKeyLabel: '소유자 전용 마스터 키 (Secret Key)',
       kvSecretKeyPlaceholder: '쓰기 권한을 잠금 해제할 마스터 키를 붙여넣으세요',
-      kvGuideTitle: '💡 무료 영구 키 발급 방법:',
-      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a>에 가입/로그인합니다;',
+      kvGuideTitle: '무료 영구 키 발급 방법:',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a>에 가입/로그인합니다;',
       kvGuideStep2: '2. Dashboard -> API Keys에서 <strong>Master Key</strong>를 복사하여 위에 붙여넣습니다;',
-      kvGuideStep3: '3. [🔌 테스트 및 연결]을 클릭하면 영구 Bin ID가 생성되고 실시간 동기화가 활성화됩니다!',
-      kvVerifyBtn: '🔌 연결 테스트 및 확인',
-      kvSaveBtn: '💾 저장하고 동기화 활성화',
-      kvClearBtn: '🗑️ 인증 해제',
-      kvSyncingToast: '☁️ 클라우드 KV로 실시간 동기화 중...',
-      kvSyncSuccessToast: '✅ 사양이 클라우드 KV에 실시간으로 저장되었습니다!',
-      kvPullSuccessToast: '☁️ 클라우드에서 최신 사양을 가져왔습니다!',
-      ghModalTitle: '👑 GitHub Pages 소유자 인증 및 클라우드 실시간 동기화',
+      kvGuideStep3: '3. [테스트 및 연결]을 클릭하면 영구 Bin ID가 생성되고 실시간 동기화가 활성화됩니다!',
+      kvVerifyBtn: '연결 테스트 및 확인',
+      kvSaveBtn: '저장하고 동기화 활성화',
+      kvClearBtn: '인증 해제',
+      kvSyncingToast: '클라우드 KV로 실시간 동기화 중...',
+      kvSyncSuccessToast: '사양이 클라우드 KV에 실시간으로 저장되었습니다!',
+      kvPullSuccessToast: '클라우드에서 최신 사양을 가져왔습니다!',
+      ghModalTitle: 'GitHub Pages 소유자 인증 및 클라우드 실시간 동기화',
       ghModalDesc: 'Fine-Grained PAT 토큰을 설정하여 <strong>[서버리스 GitHub 저장소 직접 커밋]</strong> 실시간 클라우드 저장을 활성화합니다.',
-      ghOwnerLabel: '📦 저장소 소유자 (Owner)',
-      ghRepoLabel: '📂 저장소 이름 (Repo)',
-      ghBranchLabel: '🌿 대상 브랜치 (Branch)',
-      ghTokenLabel: '🔑 GitHub 액세스 토큰 (Token)',
+      ghOwnerLabel: '저장소 소유자 (Owner)',
+      ghRepoLabel: '저장소 이름 (Repo)',
+      ghBranchLabel: '대상 브랜치 (Branch)',
+      ghTokenLabel: 'GitHub 액세스 토큰 (Token)',
       ghTokenPlaceholder: 'github_pat_xxxx 또는 ghp_xxxx 붙여넣기',
-      ghTokenGuideTitle: '💡 토큰 생성 방법 (간단한 3단계):',
+      ghTokenGuideTitle: '토큰 생성 방법 (간단한 3단계):',
       ghTokenStep1: '1. 링크를 클릭하여 GitHub 토큰 생성 페이지로 이동합니다;',
       ghTokenStep2: '2. <strong>Repository access</strong>에서 대상 저장소를 선택하고, <strong>Permissions -> Contents</strong>에서 <strong>Read and write</strong>를 선택합니다;',
       ghTokenStep3: '3. 하단의 Generate Token을 클릭하고 생성된 키를 위에 붙여넣습니다.',
-      ghGenTokenLink: '🔗 GitHub 토큰 생성 페이지 바로가기',
-      ghVerifyBtn: '🔌 소유자 권한 확인',
-      ghSaveConfigBtn: '💾 저장하고 편집 잠금 해제',
-      ghClearConfigBtn: '🗑️ 인증 해제 (읽기 전용 모드)',
-      ghVerifySuccess: '✅ 소유자 인증 성공! 저장소 쓰기 권한이 확인되었습니다.',
-      ghVerifyFailed: '❌ 인증 실패: 토큰이 유효하지 않거나 쓰기 권한이 없습니다.',
-      ghSavingToGithub: '☁️ GitHub 저장소로 커밋 전송 중...',
-      ghSaveSuccess: '✅ 사양이 GitHub 저장소에 성공적으로 커밋되었습니다!',
-      ghBadgeOwner: '👑 소유자 인증됨',
-      ghBadgeVisitor: '👁️ 읽기 전용',
-      ghBadgeLocal: '🟢 로컬 서버',
-        "apiCheckFailedTitle": "⚠️ 로컬 지속성 서비스를 찾을 수 없습니다",
+      ghGenTokenLink: 'GitHub 토큰 생성 페이지 바로가기',
+      ghVerifyBtn: '소유자 권한 확인',
+      ghSaveConfigBtn: '저장하고 편집 잠금 해제',
+      ghClearConfigBtn: '인증 해제 (읽기 전용 모드)',
+      ghVerifySuccess: '소유자 인증 성공! 저장소 쓰기 권한이 확인되었습니다.',
+      ghVerifyFailed: '인증 실패: 토큰이 유효하지 않거나 쓰기 권한이 없습니다.',
+      ghSavingToGithub: 'GitHub 저장소로 커밋 전송 중...',
+      ghSaveSuccess: '사양이 GitHub 저장소에 성공적으로 커밋되었습니다!',
+      ghBadgeOwner: '소유자 인증됨',
+      ghBadgeVisitor: '읽기 전용',
+      ghBadgeLocal: '로컬 서버',
+        "apiCheckFailedTitle": "로컬 지속성 서비스를 찾을 수 없습니다",
         "apiCheckFailedDesc": "현재 [정적 읽기 전용 미리보기 모드]입니다. 로컬 지속성 API(<code>POST /api/save-prd</code>)를 감지할 수 없습니다.<br><br>이 모드에서는 핀 추가, 순서 변경, 사양 편집 내용을 로컬 디스크 JS 파일에 저장할 수 없습니다.<br><br>편집하려면 터미널에서 로컬 서버를 먼저 시작하세요:",
         "apiCheckCmdGuide": "node server.js",
-        "apiCheckCopyCmd": "📋 시작 명령 복사",
-        "apiCheckCopySuccess": "✅ 명령이 복사되었습니다: node server.js",
+        "apiCheckCopyCmd": "시작 명령 복사",
+        "apiCheckCopySuccess": "명령이 복사되었습니다: node server.js",
         "apiCheckGotIt": "확인",
         "langName": "🇰🇷 한국어",
-        "edgeText": "📌 요구사항 핀",
+        "edgeText": "요구사항 핀",
         "drawerTitle": "요구사항 규격 (PRD)",
-        "manageOrder": "⚙️ 순서 관리",
-        "doneManage": "✓ 완료 및 종료",
-        "manageModeBanner": "🔧 정렬 및 삭제 관리 모드 실행 중...",
-        "versionPill": "🏷️ 버전",
-        "newVersion": "➕ 새 빈 버전...",
-        "copyVersion": "📋 현재 버전 복제...",
-        "uploadVersion": "📂 버전 데이터 업로드...",
-        "deleteVersion": "🗑️ 버전 삭제...",
-        "searchPlaceholder": "🔍 요구사항 제목 검색 (예: 주문 / 팝업 / 입찰)...",
-        "addPinBtn": "📍 핀 추가",
-        "viewFullPrdBtn": "📑 전체 PRD 보기",
-        "openNewTabBtn": "↗️ 새 탭에서 열기",
-        "exportMdBtn": "📥 Markdown 내보내기",
-        "exportJsBtn": "💾 JS 데이터 내보내기",
-        "importVersionBtn": "📂 버전 가져오기",
-        "printBtn": "🖨️ 인쇄 / PDF",
-        "closePageBtn": "✕ 닫기",
-        "locateBtn": "🎯 위치 이동",
-        "editBtn": "✏️ 편집",
-        "deleteBtn": "🗑️ 삭제",
-        "moveToBtn": "🔢 순서 이동",
-        "moveToTopBtn": "🔝 맨 위로",
-        "moveUpBtn": "▲ 위로",
-        "moveDownBtn": "▼ 아래로",
+        "manageOrder": "순서 관리",
+        "doneManage": "완료 및 종료",
+        "manageModeBanner": "정렬 및 삭제 관리 모드 실행 중...",
+        "versionPill": "버전",
+        "newVersion": "새 빈 버전...",
+        "copyVersion": "현재 버전 복제...",
+        "uploadVersion": "버전 데이터 업로드...",
+        "deleteVersion": "버전 삭제...",
+        "searchPlaceholder": "요구사항 제목 검색 (예: 주문 / 팝업 / 입찰)...",
+        "addPinBtn": "핀 추가",
+        "viewFullPrdBtn": "전체 PRD 보기",
+        "openNewTabBtn": "새 탭에서 열기",
+        "exportMdBtn": "Markdown 내보내기",
+        "exportJsBtn": "JS 데이터 내보내기",
+        "importVersionBtn": "버전 가져오기",
+        "printBtn": "인쇄 / PDF",
+        "closePageBtn": "닫기",
+        "locateBtn": "위치 이동",
+        "editBtn": "편집",
+        "deleteBtn": "삭제",
+        "moveToBtn": "순서 이동",
+        "moveToTopBtn": "맨 위로",
+        "moveUpBtn": "위로",
+        "moveDownBtn": "아래로",
         "boundComp": "요소 연결됨",
         "unbound": "미연결",
         "noPinsEmptyTip": "이 버전에 등록된 요구사항 핀이 없습니다",
         "noSearchMatchTip": "일치하는 요구사항 제목이 없습니다",
         "searchKeywordTip": "키워드",
         "clearSearchBtn": "검색 조건 지우기",
-        "tocTitle": "📑 목차 개요",
+        "tocTitle": "목차 개요",
         "docHeroTitleSuffix": "· 제품 요구사항 정의서 (PRD)",
         "docMetaPage": "페이지 파일",
         "docMetaVersion": "규격 버전",
@@ -710,9 +710,9 @@
         "noDocContentTip": "이 버전에 아직 작성된 PRD 규격이 없습니다",
         "editModalTitle": "요구사항 규격 편집",
         "createModalTitle": "새 요구사항 규격 작성",
-        "tabLive": "✨ 실시간 시각 편집",
-        "tabRaw": "📄 Markdown 원본",
-        "minimizeBtn": "➖ 최소화 / 화면 보기",
+        "tabLive": "실시간 시각 편집",
+        "tabRaw": "Markdown 원본",
+        "minimizeBtn": "최소화 / 화면 보기",
         "reqTitleLabel": "요구사항 명칭",
         "reqTitlePlaceholder": "요구사항 제목 입력 (필수)",
         "reqTypeLabel": "요구사항 유형",
@@ -724,42 +724,42 @@
             "异常流": "예외 흐름",
             "UI规范": "UI 규격"
         },
-        "tableDropdown": "📊 테이블 삽입...",
-        "mermaidDropdown": "🔄 다이어그램 삽입 (Mermaid)...",
-        "templateDropdown": "📑 템플릿 삽입...",
-        "tableToolbarTip": "📊 시각적 표 (셀 직접 입력, Shift+Enter 줄바꿈, Enter/Tab 셀 이동)",
-        "addRow": "➕ 행 추가",
-        "addCol": "➕ 열 추가",
-        "delRow": "➖ 행 삭제",
-        "delCol": "➖ 열 삭제",
-        "delTable": "🗑️ 표 삭제",
-        "editFlowchart": "✏️ 다이어그램 편집",
-        "editingFlowchartCode": "🔄 Mermaid 코드 편집 중:",
-        "finishRender": "✓ 렌더링 완료",
-        "rePickBtn": "🎯 요소 다시 선택",
-        "tempSaveBtn": "👀 임시저장 및 화면확인",
+        "tableDropdown": "테이블 삽입...",
+        "mermaidDropdown": "다이어그램 삽입 (Mermaid)...",
+        "templateDropdown": "템플릿 삽입...",
+        "tableToolbarTip": "시각적 표 (셀 직접 입력, Shift+Enter 줄바꿈, Enter/Tab 셀 이동)",
+        "addRow": "행 추가",
+        "addCol": "열 추가",
+        "delRow": "행 삭제",
+        "delCol": "열 삭제",
+        "delTable": "표 삭제",
+        "editFlowchart": "다이어그램 편집",
+        "editingFlowchartCode": "Mermaid 코드 편집 중:",
+        "finishRender": "렌더링 완료",
+        "rePickBtn": "요소 다시 선택",
+        "tempSaveBtn": "임시저장 및 화면확인",
         "cancelBtn": "취소",
-        "saveBtn": "💾 저장",
+        "saveBtn": "저장",
         "editingDraftPrefix": "편집 중",
         "draftStashedTip": "임시저장됨 · 클릭하여 편집 계속",
         "restoreEditBtn": "편집 재개",
         "discardDraftPrompt": "현재 작성 중인 초안을 취소하시겠습니까?",
-        "saveSuccessToast": "✅ 요구사항 규격이 로컬 JS 파일에 성공적으로 저장되었습니다!",
-        "saveFailToast": "❌ 저장 실패: 로컬 서버에 연결할 수 없습니다!",
-        "pinDeletedToast": "✅ 요구사항 핀이 삭제되고 동기화되었습니다!",
-        "reorderSuccessToast": "✅ 요구사항 순서가 성공적으로 변경되었습니다!",
+        "saveSuccessToast": "요구사항 규격이 로컬 JS 파일에 성공적으로 저장되었습니다!",
+        "saveFailToast": "저장 실패: 로컬 서버에 연결할 수 없습니다!",
+        "pinDeletedToast": "요구사항 핀이 삭제되고 동기화되었습니다!",
+        "reorderSuccessToast": "요구사항 순서가 성공적으로 변경되었습니다!",
         "rePickTip": "연결할 화면 요소를 클릭하세요!",
         "rePickSuccessToast": "요소 재연결이 완료되었습니다!",
-        "deleteVersionConfirm": "⚠️ 경고: 이 버전과 모든 핀을 영구 삭제하시겠습니까?",
+        "deleteVersionConfirm": "경고: 이 버전과 모든 핀을 영구 삭제하시겠습니까?",
         "cannotDeleteOnlyVersion": "삭제 불가: 최소 하나의 버전은 유지되어야 합니다!",
-        "importModalTitle": "📂 PRD 버전 데이터 가져오기",
+        "importModalTitle": "PRD 버전 데이터 가져오기",
         "importFileLabel": "가져올 파일",
         "importVersionNameLabel": "대상 버전명:",
-        "conflictOverwrite": "🔴 덮어쓰기 (기존 핀을 삭제하고 업로드 데이터로 교체)",
-        "conflictAppend": "🟢 병합 추가 (기존 핀 유지 및 끝에 추가)",
-        "conflictNewVer": "🔵 새 버전으로 저장 (기존 버전에 영향 없음)",
+        "conflictOverwrite": "덮어쓰기 (기존 핀을 삭제하고 업로드 데이터로 교체)",
+        "conflictAppend": "병합 추가 (기존 핀 유지 및 끝에 추가)",
+        "conflictNewVer": "새 버전으로 저장 (기존 버전에 영향 없음)",
         "confirmImportBtn": "가져오기 적용",
-        "pickingTip": "📍 화면 요소를 클릭하여 핀 추가 (ESC 취소)",
+        "pickingTip": "화면 요소를 클릭하여 핀 추가 (ESC 취소)",
         "fullCollapseTip": "패널 완전히 접기",
         "semiCollapseTip": "번호 바 모드로 접기",
         "expandDrawerTip": "전체 패널 펼치기",
@@ -771,8 +771,8 @@
         "moveToTopTip": "맨 위(1번)로 이동",
         "moveUpTip": "1칸 위로 이동",
         "moveDownTip": "1칸 아래로 이동",
-        "collapseSidebarBtn": "📁 사이드바 접기",
-        "expandSidebarBtn": "📂 사이드바 펼치기",
+        "collapseSidebarBtn": "사이드바 접기",
+        "expandSidebarBtn": "사이드바 펼치기",
         "closeInspectBubble": "요구사항 팝업 닫기",
         "reqDoc": "요구사항",
         "unboundElementTip": "요소 미연결",
@@ -820,11 +820,11 @@
   function getSyncModeBadgeInfo() {
     const mode = getActiveSyncMode();
     if (mode === 'jsonbin') {
-      return { icon: '🔑', label: '云端KV', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd', tip: '当前模式：🔑 JSONBin.io 云端存储打点 (点击切换模式)' };
+      return { icon: '', label: '云端KV', color: '#8C4A28', bg: '#FDF6F0', border: '#F1D6C7', tip: '当前模式：JSONBin.io 云端存储打点 (点击切换模式)' };
     } else if (mode === 'github') {
-      return { icon: '☁️', label: 'GitHub', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：☁️ GitHub 推送打点 (点击切换模式)' };
+      return { icon: '', label: 'GitHub', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：GitHub 推送打点 (点击切换模式)' };
     } else {
-      return { icon: '💻', label: '本地服务', color: '#475569', bg: '#f8fafc', border: '#cbd5e1', tip: '当前模式：💻 本地 Node.js 服务模式 (点击切换模式)' };
+      return { icon: '', label: '本地服务', color: '#4F4741', bg: '#FAF9F6', border: '#D6CFC7', tip: '当前模式：本地 Node.js 服务模式 (点击切换模式)' };
     }
   }
 
@@ -843,7 +843,7 @@
   }
 
   // ==========================================
-  // 🔄 持久化同步模式切换与记忆中心 (Sync Mode Switcher & Persistence)
+  // 持久化同步模式切换与记忆中心 (Sync Mode Switcher & Persistence)
   // ==========================================
   const SYNC_MODE_KEY = 'prd_active_sync_mode';
 
@@ -863,7 +863,7 @@
   }
 
   // ==========================================
-  // 🔑 云端 KV 中间存储适配器与恒久 Key 授权系统 (Remote KV Storage Adapter)
+  // 云端 KV 中间存储适配器与恒久 Key 授权系统 (Remote KV Storage Adapter)
   // ==========================================
   const KV_STORAGE_KEY = `prd_kv_config_${projectScope}_${pageKey.replace('.html', '')}`;
 
@@ -1025,9 +1025,9 @@
     pendingModeSwitchData = executeCallback;
 
     const modeNames = {
-      jsonbin: '🔑 云端 KV 模式 (JSONBin.io)',
-      github: '☁️ GitHub Commit 模式',
-      local: '💻 本地 Node.js 服务模式'
+      jsonbin: '云端 KV 模式 (JSONBin.io)',
+      github: 'GitHub Commit 模式',
+      local: '本地 Node.js 服务模式'
     };
 
     const oldName = modeNames[oldMode] || oldMode;
@@ -1038,7 +1038,7 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(28, 24, 21, 0.7);
       backdrop-filter: blur(5px);
       z-index: 10000095;
       display: flex;
@@ -1049,49 +1049,49 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
-            <span>🔄</span>
+            <span></span>
             <span>模式切换与数据无缝迁移决策</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeModeSwitchModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeModeSwitchModal()">&times;</button>
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:14px;">
-          <div>您即将把当前项目的持久化引擎从 <span style="color:#b45309; font-weight:700;">【${escapeHtml(oldName)}】</span> 切换为 <span style="color:#0284c7; font-weight:700;">【${escapeHtml(newName)}】</span>。</div>
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:14px;">
+          <div>您即将把当前项目的持久化引擎从 <span style="color:#b45309; font-weight:700;">【${escapeHtml(oldName)}】</span> 切换为 <span style="color:#8C4A28; font-weight:700;">【${escapeHtml(newName)}】</span>。</div>
 
           <!-- 迁移选择卡片组 -->
           <div style="display:flex; flex-direction:column; gap:8px;">
-            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:2px solid #0284c7; background:#f0f9ff; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-sync">
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:2px solid #8C4A28; background:#FDF6F0; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-sync">
               <input type="radio" name="prd_switch_sync_choice" value="migrate" checked style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
               <div style="display:flex; flex-direction:column; gap:2px;">
-                <strong style="color:#0369a1; font-size:13px;">🚀 同步迁移当前数据到新方案 (推荐)</strong>
-                <span style="color:#475569; font-size:11.5px;">将当前已编辑的全部打点与版本（共 ${savedPins.length} 项规约）即刻同步写入到新的持久化数据源中，实现零断点无缝过渡！</span>
+                <strong style="color:#8C4A28; font-size:13px;">同步迁移当前数据到新方案 (推荐)</strong>
+                <span style="color:#4F4741; font-size:11.5px;">将当前已编辑的全部打点与版本（共 ${savedPins.length} 项规约）即刻同步写入到新的持久化数据源中，实现零断点无缝过渡！</span>
               </div>
             </label>
 
-            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid #e2e8f0; background:#f8fafc; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-clean">
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid #E8E2D9; background:#FAF9F6; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-clean">
               <input type="radio" name="prd_switch_sync_choice" value="clean" style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
               <div style="display:flex; flex-direction:column; gap:2px;">
-                <strong style="color:#334155; font-size:13px;">📥 不同步现有数据 (从新数据源拉取)</strong>
-                <span style="color:#64748b; font-size:11.5px;">仅切换底层模式配置，不覆盖新目标存储，切换后直接从新数据源拉取最新或保持空白。</span>
+                <strong style="color:#38322D; font-size:13px;">不同步现有数据 (从新数据源拉取)</strong>
+                <span style="color:#70685E; font-size:11.5px;">仅切换底层模式配置，不覆盖新目标存储，切换后直接从新数据源拉取最新或保持空白。</span>
               </div>
             </label>
           </div>
 
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#64748b; display:flex; align-items:center; justify-content:space-between;">
+          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#70685E; display:flex; align-items:center; justify-content:space-between;">
             <span>🛡️ 数据安全建议：切换前可先备份一份本地 JSON</span>
-            <button class="prd-btn-action" style="padding:3px 10px; font-size:11px; background:#ffffff; border:1px solid #cbd5e1; border-radius:4px; color:#0f172a; cursor:pointer;" onclick="window.downloadLocalBackupJSON()">💾 下载本地备份 (.json)</button>
+            <button class="prd-btn-action" style="padding:3px 10px; font-size:11px; background:#ffffff; border:1px solid #D6CFC7; border-radius:4px; color:#2D2B29; cursor:pointer;" onclick="window.downloadLocalBackupJSON()">下载本地备份 (.json)</button>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end; gap:8px;">
-          <button class="prd-btn-action" style="padding:6px 14px; font-size:12px; border:1px solid #cbd5e1; background:#ffffff; border-radius:6px; cursor:pointer;" onclick="window.closeModeSwitchModal()">取消</button>
-          <button class="prd-btn-primary" style="background:#0284c7; border-color:#0284c7; font-size:12px; padding:6px 18px; border-radius:6px; font-weight:700;" onclick="window.confirmExecuteModeSwitch()">✅ 确认执行模式切换</button>
+        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:flex-end; gap:8px;">
+          <button class="prd-btn-action" style="padding:6px 14px; font-size:12px; border:1px solid #D6CFC7; background:#ffffff; border-radius:6px; cursor:pointer;" onclick="window.closeModeSwitchModal()">取消</button>
+          <button class="prd-btn-primary" style="background:#8C4A28; border-color:#8C4A28; font-size:12px; padding:6px 18px; border-radius:6px; font-weight:700;" onclick="window.confirmExecuteModeSwitch()">确认执行模式切换</button>
         </div>
       </div>
     `;
@@ -1104,11 +1104,11 @@
     const syncCard = document.getElementById('prd-migrate-card-sync');
     const cleanCard = document.getElementById('prd-migrate-card-clean');
     if (selected === 'migrate') {
-      if (syncCard) { syncCard.style.border = '2px solid #0284c7'; syncCard.style.background = '#f0f9ff'; }
-      if (cleanCard) { cleanCard.style.border = '1px solid #e2e8f0'; cleanCard.style.background = '#f8fafc'; }
+      if (syncCard) { syncCard.style.border = '2px solid #8C4A28'; syncCard.style.background = '#FDF6F0'; }
+      if (cleanCard) { cleanCard.style.border = '1px solid #E8E2D9'; cleanCard.style.background = '#FAF9F6'; }
     } else {
-      if (syncCard) { syncCard.style.border = '1px solid #e2e8f0'; syncCard.style.background = '#f8fafc'; }
-      if (cleanCard) { cleanCard.style.border = '2px solid #0284c7'; cleanCard.style.background = '#f0f9ff'; }
+      if (syncCard) { syncCard.style.border = '1px solid #E8E2D9'; syncCard.style.background = '#FAF9F6'; }
+      if (cleanCard) { cleanCard.style.border = '2px solid #8C4A28'; cleanCard.style.background = '#FDF6F0'; }
     }
   };
 
@@ -1142,7 +1142,7 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(28, 24, 21, 0.65);
       backdrop-filter: blur(5px);
       z-index: 10000070;
       display: flex;
@@ -1153,48 +1153,48 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
-            <span>☁️</span>
+            <span></span>
             <span>持久化同步中心与模式切换</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeKVConfigModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeKVConfigModal()">&times;</button>
         </div>
 
         <!-- Mode Switcher Tabs -->
-        <div style="background:#f1f5f9; padding:8px 16px; border-bottom:1px solid #e2e8f0; display:flex; gap:6px;">
-          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #cbd5e1':'none'}; color:${activeMode==='jsonbin'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('jsonbin')">
-            🔑 JSONBin.io 模式 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">●生效中</span>':''}
+        <div style="background:#F3EFEA; padding:8px 16px; border-bottom:1px solid #E8E2D9; display:flex; gap:6px;">
+          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #D6CFC7':'none'}; color:${activeMode==='jsonbin'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('jsonbin')">
+            JSONBin.io 模式 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
-          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #cbd5e1':'none'}; color:${activeMode==='github'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('github')">
-            ☁️ GitHub Commit 模式 ${activeMode==='github'?'<span style=\"color:#059669;\">●生效中</span>':''}
+          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #D6CFC7':'none'}; color:${activeMode==='github'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('github')">
+            GitHub Commit 模式 ${activeMode==='github'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
-          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #cbd5e1':'none'}; color:${activeMode==='local'?'#0284c7':'#64748b'};" onclick="window.switchSyncConfigTab('local')">
-            💻 本地服务 ${activeMode==='local'?'<span style=\"color:#059669;\">●生效中</span>':''}
+          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #D6CFC7':'none'}; color:${activeMode==='local'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('local')">
+            本地服务 ${activeMode==='local'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
         </div>
 
         <!-- Body Content -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D;">
           <!-- Tab Panel 1: JSONBin -->
           <div id="panel-jsonbin" style="display:${activeMode==='jsonbin'||activeMode==='auto'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#475569;">${t('kvModalDesc')}</div>
+            <div style="color:#4F4741;">${t('kvModalDesc')}</div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('kvSecretKeyLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-kv-secret-key" value="${escapeHtml(config.secretKey || '')}" placeholder="${escapeHtml(t('kvSecretKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('kvSecretKeyLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-kv-secret-key" value="${escapeHtml(config.secretKey || '')}" placeholder="${escapeHtml(t('kvSecretKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('kvBinIdLabel')}</label>
-              <input type="text" id="prd-kv-bin-id" value="${escapeHtml(config.binId || '')}" placeholder="留空则自动创建新的永久 Bin ID" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('kvBinIdLabel')}</label>
+              <input type="text" id="prd-kv-bin-id" value="${escapeHtml(config.binId || '')}" placeholder="留空则自动创建新的永久 Bin ID" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
             </div>
 
             <!-- Guide -->
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
-              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('kvGuideTitle')}</div>
+            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
+              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('kvGuideTitle')}</div>
               <div style="margin-bottom:2px;">${t('kvGuideStep1')}</div>
               <div style="margin-bottom:2px;">${t('kvGuideStep2')}</div>
               <div>${t('kvGuideStep3')}</div>
@@ -1205,27 +1205,27 @@
 
           <!-- Tab Panel 2: GitHub -->
           <div id="panel-github" style="display:${activeMode==='github'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#475569;">${t('ghModalDesc')}</div>
+            <div style="color:#4F4741;">${t('ghModalDesc')}</div>
 
             <div style="display:flex; gap:10px;">
               <div style="flex:1;">
-                <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
-                <input type="text" id="prd-gh-owner" value="${escapeHtml(ghConfig.owner || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+                <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+                <input type="text" id="prd-gh-owner" value="${escapeHtml(ghConfig.owner || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
               </div>
               <div style="flex:1;">
-                <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
-                <input type="text" id="prd-gh-repo" value="${escapeHtml(ghConfig.repo || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+                <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+                <input type="text" id="prd-gh-repo" value="${escapeHtml(ghConfig.repo || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
               </div>
             </div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-gh-token" value="${escapeHtml(ghConfig.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(ghConfig.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
 
             <!-- Guide -->
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
-              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('ghGuideTitle')}</div>
+            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
+              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('ghGuideTitle')}</div>
               <div style="margin-bottom:2px;">${t('ghGuideStep1')}</div>
               <div style="margin-bottom:2px;">${t('ghGuideStep2')}</div>
               <div>${t('ghGuideStep3')}</div>
@@ -1236,20 +1236,20 @@
 
           <!-- Tab Panel 3: Local -->
           <div id="panel-local" style="display:${activeMode==='local'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#475569;">本地 Node.js 服务模式直接将打点数据写入本地磁盘的 <code>assets/js/prd-data-*.js</code> 文件中。</div>
-            <div style="background:#0f172a; color:#38bdf8; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="color:#4F4741;">本地 Node.js 服务模式直接将打点数据写入本地磁盘的 <code>assets/js/prd-data-*.js</code> 文件中。</div>
+            <div style="background:#2D2B29; color:#E0A990; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
               <span>$ node server.js</span>
-              <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.copyStartCommand(this)">📋 复制命令</button>
+              <button style="background:#3D3B39; color:#FAF9F6; border:1px solid #38322D; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.copyStartCommand(this)">复制命令</button>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearCurrentModeConfig()">${t('kvClearBtn')}</button>
           <div style="display:flex; gap:8px;">
             <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestCurrentModeConfig()">${t('kvVerifyBtn')}</button>
-            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px; background:#0284c7; border-color:#0284c7;" onclick="window.handleSaveCurrentModeConfig()">${t('kvSaveBtn')}</button>
+            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px; background:#8C4A28; border-color:#8C4A28;" onclick="window.handleSaveCurrentModeConfig()">${t('kvSaveBtn')}</button>
           </div>
         </div>
       </div>
@@ -1264,8 +1264,8 @@
       const panel = document.getElementById(`panel-${m}`);
       if (btn) {
         btn.style.background = m === mode ? '#ffffff' : 'transparent';
-        btn.style.border = m === mode ? '1px solid #cbd5e1' : 'none';
-        btn.style.color = m === mode ? '#0284c7' : '#64748b';
+        btn.style.border = m === mode ? '1px solid #D6CFC7' : 'none';
+        btn.style.color = m === mode ? '#8C4A28' : '#70685E';
       }
       if (panel) {
         panel.style.display = m === mode ? 'flex' : 'none';
@@ -1310,7 +1310,7 @@
         setKVStorageConfig({ provider: 'jsonbin', binId, secretKey, isVerified: true, updatedAt: new Date().toISOString() });
         setActiveSyncMode('jsonbin');
         isBackendApiCached = true;
-        showToast('✅ 已成功保存并切换为【🔑 JSONBin.io 实时同步模式】！', 'success');
+        showToast('已成功保存并切换为【JSONBin.io 实时同步模式】！', 'success');
       } else if (tab === 'github') {
         const testOk = await window.handleTestGitHubConfig();
         if (!testOk) return;
@@ -1320,11 +1320,11 @@
         setGitHubConfig({ owner, repo, branch: 'main', token, verifiedUser: owner, verifiedAt: new Date().toISOString() });
         setActiveSyncMode('github');
         isBackendApiCached = true;
-        showToast('✅ 已成功保存并切换为【☁️ GitHub Commit 直连模式】！', 'success');
+        showToast('已成功保存并切换为【GitHub Commit 直连模式】！', 'success');
       } else {
         setActiveSyncMode('local');
         isBackendApiCached = true;
-        showToast('✅ 已切换为【💻 本地 Node.js 模式】！', 'success');
+        showToast('已切换为【本地 Node.js 模式】！', 'success');
       }
 
       setTimeout(() => {
@@ -1372,10 +1372,10 @@
     const tipEl = document.getElementById('prd-kv-status-tip');
 
     if (!secretKey) {
-      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 Secret Master Key</span>`;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">请先输入 Secret Master Key</span>`;
       return false;
     }
-    if (tipEl) tipEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在连接云端 KV 验证授权...</span>`;
+    if (tipEl) tipEl.innerHTML = `<span style="color:#8C4A28;">正在连接云端 KV 验证授权...</span>`;
 
     try {
       const payload = {
@@ -1386,12 +1386,12 @@
       };
       const res = await saveRemoteKVData(binId, secretKey, payload);
       const activeBin = res.metadata?.id || binId;
-      if (tipEl) tipEl.innerHTML = `<span style="color:#059669; font-weight:700;">✅ 授权成功！永久 Bin ID: <code>${escapeHtml(activeBin)}</code></span>`;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#059669; font-weight:700;">授权成功！永久 Bin ID: <code>${escapeHtml(activeBin)}</code></span>`;
       const binInput = document.getElementById('prd-kv-bin-id');
       if (binInput && !binInput.value && activeBin) binInput.value = activeBin;
       return true;
     } catch (err) {
-      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ 校验失败: ${escapeHtml(err.message)}</span>`;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">校验失败: ${escapeHtml(err.message)}</span>`;
       return false;
     }
   };
@@ -1466,7 +1466,7 @@
         if (badge) badge.innerText = savedPins.length;
         const edgeCount = document.getElementById('prd-edge-count');
         if (edgeCount) edgeCount.innerText = savedPins.length;
-        showToast(t('kvPullSuccessToast') || '☁️ 已从云端获取最新打点规约并完成同步！', 'info');
+        showToast(t('kvPullSuccessToast') || '已从云端获取最新打点规约并完成同步！', 'info');
       }
     } catch (e) {}
   }
@@ -1667,7 +1667,7 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(28, 24, 21, 0.65);
       backdrop-filter: blur(5px);
       z-index: 10000060;
       display: flex;
@@ -1678,46 +1678,46 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
-            <span>👑</span>
+            <span></span>
             <span>${escapeHtml(t('ghModalTitle'))}</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeGitHubConfigModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeGitHubConfigModal()">&times;</button>
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:12px;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:12px;">
           <div>${t('ghModalDesc')}</div>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
-              <input type="text" id="prd-gh-owner" value="${escapeHtml(config.owner)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+              <input type="text" id="prd-gh-owner" value="${escapeHtml(config.owner)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
-              <input type="text" id="prd-gh-repo" value="${escapeHtml(config.repo)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+              <input type="text" id="prd-gh-repo" value="${escapeHtml(config.repo)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
           </div>
 
           <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghBranchLabel')}</label>
-              <input type="text" id="prd-gh-branch" value="${escapeHtml(config.branch || 'main')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghBranchLabel')}</label>
+              <input type="text" id="prd-gh-branch" value="${escapeHtml(config.branch || 'main')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-gh-token" value="${escapeHtml(config.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(config.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
             </div>
           </div>
 
           <!-- Guide -->
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#475569;">
-            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('ghTokenGuideTitle')}</div>
-            <div style="margin-bottom:2px;">${t('ghTokenStep1')} <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">${t('ghGenTokenLink')} &nearr;</a></div>
+          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
+            <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('ghTokenGuideTitle')}</div>
+            <div style="margin-bottom:2px;">${t('ghTokenStep1')} <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">${t('ghGenTokenLink')} &nearr;</a></div>
             <div style="margin-bottom:2px;">${t('ghTokenStep2')}</div>
             <div>${t('ghTokenStep3')}</div>
           </div>
@@ -1726,7 +1726,7 @@
         </div>
 
         <!-- Footer -->
-        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearGitHubConfig()">${t('ghClearConfigBtn')}</button>
           <div style="display:flex; gap:8px;">
             <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestGitHubConfig()">${t('ghVerifyBtn')}</button>
@@ -1751,10 +1751,10 @@
     const statusEl = document.getElementById('prd-gh-verify-status');
 
     if (!token) {
-      if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 GitHub Token</span>`;
+      if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444;">请先输入 GitHub Token</span>`;
       return false;
     }
-    if (statusEl) statusEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在连接 GitHub API 校验权限...</span>`;
+    if (statusEl) statusEl.innerHTML = `<span style="color:#8C4A28;">正在连接 GitHub API 校验权限...</span>`;
 
     const result = await verifyGitHubTokenAccess(token, owner, repo);
     if (result.success) {
@@ -1806,7 +1806,7 @@
   let isBackendApiCached = null;
 
   // ==========================================
-  // 🔒 线上统一 API Key 鉴权系统 (Online Unified API Key Authentication)
+  // 线上统一 API Key 鉴权系统 (Online Unified API Key Authentication)
   // ==========================================
   function isLocalEnvironment() {
     const host = window.location.hostname || '';
@@ -1819,14 +1819,14 @@
     if (existing) existing.remove();
 
     const activeMode = getActiveSyncMode();
-    const modeName = activeMode === 'jsonbin' ? '🔑 云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? '☁️ GitHub 推送打点' : '💻 本地服务模式');
+    const modeName = activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式');
 
     const modal = document.createElement('div');
     modal.id = 'prd-online-auth-modal';
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(28, 24, 21, 0.7);
       backdrop-filter: blur(5px);
       z-index: 10000080;
       display: flex;
@@ -1837,43 +1837,43 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
-            <span>🔒</span>
+            <span></span>
             <span>${escapeHtml(t('onlineAuthTitle'))}</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeOnlineAuthModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeOnlineAuthModal()">&times;</button>
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#334155; display:flex; flex-direction:column; gap:14px;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:14px;">
           <div>${t('onlineAuthDesc')}</div>
 
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
+          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:#64748b;">当前项目锁定模式：</span>
-              <span style="font-weight:700; color:#0284c7;">${escapeHtml(modeName)}</span>
+              <span style="color:#70685E;">当前项目锁定模式：</span>
+              <span style="font-weight:700; color:#8C4A28;">${escapeHtml(modeName)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:6px; font-family:monospace; font-size:11.5px;">
-              <span style="color:#64748b;">绑定云端数据源：</span>
-              <span style="color:#0f172a; font-weight:700;">${activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #E8E2D9; padding-top:6px; font-family:monospace; font-size:11.5px;">
+              <span style="color:#70685E;">绑定云端数据源：</span>
+              <span style="color:#2D2B29; font-weight:700;">${activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`}</span>
             </div>
           </div>
 
           <div>
-            <label style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
+            <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
+            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
           </div>
 
           <div id="prd-online-auth-tip" style="font-size:12px; min-height:18px;"></div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
-          <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeOnlineAuthModal()">👁️ 保持访客只读</button>
-          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#0284c7; border-color:#0284c7;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
+        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeOnlineAuthModal()">保持访客只读</button>
+          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#8C4A28; border-color:#8C4A28;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
         </div>
       </div>
     `;
@@ -1896,11 +1896,11 @@
     const activeMode = getActiveSyncMode();
 
     if (!inputKey) {
-      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">⚠️ 请先输入 API Key</span>`;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">请先输入 API Key</span>`;
       return;
     }
 
-    if (tipEl) tipEl.innerHTML = `<span style="color:#2563eb;">⏳ 正在校验 Key 有效性...</span>`;
+    if (tipEl) tipEl.innerHTML = `<span style="color:#8C4A28;">正在校验 Key 有效性...</span>`;
 
     try {
       if (activeMode === 'jsonbin') {
@@ -1930,7 +1930,7 @@
       updateVersionBarUI();
       renderRightDrawerList();
     } catch (err) {
-      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ 校验失败: ${escapeHtml(err.message)}</span>`;
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">校验失败: ${escapeHtml(err.message)}</span>`;
       showToast(t('onlineAuthFailedToast'), 'error');
     }
   };
@@ -1981,7 +1981,7 @@
   window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null) {
     const activeMode = getActiveSyncMode();
     if (activeMode === 'jsonbin' || activeMode === 'github') {
-      // 云端模式下（无论文件打开还是线上）统一唤起【🔒 创立人 API Key 鉴权】
+      // 云端模式下（无论文件打开还是线上）统一唤起【创立人 API Key 鉴权】
       window.showOnlineAuthModal(actionType);
       return;
     }
@@ -1996,7 +1996,7 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(28, 24, 21, 0.65);
       backdrop-filter: blur(5px);
       z-index: 10000050;
       display: flex;
@@ -2009,41 +2009,41 @@
     if (isGithubPages) {
       // 1. GitHub Pages 云端环境弹窗
       modal.innerHTML = `
-        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
           <!-- Header -->
-          <div style="background:#0f172a; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
               <span>${t('envTitle')}</span>
-              <span style="background:#0284c7; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
+              <span style="background:#8C4A28; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
             </div>
-            <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
+            <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
           </div>
 
           <!-- Body -->
-          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#334155; display:flex; flex-direction:column; gap:12px;">
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#38322D; display:flex; flex-direction:column; gap:12px;">
             <div>${t('envGhDesc')}</div>
 
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px;">
-              <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${t('envGhHowToUnlock')}</div>
-              <div style="color:#475569;">${t('envGhUnlockStep')}</div>
+            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:12px;">
+              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('envGhHowToUnlock')}</div>
+              <div style="color:#4F4741;">${t('envGhUnlockStep')}</div>
             </div>
           </div>
 
           <!-- Footer -->
-          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
             <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeNoBackendModal()">${t('envGhContinueVisitor')}</button>
-            <button class="prd-btn-primary" style="padding:7px 18px; font-size:12px; background:#0284c7; border-color:#0284c7;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envGhUnlockBtn')}</button>
+            <button class="prd-btn-primary" style="padding:7px 18px; font-size:12px; background:#8C4A28; border-color:#8C4A28;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envGhUnlockBtn')}</button>
           </div>
         </div>
       `;
     } else {
       // 2. 本地静态 / 离线环境弹窗
       modal.innerHTML = `
-        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(226,232,240,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
           <!-- Header -->
           <div style="background:#fff1f2; border-bottom:1px solid #fecdd3; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#be123c;">
-              <span>⚠️</span>
+              <span></span>
               <span>${t('envTitle')}</span>
               <span style="background:#ffe4e6; color:#9f1239; font-size:10.5px; padding:2px 8px; border-radius:10px; font-weight:600;">${t('envLocalBadge')}</span>
             </div>
@@ -2051,28 +2051,28 @@
           </div>
 
           <!-- Body -->
-          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#334155; display:flex; flex-direction:column; gap:12px;">
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#38322D; display:flex; flex-direction:column; gap:12px;">
             <div>${t('envLocalDesc')}</div>
 
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
-              <div style="font-weight:700; color:#0f172a;">${t('envLocalHowToUnlock')}</div>
+            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+              <div style="font-weight:700; color:#2D2B29;">${t('envLocalHowToUnlock')}</div>
               <div>
                 <div>${t('envLocalOpt1')}</div>
-                <div style="margin:6px 0; background:#0f172a; color:#38bdf8; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12.5px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="margin:6px 0; background:#2D2B29; color:#E0A990; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12.5px; display:flex; align-items:center; justify-content:space-between;">
                   <span>$ node server.js</span>
-                  <button style="background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${t('envLocalCopyCmd')}</button>
+                  <button style="background:#3D3B39; color:#FAF9F6; border:1px solid #38322D; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${t('envLocalCopyCmd')}</button>
                 </div>
               </div>
-              <div style="border-top:1px dashed #cbd5e1; padding-top:6px;">
+              <div style="border-top:1px dashed #D6CFC7; padding-top:6px;">
                 <div>${t('envLocalOpt2')}</div>
               </div>
             </div>
           </div>
 
           <!-- Footer -->
-          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
-            <button class="prd-btn-action" style="font-size:12px; color:#2563eb;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envLocalConfigGh')}</button>
-            <button class="prd-btn-primary" style="background:#0f172a; border-color:#0f172a; padding:6px 20px; font-size:12px;" onclick="window.closeNoBackendModal()">${t('envLocalGotIt')}</button>
+          <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="prd-btn-action" style="font-size:12px; color:#8C4A28;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envLocalConfigGh')}</button>
+            <button class="prd-btn-primary" style="background:#2D2B29; border-color:#2D2B29; padding:6px 20px; font-size:12px;" onclick="window.closeNoBackendModal()">${t('envLocalGotIt')}</button>
           </div>
         </div>
       `;
@@ -2090,7 +2090,7 @@
     const cmd = t('apiCheckCmdGuide') || 'node server.js';
     navigator.clipboard.writeText(cmd).then(() => {
       showToast(t('apiCheckCopySuccess'), 'success');
-      if (btn) btn.innerText = '✅ Copied';
+      if (btn) btn.innerText = 'Copied';
       setTimeout(() => { if (btn) btn.innerText = t('apiCheckCopyCmd'); }, 2000);
     }).catch(() => {
       showToast('Command: ' + cmd, 'info');
@@ -2248,8 +2248,8 @@
   style.id = 'prd-tool-styles-v6';
   style.textContent = `
     :root {
-      --prd-primary: #2563eb;
-      --prd-primary-hover: #1d4ed8;
+      --prd-primary: #8C4A28;
+      --prd-primary-hover: #6B371B;
       --prd-bg-panel: rgba(255, 255, 255, 0.98);
       --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
@@ -2260,13 +2260,13 @@
       top: 140px;
       right: 0;
       z-index: 1000009;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: linear-gradient(135deg, #36322F, #48433F);
       color: #ffffff;
       padding: 12px 6px;
       border-radius: 8px 0 0 8px;
       cursor: pointer;
       box-shadow: -4px 4px 14px rgba(0,0,0,0.25);
-      border: 1px solid rgba(59, 130, 246, 0.4);
+      border: 1px solid rgba(156, 91, 64, 0.4);
       border-right: none;
       display: flex;
       flex-direction: column;
@@ -2276,8 +2276,8 @@
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .prd-drawer-edge-tab:hover {
-      background: #0284c7;
-      border-color: #38bdf8;
+      background: #8C4A28;
+      border-color: #E0A990;
       transform: translateX(-4px);
     }
     .prd-edge-arrow { font-size: 14px; font-weight: 800; }
@@ -2296,12 +2296,12 @@
       width: 400px;
       height: 100vh;
       background: #ffffff;
-      box-shadow: -10px 0 35px rgba(15, 23, 42, 0.18);
+      box-shadow: -10px 0 35px rgba(28, 24, 21, 0.18);
       z-index: 1000016;
       display: flex;
       flex-direction: column;
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-left: 1px solid #e2e8f0;
+      border-left: 1px solid #E8E2D9;
       font-family: var(--prd-font);
     }
     .prd-right-drawer.open { right: 0; }
@@ -2341,9 +2341,9 @@
     }
     /* 上方按钮：全收起 (深色科技质感，右向箭头 › 朝内收起) */
     .prd-handle-full-collapse {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: linear-gradient(135deg, #36322F, #48433F);
       color: #ffffff;
-      border: 1px solid #334155;
+      border: 1px solid #38322D;
       border-right: none;
     }
     .prd-handle-full-collapse:hover {
@@ -2353,20 +2353,20 @@
     }
     /* 下方按钮：半收起 (专业亮蓝，右向紧凑收折标号条图标 ⇥) */
     .prd-handle-semi-collapse {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      background: linear-gradient(135deg, #8C4A28, #6B371B);
       color: #ffffff;
       border: 1px solid #60a5fa;
       border-right: none;
     }
     .prd-handle-semi-collapse:hover {
-      background: #1e40af;
-      border-color: #93c5fd;
+      background: #4A352A;
+      border-color: #E0A990;
       transform: scale(1.08) translateX(-2px);
     }
 
     .prd-drawer-header {
       padding: 12px 14px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid #F3EFEA;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2376,8 +2376,8 @@
 
     .prd-version-bar {
       padding: 8px 12px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      background: #FAF9F6;
+      border-bottom: 1px solid #E8E2D9;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -2388,9 +2388,9 @@
       padding: 4px 8px;
       font-size: 11.5px;
       font-weight: 700;
-      color: #0f172a;
+      color: #2D2B29;
       background: #ffffff;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
@@ -2408,7 +2408,7 @@
     /* 需求卡片样式 (100% 绝对统一卡片高度 136px) */
     .prd-card-item {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #E8E2D9;
       border-radius: 8px;
       padding: 10px 12px;
       display: flex;
@@ -2426,17 +2426,17 @@
       flex-shrink: 0;
     }
     .prd-card-item:hover {
-      border-color: #93c5fd;
-      background: #f8fafc;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08);
+      border-color: #E0A990;
+      background: #FAF9F6;
+      box-shadow: 0 4px 10px rgba(140, 74, 40, 0.08);
     }
     .prd-card-item.dragging {
       opacity: 0.45;
-      background: #eff6ff;
-      border: 1.5px dashed #3b82f6;
+      background: #FFF4ED;
+      border: 1.5px dashed #9C5B40;
     }
     .prd-card-item.drag-over {
-      border-top: 3px solid #2563eb;
+      border-top: 3px solid #8C4A28;
       background: #f0fdf4;
     }
 
@@ -2446,7 +2446,7 @@
       align-items: center;
       font-size: 13px;
       font-weight: 700;
-      color: #0f172a;
+      color: #2D2B29;
       height: 22px;
       flex-shrink: 0;
     }
@@ -2488,7 +2488,7 @@
 
     .prd-card-desc {
       font-size: 12px;
-      color: #64748b;
+      color: #70685E;
       line-height: 18px;
       height: 36px !important;
       min-height: 36px !important;
@@ -2506,7 +2506,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid #F3EFEA;
       padding-top: 4px;
       margin-top: 0;
       height: 24px;
@@ -2519,17 +2519,17 @@
       border-radius: 4px;
       font-weight: 600;
     }
-    .prd-tag-type { background: #e0f2fe; color: #0369a1; }
+    .prd-tag-type { background: #FDF6F0; color: #8C4A28; }
     .prd-tag-version { background: #fef3c7; color: #92400e; font-family: monospace; }
 
     /* 通用按钮 */
     .prd-btn-action {
       background: #ffffff;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 6px;
       padding: 4px 8px;
       font-size: 11px;
-      color: #334155;
+      color: #38322D;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -2538,8 +2538,8 @@
       transition: all 0.15s;
     }
     .prd-btn-action:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
+      background: #F3EFEA;
+      border-color: #A39A90;
     }
     .prd-btn-primary {
       background: var(--prd-primary);
@@ -2637,7 +2637,7 @@
       line-height: 1.65 !important;
     }
     .prd-live-block ul li::marker, .prd-doc-content ul li::marker {
-      color: #2563eb !important;
+      color: #8C4A28 !important;
     }
 
     /* 抽屉全展开 (400px) / 半收起 (56px 标号竖条) / 全收起 状态体系 */
@@ -2655,7 +2655,7 @@
       transform: translateX(100%);
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease;
       box-sizing: border-box;
-      border-left: 1px solid #e2e8f0;
+      border-left: 1px solid #E8E2D9;
     }
     #prd-drawer.open, .prd-right-drawer.open {
       transform: translateX(0) !important;
@@ -2684,7 +2684,7 @@
       flex-direction: column;
       height: 100%;
       width: 100%;
-      background: #f8fafc;
+      background: #FAF9F6;
       align-items: center;
       padding: 10px 0;
       box-sizing: border-box;
@@ -2722,7 +2722,7 @@
       right: 44px;
       top: 50%;
       transform: translateY(-50%);
-      background: #1e293b;
+      background: #3D3B39;
       color: #fff;
       font-size: 11px;
       font-weight: 600;
@@ -2747,7 +2747,7 @@
       transform: translateY(-50%);
       width: 24px;
       height: 48px;
-      background: #1e293b;
+      background: #3D3B39;
       color: #ffffff;
       border-radius: 6px 0 0 6px;
       display: flex;
@@ -2761,14 +2761,14 @@
       user-select: none;
     }
     .prd-drawer-edge-handle:hover {
-      background: #2563eb;
+      background: #8C4A28;
     }
 
     .prd-inspect-bubble {
       position: fixed;
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.3), 0 0 0 1px rgba(226, 232, 240, 0.95);
+      box-shadow: 0 20px 45px -10px rgba(28, 24, 21, 0.3), 0 0 0 1px rgba(226, 232, 240, 0.95);
       padding: 14px 16px;
       width: 520px;
       min-width: 340px;
@@ -2780,7 +2780,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      color: #1e293b;
+      color: #3D3B39;
       resize: both;
       overflow: hidden;
       box-sizing: border-box;
@@ -2789,7 +2789,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid #F3EFEA;
       padding-bottom: 6px;
       cursor: grab;
       user-select: none;
@@ -2802,7 +2802,7 @@
       margin: 10px 0;
       padding: 18px 14px 28px 14px !important;
       background: #ffffff !important;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #E8E2D9;
       border-radius: 10px;
       overflow-x: auto;
       text-align: center;
@@ -2816,14 +2816,14 @@
     }
     .mermaid {
       background: #ffffff !important;
-      color: #1e293b;
+      color: #3D3B39;
     }
 
     .prd-table-responsive {
       width: 100%;
       overflow-x: auto;
       margin: 8px 0;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #E8E2D9;
       border-radius: 8px;
     }
     .prd-md-rendered table, .prd-md-doc table, .prd-table-responsive table {
@@ -2834,27 +2834,27 @@
       text-align: left;
     }
     .prd-md-rendered th, .prd-md-doc th, .prd-table-responsive th {
-      background: #f8fafc;
-      color: #0f172a;
+      background: #FAF9F6;
+      color: #2D2B29;
       font-weight: 700;
       padding: 9px 12px;
-      border-bottom: 2px solid #e2e8f0;
-      border-right: 1px solid #f1f5f9;
+      border-bottom: 2px solid #E8E2D9;
+      border-right: 1px solid #F3EFEA;
     }
     .prd-md-rendered td, .prd-md-doc td, .prd-table-responsive td {
       padding: 8px 12px;
-      border-bottom: 1px solid #f1f5f9;
-      border-right: 1px solid #f8fafc;
-      color: #334155;
+      border-bottom: 1px solid #F3EFEA;
+      border-right: 1px solid #FAF9F6;
+      color: #38322D;
     }
     .prd-md-rendered tr:hover td, .prd-md-doc tr:hover td, .prd-table-responsive tr:hover td {
-      background: #f8fafc;
+      background: #FAF9F6;
     }
 
-    /* 📊 交互式可视化直编表格容器 (零管道符，如同 Word/Excel) */
+    /* 交互式可视化直编表格容器 (零管道符，如同 Word/Excel) */
     .prd-live-table-wrapper {
       margin: 10px 0;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 8px;
       background: #ffffff;
       overflow: hidden;
@@ -2866,8 +2866,8 @@
     }
     .prd-live-table-toolbar {
       padding: 6px 12px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      background: #FAF9F6;
+      border-bottom: 1px solid #E8E2D9;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2880,7 +2880,7 @@
     }
     .prd-visual-table th, .prd-visual-table td {
       padding: 10px 12px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       outline: none;
       vertical-align: top;
       min-width: 110px;
@@ -2892,17 +2892,17 @@
       box-sizing: border-box;
     }
     .prd-visual-table th {
-      background: #f1f5f9;
+      background: #F3EFEA;
       font-weight: 700;
-      color: #0f172a;
+      color: #2D2B29;
     }
     .prd-visual-table th:focus, .prd-visual-table td:focus {
-      background: #eff6ff !important;
-      box-shadow: inset 0 0 0 2px #2563eb;
+      background: #FFF4ED !important;
+      box-shadow: inset 0 0 0 2px #8C4A28;
     }
     .prd-visual-table td:empty:before, .prd-visual-table th:empty:before {
       content: attr(placeholder);
-      color: #94a3b8;
+      color: #A39A90;
       font-style: italic;
     }
 
@@ -2920,7 +2920,7 @@
       height: 720px;
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.95);
+      box-shadow: 0 25px 60px -15px rgba(28, 24, 21, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.95);
       z-index: 1000019;
       display: flex;
       flex-direction: column;
@@ -2930,7 +2930,7 @@
     }
     .prd-editor-header {
       padding: 12px 18px;
-      background: #0f172a;
+      background: #2D2B29;
       color: #ffffff;
       display: flex;
       justify-content: space-between;
@@ -2957,33 +2957,33 @@
       gap: 4px;
       flex-wrap: wrap;
       padding: 6px 8px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      background: #FAF9F6;
+      border: 1px solid #E8E2D9;
       border-radius: 6px;
       flex-shrink: 0;
     }
     .prd-md-tool-btn {
       background: #fff;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 4px;
       padding: 3px 7px;
       font-size: 11.5px;
-      color: #334155;
+      color: #38322D;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.15s;
     }
     .prd-md-tool-btn:hover, .prd-md-tool-btn.active {
-      background: #eff6ff;
-      border-color: #3b82f6;
+      background: #FFF4ED;
+      border-color: #9C5B40;
       color: var(--prd-primary);
     }
     .prd-tool-select {
       padding: 3px 6px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 4px;
       font-size: 11px;
-      color: #334155;
+      color: #38322D;
       background: #fff;
       outline: none;
       cursor: pointer;
@@ -2992,7 +2992,7 @@
     /* 逐行所见即所得核心文档画布 (去多余外框，保留流畅真实文档感) */
     .prd-live-blocks-container {
       flex: 1;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 8px;
       padding: 20px 24px;
       overflow-y: auto;
@@ -3019,7 +3019,7 @@
     .prd-live-block.editing {
       background: transparent;
       padding: 2px 0;
-      border-left: 2.5px solid #2563eb !important;
+      border-left: 2.5px solid #8C4A28 !important;
       padding-left: 8px !important;
     }
     .prd-live-line-input {
@@ -3032,7 +3032,7 @@
       line-height: 1.65;
       resize: none;
       overflow: hidden;
-      color: #0f172a;
+      color: #2D2B29;
       box-sizing: border-box;
       display: block;
       padding: 0;
@@ -3043,7 +3043,7 @@
     .prd-raw-source-textarea {
       flex: 1;
       width: 100%;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D6CFC7;
       border-radius: 8px;
       padding: 14px 16px;
       font-size: 13px;
@@ -3053,7 +3053,7 @@
       resize: none;
       box-sizing: border-box;
       background: #ffffff;
-      color: #0f172a;
+      color: #2D2B29;
     }
 
     /* 右下角最小化悬浮胶囊 */
@@ -3062,7 +3062,7 @@
       bottom: 24px;
       right: 24px;
       z-index: 1000025;
-      background: #0f172a;
+      background: #2D2B29;
       color: #ffffff;
       border-radius: 30px;
       padding: 8px 18px;
@@ -3080,7 +3080,7 @@
       to { transform: translateY(0) scale(1); opacity: 1; }
     }
     .prd-editor-mini-dock:hover {
-      background: #1e293b;
+      background: #3D3B39;
       box-shadow: 0 12px 35px rgba(2, 132, 199, 0.45);
     }
 
@@ -3088,7 +3088,7 @@
     .prd-doc-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(28, 24, 21, 0.65);
       backdrop-filter: blur(4px);
       z-index: 1000020;
       display: flex;
@@ -3110,7 +3110,7 @@
     .prd-doc-header {
       padding: 14px 20px;
       background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #E8E2D9;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3123,8 +3123,8 @@
     }
     .prd-doc-toc {
       width: 260px;
-      border-right: 1px solid #e2e8f0;
-      background: #f8fafc;
+      border-right: 1px solid #E8E2D9;
+      background: #FAF9F6;
       padding: 14px 10px;
       overflow-y: auto;
       flex-shrink: 0;
@@ -3132,7 +3132,7 @@
     .prd-toc-title {
       font-size: 11px;
       font-weight: 700;
-      color: #94a3b8;
+      color: #A39A90;
       text-transform: uppercase;
       margin-bottom: 8px;
       padding: 0 6px;
@@ -3141,7 +3141,7 @@
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12.5px;
-      color: #475569;
+      color: #4F4741;
       cursor: pointer;
       display: flex;
       gap: 6px;
@@ -3149,7 +3149,7 @@
       transition: all 0.15s;
     }
     .prd-toc-item:hover, .prd-toc-item.active {
-      background: #eff6ff;
+      background: #FFF4ED;
       color: var(--prd-primary);
       font-weight: 600;
     }
@@ -3164,19 +3164,19 @@
     }
     .prd-doc-paper { max-width: 900px; margin: 0 auto; }
     .prd-doc-hero {
-      border-bottom: 2px solid #f1f5f9;
+      border-bottom: 2px solid #F3EFEA;
       padding-bottom: 16px;
       margin-bottom: 24px;
     }
     .prd-doc-hero-title {
       font-size: 24px;
       font-weight: 800;
-      color: #0f172a;
+      color: #2D2B29;
       margin: 0 0 8px 0;
     }
     .prd-doc-hero-meta {
       font-size: 12px;
-      color: #64748b;
+      color: #70685E;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -3185,7 +3185,7 @@
     .prd-doc-article-section {
       margin-top: 28px;
       padding-top: 20px;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid #F3EFEA;
       scroll-margin-top: 80px;
     }
     .prd-doc-article-section:first-of-type {
@@ -3196,7 +3196,7 @@
     .prd-doc-sec-heading {
       font-size: 17px;
       font-weight: 700;
-      color: #0f172a;
+      color: #2D2B29;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -3205,14 +3205,14 @@
     .prd-doc-sec-content {
       font-size: 13.5px;
       line-height: 1.7;
-      color: #334155;
+      color: #38322D;
     }
 
     /* 版本上传模态框 */
     .prd-version-modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(28, 24, 21, 0.6);
       backdrop-filter: blur(2px);
       z-index: 1000030;
       display: flex;
@@ -3247,9 +3247,9 @@
             themeVariables: {
               background: '#ffffff',
               mainBkg: '#ffffff',
-              nodeBorder: '#2563eb',
+              nodeBorder: '#8C4A28',
               clusterBkg: '#ffffff',
-              titleColor: '#0f172a',
+              titleColor: '#2D2B29',
               edgeLabelBackground: '#ffffff'
             },
             securityLevel: 'loose',
@@ -3275,9 +3275,9 @@
           themeVariables: {
             background: '#ffffff',
             mainBkg: '#ffffff',
-            nodeBorder: '#2563eb',
+            nodeBorder: '#8C4A28',
             clusterBkg: '#ffffff',
-            titleColor: '#0f172a',
+            titleColor: '#2D2B29',
             edgeLabelBackground: '#ffffff'
           },
           securityLevel: 'loose',
@@ -3548,7 +3548,7 @@
       const bgMap = {
         success: 'linear-gradient(135deg, #059669, #10b981)',
         error: 'linear-gradient(135deg, #dc2626, #ef4444)',
-        info: 'linear-gradient(135deg, #0f172a, #1e293b)'
+        info: 'linear-gradient(135deg, #36322F, #48433F)'
       };
 
       toast.style.cssText = `
@@ -3588,16 +3588,16 @@
 
     const activeMode = getActiveSyncMode();
 
-    // 模式 1: 🔑 云端 KV 存储打点 (JSONBin.io)
+    // 模式 1: 云端 KV 存储打点 (JSONBin.io)
     // 严格单一排他：只向云端 JSONBin 发送真实请求，云端成功后才更新本地缓存镜像
     if (activeMode === 'jsonbin') {
       const kv = getKVStorageConfig();
       if (!kv || !kv.secretKey) {
-        showToast('⚠️ 未配置有效的 JSONBin Master Key，保存失败', 'error');
+        showToast('未配置有效的 JSONBin Master Key，保存失败', 'error');
         return false;
       }
       try {
-        showToast(t('kvSyncingToast') || '⏳ 正在同步至云端...', 'info');
+        showToast(t('kvSyncingToast') || '正在同步至云端...', 'info');
         const res = await saveRemoteKVData(kv.binId, kv.secretKey, {
           pageKey,
           versionRegistry,
@@ -3617,40 +3617,40 @@
         } catch (e) {}
 
         const binDisplay = kv.binId ? ` (Bin: ${kv.binId.substring(0, 8)}...)` : '';
-        showToast(`✅ [云端KV] 真实同步成功！${binDisplay}`, 'success');
+        showToast(`[云端KV] 真实同步成功！${binDisplay}`, 'success');
         return true;
       } catch (kvErr) {
-        showToast(`❌ 云端 KV 同步失败: ${kvErr.message}`, 'error');
+        showToast(`云端 KV 同步失败: ${kvErr.message}`, 'error');
         return false;
       }
     }
 
-    // 模式 2: ☁️ GitHub 推送打点 (Git Commit)
+    // 模式 2: GitHub 推送打点 (Git Commit)
     // 严格单一排他：只调用 GitHub REST API 生成正式 Commit 并严格校验返回
     if (activeMode === 'github') {
       const gh = getGitHubConfig();
       if (!gh || !gh.token || !gh.owner || !gh.repo) {
-        showToast('⚠️ 未配置有效的 GitHub Token，保存失败', 'error');
+        showToast('未配置有效的 GitHub Token，保存失败', 'error');
         return false;
       }
       try {
-        showToast(t('ghSavingToGithub') || '⏳ 正在向 GitHub 提交 Commit...', 'info');
+        showToast(t('ghSavingToGithub') || '正在向 GitHub 提交 Commit...', 'info');
         const jsFileContent = `/**\n * PRD 需求数据 - ${pageKey}\n * GitHub Pages 实时保存于: ${new Date().toLocaleString()}\n */\nwindow.INITIAL_PRD_DATA = ${JSON.stringify(savedPins, null, 2)};\nwindow.PRD_VERSION_REGISTRY = ${JSON.stringify(versionRegistry, null, 2)};\n`;
         const filePath = getGitHubTargetFilePath(pageKey);
         await saveToGitHubApi(gh.owner, gh.repo, gh.branch || 'main', filePath, gh.token, jsFileContent);
-        showToast(`✅ [GitHub] Commit 提交成功！(${filePath})`, 'success');
+        showToast(`[GitHub] Commit 提交成功！(${filePath})`, 'success');
         return true;
       } catch (ghErr) {
-        showToast(`❌ GitHub 同步失败: ${ghErr.message}`, 'error');
+        showToast(`GitHub 同步失败: ${ghErr.message}`, 'error');
         return false;
       }
     }
 
-    // 模式 3: 💻 本地 Node.js 服务模式
+    // 模式 3: 本地 Node.js 服务模式
     // 严格单一排他：只调用本地 /api/save-prd 写入磁盘，并严格校验返回
     if (activeMode === 'local') {
       if (window.location.protocol === 'file:') {
-        showToast('❌ file:// 静态协议下无法使用本地服务模式，请在终端运行 node server.js', 'error');
+        showToast('file:// 静态协议下无法使用本地服务模式，请在终端运行 node server.js', 'error');
         return false;
       }
       try {
@@ -3662,12 +3662,12 @@
         if (resp.ok) {
           const resJson = await resp.json();
           if (resJson && resJson.success) {
-            showToast('✅ [本地服务] 需求规约已成功写入本地磁盘 JS 文件！', 'success');
+            showToast('[本地服务] 需求规约已成功写入本地磁盘 JS 文件！', 'success');
             return true;
           }
         }
       } catch (e) {}
-      showToast('❌ 本地 Node.js 写入服务未连接 (请检查 node server.js)', 'error');
+      showToast('本地 Node.js 写入服务未连接 (请检查 node server.js)', 'error');
       return false;
     }
 
@@ -3699,7 +3699,7 @@
       window.openCurrentPagePRDDoc();
     }
     await persistData();
-    showToast(`✅ 已切换至版本 [${ver}]（当前版本共 ${savedPins.length} 项规格）`, 'info');
+    showToast(`已切换至版本 [${ver}]（当前版本共 ${savedPins.length} 项规格）`, 'info');
   };
 
   window.createPRDVersion = async function(ver) {
@@ -3732,7 +3732,7 @@
     // 严格创建全新空白版本（各版本打点完全物理隔离，互不可见）
     const ok = await window.createPRDVersion(ver);
     if (ok) {
-      showToast(`✅ 已创建并切换至全新空白版本 [${ver}]（初始打点数：0）`, 'success');
+      showToast(`已创建并切换至全新空白版本 [${ver}]（初始打点数：0）`, 'success');
     }
   };
 
@@ -3749,7 +3749,7 @@
     }
     versionRegistry.versions[ver] = JSON.parse(JSON.stringify(savedPins));
     await window.switchPRDVersion(ver);
-    showToast(`✅ 已复制并切换至新版本 [${ver}]！`, 'success');
+    showToast(`已复制并切换至新版本 [${ver}]！`, 'success');
   };
 
   window.deleteCurrentVersion = async function() {
@@ -3758,7 +3758,7 @@
       alert('无法删除：必须保留至少一个 PRD 规格版本！');
       return;
     }
-    if (confirm(`⚠️ 危险操作：确认永久删除版本 [${currentVersion}] 及其所有打点数据吗？`)) {
+    if (confirm(`危险操作：确认永久删除版本 [${currentVersion}] 及其所有打点数据吗？`)) {
       delete versionRegistry.versions[currentVersion];
       const remainingVer = Object.keys(versionRegistry.versions)[0];
       await window.switchPRDVersion(remainingVer);
@@ -3773,14 +3773,14 @@
     const verKeys = Object.keys(versionRegistry.versions);
     let html = '';
     verKeys.forEach(ver => {
-      html += `<option value="${ver}" ${ver === currentVersion ? 'selected' : ''}>🏷️ ${ver} (${versionRegistry.versions[ver].length}项)</option>`;
+      html += `<option value="${ver}" ${ver === currentVersion ? 'selected' : ''}>${ver} (${versionRegistry.versions[ver].length}项)</option>`;
     });
     html += `
       <option disabled>──────────</option>
-      <option value="__NEW__">➕ 新建空白版本...</option>
-      <option value="__COPY__">📋 复制当前版本副本...</option>
-      <option value="__UPLOAD__">📂 上传版本数据...</option>
-      <option value="__DELETE__">🗑️ 删除当前版本...</option>
+      <option value="__NEW__">新建空白版本...</option>
+      <option value="__COPY__">复制当前版本副本...</option>
+      <option value="__UPLOAD__">上传版本数据...</option>
+      <option value="__DELETE__">删除当前版本...</option>
     `;
     select.innerHTML = html;
   }
@@ -3956,26 +3956,26 @@
       <div class="prd-inspect-bubble-header">
         <div style="display:flex; align-items:center; gap:6px; flex:1; overflow:hidden;">
           <span class="prd-pin-num-pill">${pin.id}</span>
-          <strong style="font-size:13px; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(pin.title || '（未命名需求）')}</strong>
+          <strong style="font-size:13px; color:#2D2B29; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(pin.title || '（未命名需求）')}</strong>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button class="prd-btn-action" style="padding:2px 8px; font-size:11px; background:#f1f5f9; color:#475569; border-radius:4px; border:1px solid #e2e8f0;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
-            <span id="prd-bubble-drawer-btn-icon">${isDrawerOpen ? '📁 收起侧边栏' : '📂 展开侧边栏'}</span>
+          <button class="prd-btn-action" style="padding:2px 8px; font-size:11px; background:#F3EFEA; color:#4F4741; border-radius:4px; border:1px solid #E8E2D9;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
+            <span id="prd-bubble-drawer-btn-icon">${isDrawerOpen ? '收起侧边栏' : '展开侧边栏'}</span>
           </button>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer; padding:0 4px; line-height:1;" onclick="window.closeInspectBubble()" title="关闭当前需求框">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer; padding:0 4px; line-height:1;" onclick="window.closeInspectBubble()" title="关闭当前需求框">&times;</button>
         </div>
       </div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
         <span class="prd-tag prd-tag-type">${escapeHtml(pin.type || '业务规则')}</span>
         <span class="prd-tag prd-tag-version">${escapeHtml(currentVersion)}</span>
-        ${pin.selector ? `<code style="font-size:11px; background:#f1f5f9; color:#64748b; padding:1px 6px; border-radius:3px;">${escapeHtml(pin.selector)}</code>` : ''}
+        ${pin.selector ? `<code style="font-size:11px; background:#F3EFEA; color:#70685E; padding:1px 6px; border-radius:3px;">${escapeHtml(pin.selector)}</code>` : ''}
       </div>
       <div class="prd-md-rendered" style="flex:1; overflow-y:auto; min-height:140px; font-size:13px; line-height:1.6; padding-right:4px;">
-        ${parseMarkdown(pin.desc) || '<p style="color:#94a3b8; font-style:italic;">暂无详细描述</p>'}
+        ${parseMarkdown(pin.desc) || '<p style="color:#A39A90; font-style:italic;">暂无详细描述</p>'}
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:6px; margin-top:2px; flex-shrink:0;">
-        <span style="font-size:10px; color:#94a3b8;">${escapeHtml(pin.pageTitle || pageKey)}</span>
-        <button class="prd-btn-action" style="color:var(--prd-primary);" onclick="window.openEditorForPin(${pin.id})">✏️ 编辑需求</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #F3EFEA; padding-top:6px; margin-top:2px; flex-shrink:0;">
+        <span style="font-size:10px; color:#A39A90;">${escapeHtml(pin.pageTitle || pageKey)}</span>
+        <button class="prd-btn-action" style="color:var(--prd-primary);" onclick="window.openEditorForPin(${pin.id})">编辑需求</button>
       </div>
     `;
 
@@ -4009,7 +4009,7 @@
       window.setPRDMode('show');
     }
     const btnText = document.getElementById('prd-bubble-drawer-btn-icon');
-    if (btnText) btnText.innerText = isCurrentlyOpen ? '📂 展开侧边栏' : '📁 收起侧边栏';
+    if (btnText) btnText.innerText = isCurrentlyOpen ? '展开侧边栏' : '收起侧边栏';
   };
 
   window.closeInspectBubble = function() {
@@ -4593,7 +4593,7 @@
     editor.innerHTML = `
       <div class="prd-editor-header" id="prd-editor-drag-handle">
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:15px;">✏️</span>
+          <span style="font-size:15px;"></span>
           <strong>${draft.id ? `${t('editModalTitle')} #${draft.id}` : t('createModalTitle')}</strong>
           <span class="prd-tag prd-tag-version">${escapeHtml(currentVersion)}</span>
         </div>
@@ -4606,12 +4606,12 @@
         <!-- 头部元信息表单 -->
         <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 12px; flex-shrink:0;">
           <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:12px; font-weight:700; color:#334155;">${t('reqTitleLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="prd-modal-title" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none;" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
+            <label style="font-size:12px; font-weight:700; color:#38322D;">${t('reqTitleLabel')} <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="prd-modal-title" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none;" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
           </div>
           <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:12px; font-weight:700; color:#334155;">${t('reqTypeLabel')}</label>
-            <select id="prd-modal-type" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff;">
+            <label style="font-size:12px; font-weight:700; color:#38322D;">${t('reqTypeLabel')}</label>
+            <select id="prd-modal-type" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; background:#fff;">
               <option value="业务规则" ${draft.type === '业务规则' ? 'selected' : ''}>${t('reqTypes')['业务规则'] || '业务规则'}</option>
               <option value="交互逻辑" ${draft.type === '交互逻辑' ? 'selected' : ''}>${t('reqTypes')['交互逻辑'] || '交互逻辑'}</option>
               <option value="数据口径" ${draft.type === '数据口径' ? 'selected' : ''}>${t('reqTypes')['数据口径'] || '数据口径'}</option>
@@ -4623,15 +4623,15 @@
         </div>
 
         <!-- 业务规约快捷模板下拉菜单与快捷插入栏 -->
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:#f8fafc; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:#FAF9F6; padding:6px 10px; border-radius:6px; border:1px solid #E8E2D9;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:12px; font-weight:700; color:#475569;">💡 快速插入规约：</span>
-            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('rule')">📋 业务规则模版</button>
-            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('state-chart')">🔄 状态机流程图</button>
-            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('table-dict')">📊 字段数据字典表</button>
+            <span style="font-size:12px; font-weight:700; color:#4F4741;">快速插入规约：</span>
+            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('rule')">业务规则模版</button>
+            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('state-chart')">状态机流程图</button>
+            <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('table-dict')">字段数据字典表</button>
           </div>
-          <div style="font-size:11px; color:#64748b;">
-            ⌨️ 提示：支持按 <kbd style="background:#e2e8f0; padding:1px 4px; border-radius:3px;">Tab</kbd> / <kbd style="background:#e2e8f0; padding:1px 4px; border-radius:3px;">Shift+Tab</kbd> 多级层级缩进
+          <div style="font-size:11px; color:#70685E;">
+            ⌨️ 提示：支持按 <kbd style="background:#E8E2D9; padding:1px 4px; border-radius:3px;">Tab</kbd> / <kbd style="background:#E8E2D9; padding:1px 4px; border-radius:3px;">Shift+Tab</kbd> 多级层级缩进
           </div>
         </div>
 
@@ -4641,16 +4641,16 @@
         </div>
 
         <!-- 底部绑定状态与操作栏 (单一暂存并看页面入口) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; padding-top:8px; border-top:1px solid #f1f5f9;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; padding-top:8px; border-top:1px solid #F3EFEA;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="prd-btn-action" style="font-size:11.5px; padding:4px 10px; color:#2563eb;" onclick="window.rePickElementForDraft()">${t('rePickBtn')}</button>
-            <span style="font-size:11px; color:#64748b; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-              ${draft.selector ? `<span style="color:#059669;">● ${t('boundComp')}:</span> <code>${escapeHtml(draft.selector)}</code>` : `<span style="color:#94a3b8;">○ ${t('unboundElementTip')}</span>`}
+            <button class="prd-btn-action" style="font-size:11.5px; padding:4px 10px; color:#8C4A28;" onclick="window.rePickElementForDraft()">${t('rePickBtn')}</button>
+            <span style="font-size:11px; color:#70685E; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              ${draft.selector ? `<span style="color:#059669;">${t('boundComp')}:</span> <code>${escapeHtml(draft.selector)}</code>` : `<span style="color:#A39A90;">○ ${t('unboundElementTip')}</span>`}
             </span>
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="prd-btn-action" style="padding:6px 14px; background:#eff6ff; color:#1d4ed8; font-weight:600; border-color:#bfdbfe;" onclick="window.minimizeEditor()" title="暂存当前草稿并折叠至右下角胶囊，随时查阅底层原型">${t('tempSaveBtn')}</button>
-            <button class="prd-btn-action" style="padding:6px 14px; background:#f1f5f9;" onclick="window.closeEditorModal()">${t('cancelBtn')}</button>
+            <button class="prd-btn-action" style="padding:6px 14px; background:#FFF4ED; color:#6B371B; font-weight:600; border-color:#F2D1C1;" onclick="window.minimizeEditor()" title="暂存当前草稿并折叠至右下角胶囊，随时查阅底层原型">${t('tempSaveBtn')}</button>
+            <button class="prd-btn-action" style="padding:6px 14px; background:#F3EFEA;" onclick="window.closeEditorModal()">${t('cancelBtn')}</button>
             <button class="prd-btn-primary" style="padding:6px 18px;" onclick="window.saveEditorModal()">${t('saveBtn')}</button>
           </div>
         </div>
@@ -4707,7 +4707,7 @@
         });
       } catch (err) {
         console.warn('Vditor init failed, fallback to textarea:', err);
-        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #cbd5e1; border-radius:6px;">${escapeHtml(draft.desc || '')}</textarea>`;
+        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #D6CFC7; border-radius:6px;">${escapeHtml(draft.desc || '')}</textarea>`;
       }
     });
   }
@@ -4740,7 +4740,7 @@
     if (!textarea) {
       const container = document.getElementById('prd-vditor-container');
       if (container) {
-        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none; line-height:1.5;">${escapeHtml(activeDraft?.desc || '')}</textarea>`;
+        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none; line-height:1.5;">${escapeHtml(activeDraft?.desc || '')}</textarea>`;
         textarea = document.getElementById('prd-fallback-textarea');
       }
     }
@@ -4787,17 +4787,17 @@
     const displayTitle = activeDraft.title ? activeDraft.title : (activeDraft.id ? `需求 #${activeDraft.id}` : '新建需求');
 
     dock.innerHTML = `
-      <span style="font-size:18px;">✏️</span>
+      <span style="font-size:18px;"></span>
       <div style="display:flex; flex-direction:column; line-height:1.2;">
         <strong style="font-size:12px; color:#ffffff; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t('editingDraftPrefix')}: ${escapeHtml(displayTitle)}</strong>
-        <span style="font-size:10px; color:#94a3b8;">${t('draftStashedTip')}</span>
+        <span style="font-size:10px; color:#A39A90;">${t('draftStashedTip')}</span>
       </div>
-      <button class="prd-btn-action" style="padding:4px 10px; font-size:11px; background:#2563eb; color:#ffffff; border-radius:14px; font-weight:700; margin-left:4px;">${t('restoreEditBtn')}</button>
-      <button style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px; line-height:1;" onclick="event.stopPropagation(); window.cancelEditorFromDock()" title="${escapeHtml(t('cancelBtn'))}">&times;</button>
+      <button class="prd-btn-action" style="padding:4px 10px; font-size:11px; background:#8C4A28; color:#ffffff; border-radius:14px; font-weight:700; margin-left:4px;">${t('restoreEditBtn')}</button>
+      <button style="background:none; border:none; color:#A39A90; font-size:16px; cursor:pointer; padding:0 4px; line-height:1;" onclick="event.stopPropagation(); window.cancelEditorFromDock()" title="${escapeHtml(t('cancelBtn'))}">&times;</button>
     `;
 
     document.body.appendChild(dock);
-    showToast('💡 编辑器已最小化至右下角，您可随意查阅底部页面原型，点击右下角胶囊即可继续编辑！', 'info');
+    showToast('编辑器已最小化至右下角，您可随意查阅底部页面原型，点击右下角胶囊即可继续编辑！', 'info');
   };
 
   window.restoreEditorModal = function() {
@@ -4892,7 +4892,7 @@ window.saveEditorModal = async function() {
       reIndexPins(savedPins);
       renderPinMarkers();
       renderRightDrawerList();
-      showToast('❌ 保存失败：云端/后端同步未完成，已自动回滚', 'error');
+      showToast('保存失败：云端/后端同步未完成，已自动回滚', 'error');
     }
   };
 
@@ -4919,7 +4919,7 @@ window.saveEditorModal = async function() {
     }
     isDrawerManageMode = !isDrawerManageMode;
     renderRightDrawerList();
-    showToast(isDrawerManageMode ? '🔧 已开启排序与删除管理模式（可拖拽或调整序号）' : '🔒 已退出管理模式（列表已安全锁定）', 'info');
+    showToast(isDrawerManageMode ? '已开启排序与删除管理模式（可拖拽或调整序号）' : '已退出管理模式（列表已安全锁定）', 'info');
   };
 
   window.handleCardDragStart = function(e, id) {
@@ -5023,20 +5023,20 @@ window.saveEditorModal = async function() {
       const movedCard = document.querySelector(`.prd-card-item:nth-child(${targetIdx + (isDrawerManageMode ? 2 : 1)})`);
       if (movedCard) {
         movedCard.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-        movedCard.style.boxShadow = '0 0 0 2px #2563eb, 0 4px 14px rgba(37,99,235,0.25)';
+        movedCard.style.boxShadow = '0 0 0 2px #8C4A28, 0 4px 14px rgba(140,74,40,0.25)';
         setTimeout(() => {
           if (movedCard) movedCard.style.boxShadow = '';
         }, 800);
       }
 
-      showToast(`✅ 需求已调整至 #${targetIdx + 1}，后续序号已依次顺延！`, 'success');
+      showToast(`需求已调整至 #${targetIdx + 1}，后续序号已依次顺延！`, 'success');
     } else {
       savedPins = backup;
       reIndexPins(savedPins);
       renderRightDrawerList();
       renderMiniRailList();
-      alert('❌ 排序保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！');
-      showToast('❌ 排序保存失败', 'error');
+      alert('排序保存失败：未检测到本地服务接口，无法写入本地磁盘 JS 文件！');
+      showToast('排序保存失败', 'error');
     }
   };
 
@@ -5078,18 +5078,18 @@ window.saveEditorModal = async function() {
       if (searchKeyword) {
         container.innerHTML = `
           ${headerBannerHtml}
-          <div style="text-align:center; color:#94a3b8; padding:40px 10px;">
-            <div style="font-size:28px; margin-bottom:6px;">🔍</div>
-            <div style="font-size:13px; font-weight:600; color:#475569; margin-bottom:4px;">未搜索到匹配的需求标题</div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:12px;">关键词: "${escapeHtml(searchKeyword)}"</div>
+          <div style="text-align:center; color:#A39A90; padding:40px 10px;">
+            <div style="font-size:28px; margin-bottom:6px;"></div>
+            <div style="font-size:13px; font-weight:600; color:#4F4741; margin-bottom:4px;">未搜索到匹配的需求标题</div>
+            <div style="font-size:11px; color:#A39A90; margin-bottom:12px;">关键词: "${escapeHtml(searchKeyword)}"</div>
             <button class="prd-btn-action" style="font-size:11px; padding:4px 12px;" onclick="window.clearPRDSearch()">清空搜索条件</button>
           </div>
         `;
       } else {
         container.innerHTML = `
           ${headerBannerHtml}
-          <div style="text-align:center; color:#94a3b8; padding:40px 10px;">
-            <div style="font-size:28px; margin-bottom:6px;">📌</div>
+          <div style="text-align:center; color:#A39A90; padding:40px 10px;">
+            <div style="font-size:28px; margin-bottom:6px;"></div>
             <div style="font-size:12px;">当前版本 [${escapeHtml(currentVersion)}] 暂无需求点</div>
           </div>
         `;
@@ -5103,14 +5103,14 @@ window.saveEditorModal = async function() {
         <div class="prd-card-item" draggable="${isDrawerManageMode ? 'true' : 'false'}" ondragstart="window.handleCardDragStart(event, ${pin.id})" ondragover="window.handleCardDragOver(event)" ondragleave="window.handleCardDragLeave(event)" ondrop="window.handleCardDrop(event, ${pin.id})" ondragend="window.handleCardDragEnd(event)" onclick="window.locateAndHighlight(${pin.id})">
           <div class="prd-card-header">
             <div class="prd-num-title">
-              ${isDrawerManageMode ? '<span style="color:#94a3b8; font-size:14px; cursor:grab;" title="按住拖拽排序">⠿</span>' : ''}
+              ${isDrawerManageMode ? '<span style="color:#A39A90; font-size:14px; cursor:grab;" title="按住拖拽排序">⠿</span>' : ''}
               <span class="prd-pin-num-pill ${isDrawerManageMode ? 'clickable' : ''}" onclick="${isDrawerManageMode ? `event.stopPropagation(); window.promptChangePinOrder(${pin.id});` : ''}" title="${isDrawerManageMode ? `点击直接修改序号 (当前 #${pin.id})` : `#${pin.id}`}">${pin.id}</span>
               <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(pin.title || '（未命名）')}</span>
             </div>
             ${isDrawerManageMode ? `
               <div style="display:flex; align-items:center; gap:2px;">
-                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#eff6ff; color:#1d4ed8; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="${escapeHtml(t('moveToTopTip'))}">${t('moveToTopBtn')}</button>
-                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f1f5f9; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="${escapeHtml(t('clickToReorderTip'))}">${t('moveToBtn')}</button>
+                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#FFF4ED; color:#6B371B; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="${escapeHtml(t('moveToTopTip'))}">${t('moveToTopBtn')}</button>
+                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#F3EFEA; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="${escapeHtml(t('clickToReorderTip'))}">${t('moveToBtn')}</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, -1)" title="${escapeHtml(t('moveUpTip'))}">▲</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, 1)" title="${escapeHtml(t('moveDownTip'))}">▼</button>
               </div>
@@ -5126,12 +5126,12 @@ window.saveEditorModal = async function() {
           </div>
 
           <div class="prd-card-footer">
-            <span style="font-size:10px; color:#94a3b8;">${pin.selector ? t('boundComp') : t('unbound')}</span>
+            <span style="font-size:10px; color:#A39A90;">${pin.selector ? t('boundComp') : t('unbound')}</span>
             <div style="display:flex; gap:6px;">
               <button class="prd-btn-action" onclick="event.stopPropagation(); window.locateAndHighlight(${pin.id});">${t('locateBtn')}</button>
               <button class="prd-btn-action" onclick="event.stopPropagation(); window.openEditorForPin(${pin.id});">${t('editBtn')}</button>
               ${isDrawerManageMode ? `
-                <button class="prd-btn-action btn-danger" onclick="event.stopPropagation(); window.deletePinItem(${pin.id});" title="删除该需求">🗑️ 删除</button>
+                <button class="prd-btn-action" style="color: #dc2626; border-color: #fecaca; background: #fef2f2; padding: 2px 10px;" onclick="event.stopPropagation(); window.deletePinItem(${pin.id});" title="删除该需求">删除</button>
               ` : ''}
             </div>
           </div>
@@ -5167,14 +5167,14 @@ window.saveEditorModal = async function() {
         if (badge) badge.innerText = savedPins.length;
         const edgeCount = document.getElementById('prd-edge-count');
         if (edgeCount) edgeCount.innerText = savedPins.length;
-        showToast('✅ 需求点已成功删除并同步至云端！', 'success');
+        showToast('需求点已成功删除并同步至云端！', 'success');
       } else {
         savedPins = backup;
         reIndexPins(savedPins);
         versionRegistry.versions[currentVersion] = savedPins;
         renderPinMarkers();
         renderRightDrawerList();
-        showToast('❌ 删除失败：云端同步未完成', 'error');
+        showToast('删除失败：云端同步未完成', 'error');
       }
     }
   };
@@ -5272,10 +5272,10 @@ window.saveEditorModal = async function() {
       if (edgeTab) {
         edgeTab.style.display = 'flex';
         edgeTab.title = '点击退出打标模式 (或按 ESC 退出)';
-        edgeTab.innerHTML = `<span class="prd-edge-arrow" style="color:#ef4444; font-size:12px; font-weight:800;">✕</span><span class="prd-edge-text" style="color:#ef4444; font-weight:700;">📍 点击组件打标 (点击或ESC退出)</span>`;
+        edgeTab.innerHTML = `<span class="prd-edge-arrow" style="color:#ef4444; font-size:12px; font-weight:800;"></span><span class="prd-edge-text" style="color:#ef4444; font-weight:700;">点击组件打标 (点击或ESC退出)</span>`;
       }
       renderPinMarkers();
-      showToast('📍 点击页面任意组件即可完成打标并呼出规约编辑窗', 'info');
+      showToast('点击页面任意组件即可完成打标并呼出规约编辑窗', 'info');
     } else if (mode === 'show') {
       unbindPickListeners();
       if (drawer) {
@@ -5353,21 +5353,21 @@ window.saveEditorModal = async function() {
   <style>
     :root {
       --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      --prd-primary: #2563eb;
+      --prd-primary: #8C4A28;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 0;
       font-family: var(--prd-font);
-      background: #f8fafc;
-      color: #1e293b;
+      background: #FAF9F6;
+      color: #3D3B39;
       line-height: 1.6;
     }
     .prd-page-header {
       position: sticky;
       top: 0;
-      background: #0f172a;
+      background: #2D2B29;
       color: #ffffff;
       padding: 14px 28px;
       display: flex;
@@ -5420,7 +5420,7 @@ window.saveEditorModal = async function() {
       overflow-y: auto;
       background: #ffffff;
       border-radius: 10px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #E8E2D9;
       padding: 16px 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       flex-shrink: 0;
@@ -5428,11 +5428,11 @@ window.saveEditorModal = async function() {
     .prd-toc-title {
       font-size: 12px;
       font-weight: 700;
-      color: #94a3b8;
+      color: #A39A90;
       text-transform: uppercase;
       padding: 4px 8px 8px;
       margin-bottom: 6px;
-      border-bottom: 1px dashed #e2e8f0;
+      border-bottom: 1px dashed #E8E2D9;
     }
     .prd-toc-link {
       display: flex;
@@ -5440,13 +5440,13 @@ window.saveEditorModal = async function() {
       gap: 6px;
       padding: 6px 10px;
       border-radius: 6px;
-      color: #475569;
+      color: #4F4741;
       text-decoration: none;
       font-size: 13px;
       transition: all 0.15s;
     }
     .prd-toc-link:hover {
-      background: #eff6ff;
+      background: #FFF4ED;
       color: var(--prd-primary);
     }
     .prd-toc-badge {
@@ -5466,20 +5466,20 @@ window.saveEditorModal = async function() {
       flex: 1;
       background: #ffffff;
       border-radius: 12px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #E8E2D9;
       padding: 40px 48px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.04);
       overflow: hidden;
     }
     .prd-doc-hero {
-      border-bottom: 2px solid #f1f5f9;
+      border-bottom: 2px solid #F3EFEA;
       padding-bottom: 20px;
       margin-bottom: 32px;
     }
     .prd-doc-hero h1 {
       font-size: 26px;
       font-weight: 800;
-      color: #0f172a;
+      color: #2D2B29;
       margin: 0 0 10px 0;
     }
     .prd-meta {
@@ -5487,11 +5487,11 @@ window.saveEditorModal = async function() {
       flex-wrap: wrap;
       gap: 12px;
       font-size: 13px;
-      color: #64748b;
+      color: #70685E;
     }
     .prd-meta code {
-      background: #f1f5f9;
-      color: #0f172a;
+      background: #F3EFEA;
+      color: #2D2B29;
       padding: 2px 6px;
       border-radius: 4px;
       font-family: monospace;
@@ -5499,7 +5499,7 @@ window.saveEditorModal = async function() {
     .prd-article {
       margin-top: 36px;
       padding-top: 28px;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid #F3EFEA;
       scroll-margin-top: 90px;
     }
     .prd-article:first-of-type {
@@ -5510,7 +5510,7 @@ window.saveEditorModal = async function() {
     .prd-heading {
       font-size: 18px;
       font-weight: 700;
-      color: #0f172a;
+      color: #2D2B29;
       margin: 0 0 14px 0;
       display: flex;
       align-items: center;
@@ -5532,15 +5532,15 @@ window.saveEditorModal = async function() {
     .prd-type-pill {
       font-size: 11px;
       font-weight: 600;
-      background: #f1f5f9;
-      color: #64748b;
+      background: #F3EFEA;
+      color: #70685E;
       padding: 2px 8px;
       border-radius: 4px;
     }
     .prd-selector-tag {
       font-size: 11px;
-      background: #eff6ff;
-      color: #1d4ed8;
+      background: #FFF4ED;
+      color: #6B371B;
       padding: 2px 8px;
       border-radius: 4px;
       font-family: monospace;
@@ -5549,22 +5549,22 @@ window.saveEditorModal = async function() {
     .prd-content {
       font-size: 14px;
       line-height: 1.7;
-      color: #334155;
+      color: #38322D;
     }
-    .prd-content h3 { font-size: 15px; margin: 16px 0 8px; color: #0f172a; }
-    .prd-content h4 { font-size: 14px; margin: 12px 0 6px; color: #1e293b; }
+    .prd-content h3 { font-size: 15px; margin: 16px 0 8px; color: #2D2B29; }
+    .prd-content h4 { font-size: 14px; margin: 12px 0 6px; color: #3D3B39; }
     .prd-content p { margin: 8px 0; }
     .prd-content ul, .prd-content ol { padding-left: 20px; margin: 8px 0; }
     .prd-content li { margin-bottom: 4px; }
-    .prd-content code { background: #f1f5f9; color: #ef4444; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 13px; }
-    .prd-content pre { background: #0f172a; color: #f8fafc; padding: 14px 18px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    .prd-content code { background: #F3EFEA; color: #ef4444; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+    .prd-content pre { background: #2D2B29; color: #FAF9F6; padding: 14px 18px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
     .prd-content pre code { background: transparent; color: inherit; padding: 0; }
-    .prd-table-responsive { width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .prd-table-responsive { width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid #E8E2D9; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 0; text-align: left; }
-    th { background: #f8fafc; color: #0f172a; font-weight: 700; padding: 10px 14px; border-bottom: 2px solid #e2e8f0; border-right: 1px solid #f1f5f9; }
-    td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f8fafc; color: #334155; }
-    tr:hover td { background: #f8fafc; }
-    .prd-mermaid-block { margin: 16px 0; padding: 18px 14px 28px 14px; background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; overflow-x: auto; text-align: center; }
+    th { background: #FAF9F6; color: #2D2B29; font-weight: 700; padding: 10px 14px; border-bottom: 2px solid #E8E2D9; border-right: 1px solid #F3EFEA; }
+    td { padding: 10px 14px; border-bottom: 1px solid #F3EFEA; border-right: 1px solid #FAF9F6; color: #38322D; }
+    tr:hover td { background: #FAF9F6; }
+    .prd-mermaid-block { margin: 16px 0; padding: 18px 14px 28px 14px; background: #ffffff !important; border: 1px solid #E8E2D9; border-radius: 10px; overflow-x: auto; text-align: center; }
     .prd-mermaid-block svg { background: #ffffff !important; }
     @media print {
       .prd-page-header, .prd-toc, .prd-btn { display: none !important; }
@@ -5577,12 +5577,12 @@ window.saveEditorModal = async function() {
 <body>
   <header class="prd-page-header">
     <div class="prd-header-title">
-      <span>📑</span>
+      <span></span>
       <span>${escapeHtml(docTitle)}</span>
     </div>
     <div class="prd-header-actions">
       <button class="prd-btn" onclick="window.print()">${t('printBtn')}</button>
-      <button class="prd-btn" onclick="window.close()">✕ 关闭网页</button>
+      <button class="prd-btn" onclick="window.close()">关闭网页</button>
     </div>
   </header>
 
@@ -5601,11 +5601,11 @@ window.saveEditorModal = async function() {
       <div class="prd-doc-hero">
         <h1>${escapeHtml(docTitle)}</h1>
         <div class="prd-meta">
-          <span>📄 ${t('docMetaPage')}: <code>${pageKey}</code></span>
+          <span>${t('docMetaPage')}: <code>${pageKey}</code></span>
           <span>·</span>
-          <span>🏷️ ${t('docMetaVersion')}: <strong>${escapeHtml(currentVersion)}</strong></span>
+          <span>${t('docMetaVersion')}: <strong>${escapeHtml(currentVersion)}</strong></span>
           <span>·</span>
-          <span>📌 ${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
+          <span>${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
           <span>·</span>
           <span>⏱️ 生成时间: ${new Date().toLocaleString()}</span>
         </div>
@@ -5621,7 +5621,7 @@ window.saveEditorModal = async function() {
               ${pin.selector ? `<span class="prd-selector-tag"><code>${escapeHtml(pin.selector)}</code></span>` : ''}
             </div>
             <div class="prd-content">
-              ${parseMarkdown(pin.desc) || '<p style="color:#94a3b8; font-style:italic;">暂无详细描述</p>'}
+              ${parseMarkdown(pin.desc) || '<p style="color:#A39A90; font-style:italic;">暂无详细描述</p>'}
             </div>
           </article>
         `).join('')}
@@ -5664,19 +5664,19 @@ window.saveEditorModal = async function() {
       <div class="prd-doc-container" onclick="event.stopPropagation()">
         <div class="prd-doc-header">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-size:17px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">
-              <span>📑 ${getCurrentPageTitle()}</span>
-              <span style="font-size:13px; color:#64748b; font-weight:normal;">产品需求规格说明书 (PRD)</span>
+            <span style="font-size:17px; font-weight:800; color:#2D2B29; display:flex; align-items:center; gap:8px;">
+              <span>${getCurrentPageTitle()}</span>
+              <span style="font-size:13px; color:#70685E; font-weight:normal;">产品需求规格说明书 (PRD)</span>
             </span>
             <span class="prd-tag prd-tag-version" style="font-size:11px; padding:2px 8px;">${escapeHtml(currentVersion)}</span>
-            <span style="font-size:12px; background:#e0f2fe; color:#0284c7; padding:2px 10px; border-radius:12px; font-weight:700;">
+            <span style="font-size:12px; background:#FDF6F0; color:#8C4A28; padding:2px 10px; border-radius:12px; font-weight:700;">
               共 ${savedPins.length} 项规格
             </span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="prd-btn-action" style="background:#2563eb; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
+            <button class="prd-btn-action" style="background:#8C4A28; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
             <button class="prd-btn-action" style="background:#10b981; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDMarkdown()">${t('exportMdBtn')}</button>
-            <button class="prd-btn-action" style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
+            <button class="prd-btn-action" style="background:#9C5B40; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
             <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">${t('importVersionBtn')}</button>
             <input type="file" id="prd-file-import-input" accept=".js,.json,.txt" style="display:none;" onchange="window.handleImportJS(this)">
             <button class="prd-btn-action" style="font-size:22px; padding:4px 8px;" onclick="window.closeCurrentPagePRDDoc()">&times;</button>
@@ -5706,18 +5706,18 @@ window.saveEditorModal = async function() {
                   <span>${getCurrentPageTitle()} ${t('docHeroTitleSuffix')}</span>
                 </h1>
                 <div class="prd-doc-hero-meta">
-                  <span>📄 ${t('docMetaPage')}: <code>${pageKey}</code></span>
+                  <span>${t('docMetaPage')}: <code>${pageKey}</code></span>
                   <span>·</span>
-                  <span>🏷️ 版本: <strong>${escapeHtml(currentVersion)}</strong></span>
+                  <span>版本: <strong>${escapeHtml(currentVersion)}</strong></span>
                   <span>·</span>
-                  <span>📌 ${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
+                  <span>${t('docMetaCount')}: 共 <strong>${savedPins.length}</strong> 项</span>
                 </div>
               </div>
 
               <div class="prd-md-doc">
                 ${savedPins.length === 0 ? `
-                  <div style="text-align:center; padding:80px 20px; color:#94a3b8;">
-                    <div style="font-size:42px; margin-bottom:12px;">📄</div>
+                  <div style="text-align:center; padding:80px 20px; color:#A39A90;">
+                    <div style="font-size:42px; margin-bottom:12px;"></div>
                     <div style="font-size:16px; font-weight:600;">当前版本尚未录入任何 PRD 规格</div>
                   </div>
                 ` : savedPins.map(pin => `
@@ -5728,13 +5728,13 @@ window.saveEditorModal = async function() {
                       ${pin.selector ? `
                         <span class="prd-doc-anchor-link" onclick="window.docJumpToElement(${pin.id})" title="在原型界面定位并高亮此元素">
                           <code>${escapeHtml(pin.selector)}</code>
-                          <span class="prd-doc-anchor-icon" style="color:var(--prd-primary); cursor:pointer; margin-left:6px; font-size:11px;">🎯 定位</span>
+                          <span class="prd-doc-anchor-icon" style="color:var(--prd-primary); cursor:pointer; margin-left:6px; font-size:11px;">定位</span>
                         </span>
                       ` : ''}
                     </h2>
 
                     <div class="prd-doc-sec-content">
-                      ${parseMarkdown(pin.desc) || '<p style="color:#94a3b8; font-style:italic;">暂无详细描述</p>'}
+                      ${parseMarkdown(pin.desc) || '<p style="color:#A39A90; font-style:italic;">暂无详细描述</p>'}
                     </div>
                   </article>
                 `).join('')}
@@ -5895,42 +5895,42 @@ window.saveEditorModal = async function() {
 
     overlay.innerHTML = `
       <div class="prd-version-modal-card" onclick="event.stopPropagation()">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
-          <strong style="font-size:15px; color:#0f172a;">📂 导入 PRD 规格版本数据</strong>
-          <button style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer;" onclick="document.getElementById('prd-version-import-modal').remove()">&times;</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #F3EFEA; padding-bottom:8px;">
+          <strong style="font-size:15px; color:#2D2B29;">导入 PRD 规格版本数据</strong>
+          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="document.getElementById('prd-version-import-modal').remove()">&times;</button>
         </div>
 
-        <div style="font-size:12.5px; color:#475569; display:flex; flex-direction:column; gap:8px;">
-          <div>📄 导入文件: <strong style="color:#0f172a;">${escapeHtml(fileName)}</strong>（包含 <strong>${importedPins.length}</strong> 条规格）</div>
+        <div style="font-size:12.5px; color:#4F4741; display:flex; flex-direction:column; gap:8px;">
+          <div>导入文件: <strong style="color:#2D2B29;">${escapeHtml(fileName)}</strong>（包含 <strong>${importedPins.length}</strong> 条规格）</div>
           
           <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
-            <label style="font-weight:700; color:#334155;">指定导入版本号：</label>
-            <input type="text" id="prd-import-ver-name" value="${escapeHtml(defaultVer)}" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; outline:none;" oninput="window.checkImportVerConflict(this.value)">
+            <label style="font-weight:700; color:#38322D;">指定导入版本号：</label>
+            <input type="text" id="prd-import-ver-name" value="${escapeHtml(defaultVer)}" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none;" oninput="window.checkImportVerConflict(this.value)">
           </div>
 
-          <div id="prd-import-conflict-section" style="margin-top:6px; display:flex; flex-direction:column; gap:8px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0;">
-            <div style="font-weight:700; color:#0f172a;" id="prd-import-conflict-tip">
-              ${isExisting ? `⚠️ 版本 [${escapeHtml(defaultVer)}] 已存在，请选择冲突处理方式：` : '✨ 新版本，确认后将自动创建并切换。'}
+          <div id="prd-import-conflict-section" style="margin-top:6px; display:flex; flex-direction:column; gap:8px; background:#FAF9F6; padding:10px 12px; border-radius:8px; border:1px solid #E8E2D9;">
+            <div style="font-weight:700; color:#2D2B29;" id="prd-import-conflict-tip">
+              ${isExisting ? `版本 [${escapeHtml(defaultVer)}] 已存在，请选择冲突处理方式：` : '新版本，确认后将自动创建并切换。'}
             </div>
             
             <div id="prd-import-strategies" style="display:${isExisting ? 'flex' : 'none'}; flex-direction:column; gap:6px;">
               <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px;">
                 <input type="radio" name="prd-import-strategy" value="overwrite" checked>
-                <span>🔴 <b>覆盖现有版本</b>（清空旧打点，完全替换为上传文件内容）</span>
+                <span><b>覆盖现有版本</b>（清空旧打点，完全替换为上传文件内容）</span>
               </label>
               <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px;">
                 <input type="radio" name="prd-import-strategy" value="append">
-                <span>🟢 <b>追加合并</b>（保留旧打点，将上传打点追加至末尾）</span>
+                <span><b>追加合并</b>（保留旧打点，将上传打点追加至末尾）</span>
               </label>
               <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px;">
                 <input type="radio" name="prd-import-strategy" value="new_version">
-                <span>🔵 <b>另存为新版本</b>（输入新版本名称，不影响当前版本）</span>
+                <span><b>另存为新版本</b>（输入新版本名称，不影响当前版本）</span>
               </label>
             </div>
           </div>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid #f1f5f9; padding-top:10px;">
+        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid #F3EFEA; padding-top:10px;">
           <button class="prd-btn-action" onclick="document.getElementById('prd-version-import-modal').remove()">${t('cancelBtn')}</button>
           <button class="prd-btn-primary" onclick="window.confirmImportVersionData()">确认导入并应用</button>
         </div>
@@ -5970,7 +5970,7 @@ window.saveEditorModal = async function() {
 
       await window.switchPRDVersion(targetVer);
       overlay.remove();
-      showToast(`✅ 版本 [${targetVer}] 导入并更新成功！`, 'success');
+      showToast(`版本 [${targetVer}] 导入并更新成功！`, 'success');
     };
 
     window.checkImportVerConflict = function(val) {
@@ -5980,10 +5980,10 @@ window.saveEditorModal = async function() {
       const strat = document.getElementById('prd-import-strategies');
       if (tip && strat) {
         if (exists) {
-          tip.innerHTML = `⚠️ 版本 [${escapeHtml(trimmed)}] 已存在，请选择冲突处理方式：`;
+          tip.innerHTML = `版本 [${escapeHtml(trimmed)}] 已存在，请选择冲突处理方式：`;
           strat.style.display = 'flex';
         } else {
-          tip.innerHTML = `✨ 目标版本 [${escapeHtml(trimmed)}] 为全新版本，确认后将自动创建并切换。`;
+          tip.innerHTML = `目标版本 [${escapeHtml(trimmed)}] 为全新版本，确认后将自动创建并切换。`;
           strat.style.display = 'none';
         }
       }
@@ -6041,9 +6041,9 @@ window.saveEditorModal = async function() {
       <div class="prd-drawer-full-content" style="display:flex; flex-direction:column; height:100%; width:100%; overflow:hidden;">
         <!-- 抽屉头部 -->
         <div class="prd-drawer-header">
-          <div style="font-size:14px; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:6px;">
-            <span>📋 ${getCurrentPageTitle()}</span>
-            <span style="background:#e0f2fe; color:#0284c7; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
+          <div style="font-size:14px; font-weight:700; color:#2D2B29; display:flex; align-items:center; gap:6px;">
+            <span>${getCurrentPageTitle()}</span>
+            <span style="background:#FDF6F0; color:#8C4A28; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             <!-- 统一模式切换与状态徽标 -->
@@ -6051,14 +6051,14 @@ window.saveEditorModal = async function() {
               <span>${getSyncModeBadgeInfo().icon}</span>
               <span>${getSyncModeBadgeInfo().label}</span>
             </button>
-            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#334155; font-weight:600;" title="切换语言 (Language)">
-              <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>🇨🇳 中文</option>
-              <option value="en" ${currentLang==='en'?'selected':''}>🇺🇸 EN</option>
-              <option value="ja" ${currentLang==='ja'?'selected':''}>🇯🇵 日本語</option>
+            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #D6CFC7; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#38322D; font-weight:600;" title="切换语言 (Language)">
+              <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>中文</option>
+              <option value="en" ${currentLang==='en'?'selected':''}>EN</option>
+              <option value="ja" ${currentLang==='ja'?'selected':''}>日本語</option>
               <option value="ko" ${currentLang==='ko'?'selected':''}>🇰🇷 한국어</option>
             </select>
             
-            <button id="prd-manage-order-btn" class="prd-btn-action" style="font-size:11px; background:#eff6ff; color:#1d4ed8; padding:3px 6px;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
+            <button id="prd-manage-order-btn" class="prd-btn-action" style="font-size:11px; background:#FFF4ED; color:#6B371B; padding:3px 6px;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
             <button class="prd-btn-action" style="font-size:16px; padding:0 6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
           </div>
         </div>
@@ -6068,15 +6068,15 @@ window.saveEditorModal = async function() {
           <select class="prd-version-select" id="prd-version-select" onchange="window.handleVersionSelectChange(this.value)">
             <!-- 动态版本列表 -->
           </select>
-          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">➕</button>
-          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">📂</button>
+          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">新建</button>
+          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">导入</button>
         </div>
 
         <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
-        <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
+        <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #F3EFEA; display:flex; align-items:center; gap:6px;">
           <div style="position:relative; flex:1; display:flex; align-items:center;">
-            <input type="text" id="prd-drawer-search-input" placeholder="🔍 模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
-            <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
+            <input type="text" id="prd-drawer-search-input" placeholder="模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
+            <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#A39A90; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
           </div>
         </div>
 
@@ -6086,25 +6086,25 @@ window.saveEditorModal = async function() {
         </div>
 
         <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
-        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
+        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #E8E2D9; display:flex; gap:8px;">
           <button class="prd-btn-primary" style="flex:1;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
-          <button class="prd-btn-action" style="background:#f1f5f9; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
+          <button class="prd-btn-action" style="background:#F3EFEA; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
         </div>
       </div>
 
       <!-- 2. 半收起紧凑标号竖条 (56px Mini Rail) -->
-      <div class="prd-drawer-mini-rail" style="display:none; flex-direction:column; height:100%; width:100%; background:#f8fafc; align-items:center; padding:10px 0; box-sizing:border-box; user-select:none;">
+      <div class="prd-drawer-mini-rail" style="display:none; flex-direction:column; height:100%; width:100%; background:#FAF9F6; align-items:center; padding:10px 0; box-sizing:border-box; user-select:none;">
         <button class="prd-btn-action" style="width:36px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:12px;" onclick="window.setPRDMode('show')" title="展开完整抽屉">
           ▶
         </button>
-        <div style="font-size:10px; font-weight:800; color:#64748b; margin-bottom:10px; text-align:center;">
+        <div style="font-size:10px; font-weight:800; color:#70685E; margin-bottom:10px; text-align:center;">
           ${escapeHtml(currentVersion)}
         </div>
         <div id="prd-mini-rail-pins" style="display:flex; flex-direction:column; align-items:center; flex:1; overflow-y:auto; overflow-x:visible; width:100%;">
           <!-- 由 renderMiniRailList 动态填充 -->
         </div>
-        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(37,99,235,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
-          📍
+        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(140,74,40,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
+          +
         </button>
       </div>
     `;
