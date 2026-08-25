@@ -72,7 +72,7 @@
       kvSecretKeyLabel: '创立人专属授权密钥 (Secret Master Key)',
       kvSecretKeyPlaceholder: '粘贴您的专属 Master Key 以解锁写入权限',
       kvGuideTitle: '如何免费获取您的专属恒久 Key：',
-      kvGuideStep1: '1. 访问 <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> 注册/登录；',
+      kvGuideStep1: '1. 访问 <a href="https://jsonbin.io" target="_blank" style="color:#18181b; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> 注册/登录；',
       kvGuideStep2: '2. 在 Dashboard -> API Keys 中复制您的 <strong>Master Key</strong> 粘贴在上方；',
       kvGuideStep3: '3. 点击下方【测试并自动创建/绑定】，系统将自动生成恒久 Bin ID 并解锁实时云端同步！',
       kvVerifyBtn: '测试并验证授权',
@@ -263,7 +263,7 @@
       kvSecretKeyLabel: 'Creator Secret Master Key',
       kvSecretKeyPlaceholder: 'Paste your secret Master Key to unlock write permissions',
       kvGuideTitle: 'How to get your free permanent key:',
-      kvGuideStep1: '1. Visit <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> to register/login;',
+      kvGuideStep1: '1. Visit <a href="https://jsonbin.io" target="_blank" style="color:#18181b; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> to register/login;',
       kvGuideStep2: '2. In Dashboard -> API Keys, copy your <strong>Master Key</strong> and paste above;',
       kvGuideStep3: '3. Click [Test & Auto-Bind], the system will automatically create/bind a permanent Bin ID and unlock cloud sync!',
       kvVerifyBtn: 'Test & Verify Key',
@@ -447,7 +447,7 @@
       kvSecretKeyLabel: '作成者専用マスターキー (Secret Key)',
       kvSecretKeyPlaceholder: '書き込み権限を解除するマスターキーを貼り付け',
       kvGuideTitle: '恒久キーの無料取得手順：',
-      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> で登録/ログイン；',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#18181b; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a> で登録/ログイン；',
       kvGuideStep2: '2. Dashboard -> API Keys で <strong>Master Key</strong> をコピーして上に貼り付け；',
       kvGuideStep3: '3. 【テストしてバインド】を押すと、恒久Bin IDが自動生成され同期が有効化されます！',
       kvVerifyBtn: '接続テストと検証',
@@ -631,7 +631,7 @@
       kvSecretKeyLabel: '소유자 전용 마스터 키 (Secret Key)',
       kvSecretKeyPlaceholder: '쓰기 권한을 잠금 해제할 마스터 키를 붙여넣으세요',
       kvGuideTitle: '무료 영구 키 발급 방법:',
-      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a>에 가입/로그인합니다;',
+      kvGuideStep1: '1. <a href="https://jsonbin.io" target="_blank" style="color:#18181b; font-weight:700; text-decoration:none;">JSONBin.io &nearr;</a>에 가입/로그인합니다;',
       kvGuideStep2: '2. Dashboard -> API Keys에서 <strong>Master Key</strong>를 복사하여 위에 붙여넣습니다;',
       kvGuideStep3: '3. [테스트 및 연결]을 클릭하면 영구 Bin ID가 생성되고 실시간 동기화가 활성화됩니다!',
       kvVerifyBtn: '연결 테스트 및 확인',
@@ -819,12 +819,14 @@
 
   function getSyncModeBadgeInfo() {
     const mode = getActiveSyncMode();
-    if (mode === 'jsonbin') {
-      return { icon: '', label: '云端KV', color: '#8C4A28', bg: '#FDF6F0', border: '#F1D6C7', tip: '当前模式：JSONBin.io 云端存储打点 (点击切换模式)' };
+    if (mode === 'supabase') {
+      return { icon: '', label: 'Supabase', color: '#18181b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：Supabase 云端数据库存储 (点击切换模式)' };
+    } else if (mode === 'jsonbin') {
+      return { icon: '', label: 'JSONBin', color: '#18181b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：JSONBin.io 云端存储打点 (点击切换模式)' };
     } else if (mode === 'github') {
       return { icon: '', label: 'GitHub', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：GitHub 推送打点 (点击切换模式)' };
     } else {
-      return { icon: '', label: '本地服务', color: '#4F4741', bg: '#FAF9F6', border: '#D6CFC7', tip: '当前模式：本地 Node.js 服务模式 (点击切换模式)' };
+      return { icon: '', label: '本地服务', color: '#52525b', bg: '#f8fafc', border: '#d4d4d8', tip: '当前模式：本地 Node.js 服务模式 (点击切换模式)' };
     }
   }
 
@@ -850,9 +852,9 @@
   function getActiveSyncMode() {
     try {
       const mode = localStorage.getItem(SYNC_MODE_KEY);
-      if (mode && ['jsonbin', 'github', 'local', 'auto'].includes(mode)) return mode;
+      if (mode && ['supabase', 'jsonbin', 'github', 'local', 'auto'].includes(mode)) return mode;
     } catch (e) {}
-    return 'jsonbin'; // 默认统一锁定为云端 JSONBin.io 实时同步模式
+    return 'supabase';
   }
 
   function setActiveSyncMode(mode) {
@@ -880,13 +882,21 @@
     "default": "6a8bfab8da38895dfe09944d"
   };
 
-        window.getKVStorageConfig = function getKVStorageConfig() {
-    const getKVStorageConfig = window.getKVStorageConfig;
+        const DEFAULT_SUPABASE_URL = 'https://xptyvhycdcuegzdtrlzo.supabase.co';
+  const DEFAULT_SUPABASE_KEY = 'sb_publishable_uNeQzELHbWHhcTIGgr5FBw__T5OsA_x';
+  const DEFAULT_SUPABASE_TABLE = 'sahngliu_prd';
+
+  window.getKVStorageConfig = function getKVStorageConfig() {
     let defaultBin = DEFAULT_JSONBIN_MAPPING[pageKey] || DEFAULT_JSONBIN_MAPPING['default'] || '';
     let cachedBin = '';
     let cachedSecretKey = '';
     let isVerified = false;
     let customUrl = '';
+    let supabaseUrl = DEFAULT_SUPABASE_URL;
+    let supabaseKey = DEFAULT_SUPABASE_KEY;
+    let supabaseTable = DEFAULT_SUPABASE_TABLE;
+    let customDocId = '';
+    let mode = 'supabase';
 
     try {
       const cached = localStorage.getItem(KV_STORAGE_KEY);
@@ -897,6 +907,11 @@
           if (parsed.secretKey) cachedSecretKey = parsed.secretKey;
           if (parsed.customUrl) customUrl = parsed.customUrl;
           if (parsed.isVerified) isVerified = true;
+          if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl;
+          if (parsed.supabaseKey) supabaseKey = parsed.supabaseKey;
+          if (parsed.supabaseTable) supabaseTable = parsed.supabaseTable;
+          if (parsed.customDocId) customDocId = parsed.customDocId;
+          if (parsed.mode) mode = parsed.mode;
         }
       }
       const globalCached = localStorage.getItem('prd_kv_config_global');
@@ -905,22 +920,38 @@
         if (parsedG) {
           if (!cachedSecretKey && parsedG.secretKey) cachedSecretKey = parsedG.secretKey;
           if (!customUrl && parsedG.customUrl) customUrl = parsedG.customUrl;
+          if (parsedG.supabaseUrl) supabaseUrl = parsedG.supabaseUrl;
+          if (parsedG.supabaseKey) supabaseKey = parsedG.supabaseKey;
+          if (parsedG.supabaseTable) supabaseTable = parsedG.supabaseTable;
+          if (parsedG.customDocId && !customDocId) customDocId = parsedG.customDocId;
+          if (parsedG.mode) mode = parsedG.mode;
         }
       }
     } catch (e) {}
 
     const sessionBin = sessionStorage.getItem(`prd_jsonbin_session_bin_${pageKey}`);
     const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
+    const sessionSbKey = sessionStorage.getItem('prd_supabase_session_key');
+    if (sessionSbKey) {
+      supabaseKey = sessionSbKey;
+    }
 
     const finalBinId = sessionBin || cachedBin || defaultBin;
     const finalSecretKey = sessionKey || cachedSecretKey || DEFAULT_MASTER_KEY;
 
+    const hasAuthKey = (mode === 'supabase' ? Boolean(supabaseKey) : Boolean(finalSecretKey));
+
     return {
-      provider: 'jsonbin',
+      provider: mode,
+      mode: mode,
       binId: finalBinId,
       secretKey: finalSecretKey,
       customUrl: customUrl || '',
-      isVerified: Boolean(finalSecretKey && (isVerified || sessionKey))
+      supabaseUrl: supabaseUrl,
+      supabaseKey: supabaseKey,
+      supabaseTable: supabaseTable,
+      customDocId: customDocId,
+      isVerified: Boolean(hasAuthKey && (isVerified || sessionKey || sessionSbKey))
     };
   };
 
@@ -948,14 +979,35 @@
 
   // 从云端拉取最新数据 (带抗缓存时间戳与请求头)
   async function fetchRemoteKVData(binId, secretKey = '') {
+    const activeMode = getActiveSyncMode();
+    const cfg = getKVStorageConfig();
+    if (activeMode === 'supabase' || cfg.mode === 'supabase') {
+      try {
+        const docId = cfg.customDocId || pageKey;
+        const targetUrl = `${cfg.supabaseUrl.replace(/\/+$/, '')}/rest/v1/${cfg.supabaseTable}?id=eq.${encodeURIComponent(docId)}`;
+        const resp = await fetch(targetUrl, {
+          headers: {
+            'apikey': cfg.supabaseKey,
+            'Authorization': `Bearer ${cfg.supabaseKey}`,
+            'Cache-Control': 'no-cache'
+          }
+        });
+        if (resp.ok) {
+          const json = await resp.json();
+          if (Array.isArray(json) && json.length > 0) {
+            return json[0].data;
+          }
+        }
+      } catch (e) {
+        console.error('Supabase Fetch Error:', e);
+      }
+      return null;
+    }
+
     if (!binId) return null;
     try {
-      const headers = {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      };
+      const headers = { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' };
       if (secretKey) headers['X-Master-Key'] = secretKey.trim();
-
       const resp = await fetch(`https://api.jsonbin.io/v3/b/${binId.trim()}/latest?_t=${Date.now()}`, { headers });
       if (resp.ok) {
         const json = await resp.json();
@@ -967,52 +1019,54 @@
 
   // 提交数据至云端
   async function saveRemoteKVData(binId, secretKey, payload) {
-    if (!secretKey) throw new Error('缺少 Secret Key 写入授权');
+    const activeMode = getActiveSyncMode();
+    const cfg = getKVStorageConfig();
+    if (activeMode === 'supabase' || cfg.mode === 'supabase') {
+      const docId = cfg.customDocId || pageKey;
+      const targetUrl = `${cfg.supabaseUrl.replace(/\/+$/, '')}/rest/v1/${cfg.supabaseTable}`;
+      const effectiveKey = secretKey || cfg.supabaseKey;
+      const resp = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'apikey': effectiveKey,
+          'Authorization': `Bearer ${effectiveKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          id: docId,
+          data: payload
+        })
+      });
+      if (!resp.ok) {
+        const errText = await resp.text().catch(() => '');
+        throw new Error(`Supabase 保存失败 (${resp.status}): ${errText}`);
+      }
+      return { metadata: { id: cfg.supabaseUrl } };
+    }
 
-    const cleanKey = secretKey.trim();
-
-    // 若尚无 Bin ID，先自动创建新的永久 Bin
+    const cleanKey = secretKey ? secretKey.trim() : DEFAULT_MASTER_KEY;
     if (!binId) {
       const createResp = await fetch('https://api.jsonbin.io/v3/b', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': cleanKey,
-          'X-Bin-Name': `prd-data-${encodeURIComponent(pageKey.replace('.html', ''))}`,
-          'X-Bin-Private': 'false' // 设为公开只读，便于访客免密实时读取
-        },
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': cleanKey, 'X-Bin-Name': `prd-data-${pageKey}`, 'X-Bin-Private': 'false' },
         body: JSON.stringify(payload)
       });
-      if (!createResp.ok) {
-        const errJson = await createResp.json().catch(() => ({}));
-        throw new Error(errJson.message || `HTTP ${createResp.status}: 创建云端 Bin 失败`);
-      }
+      if (!createResp.ok) throw new Error('Create failed');
       const createData = await createResp.json();
-      const newBinId = createData.metadata?.id;
-      if (newBinId) {
-        const curCfg = getKVStorageConfig();
-        curCfg.binId = newBinId;
-        curCfg.isVerified = true;
-        setKVStorageConfig(curCfg);
+      if (createData.metadata?.id) {
+        cfg.binId = createData.metadata.id;
+        cfg.isVerified = true;
+        setKVStorageConfig(cfg);
       }
       return createData;
     }
-
-    // 已有 Bin ID，执行 PUT 更新
     const updateResp = await fetch(`https://api.jsonbin.io/v3/b/${binId.trim()}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': cleanKey
-      },
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': cleanKey },
       body: JSON.stringify(payload)
     });
-
-    if (!updateResp.ok) {
-      const errJson = await updateResp.json().catch(() => ({}));
-      throw new Error(errJson.message || `HTTP ${updateResp.status}: 更新云端 KV 数据失败`);
-    }
-
+    if (!updateResp.ok) throw new Error('Update failed');
     return await updateResp.json();
   }
 
@@ -1051,7 +1105,7 @@
     modal.innerHTML = `
       <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>模式切换与数据无缝迁移决策</span>
@@ -1060,38 +1114,38 @@
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:14px;">
-          <div>您即将把当前项目的持久化引擎从 <span style="color:#b45309; font-weight:700;">【${escapeHtml(oldName)}】</span> 切换为 <span style="color:#8C4A28; font-weight:700;">【${escapeHtml(newName)}】</span>。</div>
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a; display:flex; flex-direction:column; gap:14px;">
+          <div>您即将把当前项目的持久化引擎从 <span style="color:#b45309; font-weight:700;">【${escapeHtml(oldName)}】</span> 切换为 <span style="color:#18181b; font-weight:700;">【${escapeHtml(newName)}】</span>。</div>
 
           <!-- 迁移选择卡片组 -->
           <div style="display:flex; flex-direction:column; gap:8px;">
-            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:2px solid #8C4A28; background:#FDF6F0; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-sync">
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:2px solid #18181b; background:#f4f4f5; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-sync">
               <input type="radio" name="prd_switch_sync_choice" value="migrate" checked style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
               <div style="display:flex; flex-direction:column; gap:2px;">
-                <strong style="color:#8C4A28; font-size:13px;">同步迁移当前数据到新方案 (推荐)</strong>
-                <span style="color:#4F4741; font-size:11.5px;">将当前已编辑的全部打点与版本（共 ${savedPins.length} 项规约）即刻同步写入到新的持久化数据源中，实现零断点无缝过渡！</span>
+                <strong style="color:#18181b; font-size:13px;">同步迁移当前数据到新方案 (推荐)</strong>
+                <span style="color:#52525b; font-size:11.5px;">将当前已编辑的全部打点与版本（共 ${savedPins.length} 项规约）即刻同步写入到新的持久化数据源中，实现零断点无缝过渡！</span>
               </div>
             </label>
 
-            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid #E8E2D9; background:#FAF9F6; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-clean">
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px; border:1px solid #e2e8f0; background:#f8fafc; border-radius:8px; cursor:pointer; transition:all 0.2s;" id="prd-migrate-card-clean">
               <input type="radio" name="prd_switch_sync_choice" value="clean" style="margin-top:2px;" onchange="window.updateSwitchCardStyles()">
               <div style="display:flex; flex-direction:column; gap:2px;">
-                <strong style="color:#38322D; font-size:13px;">不同步现有数据 (从新数据源拉取)</strong>
-                <span style="color:#70685E; font-size:11.5px;">仅切换底层模式配置，不覆盖新目标存储，切换后直接从新数据源拉取最新或保持空白。</span>
+                <strong style="color:#27272a; font-size:13px;">不同步现有数据 (从新数据源拉取)</strong>
+                <span style="color:#71717a; font-size:11.5px;">仅切换底层模式配置，不覆盖新目标存储，切换后直接从新数据源拉取最新或保持空白。</span>
               </div>
             </label>
           </div>
 
-          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#70685E; display:flex; align-items:center; justify-content:space-between;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#71717a; display:flex; align-items:center; justify-content:space-between;">
             <span>🛡️ 数据安全建议：切换前可先备份一份本地 JSON</span>
-            <button class="prd-btn-action" style="padding:3px 10px; font-size:11px; background:#ffffff; border:1px solid #D6CFC7; border-radius:4px; color:#2D2B29; cursor:pointer;" onclick="window.downloadLocalBackupJSON()">下载本地备份 (.json)</button>
+            <button class="prd-btn-action" style="padding:3px 10px; font-size:11px; background:#ffffff; border:1px solid #d4d4d8; border-radius:4px; color:#18181b; cursor:pointer;" onclick="window.downloadLocalBackupJSON()">下载本地备份 (.json)</button>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:flex-end; gap:8px;">
-          <button class="prd-btn-action" style="padding:6px 14px; font-size:12px; border:1px solid #D6CFC7; background:#ffffff; border-radius:6px; cursor:pointer;" onclick="window.closeModeSwitchModal()">取消</button>
-          <button class="prd-btn-primary" style="background:#8C4A28; border-color:#8C4A28; font-size:12px; padding:6px 18px; border-radius:6px; font-weight:700;" onclick="window.confirmExecuteModeSwitch()">确认执行模式切换</button>
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end; gap:8px;">
+          <button class="prd-btn-action" style="padding:6px 14px; font-size:12px; border:1px solid #d4d4d8; background:#ffffff; border-radius:6px; cursor:pointer;" onclick="window.closeModeSwitchModal()">取消</button>
+          <button class="prd-btn-primary" style="background:#18181b; border-color:#18181b; font-size:12px; padding:6px 18px; border-radius:6px; font-weight:700;" onclick="window.confirmExecuteModeSwitch()">确认执行模式切换</button>
         </div>
       </div>
     `;
@@ -1104,11 +1158,11 @@
     const syncCard = document.getElementById('prd-migrate-card-sync');
     const cleanCard = document.getElementById('prd-migrate-card-clean');
     if (selected === 'migrate') {
-      if (syncCard) { syncCard.style.border = '2px solid #8C4A28'; syncCard.style.background = '#FDF6F0'; }
-      if (cleanCard) { cleanCard.style.border = '1px solid #E8E2D9'; cleanCard.style.background = '#FAF9F6'; }
+      if (syncCard) { syncCard.style.border = '2px solid #18181b'; syncCard.style.background = '#f4f4f5'; }
+      if (cleanCard) { cleanCard.style.border = '1px solid #e2e8f0'; cleanCard.style.background = '#f8fafc'; }
     } else {
-      if (syncCard) { syncCard.style.border = '1px solid #E8E2D9'; syncCard.style.background = '#FAF9F6'; }
-      if (cleanCard) { cleanCard.style.border = '2px solid #8C4A28'; cleanCard.style.background = '#FDF6F0'; }
+      if (syncCard) { syncCard.style.border = '1px solid #e2e8f0'; syncCard.style.background = '#f8fafc'; }
+      if (cleanCard) { cleanCard.style.border = '2px solid #18181b'; cleanCard.style.background = '#f4f4f5'; }
     }
   };
 
@@ -1155,7 +1209,7 @@
     modal.innerHTML = `
       <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>持久化同步中心与模式切换</span>
@@ -1164,37 +1218,40 @@
         </div>
 
         <!-- Mode Switcher Tabs -->
-        <div style="background:#F3EFEA; padding:8px 16px; border-bottom:1px solid #E8E2D9; display:flex; gap:6px;">
-          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #D6CFC7':'none'}; color:${activeMode==='jsonbin'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('jsonbin')">
-            JSONBin.io 模式 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">生效中</span>':''}
+        <div style="background:#f1f5f9; padding:8px 16px; border-bottom:1px solid #e2e8f0; display:flex; gap:6px;">
+          <button id="tab-btn-supabase" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:11px; font-weight:700; border-radius:6px; background:${activeMode==='supabase'?'#ffffff':'transparent'}; border:${activeMode==='supabase'?'1px solid #d4d4d8':'none'}; color:${activeMode==='supabase'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('supabase')">
+            Supabase 模式 ${activeMode==='supabase'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
-          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #D6CFC7':'none'}; color:${activeMode==='github'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('github')">
+          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:11px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #d4d4d8':'none'}; color:${activeMode==='jsonbin'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('jsonbin')">
+            JSONBin 备用 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">生效中</span>':''}
+          </button>
+          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #d4d4d8':'none'}; color:${activeMode==='github'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('github')">
             GitHub Commit 模式 ${activeMode==='github'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
-          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #D6CFC7':'none'}; color:${activeMode==='local'?'#8C4A28':'#70685E'};" onclick="window.switchSyncConfigTab('local')">
+          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #d4d4d8':'none'}; color:${activeMode==='local'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('local')">
             本地服务 ${activeMode==='local'?'<span style=\"color:#059669;\">生效中</span>':''}
           </button>
         </div>
 
         <!-- Body Content -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a;">
           <!-- Tab Panel 1: JSONBin -->
-          <div id="panel-jsonbin" style="display:${activeMode==='jsonbin'||activeMode==='auto'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#4F4741;">${t('kvModalDesc')}</div>
+          <div id="panel-jsonbin" style="display:${activeMode==='jsonbin'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#52525b;">${t('kvModalDesc')}</div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('kvSecretKeyLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-kv-secret-key" value="${escapeHtml(config.secretKey || '')}" placeholder="${escapeHtml(t('kvSecretKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('kvSecretKeyLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-kv-secret-key" value="${escapeHtml(config.secretKey || '')}" placeholder="${escapeHtml(t('kvSecretKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('kvBinIdLabel')}</label>
-              <input type="text" id="prd-kv-bin-id" value="${escapeHtml(config.binId || '')}" placeholder="留空则自动创建新的永久 Bin ID" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('kvBinIdLabel')}</label>
+              <input type="text" id="prd-kv-bin-id" value="${escapeHtml(config.binId || '')}" placeholder="留空则自动创建新的永久 Bin ID" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
             </div>
 
             <!-- Guide -->
-            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
-              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('kvGuideTitle')}</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#52525b;">
+              <div style="font-weight:700; color:#18181b; margin-bottom:4px;">${t('kvGuideTitle')}</div>
               <div style="margin-bottom:2px;">${t('kvGuideStep1')}</div>
               <div style="margin-bottom:2px;">${t('kvGuideStep2')}</div>
               <div>${t('kvGuideStep3')}</div>
@@ -1203,29 +1260,68 @@
             <div id="prd-kv-status-tip" style="font-size:12px; min-height:18px;"></div>
           </div>
 
+          
+          <!-- Tab Panel: Supabase -->
+          <div id="panel-supabase" style="display:${activeMode==='supabase'||activeMode==='auto'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#52525b;">
+              <strong>Supabase (推荐)</strong>：容量大，限制宽松。<br>
+              相比 JSONBin，Supabase 免费版提供 500MB 存储且无 API 调用限制。
+            </div>
+            
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">Supabase URL (项目地址) <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="prd-sb-url" value="${escapeHtml(config.supabaseUrl || '')}" placeholder="https://xxx.supabase.co" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">Anon / 创立人管理密钥 (API Key) <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-sb-key" value="${escapeHtml(config.supabaseKey || '')}" placeholder="eyJhbG... 或 sb_publishable_..." style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+              <div style="flex:1;">
+                <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">Table Name (数据表名称) <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="prd-sb-table" value="${escapeHtml(config.supabaseTable || '')}" placeholder="sahngliu_prd" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
+              </div>
+              <div style="flex:1;">
+                <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">页面关联主键 (Doc ID) <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="prd-sb-doc-id" value="${escapeHtml(config.customDocId || pageKey)}" placeholder="如 admin.html" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+              </div>
+            </div>
+
+            <!-- Mapping Guide -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#52525b; line-height:1.6;">
+              <div style="font-weight:700; color:#18181b; margin-bottom:3px;">🔗 页面 ⇄ 数据表主键关联机制：</div>
+              <div>• <strong>已有 ID 自动匹配</strong>：若表里已有当前 Doc ID，将自动载入对应规约并持续更新。</div>
+              <div>• <strong>全新 ID 自动建档</strong>：若表里尚无此 ID，保存时系统将自动以该 ID 新增一条主键记录。</div>
+            </div>
+
+            <div id="prd-sb-status-tip" style="font-size:12px; min-height:18px;"></div>
+          </div>
+
           <!-- Tab Panel 2: GitHub -->
           <div id="panel-github" style="display:${activeMode==='github'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#4F4741;">${t('ghModalDesc')}</div>
+            <div style="color:#52525b;">${t('ghModalDesc')}</div>
 
             <div style="display:flex; gap:10px;">
               <div style="flex:1;">
-                <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
-                <input type="text" id="prd-gh-owner" value="${escapeHtml(ghConfig.owner || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+                <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+                <input type="text" id="prd-gh-owner" value="${escapeHtml(ghConfig.owner || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
               </div>
               <div style="flex:1;">
-                <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
-                <input type="text" id="prd-gh-repo" value="${escapeHtml(ghConfig.repo || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+                <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+                <input type="text" id="prd-gh-repo" value="${escapeHtml(ghConfig.repo || '')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
               </div>
             </div>
 
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-gh-token" value="${escapeHtml(ghConfig.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(ghConfig.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
 
             <!-- Guide -->
-            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
-              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('ghGuideTitle')}</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#52525b;">
+              <div style="font-weight:700; color:#18181b; margin-bottom:4px;">${t('ghGuideTitle')}</div>
               <div style="margin-bottom:2px;">${t('ghGuideStep1')}</div>
               <div style="margin-bottom:2px;">${t('ghGuideStep2')}</div>
               <div>${t('ghGuideStep3')}</div>
@@ -1236,20 +1332,20 @@
 
           <!-- Tab Panel 3: Local -->
           <div id="panel-local" style="display:${activeMode==='local'?'flex':'none'}; flex-direction:column; gap:12px;">
-            <div style="color:#4F4741;">本地 Node.js 服务模式直接将打点数据写入本地磁盘的 <code>assets/js/prd-data-*.js</code> 文件中。</div>
-            <div style="background:#2D2B29; color:#E0A990; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="color:#52525b;">本地 Node.js 服务模式直接将打点数据写入本地磁盘的 <code>assets/js/prd-data-*.js</code> 文件中。</div>
+            <div style="background:#18181b; color:#a1a1aa; padding:10px 14px; border-radius:8px; font-family:monospace; font-size:13px; display:flex; align-items:center; justify-content:space-between;">
               <span>$ node server.js</span>
-              <button style="background:#3D3B39; color:#FAF9F6; border:1px solid #38322D; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.copyStartCommand(this)">复制命令</button>
+              <button style="background:#3D3B39; color:#f8fafc; border:1px solid #27272a; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.copyStartCommand(this)">复制命令</button>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearCurrentModeConfig()">${t('kvClearBtn')}</button>
           <div style="display:flex; gap:8px;">
             <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestCurrentModeConfig()">${t('kvVerifyBtn')}</button>
-            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px; background:#8C4A28; border-color:#8C4A28;" onclick="window.handleSaveCurrentModeConfig()">${t('kvSaveBtn')}</button>
+            <button class="prd-btn-primary" style="padding:6px 18px; font-size:12px; background:#18181b; border-color:#18181b;" onclick="window.handleSaveCurrentModeConfig()">${t('kvSaveBtn')}</button>
           </div>
         </div>
       </div>
@@ -1259,13 +1355,13 @@
   };
 
   window.switchSyncConfigTab = function(mode) {
-    ['jsonbin', 'github', 'local'].forEach(m => {
+    ['supabase', 'jsonbin', 'github', 'local'].forEach(m => {
       const btn = document.getElementById(`tab-btn-${m}`);
       const panel = document.getElementById(`panel-${m}`);
       if (btn) {
         btn.style.background = m === mode ? '#ffffff' : 'transparent';
-        btn.style.border = m === mode ? '1px solid #D6CFC7' : 'none';
-        btn.style.color = m === mode ? '#8C4A28' : '#70685E';
+        btn.style.border = m === mode ? '1px solid #d4d4d8' : 'none';
+        btn.style.color = m === mode ? '#18181b' : '#71717a';
       }
       if (panel) {
         panel.style.display = m === mode ? 'flex' : 'none';
@@ -1274,6 +1370,8 @@
   };
 
   window.getCurrentModalActiveTab = function getCurrentModalActiveTab() {
+    const pSb = document.getElementById('panel-supabase');
+    if (pSb && pSb.style.display !== 'none') return 'supabase';
     const pJson = document.getElementById('panel-jsonbin');
     if (pJson && pJson.style.display !== 'none') return 'jsonbin';
     const pGh = document.getElementById('panel-github');
@@ -1281,9 +1379,52 @@
     return 'local';
   }
 
+  window.handleTestSupabaseConfig = async function() {
+    const url = (document.getElementById('prd-sb-url')?.value || '').trim();
+    const key = (document.getElementById('prd-sb-key')?.value || '').trim();
+    const table = (document.getElementById('prd-sb-table')?.value || '').trim();
+    const tipEl = document.getElementById('prd-sb-status-tip');
+
+    if (!url || !key || !table) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">请完整输入 Supabase URL、Key 和 Table 名称</span>`;
+      showToast('请完整填写 Supabase 配置', 'error');
+      return false;
+    }
+
+    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在连接 Supabase 验证表与权限...</span>`;
+
+    try {
+      const targetUrl = `${url.replace(/\/+$/, '')}/rest/v1/${table}?select=id&limit=1`;
+      const resp = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+          'Cache-Control': 'no-cache'
+        }
+      });
+      if (resp.ok) {
+        if (tipEl) tipEl.innerHTML = `<span style="color:#059669; font-weight:700;">验证成功！已连通表 <code>${escapeHtml(table)}</code>，点击右下角保存生效。</span>`;
+        showToast('Supabase 连通性测试通过！', 'success');
+        return true;
+      } else {
+        const errText = await resp.text().catch(() => '');
+        if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">验证失败 (HTTP ${resp.status}): ${escapeHtml(errText.substring(0, 80))}</span>`;
+        showToast(`Supabase 验证失败: HTTP ${resp.status}`, 'error');
+        return false;
+      }
+    } catch (e) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">网络异常: ${escapeHtml(e.message)}</span>`;
+      showToast(`网络连接失败: ${e.message}`, 'error');
+      return false;
+    }
+  };
+
   window.handleTestCurrentModeConfig = async function() {
     const tab = getCurrentModalActiveTab();
-    if (tab === 'jsonbin') {
+    if (tab === 'supabase') {
+      return await window.handleTestSupabaseConfig();
+    } else if (tab === 'jsonbin') {
       return await window.handleTestKVConfig();
     } else if (tab === 'github') {
       return await window.handleTestGitHubConfig();
@@ -1297,8 +1438,41 @@
     const currentActive = getActiveSyncMode();
     const tab = getCurrentModalActiveTab();
 
-    const doApplySave = async () => {
-      if (tab === 'jsonbin') {
+    const doApplySave = async (shouldMigrate = true) => {
+      if (tab === 'supabase') {
+        const testOk = await window.handleTestSupabaseConfig();
+        if (!testOk) return;
+        const url = (document.getElementById('prd-sb-url')?.value || '').trim();
+        const key = (document.getElementById('prd-sb-key')?.value || '').trim();
+        const table = (document.getElementById('prd-sb-table')?.value || '').trim();
+        const customDocId = (document.getElementById('prd-sb-doc-id')?.value || '').trim();
+        const curCfg = getKVStorageConfig();
+        curCfg.mode = 'supabase';
+        curCfg.supabaseUrl = url;
+        curCfg.supabaseKey = key;
+        curCfg.supabaseTable = table;
+        curCfg.customDocId = customDocId;
+        curCfg.isVerified = true;
+        setKVStorageConfig(curCfg);
+        setActiveSyncMode('supabase');
+        isBackendApiCached = true;
+
+        if (shouldMigrate && savedPins && savedPins.length > 0) {
+          try {
+            await saveRemoteKVData(null, null, {
+              pageKey,
+              versionRegistry,
+              savedPins,
+              updatedAt: new Date().toISOString()
+            });
+            showToast(`[无缝迁移] 已成功将 ${savedPins.length} 个打点规约同步至 Supabase！`, 'success');
+          } catch (e) {
+            showToast(`数据同步失败: ${e.message}`, 'error');
+          }
+        } else {
+          showToast('已成功保存并切换为【Supabase 同步模式】！', 'success');
+        }
+      } else if (tab === 'jsonbin') {
         const secretKey = (document.getElementById('prd-kv-secret-key')?.value || '').trim();
         if (!secretKey) {
           showToast('请先输入 Secret Master Key', 'error');
@@ -1307,10 +1481,30 @@
         const testOk = await window.handleTestKVConfig();
         if (!testOk) return;
         const binId = (document.getElementById('prd-kv-bin-id')?.value || '').trim();
-        setKVStorageConfig({ provider: 'jsonbin', binId, secretKey, isVerified: true, updatedAt: new Date().toISOString() });
+        const curCfg = getKVStorageConfig();
+        curCfg.mode = 'jsonbin';
+        curCfg.binId = binId;
+        curCfg.secretKey = secretKey;
+        curCfg.isVerified = true;
+        setKVStorageConfig(curCfg);
         setActiveSyncMode('jsonbin');
         isBackendApiCached = true;
-        showToast('已成功保存并切换为【JSONBin.io 实时同步模式】！', 'success');
+
+        if (shouldMigrate && savedPins && savedPins.length > 0) {
+          try {
+            await saveRemoteKVData(binId, secretKey, {
+              pageKey,
+              versionRegistry,
+              savedPins,
+              updatedAt: new Date().toISOString()
+            });
+            showToast(`[无缝迁移] 已成功将 ${savedPins.length} 个打点规约同步至 JSONBin！`, 'success');
+          } catch (e) {
+            showToast(`数据同步失败: ${e.message}`, 'error');
+          }
+        } else {
+          showToast('已成功保存并切换为【JSONBin.io 实时同步模式】！', 'success');
+        }
       } else if (tab === 'github') {
         const testOk = await window.handleTestGitHubConfig();
         if (!testOk) return;
@@ -1338,12 +1532,23 @@
     if (tab !== currentActive) {
       window.showModeSwitchConfirmModal(currentActive, tab, doApplySave);
     } else {
-      await doApplySave();
+      await doApplySave(false);
     }
   };
+
   window.handleClearCurrentModeConfig = function() {
     const tab = getCurrentModalActiveTab();
-    if (tab === 'jsonbin') {
+    if (tab === 'supabase') {
+      const curCfg = getKVStorageConfig();
+      curCfg.supabaseUrl = '';
+      curCfg.supabaseKey = '';
+      curCfg.supabaseTable = '';
+      setKVStorageConfig(curCfg);
+      const u = document.getElementById('prd-sb-url'); if (u) u.value = '';
+      const k = document.getElementById('prd-sb-key'); if (k) k.value = '';
+      const t = document.getElementById('prd-sb-table'); if (t) t.value = '';
+      showToast('已清除 Supabase 配置', 'info');
+    } else if (tab === 'jsonbin') {
       clearKVStorageConfig();
       showToast('已清除 JSONBin 授权', 'info');
     } else if (tab === 'github') {
@@ -1375,7 +1580,7 @@
       if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">请先输入 Secret Master Key</span>`;
       return false;
     }
-    if (tipEl) tipEl.innerHTML = `<span style="color:#8C4A28;">正在连接云端 KV 验证授权...</span>`;
+    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在连接云端 KV 验证授权...</span>`;
 
     try {
       const payload = {
@@ -1436,8 +1641,15 @@
 
   // 页面初始化时静默从云端拉取最新数据并热替换
   async function syncFromCloudKVOnStartup() {
+    const activeMode = getActiveSyncMode();
     const kv = getKVStorageConfig();
-    if (!kv || !kv.binId) return;
+    if (activeMode === 'supabase') {
+      if (!kv || !kv.supabaseUrl || !kv.supabaseKey) return;
+    } else if (activeMode === 'jsonbin') {
+      if (!kv || !kv.binId) return;
+    } else {
+      return;
+    }
 
     try {
       const remoteData = await fetchRemoteKVData(kv.binId, kv.secretKey);
@@ -1680,7 +1892,7 @@
     modal.innerHTML = `
       <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>${escapeHtml(t('ghModalTitle'))}</span>
@@ -1689,35 +1901,35 @@
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:12px;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a; display:flex; flex-direction:column; gap:12px;">
           <div>${t('ghModalDesc')}</div>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
-              <input type="text" id="prd-gh-owner" value="${escapeHtml(config.owner)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghOwnerLabel')}</label>
+              <input type="text" id="prd-gh-owner" value="${escapeHtml(config.owner)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
-              <input type="text" id="prd-gh-repo" value="${escapeHtml(config.repo)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghRepoLabel')}</label>
+              <input type="text" id="prd-gh-repo" value="${escapeHtml(config.repo)}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
           </div>
 
           <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghBranchLabel')}</label>
-              <input type="text" id="prd-gh-branch" value="${escapeHtml(config.branch || 'main')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghBranchLabel')}</label>
+              <input type="text" id="prd-gh-branch" value="${escapeHtml(config.branch || 'main')}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
             <div>
-              <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
-              <input type="password" id="prd-gh-token" value="${escapeHtml(config.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none;">
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">${t('ghTokenLabel')} <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-gh-token" value="${escapeHtml(config.token || '')}" placeholder="${escapeHtml(t('ghTokenPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none;">
             </div>
           </div>
 
           <!-- Guide -->
-          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:11.5px; color:#4F4741;">
-            <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('ghTokenGuideTitle')}</div>
-            <div style="margin-bottom:2px;">${t('ghTokenStep1')} <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:#8C4A28; font-weight:700; text-decoration:none;">${t('ghGenTokenLink')} &nearr;</a></div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#52525b;">
+            <div style="font-weight:700; color:#18181b; margin-bottom:4px;">${t('ghTokenGuideTitle')}</div>
+            <div style="margin-bottom:2px;">${t('ghTokenStep1')} <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:#18181b; font-weight:700; text-decoration:none;">${t('ghGenTokenLink')} &nearr;</a></div>
             <div style="margin-bottom:2px;">${t('ghTokenStep2')}</div>
             <div>${t('ghTokenStep3')}</div>
           </div>
@@ -1726,7 +1938,7 @@
         </div>
 
         <!-- Footer -->
-        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:11.5px; color:#ef4444;" onclick="window.handleClearGitHubConfig()">${t('ghClearConfigBtn')}</button>
           <div style="display:flex; gap:8px;">
             <button class="prd-btn-action" style="padding:6px 14px; font-size:12px;" onclick="window.handleTestGitHubConfig()">${t('ghVerifyBtn')}</button>
@@ -1754,7 +1966,7 @@
       if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444;">请先输入 GitHub Token</span>`;
       return false;
     }
-    if (statusEl) statusEl.innerHTML = `<span style="color:#8C4A28;">正在连接 GitHub API 校验权限...</span>`;
+    if (statusEl) statusEl.innerHTML = `<span style="color:#18181b;">正在连接 GitHub API 校验权限...</span>`;
 
     const result = await verifyGitHubTokenAccess(token, owner, repo);
     if (result.success) {
@@ -1819,7 +2031,7 @@
     if (existing) existing.remove();
 
     const activeMode = getActiveSyncMode();
-    const modeName = activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式');
+    const modeName = activeMode === 'supabase' ? '云端存储打点 (Supabase)' : (activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式'));
 
     const modal = document.createElement('div');
     modal.id = 'prd-online-auth-modal';
@@ -1839,7 +2051,7 @@
     modal.innerHTML = `
       <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>${escapeHtml(t('onlineAuthTitle'))}</span>
@@ -1848,32 +2060,32 @@
         </div>
 
         <!-- Body -->
-        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#38322D; display:flex; flex-direction:column; gap:14px;">
+        <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a; display:flex; flex-direction:column; gap:14px;">
           <div>${t('onlineAuthDesc')}</div>
 
-          <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:#70685E;">当前项目锁定模式：</span>
-              <span style="font-weight:700; color:#8C4A28;">${escapeHtml(modeName)}</span>
+              <span style="color:#71717a;">当前项目锁定模式：</span>
+              <span style="font-weight:700; color:#18181b;">${escapeHtml(modeName)}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #E8E2D9; padding-top:6px; font-family:monospace; font-size:11.5px;">
-              <span style="color:#70685E;">绑定云端数据源：</span>
-              <span style="color:#2D2B29; font-weight:700;">${activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:6px; font-family:monospace; font-size:11.5px;">
+              <span style="color:#71717a;">绑定云端数据源：</span>
+              <span style="color:#18181b; font-weight:700;">${activeMode==='supabase' ? `Table: ${getKVStorageConfig().supabaseTable} (Doc ID: ${getKVStorageConfig().customDocId || pageKey})` : (activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`)}</span>
             </div>
           </div>
 
           <div>
-            <label style="font-size:11.5px; font-weight:700; color:#4F4741; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
+            <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
+            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
           </div>
 
           <div id="prd-online-auth-tip" style="font-size:12px; min-height:18px;"></div>
         </div>
 
         <!-- Footer -->
-        <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeOnlineAuthModal()">保持访客只读</button>
-          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#8C4A28; border-color:#8C4A28;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
+          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#18181b; border-color:#18181b;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
         </div>
       </div>
     `;
@@ -1900,10 +2112,25 @@
       return;
     }
 
-    if (tipEl) tipEl.innerHTML = `<span style="color:#8C4A28;">正在校验 Key 有效性...</span>`;
+    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在校验 Key 有效性...</span>`;
 
     try {
-      if (activeMode === 'jsonbin') {
+      if (activeMode === 'supabase') {
+        const kv = getKVStorageConfig();
+        const testRes = await saveRemoteKVData(null, inputKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        kv.supabaseKey = inputKey;
+        kv.isVerified = true;
+        try {
+          sessionStorage.setItem('prd_supabase_session_key', inputKey);
+        } catch (e) {}
+        setKVStorageConfig(kv);
+        isBackendApiCached = true;
+      } else if (activeMode === 'jsonbin') {
         const kv = getKVStorageConfig();
         const testRes = await saveRemoteKVData(kv.binId, inputKey, {
           pageKey,
@@ -1939,6 +2166,13 @@
     if (!force && isBackendApiCached !== null) return isBackendApiCached;
 
     const activeMode = getActiveSyncMode();
+
+    if (activeMode === 'supabase') {
+      const kv = getKVStorageConfig();
+      const isOk = !!(kv && kv.supabaseKey && kv.supabaseUrl && kv.supabaseTable);
+      isBackendApiCached = isOk;
+      return isOk;
+    }
 
     if (activeMode === 'jsonbin') {
       const kv = getKVStorageConfig();
@@ -1980,7 +2214,7 @@
 
   window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null) {
     const activeMode = getActiveSyncMode();
-    if (activeMode === 'jsonbin' || activeMode === 'github') {
+    if (activeMode === 'jsonbin' || activeMode === 'supabase' || activeMode === 'github') {
       // 云端模式下（无论文件打开还是线上）统一唤起【创立人 API Key 鉴权】
       window.showOnlineAuthModal(actionType);
       return;
@@ -2011,28 +2245,28 @@
       modal.innerHTML = `
         <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
           <!-- Header -->
-          <div style="background:#2D2B29; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
               <span>${t('envTitle')}</span>
-              <span style="background:#8C4A28; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
+              <span style="background:#18181b; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
             </div>
             <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeNoBackendModal()">&times;</button>
           </div>
 
           <!-- Body -->
-          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#38322D; display:flex; flex-direction:column; gap:12px;">
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#27272a; display:flex; flex-direction:column; gap:12px;">
             <div>${t('envGhDesc')}</div>
 
-            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; font-size:12px;">
-              <div style="font-weight:700; color:#2D2B29; margin-bottom:4px;">${t('envGhHowToUnlock')}</div>
-              <div style="color:#4F4741;">${t('envGhUnlockStep')}</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px;">
+              <div style="font-weight:700; color:#18181b; margin-bottom:4px;">${t('envGhHowToUnlock')}</div>
+              <div style="color:#52525b;">${t('envGhUnlockStep')}</div>
             </div>
           </div>
 
           <!-- Footer -->
-          <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
             <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeNoBackendModal()">${t('envGhContinueVisitor')}</button>
-            <button class="prd-btn-primary" style="padding:7px 18px; font-size:12px; background:#8C4A28; border-color:#8C4A28;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envGhUnlockBtn')}</button>
+            <button class="prd-btn-primary" style="padding:7px 18px; font-size:12px; background:#18181b; border-color:#18181b;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envGhUnlockBtn')}</button>
           </div>
         </div>
       `;
@@ -2051,28 +2285,28 @@
           </div>
 
           <!-- Body -->
-          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#38322D; display:flex; flex-direction:column; gap:12px;">
+          <div style="padding:20px; font-size:12.5px; line-height:1.65; color:#27272a; display:flex; flex-direction:column; gap:12px;">
             <div>${t('envLocalDesc')}</div>
 
-            <div style="background:#FAF9F6; border:1px solid #E8E2D9; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
-              <div style="font-weight:700; color:#2D2B29;">${t('envLocalHowToUnlock')}</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+              <div style="font-weight:700; color:#18181b;">${t('envLocalHowToUnlock')}</div>
               <div>
                 <div>${t('envLocalOpt1')}</div>
-                <div style="margin:6px 0; background:#2D2B29; color:#E0A990; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12.5px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="margin:6px 0; background:#18181b; color:#a1a1aa; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12.5px; display:flex; align-items:center; justify-content:space-between;">
                   <span>$ node server.js</span>
-                  <button style="background:#3D3B39; color:#FAF9F6; border:1px solid #38322D; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${t('envLocalCopyCmd')}</button>
+                  <button style="background:#3D3B39; color:#f8fafc; border:1px solid #27272a; padding:3px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;" onclick="window.copyStartCommand(this)">${t('envLocalCopyCmd')}</button>
                 </div>
               </div>
-              <div style="border-top:1px dashed #D6CFC7; padding-top:6px;">
+              <div style="border-top:1px dashed #d4d4d8; padding-top:6px;">
                 <div>${t('envLocalOpt2')}</div>
               </div>
             </div>
           </div>
 
           <!-- Footer -->
-          <div style="background:#FAF9F6; border-top:1px solid #E8E2D9; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
-            <button class="prd-btn-action" style="font-size:12px; color:#8C4A28;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envLocalConfigGh')}</button>
-            <button class="prd-btn-primary" style="background:#2D2B29; border-color:#2D2B29; padding:6px 20px; font-size:12px;" onclick="window.closeNoBackendModal()">${t('envLocalGotIt')}</button>
+          <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="prd-btn-action" style="font-size:12px; color:#18181b;" onclick="window.closeNoBackendModal(); window.showGitHubConfigModal();">${t('envLocalConfigGh')}</button>
+            <button class="prd-btn-primary" style="background:#18181b; border-color:#18181b; padding:6px 20px; font-size:12px;" onclick="window.closeNoBackendModal()">${t('envLocalGotIt')}</button>
           </div>
         </div>
       `;
@@ -2248,60 +2482,106 @@
   style.id = 'prd-tool-styles-v6';
   style.textContent = `
     :root {
-      --prd-primary: #8C4A28;
-      --prd-primary-hover: #6B371B;
+      --prd-primary: #18181b;
+      --prd-primary-hover: #27272a;
       --prd-bg-panel: rgba(255, 255, 255, 0.98);
       --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
-    /* 屏幕右边缘快捷展开 Tab */
+    /* 屏幕右边缘快捷控制胶囊 (高雅炭灰 + 小眼睛独立打点开关 + 抽屉展开) */
     .prd-drawer-edge-tab {
       position: fixed;
       top: 140px;
       right: 0;
       z-index: 1000009;
-      background: linear-gradient(135deg, #36322F, #48433F);
+      background: #18181b;
       color: #ffffff;
-      padding: 12px 6px;
-      border-radius: 8px 0 0 8px;
+      padding: 0;
+      border-radius: 12px 0 0 12px;
       cursor: pointer;
-      box-shadow: -4px 4px 14px rgba(0,0,0,0.25);
-      border: 1px solid rgba(156, 91, 64, 0.4);
+      box-shadow: -4px 6px 22px rgba(0,0,0,0.28);
+      border: 1px solid #27272a;
       border-right: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
       user-select: none;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      width: 38px;
+      box-sizing: border-box;
     }
     .prd-drawer-edge-tab:hover {
-      background: #8C4A28;
-      border-color: #E0A990;
-      transform: translateX(-4px);
+      box-shadow: -6px 8px 26px rgba(0,0,0,0.35);
+      transform: translateX(-3px);
     }
-    .prd-edge-arrow { font-size: 14px; font-weight: 800; }
+    .prd-edge-eye-btn {
+      width: 100%;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #ffffff;
+      background: #27272a;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .prd-edge-eye-btn:hover {
+      background: #3f3f46;
+      color: #ffffff;
+    }
+    .prd-edge-eye-btn.off {
+      color: #71717a;
+      background: #18181b;
+      opacity: 0.65;
+    }
+    .prd-edge-eye-btn.active {
+      color: #ffffff;
+      background: #27272a;
+    }
+    .prd-edge-handle-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+    }
+    .prd-edge-drawer-trigger {
+      padding: 12px 4px 14px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .prd-edge-drawer-trigger:hover {
+      background: #27272a;
+    }
+    .prd-edge-arrow { font-size: 15px; font-weight: 800; }
     .prd-edge-text {
       writing-mode: vertical-rl;
-      letter-spacing: 2px;
-      font-size: 11px;
+      letter-spacing: 3px;
+      font-size: 12px;
       font-weight: 700;
     }
 
-    /* 右侧抽屉核心容器 */
+    /* 右侧抽屉核心容器 (圆角更大，质感升级) */
     .prd-right-drawer {
       position: fixed;
       top: 0;
-      right: -420px;
-      width: 400px;
+      right: -430px;
+      width: 410px;
       height: 100vh;
       background: #ffffff;
-      box-shadow: -10px 0 35px rgba(28, 24, 21, 0.18);
+      box-shadow: -12px 0 40px rgba(28, 24, 21, 0.18);
       z-index: 1000016;
       display: flex;
       flex-direction: column;
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-left: 1px solid #E8E2D9;
+      border-left: 1px solid #e2e8f0;
+      border-radius: 16px 0 0 16px;
       font-family: var(--prd-font);
     }
     .prd-right-drawer.open { right: 0; }
@@ -2343,7 +2623,7 @@
     .prd-handle-full-collapse {
       background: linear-gradient(135deg, #36322F, #48433F);
       color: #ffffff;
-      border: 1px solid #38322D;
+      border: 1px solid #27272a;
       border-right: none;
     }
     .prd-handle-full-collapse:hover {
@@ -2353,20 +2633,20 @@
     }
     /* 下方按钮：半收起 (专业亮蓝，右向紧凑收折标号条图标 ⇥) */
     .prd-handle-semi-collapse {
-      background: linear-gradient(135deg, #8C4A28, #6B371B);
+      background: linear-gradient(135deg, #18181b, #27272a);
       color: #ffffff;
       border: 1px solid #60a5fa;
       border-right: none;
     }
     .prd-handle-semi-collapse:hover {
       background: #4A352A;
-      border-color: #E0A990;
+      border-color: #a1a1aa;
       transform: scale(1.08) translateX(-2px);
     }
 
     .prd-drawer-header {
       padding: 12px 14px;
-      border-bottom: 1px solid #F3EFEA;
+      border-bottom: 1px solid #f1f5f9;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2376,8 +2656,8 @@
 
     .prd-version-bar {
       padding: 8px 12px;
-      background: #FAF9F6;
-      border-bottom: 1px solid #E8E2D9;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -2388,9 +2668,9 @@
       padding: 4px 8px;
       font-size: 11.5px;
       font-weight: 700;
-      color: #2D2B29;
+      color: #18181b;
       background: #ffffff;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
@@ -2399,44 +2679,44 @@
     .prd-drawer-body {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 12px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
-    /* 需求卡片样式 (100% 绝对统一卡片高度 136px) */
+    /* 需求卡片样式 (圆角与间距更大，呼吸感与质感更强) */
     .prd-card-item {
       background: #ffffff;
-      border: 1px solid #E8E2D9;
-      border-radius: 8px;
-      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 136px !important;
-      min-height: 136px !important;
-      max-height: 136px !important;
+      height: 144px !important;
+      min-height: 144px !important;
+      max-height: 144px !important;
       box-sizing: border-box;
       cursor: pointer;
       transition: all 0.15s ease-in-out;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
     }
     .prd-card-item:hover {
-      border-color: #E0A990;
-      background: #FAF9F6;
-      box-shadow: 0 4px 10px rgba(140, 74, 40, 0.08);
+      border-color: #a1a1aa;
+      background: #f8fafc;
+      box-shadow: 0 4px 10px rgba(24, 24, 27, 0.08);
     }
     .prd-card-item.dragging {
       opacity: 0.45;
-      background: #FFF4ED;
-      border: 1.5px dashed #9C5B40;
+      background: #f4f4f5;
+      border: 1.5px dashed #52525b;
     }
     .prd-card-item.drag-over {
-      border-top: 3px solid #8C4A28;
+      border-top: 3px solid #18181b;
       background: #f0fdf4;
     }
 
@@ -2446,7 +2726,7 @@
       align-items: center;
       font-size: 13px;
       font-weight: 700;
-      color: #2D2B29;
+      color: #18181b;
       height: 22px;
       flex-shrink: 0;
     }
@@ -2488,7 +2768,7 @@
 
     .prd-card-desc {
       font-size: 12px;
-      color: #70685E;
+      color: #71717a;
       line-height: 18px;
       height: 36px !important;
       min-height: 36px !important;
@@ -2506,7 +2786,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid #F3EFEA;
+      border-top: 1px solid #f1f5f9;
       padding-top: 4px;
       margin-top: 0;
       height: 24px;
@@ -2519,17 +2799,17 @@
       border-radius: 4px;
       font-weight: 600;
     }
-    .prd-tag-type { background: #FDF6F0; color: #8C4A28; }
+    .prd-tag-type { background: #f4f4f5; color: #18181b; }
     .prd-tag-version { background: #fef3c7; color: #92400e; font-family: monospace; }
 
     /* 通用按钮 */
     .prd-btn-action {
       background: #ffffff;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 6px;
       padding: 4px 8px;
       font-size: 11px;
-      color: #38322D;
+      color: #27272a;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -2538,7 +2818,7 @@
       transition: all 0.15s;
     }
     .prd-btn-action:hover {
-      background: #F3EFEA;
+      background: #f1f5f9;
       border-color: #A39A90;
     }
     .prd-btn-primary {
@@ -2637,7 +2917,7 @@
       line-height: 1.65 !important;
     }
     .prd-live-block ul li::marker, .prd-doc-content ul li::marker {
-      color: #8C4A28 !important;
+      color: #18181b !important;
     }
 
     /* 抽屉全展开 (400px) / 半收起 (56px 标号竖条) / 全收起 状态体系 */
@@ -2655,7 +2935,7 @@
       transform: translateX(100%);
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease;
       box-sizing: border-box;
-      border-left: 1px solid #E8E2D9;
+      border-left: 1px solid #e2e8f0;
     }
     #prd-drawer.open, .prd-right-drawer.open {
       transform: translateX(0) !important;
@@ -2684,7 +2964,7 @@
       flex-direction: column;
       height: 100%;
       width: 100%;
-      background: #FAF9F6;
+      background: #f8fafc;
       align-items: center;
       padding: 10px 0;
       box-sizing: border-box;
@@ -2761,7 +3041,7 @@
       user-select: none;
     }
     .prd-drawer-edge-handle:hover {
-      background: #8C4A28;
+      background: #18181b;
     }
 
     .prd-inspect-bubble {
@@ -2789,7 +3069,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #F3EFEA;
+      border-bottom: 1px solid #f1f5f9;
       padding-bottom: 6px;
       cursor: grab;
       user-select: none;
@@ -2802,7 +3082,7 @@
       margin: 10px 0;
       padding: 18px 14px 28px 14px !important;
       background: #ffffff !important;
-      border: 1px solid #E8E2D9;
+      border: 1px solid #e2e8f0;
       border-radius: 10px;
       overflow-x: auto;
       text-align: center;
@@ -2823,7 +3103,7 @@
       width: 100%;
       overflow-x: auto;
       margin: 8px 0;
-      border: 1px solid #E8E2D9;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
     }
     .prd-md-rendered table, .prd-md-doc table, .prd-table-responsive table {
@@ -2834,27 +3114,27 @@
       text-align: left;
     }
     .prd-md-rendered th, .prd-md-doc th, .prd-table-responsive th {
-      background: #FAF9F6;
-      color: #2D2B29;
+      background: #f8fafc;
+      color: #18181b;
       font-weight: 700;
       padding: 9px 12px;
-      border-bottom: 2px solid #E8E2D9;
-      border-right: 1px solid #F3EFEA;
+      border-bottom: 2px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
     }
     .prd-md-rendered td, .prd-md-doc td, .prd-table-responsive td {
       padding: 8px 12px;
-      border-bottom: 1px solid #F3EFEA;
-      border-right: 1px solid #FAF9F6;
-      color: #38322D;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f8fafc;
+      color: #27272a;
     }
     .prd-md-rendered tr:hover td, .prd-md-doc tr:hover td, .prd-table-responsive tr:hover td {
-      background: #FAF9F6;
+      background: #f8fafc;
     }
 
     /* 交互式可视化直编表格容器 (零管道符，如同 Word/Excel) */
     .prd-live-table-wrapper {
       margin: 10px 0;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 8px;
       background: #ffffff;
       overflow: hidden;
@@ -2866,8 +3146,8 @@
     }
     .prd-live-table-toolbar {
       padding: 6px 12px;
-      background: #FAF9F6;
-      border-bottom: 1px solid #E8E2D9;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2880,7 +3160,7 @@
     }
     .prd-visual-table th, .prd-visual-table td {
       padding: 10px 12px;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       outline: none;
       vertical-align: top;
       min-width: 110px;
@@ -2892,13 +3172,13 @@
       box-sizing: border-box;
     }
     .prd-visual-table th {
-      background: #F3EFEA;
+      background: #f1f5f9;
       font-weight: 700;
-      color: #2D2B29;
+      color: #18181b;
     }
     .prd-visual-table th:focus, .prd-visual-table td:focus {
-      background: #FFF4ED !important;
-      box-shadow: inset 0 0 0 2px #8C4A28;
+      background: #f4f4f5 !important;
+      box-shadow: inset 0 0 0 2px #18181b;
     }
     .prd-visual-table td:empty:before, .prd-visual-table th:empty:before {
       content: attr(placeholder);
@@ -2930,7 +3210,7 @@
     }
     .prd-editor-header {
       padding: 12px 18px;
-      background: #2D2B29;
+      background: #18181b;
       color: #ffffff;
       display: flex;
       justify-content: space-between;
@@ -2957,33 +3237,33 @@
       gap: 4px;
       flex-wrap: wrap;
       padding: 6px 8px;
-      background: #FAF9F6;
-      border: 1px solid #E8E2D9;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
       flex-shrink: 0;
     }
     .prd-md-tool-btn {
       background: #fff;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 4px;
       padding: 3px 7px;
       font-size: 11.5px;
-      color: #38322D;
+      color: #27272a;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.15s;
     }
     .prd-md-tool-btn:hover, .prd-md-tool-btn.active {
-      background: #FFF4ED;
-      border-color: #9C5B40;
+      background: #f4f4f5;
+      border-color: #52525b;
       color: var(--prd-primary);
     }
     .prd-tool-select {
       padding: 3px 6px;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 4px;
       font-size: 11px;
-      color: #38322D;
+      color: #27272a;
       background: #fff;
       outline: none;
       cursor: pointer;
@@ -2992,7 +3272,7 @@
     /* 逐行所见即所得核心文档画布 (去多余外框，保留流畅真实文档感) */
     .prd-live-blocks-container {
       flex: 1;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 8px;
       padding: 20px 24px;
       overflow-y: auto;
@@ -3019,7 +3299,7 @@
     .prd-live-block.editing {
       background: transparent;
       padding: 2px 0;
-      border-left: 2.5px solid #8C4A28 !important;
+      border-left: 2.5px solid #18181b !important;
       padding-left: 8px !important;
     }
     .prd-live-line-input {
@@ -3032,7 +3312,7 @@
       line-height: 1.65;
       resize: none;
       overflow: hidden;
-      color: #2D2B29;
+      color: #18181b;
       box-sizing: border-box;
       display: block;
       padding: 0;
@@ -3043,7 +3323,7 @@
     .prd-raw-source-textarea {
       flex: 1;
       width: 100%;
-      border: 1px solid #D6CFC7;
+      border: 1px solid #d4d4d8;
       border-radius: 8px;
       padding: 14px 16px;
       font-size: 13px;
@@ -3053,7 +3333,7 @@
       resize: none;
       box-sizing: border-box;
       background: #ffffff;
-      color: #2D2B29;
+      color: #18181b;
     }
 
     /* 右下角最小化悬浮胶囊 */
@@ -3062,7 +3342,7 @@
       bottom: 24px;
       right: 24px;
       z-index: 1000025;
-      background: #2D2B29;
+      background: #18181b;
       color: #ffffff;
       border-radius: 30px;
       padding: 8px 18px;
@@ -3110,7 +3390,7 @@
     .prd-doc-header {
       padding: 14px 20px;
       background: #ffffff;
-      border-bottom: 1px solid #E8E2D9;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3123,8 +3403,8 @@
     }
     .prd-doc-toc {
       width: 260px;
-      border-right: 1px solid #E8E2D9;
-      background: #FAF9F6;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
       padding: 14px 10px;
       overflow-y: auto;
       flex-shrink: 0;
@@ -3141,7 +3421,7 @@
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12.5px;
-      color: #4F4741;
+      color: #52525b;
       cursor: pointer;
       display: flex;
       gap: 6px;
@@ -3149,7 +3429,7 @@
       transition: all 0.15s;
     }
     .prd-toc-item:hover, .prd-toc-item.active {
-      background: #FFF4ED;
+      background: #f4f4f5;
       color: var(--prd-primary);
       font-weight: 600;
     }
@@ -3164,19 +3444,19 @@
     }
     .prd-doc-paper { max-width: 900px; margin: 0 auto; }
     .prd-doc-hero {
-      border-bottom: 2px solid #F3EFEA;
+      border-bottom: 2px solid #f1f5f9;
       padding-bottom: 16px;
       margin-bottom: 24px;
     }
     .prd-doc-hero-title {
       font-size: 24px;
       font-weight: 800;
-      color: #2D2B29;
+      color: #18181b;
       margin: 0 0 8px 0;
     }
     .prd-doc-hero-meta {
       font-size: 12px;
-      color: #70685E;
+      color: #71717a;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -3185,7 +3465,7 @@
     .prd-doc-article-section {
       margin-top: 28px;
       padding-top: 20px;
-      border-top: 1px solid #F3EFEA;
+      border-top: 1px solid #f1f5f9;
       scroll-margin-top: 80px;
     }
     .prd-doc-article-section:first-of-type {
@@ -3196,7 +3476,7 @@
     .prd-doc-sec-heading {
       font-size: 17px;
       font-weight: 700;
-      color: #2D2B29;
+      color: #18181b;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -3205,7 +3485,7 @@
     .prd-doc-sec-content {
       font-size: 13.5px;
       line-height: 1.7;
-      color: #38322D;
+      color: #27272a;
     }
 
     /* 版本上传模态框 */
@@ -3247,9 +3527,9 @@
             themeVariables: {
               background: '#ffffff',
               mainBkg: '#ffffff',
-              nodeBorder: '#8C4A28',
+              nodeBorder: '#18181b',
               clusterBkg: '#ffffff',
-              titleColor: '#2D2B29',
+              titleColor: '#18181b',
               edgeLabelBackground: '#ffffff'
             },
             securityLevel: 'loose',
@@ -3275,9 +3555,9 @@
           themeVariables: {
             background: '#ffffff',
             mainBkg: '#ffffff',
-            nodeBorder: '#8C4A28',
+            nodeBorder: '#18181b',
             clusterBkg: '#ffffff',
-            titleColor: '#2D2B29',
+            titleColor: '#18181b',
             edgeLabelBackground: '#ffffff'
           },
           securityLevel: 'loose',
@@ -3590,7 +3870,7 @@
 
     // 模式 1: 云端 KV 存储打点 (JSONBin.io)
     // 严格单一排他：只向云端 JSONBin 发送真实请求，云端成功后才更新本地缓存镜像
-    if (activeMode === 'jsonbin') {
+    if (activeMode === 'jsonbin' || activeMode === 'supabase') {
       const kv = getKVStorageConfig();
       if (!kv || !kv.secretKey) {
         showToast('未配置有效的 JSONBin Master Key，保存失败', 'error');
@@ -3893,9 +4173,63 @@
   pinsOverlay.style.cssText = 'position: fixed; inset: 0; pointer-events: none; z-index: 1000015;';
   document.body.appendChild(pinsOverlay);
 
+  let isCanvasPinsVisible = false; // 默认不显示打点标记
+
+  window.updateEdgeTabUI = function updateEdgeTabUI() {
+    const edgeTab = document.getElementById('prd-drawer-edge-tab');
+    if (!edgeTab) return;
+    
+    if (currentMode === 'pick' || rePickModeActive) {
+      edgeTab.title = '点击退出打标模式 (或按 ESC 退出)';
+      edgeTab.innerHTML = `
+        <div class="prd-edge-drawer-trigger" onclick="window.handleEdgeDrawerTriggerClick(event)" style="padding:14px 4px;">
+          <span class="prd-edge-arrow" style="color:#ef4444; font-size:12px; font-weight:800;">✕</span>
+          <span class="prd-edge-text" style="color:#ef4444; font-weight:700;">点击组件打标</span>
+        </div>
+      `;
+      return;
+    }
+
+    edgeTab.title = '需求打点控制台';
+    edgeTab.innerHTML = `
+      <div class="prd-edge-eye-btn ${isCanvasPinsVisible ? 'active' : 'off'}" id="prd-edge-eye-btn" onclick="window.toggleCanvasMarkersOnly(event)" title="${isCanvasPinsVisible ? '点击隐藏页面打点标记' : '点击在页面上显示打点标记 (不打开抽屉)'}">
+        <span id="prd-edge-eye-icon">${isCanvasPinsVisible ? '👁' : '👁‍🗨'}</span>
+      </div>
+      <div class="prd-edge-handle-divider"></div>
+      <div class="prd-edge-drawer-trigger" onclick="window.handleEdgeDrawerTriggerClick(event)" title="点击展开需求列表抽屉">
+        <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
+        <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
+      </div>
+    `;
+  };
+
+  window.toggleCanvasMarkersOnly = function(e) {
+    if (e) e.stopPropagation();
+    isCanvasPinsVisible = !isCanvasPinsVisible;
+    renderPinMarkers();
+    window.updateEdgeTabUI();
+    if (isCanvasPinsVisible) {
+      showToast('已显示页面打点标记 (点击标记可直接查看规约详情)', 'info');
+    } else {
+      showToast('已隐藏页面打点标记', 'info');
+    }
+  };
+
+  window.handleEdgeDrawerTriggerClick = function(e) {
+    if (e) e.stopPropagation();
+    if (currentMode === 'pick' || rePickModeActive) {
+      rePickModeActive = false;
+      unbindPickListeners();
+      window.setPRDMode('show');
+      showToast('已退出打标模式', 'info');
+      return;
+    }
+    window.togglePRDDrawer();
+  };
+
   function renderPinMarkers() {
     pinsOverlay.innerHTML = '';
-    if (currentMode === 'hide') return;
+    if (!isCanvasPinsVisible) return;
 
     savedPins.forEach((pin) => {
       if (searchKeyword && !matchFuzzyTitle(pin.title, searchKeyword)) return;
@@ -3956,10 +4290,10 @@
       <div class="prd-inspect-bubble-header">
         <div style="display:flex; align-items:center; gap:6px; flex:1; overflow:hidden;">
           <span class="prd-pin-num-pill">${pin.id}</span>
-          <strong style="font-size:13px; color:#2D2B29; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(pin.title || '（未命名需求）')}</strong>
+          <strong style="font-size:13px; color:#18181b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(pin.title || '（未命名需求）')}</strong>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button class="prd-btn-action" style="padding:2px 8px; font-size:11px; background:#F3EFEA; color:#4F4741; border-radius:4px; border:1px solid #E8E2D9;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
+          <button class="prd-btn-action" style="padding:2px 8px; font-size:11px; background:#f1f5f9; color:#52525b; border-radius:4px; border:1px solid #e2e8f0;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
             <span id="prd-bubble-drawer-btn-icon">${isDrawerOpen ? '收起侧边栏' : '展开侧边栏'}</span>
           </button>
           <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer; padding:0 4px; line-height:1;" onclick="window.closeInspectBubble()" title="关闭当前需求框">&times;</button>
@@ -3968,12 +4302,12 @@
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
         <span class="prd-tag prd-tag-type">${escapeHtml(pin.type || '业务规则')}</span>
         <span class="prd-tag prd-tag-version">${escapeHtml(currentVersion)}</span>
-        ${pin.selector ? `<code style="font-size:11px; background:#F3EFEA; color:#70685E; padding:1px 6px; border-radius:3px;">${escapeHtml(pin.selector)}</code>` : ''}
+        ${pin.selector ? `<code style="font-size:11px; background:#f1f5f9; color:#71717a; padding:1px 6px; border-radius:3px;">${escapeHtml(pin.selector)}</code>` : ''}
       </div>
       <div class="prd-md-rendered" style="flex:1; overflow-y:auto; min-height:140px; font-size:13px; line-height:1.6; padding-right:4px;">
         ${parseMarkdown(pin.desc) || '<p style="color:#A39A90; font-style:italic;">暂无详细描述</p>'}
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #F3EFEA; padding-top:6px; margin-top:2px; flex-shrink:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:6px; margin-top:2px; flex-shrink:0;">
         <span style="font-size:10px; color:#A39A90;">${escapeHtml(pin.pageTitle || pageKey)}</span>
         <button class="prd-btn-action" style="color:var(--prd-primary);" onclick="window.openEditorForPin(${pin.id})">编辑需求</button>
       </div>
@@ -4606,12 +4940,12 @@
         <!-- 头部元信息表单 -->
         <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 12px; flex-shrink:0;">
           <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:12px; font-weight:700; color:#38322D;">${t('reqTitleLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="prd-modal-title" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none;" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
+            <label style="font-size:12px; font-weight:700; color:#27272a;">${t('reqTitleLabel')} <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="prd-modal-title" style="padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none;" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
           </div>
           <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:12px; font-weight:700; color:#38322D;">${t('reqTypeLabel')}</label>
-            <select id="prd-modal-type" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; background:#fff;">
+            <label style="font-size:12px; font-weight:700; color:#27272a;">${t('reqTypeLabel')}</label>
+            <select id="prd-modal-type" style="padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; background:#fff;">
               <option value="业务规则" ${draft.type === '业务规则' ? 'selected' : ''}>${t('reqTypes')['业务规则'] || '业务规则'}</option>
               <option value="交互逻辑" ${draft.type === '交互逻辑' ? 'selected' : ''}>${t('reqTypes')['交互逻辑'] || '交互逻辑'}</option>
               <option value="数据口径" ${draft.type === '数据口径' ? 'selected' : ''}>${t('reqTypes')['数据口径'] || '数据口径'}</option>
@@ -4623,15 +4957,15 @@
         </div>
 
         <!-- 业务规约快捷模板下拉菜单与快捷插入栏 -->
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:#FAF9F6; padding:6px 10px; border-radius:6px; border:1px solid #E8E2D9;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:#f8fafc; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:12px; font-weight:700; color:#4F4741;">快速插入规约：</span>
+            <span style="font-size:12px; font-weight:700; color:#52525b;">快速插入规约：</span>
             <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('rule')">业务规则模版</button>
             <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('state-chart')">状态机流程图</button>
             <button class="prd-btn-action" style="font-size:11px; padding:3px 8px; background:#fff;" onclick="window.insertVditorTemplate('table-dict')">字段数据字典表</button>
           </div>
-          <div style="font-size:11px; color:#70685E;">
-            ⌨️ 提示：支持按 <kbd style="background:#E8E2D9; padding:1px 4px; border-radius:3px;">Tab</kbd> / <kbd style="background:#E8E2D9; padding:1px 4px; border-radius:3px;">Shift+Tab</kbd> 多级层级缩进
+          <div style="font-size:11px; color:#71717a;">
+            ⌨️ 提示：支持按 <kbd style="background:#e2e8f0; padding:1px 4px; border-radius:3px;">Tab</kbd> / <kbd style="background:#e2e8f0; padding:1px 4px; border-radius:3px;">Shift+Tab</kbd> 多级层级缩进
           </div>
         </div>
 
@@ -4641,16 +4975,16 @@
         </div>
 
         <!-- 底部绑定状态与操作栏 (单一暂存并看页面入口) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; padding-top:8px; border-top:1px solid #F3EFEA;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0; padding-top:8px; border-top:1px solid #f1f5f9;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="prd-btn-action" style="font-size:11.5px; padding:4px 10px; color:#8C4A28;" onclick="window.rePickElementForDraft()">${t('rePickBtn')}</button>
-            <span style="font-size:11px; color:#70685E; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <button class="prd-btn-action" style="font-size:11.5px; padding:4px 10px; color:#18181b;" onclick="window.rePickElementForDraft()">${t('rePickBtn')}</button>
+            <span style="font-size:11px; color:#71717a; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
               ${draft.selector ? `<span style="color:#059669;">${t('boundComp')}:</span> <code>${escapeHtml(draft.selector)}</code>` : `<span style="color:#A39A90;">○ ${t('unboundElementTip')}</span>`}
             </span>
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="prd-btn-action" style="padding:6px 14px; background:#FFF4ED; color:#6B371B; font-weight:600; border-color:#F2D1C1;" onclick="window.minimizeEditor()" title="暂存当前草稿并折叠至右下角胶囊，随时查阅底层原型">${t('tempSaveBtn')}</button>
-            <button class="prd-btn-action" style="padding:6px 14px; background:#F3EFEA;" onclick="window.closeEditorModal()">${t('cancelBtn')}</button>
+            <button class="prd-btn-action" style="padding:6px 14px; background:#f4f4f5; color:#27272a; font-weight:600; border-color:#F2D1C1;" onclick="window.minimizeEditor()" title="暂存当前草稿并折叠至右下角胶囊，随时查阅底层原型">${t('tempSaveBtn')}</button>
+            <button class="prd-btn-action" style="padding:6px 14px; background:#f1f5f9;" onclick="window.closeEditorModal()">${t('cancelBtn')}</button>
             <button class="prd-btn-primary" style="padding:6px 18px;" onclick="window.saveEditorModal()">${t('saveBtn')}</button>
           </div>
         </div>
@@ -4707,7 +5041,7 @@
         });
       } catch (err) {
         console.warn('Vditor init failed, fallback to textarea:', err);
-        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #D6CFC7; border-radius:6px;">${escapeHtml(draft.desc || '')}</textarea>`;
+        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #d4d4d8; border-radius:6px;">${escapeHtml(draft.desc || '')}</textarea>`;
       }
     });
   }
@@ -4740,7 +5074,7 @@
     if (!textarea) {
       const container = document.getElementById('prd-vditor-container');
       if (container) {
-        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none; line-height:1.5;">${escapeHtml(activeDraft?.desc || '')}</textarea>`;
+        container.innerHTML = `<textarea id="prd-fallback-textarea" style="width:100%; height:100%; box-sizing:border-box; padding:10px; font-family:monospace; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; line-height:1.5;">${escapeHtml(activeDraft?.desc || '')}</textarea>`;
         textarea = document.getElementById('prd-fallback-textarea');
       }
     }
@@ -4792,7 +5126,7 @@
         <strong style="font-size:12px; color:#ffffff; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t('editingDraftPrefix')}: ${escapeHtml(displayTitle)}</strong>
         <span style="font-size:10px; color:#A39A90;">${t('draftStashedTip')}</span>
       </div>
-      <button class="prd-btn-action" style="padding:4px 10px; font-size:11px; background:#8C4A28; color:#ffffff; border-radius:14px; font-weight:700; margin-left:4px;">${t('restoreEditBtn')}</button>
+      <button class="prd-btn-action" style="padding:4px 10px; font-size:11px; background:#18181b; color:#ffffff; border-radius:14px; font-weight:700; margin-left:4px;">${t('restoreEditBtn')}</button>
       <button style="background:none; border:none; color:#A39A90; font-size:16px; cursor:pointer; padding:0 4px; line-height:1;" onclick="event.stopPropagation(); window.cancelEditorFromDock()" title="${escapeHtml(t('cancelBtn'))}">&times;</button>
     `;
 
@@ -5023,7 +5357,7 @@ window.saveEditorModal = async function() {
       const movedCard = document.querySelector(`.prd-card-item:nth-child(${targetIdx + (isDrawerManageMode ? 2 : 1)})`);
       if (movedCard) {
         movedCard.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-        movedCard.style.boxShadow = '0 0 0 2px #8C4A28, 0 4px 14px rgba(140,74,40,0.25)';
+        movedCard.style.boxShadow = '0 0 0 2px #18181b, 0 4px 14px rgba(24, 24, 27,0.25)';
         setTimeout(() => {
           if (movedCard) movedCard.style.boxShadow = '';
         }, 800);
@@ -5080,7 +5414,7 @@ window.saveEditorModal = async function() {
           ${headerBannerHtml}
           <div style="text-align:center; color:#A39A90; padding:40px 10px;">
             <div style="font-size:28px; margin-bottom:6px;"></div>
-            <div style="font-size:13px; font-weight:600; color:#4F4741; margin-bottom:4px;">未搜索到匹配的需求标题</div>
+            <div style="font-size:13px; font-weight:600; color:#52525b; margin-bottom:4px;">未搜索到匹配的需求标题</div>
             <div style="font-size:11px; color:#A39A90; margin-bottom:12px;">关键词: "${escapeHtml(searchKeyword)}"</div>
             <button class="prd-btn-action" style="font-size:11px; padding:4px 12px;" onclick="window.clearPRDSearch()">清空搜索条件</button>
           </div>
@@ -5109,8 +5443,8 @@ window.saveEditorModal = async function() {
             </div>
             ${isDrawerManageMode ? `
               <div style="display:flex; align-items:center; gap:2px;">
-                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#FFF4ED; color:#6B371B; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="${escapeHtml(t('moveToTopTip'))}">${t('moveToTopBtn')}</button>
-                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#F3EFEA; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="${escapeHtml(t('clickToReorderTip'))}">${t('moveToBtn')}</button>
+                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f4f4f5; color:#27272a; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="${escapeHtml(t('moveToTopTip'))}">${t('moveToTopBtn')}</button>
+                <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f1f5f9; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="${escapeHtml(t('clickToReorderTip'))}">${t('moveToBtn')}</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, -1)" title="${escapeHtml(t('moveUpTip'))}">▲</button>
                 <button class="prd-btn-action" style="padding:1px 4px; font-size:10px;" onclick="event.stopPropagation(); window.movePinOrder(${pin.id}, 1)" title="${escapeHtml(t('moveDownTip'))}">▼</button>
               </div>
@@ -5195,14 +5529,7 @@ window.saveEditorModal = async function() {
       highlightedElement = null;
     }
     document.body.style.cursor = 'default';
-    const edgeTab = document.getElementById('prd-drawer-edge-tab');
-    if (edgeTab && currentMode !== 'pick' && !rePickModeActive) {
-      edgeTab.title = '点击展开/收起需求打点面板';
-      edgeTab.innerHTML = `
-        <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
-        <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
-      `;
-    }
+    window.updateEdgeTabUI();
   }
 
   function handlePickOver(e) {
@@ -5265,15 +5592,14 @@ window.saveEditorModal = async function() {
     if (mode === 'pick' || mode === 'edit') {
       document.body.style.cursor = 'crosshair';
       bindPickListeners();
-      // 打标时自动收起右侧抽屉，完全暴露底层页面组件
       if (drawer) {
         drawer.classList.remove('open', 'semi-open');
       }
       if (edgeTab) {
         edgeTab.style.display = 'flex';
-        edgeTab.title = '点击退出打标模式 (或按 ESC 退出)';
-        edgeTab.innerHTML = `<span class="prd-edge-arrow" style="color:#ef4444; font-size:12px; font-weight:800;"></span><span class="prd-edge-text" style="color:#ef4444; font-weight:700;">点击组件打标 (点击或ESC退出)</span>`;
+        window.updateEdgeTabUI();
       }
+      isCanvasPinsVisible = true;
       renderPinMarkers();
       showToast('点击页面任意组件即可完成打标并呼出规约编辑窗', 'info');
     } else if (mode === 'show') {
@@ -5283,6 +5609,7 @@ window.saveEditorModal = async function() {
         drawer.classList.add('open');
       }
       if (edgeTab) edgeTab.style.display = 'none';
+      isCanvasPinsVisible = true;
       renderPinMarkers();
       renderRightDrawerList();
     } else if (mode === 'semi') {
@@ -5292,6 +5619,7 @@ window.saveEditorModal = async function() {
         drawer.classList.add('semi-open');
       }
       if (edgeTab) edgeTab.style.display = 'none';
+      isCanvasPinsVisible = true;
       renderPinMarkers();
       renderMiniRailList();
     } else if (mode === 'hide') {
@@ -5299,7 +5627,7 @@ window.saveEditorModal = async function() {
       if (drawer) drawer.classList.remove('open', 'semi-open');
       if (edgeTab) {
         edgeTab.style.display = 'flex';
-        edgeTab.innerHTML = `<span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>`;
+        window.updateEdgeTabUI();
       }
       renderPinMarkers();
     }
@@ -5353,21 +5681,21 @@ window.saveEditorModal = async function() {
   <style>
     :root {
       --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      --prd-primary: #8C4A28;
+      --prd-primary: #18181b;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 0;
       font-family: var(--prd-font);
-      background: #FAF9F6;
+      background: #f8fafc;
       color: #3D3B39;
       line-height: 1.6;
     }
     .prd-page-header {
       position: sticky;
       top: 0;
-      background: #2D2B29;
+      background: #18181b;
       color: #ffffff;
       padding: 14px 28px;
       display: flex;
@@ -5420,7 +5748,7 @@ window.saveEditorModal = async function() {
       overflow-y: auto;
       background: #ffffff;
       border-radius: 10px;
-      border: 1px solid #E8E2D9;
+      border: 1px solid #e2e8f0;
       padding: 16px 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       flex-shrink: 0;
@@ -5432,7 +5760,7 @@ window.saveEditorModal = async function() {
       text-transform: uppercase;
       padding: 4px 8px 8px;
       margin-bottom: 6px;
-      border-bottom: 1px dashed #E8E2D9;
+      border-bottom: 1px dashed #e2e8f0;
     }
     .prd-toc-link {
       display: flex;
@@ -5440,13 +5768,13 @@ window.saveEditorModal = async function() {
       gap: 6px;
       padding: 6px 10px;
       border-radius: 6px;
-      color: #4F4741;
+      color: #52525b;
       text-decoration: none;
       font-size: 13px;
       transition: all 0.15s;
     }
     .prd-toc-link:hover {
-      background: #FFF4ED;
+      background: #f4f4f5;
       color: var(--prd-primary);
     }
     .prd-toc-badge {
@@ -5466,20 +5794,20 @@ window.saveEditorModal = async function() {
       flex: 1;
       background: #ffffff;
       border-radius: 12px;
-      border: 1px solid #E8E2D9;
+      border: 1px solid #e2e8f0;
       padding: 40px 48px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.04);
       overflow: hidden;
     }
     .prd-doc-hero {
-      border-bottom: 2px solid #F3EFEA;
+      border-bottom: 2px solid #f1f5f9;
       padding-bottom: 20px;
       margin-bottom: 32px;
     }
     .prd-doc-hero h1 {
       font-size: 26px;
       font-weight: 800;
-      color: #2D2B29;
+      color: #18181b;
       margin: 0 0 10px 0;
     }
     .prd-meta {
@@ -5487,11 +5815,11 @@ window.saveEditorModal = async function() {
       flex-wrap: wrap;
       gap: 12px;
       font-size: 13px;
-      color: #70685E;
+      color: #71717a;
     }
     .prd-meta code {
-      background: #F3EFEA;
-      color: #2D2B29;
+      background: #f1f5f9;
+      color: #18181b;
       padding: 2px 6px;
       border-radius: 4px;
       font-family: monospace;
@@ -5499,7 +5827,7 @@ window.saveEditorModal = async function() {
     .prd-article {
       margin-top: 36px;
       padding-top: 28px;
-      border-top: 1px solid #F3EFEA;
+      border-top: 1px solid #f1f5f9;
       scroll-margin-top: 90px;
     }
     .prd-article:first-of-type {
@@ -5510,7 +5838,7 @@ window.saveEditorModal = async function() {
     .prd-heading {
       font-size: 18px;
       font-weight: 700;
-      color: #2D2B29;
+      color: #18181b;
       margin: 0 0 14px 0;
       display: flex;
       align-items: center;
@@ -5532,15 +5860,15 @@ window.saveEditorModal = async function() {
     .prd-type-pill {
       font-size: 11px;
       font-weight: 600;
-      background: #F3EFEA;
-      color: #70685E;
+      background: #f1f5f9;
+      color: #71717a;
       padding: 2px 8px;
       border-radius: 4px;
     }
     .prd-selector-tag {
       font-size: 11px;
-      background: #FFF4ED;
-      color: #6B371B;
+      background: #f4f4f5;
+      color: #27272a;
       padding: 2px 8px;
       border-radius: 4px;
       font-family: monospace;
@@ -5549,22 +5877,22 @@ window.saveEditorModal = async function() {
     .prd-content {
       font-size: 14px;
       line-height: 1.7;
-      color: #38322D;
+      color: #27272a;
     }
-    .prd-content h3 { font-size: 15px; margin: 16px 0 8px; color: #2D2B29; }
+    .prd-content h3 { font-size: 15px; margin: 16px 0 8px; color: #18181b; }
     .prd-content h4 { font-size: 14px; margin: 12px 0 6px; color: #3D3B39; }
     .prd-content p { margin: 8px 0; }
     .prd-content ul, .prd-content ol { padding-left: 20px; margin: 8px 0; }
     .prd-content li { margin-bottom: 4px; }
-    .prd-content code { background: #F3EFEA; color: #ef4444; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 13px; }
-    .prd-content pre { background: #2D2B29; color: #FAF9F6; padding: 14px 18px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    .prd-content code { background: #f1f5f9; color: #ef4444; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+    .prd-content pre { background: #18181b; color: #f8fafc; padding: 14px 18px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
     .prd-content pre code { background: transparent; color: inherit; padding: 0; }
-    .prd-table-responsive { width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid #E8E2D9; border-radius: 8px; }
+    .prd-table-responsive { width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 0; text-align: left; }
-    th { background: #FAF9F6; color: #2D2B29; font-weight: 700; padding: 10px 14px; border-bottom: 2px solid #E8E2D9; border-right: 1px solid #F3EFEA; }
-    td { padding: 10px 14px; border-bottom: 1px solid #F3EFEA; border-right: 1px solid #FAF9F6; color: #38322D; }
-    tr:hover td { background: #FAF9F6; }
-    .prd-mermaid-block { margin: 16px 0; padding: 18px 14px 28px 14px; background: #ffffff !important; border: 1px solid #E8E2D9; border-radius: 10px; overflow-x: auto; text-align: center; }
+    th { background: #f8fafc; color: #18181b; font-weight: 700; padding: 10px 14px; border-bottom: 2px solid #e2e8f0; border-right: 1px solid #f1f5f9; }
+    td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f8fafc; color: #27272a; }
+    tr:hover td { background: #f8fafc; }
+    .prd-mermaid-block { margin: 16px 0; padding: 18px 14px 28px 14px; background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; overflow-x: auto; text-align: center; }
     .prd-mermaid-block svg { background: #ffffff !important; }
     @media print {
       .prd-page-header, .prd-toc, .prd-btn { display: none !important; }
@@ -5664,19 +5992,19 @@ window.saveEditorModal = async function() {
       <div class="prd-doc-container" onclick="event.stopPropagation()">
         <div class="prd-doc-header">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-size:17px; font-weight:800; color:#2D2B29; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:17px; font-weight:800; color:#18181b; display:flex; align-items:center; gap:8px;">
               <span>${getCurrentPageTitle()}</span>
-              <span style="font-size:13px; color:#70685E; font-weight:normal;">产品需求规格说明书 (PRD)</span>
+              <span style="font-size:13px; color:#71717a; font-weight:normal;">产品需求规格说明书 (PRD)</span>
             </span>
             <span class="prd-tag prd-tag-version" style="font-size:11px; padding:2px 8px;">${escapeHtml(currentVersion)}</span>
-            <span style="font-size:12px; background:#FDF6F0; color:#8C4A28; padding:2px 10px; border-radius:12px; font-weight:700;">
+            <span style="font-size:12px; background:#f4f4f5; color:#18181b; padding:2px 10px; border-radius:12px; font-weight:700;">
               共 ${savedPins.length} 项规格
             </span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="prd-btn-action" style="background:#8C4A28; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
+            <button class="prd-btn-action" style="background:#18181b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
             <button class="prd-btn-action" style="background:#10b981; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDMarkdown()">${t('exportMdBtn')}</button>
-            <button class="prd-btn-action" style="background:#9C5B40; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
+            <button class="prd-btn-action" style="background:#52525b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
             <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">${t('importVersionBtn')}</button>
             <input type="file" id="prd-file-import-input" accept=".js,.json,.txt" style="display:none;" onchange="window.handleImportJS(this)">
             <button class="prd-btn-action" style="font-size:22px; padding:4px 8px;" onclick="window.closeCurrentPagePRDDoc()">&times;</button>
@@ -5895,21 +6223,21 @@ window.saveEditorModal = async function() {
 
     overlay.innerHTML = `
       <div class="prd-version-modal-card" onclick="event.stopPropagation()">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #F3EFEA; padding-bottom:8px;">
-          <strong style="font-size:15px; color:#2D2B29;">导入 PRD 规格版本数据</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+          <strong style="font-size:15px; color:#18181b;">导入 PRD 规格版本数据</strong>
           <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="document.getElementById('prd-version-import-modal').remove()">&times;</button>
         </div>
 
-        <div style="font-size:12.5px; color:#4F4741; display:flex; flex-direction:column; gap:8px;">
-          <div>导入文件: <strong style="color:#2D2B29;">${escapeHtml(fileName)}</strong>（包含 <strong>${importedPins.length}</strong> 条规格）</div>
+        <div style="font-size:12.5px; color:#52525b; display:flex; flex-direction:column; gap:8px;">
+          <div>导入文件: <strong style="color:#18181b;">${escapeHtml(fileName)}</strong>（包含 <strong>${importedPins.length}</strong> 条规格）</div>
           
           <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
-            <label style="font-weight:700; color:#38322D;">指定导入版本号：</label>
-            <input type="text" id="prd-import-ver-name" value="${escapeHtml(defaultVer)}" style="padding:6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:13px; outline:none;" oninput="window.checkImportVerConflict(this.value)">
+            <label style="font-weight:700; color:#27272a;">指定导入版本号：</label>
+            <input type="text" id="prd-import-ver-name" value="${escapeHtml(defaultVer)}" style="padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none;" oninput="window.checkImportVerConflict(this.value)">
           </div>
 
-          <div id="prd-import-conflict-section" style="margin-top:6px; display:flex; flex-direction:column; gap:8px; background:#FAF9F6; padding:10px 12px; border-radius:8px; border:1px solid #E8E2D9;">
-            <div style="font-weight:700; color:#2D2B29;" id="prd-import-conflict-tip">
+          <div id="prd-import-conflict-section" style="margin-top:6px; display:flex; flex-direction:column; gap:8px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+            <div style="font-weight:700; color:#18181b;" id="prd-import-conflict-tip">
               ${isExisting ? `版本 [${escapeHtml(defaultVer)}] 已存在，请选择冲突处理方式：` : '新版本，确认后将自动创建并切换。'}
             </div>
             
@@ -5930,7 +6258,7 @@ window.saveEditorModal = async function() {
           </div>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid #F3EFEA; padding-top:10px;">
+        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid #f1f5f9; padding-top:10px;">
           <button class="prd-btn-action" onclick="document.getElementById('prd-version-import-modal').remove()">${t('cancelBtn')}</button>
           <button class="prd-btn-primary" onclick="window.confirmImportVersionData()">确认导入并应用</button>
         </div>
@@ -5996,31 +6324,23 @@ window.saveEditorModal = async function() {
   }
 
   // 18. DOM 初始化与事件绑定 (彻底移除右上角多余胶囊，保留抽屉左边缘箭头与底部查看完整PRD)
+  window.togglePurePinsMode = function() {
+    window.setPRDMode('hide');
+    renderPinMarkers();
+    showToast('已进入【纯点位预览模式】：抽屉已收起，直接点击页面上的打点气泡即可查看规约。', 'info');
+  };
+
   let isInitialized = false;
   function initDOM() {
     if (isInitialized) return;
     isInitialized = true;
 
-    // 18.1 屏幕右边缘快捷展开/收起箭头 Tab
+    // 18.1 屏幕右边缘快捷展开/收起 + 独立小眼睛打点开关
     const edgeTab = document.createElement('div');
     edgeTab.className = 'prd-drawer-edge-tab';
     edgeTab.id = 'prd-drawer-edge-tab';
-    edgeTab.title = '点击展开/收起需求打点面板';
-    edgeTab.onclick = function() {
-      if (currentMode === 'pick' || rePickModeActive) {
-        rePickModeActive = false;
-        unbindPickListeners();
-        window.setPRDMode('show');
-        showToast('已退出打标模式', 'info');
-        return;
-      }
-      window.togglePRDDrawer();
-    };
-    edgeTab.innerHTML = `
-      <span class="prd-edge-arrow" id="prd-edge-arrow">‹</span>
-      <span class="prd-edge-text">${t('edgeText')} (<span id="prd-edge-count">${savedPins.length}</span>)</span>
-    `;
     document.body.appendChild(edgeTab);
+    window.updateEdgeTabUI();
 
     // 18.2 右侧抽屉面板 (集成多版本选择器、安全管理锁模式、搜索、打点列表与完整PRD入口)
     const drawer = document.createElement('div');
@@ -6041,9 +6361,9 @@ window.saveEditorModal = async function() {
       <div class="prd-drawer-full-content" style="display:flex; flex-direction:column; height:100%; width:100%; overflow:hidden;">
         <!-- 抽屉头部 -->
         <div class="prd-drawer-header">
-          <div style="font-size:14px; font-weight:700; color:#2D2B29; display:flex; align-items:center; gap:6px;">
+          <div style="font-size:14px; font-weight:700; color:#18181b; display:flex; align-items:center; gap:6px;">
             <span>${getCurrentPageTitle()}</span>
-            <span style="background:#FDF6F0; color:#8C4A28; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
+            <span style="background:#f4f4f5; color:#18181b; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             <!-- 统一模式切换与状态徽标 -->
@@ -6051,15 +6371,16 @@ window.saveEditorModal = async function() {
               <span>${getSyncModeBadgeInfo().icon}</span>
               <span>${getSyncModeBadgeInfo().label}</span>
             </button>
-            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #D6CFC7; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#38322D; font-weight:600;" title="切换语言 (Language)">
+            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #d4d4d8; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#27272a; font-weight:600;" title="切换语言 (Language)">
               <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>中文</option>
               <option value="en" ${currentLang==='en'?'selected':''}>EN</option>
               <option value="ja" ${currentLang==='ja'?'selected':''}>日本語</option>
               <option value="ko" ${currentLang==='ko'?'selected':''}>🇰🇷 한국어</option>
             </select>
             
-            <button id="prd-manage-order-btn" class="prd-btn-action" style="font-size:11px; background:#FFF4ED; color:#6B371B; padding:3px 6px;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
-            <button class="prd-btn-action" style="font-size:16px; padding:0 6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
+            
+            <button id="prd-manage-order-btn" class="prd-btn-action" style="font-size:11px; background:#f4f4f5; color:#27272a; padding:3px 6px; border-radius:6px;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
+            <button class="prd-btn-action" style="font-size:16px; padding:0 6px; border-radius:6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
           </div>
         </div>
 
@@ -6073,9 +6394,9 @@ window.saveEditorModal = async function() {
         </div>
 
         <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
-        <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #F3EFEA; display:flex; align-items:center; gap:6px;">
+        <div class="prd-drawer-filter-bar" style="padding:8px 12px; background:#fff; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
           <div style="position:relative; flex:1; display:flex; align-items:center;">
-            <input type="text" id="prd-drawer-search-input" placeholder="模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #D6CFC7; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
+            <input type="text" id="prd-drawer-search-input" placeholder="模糊搜索需求标题 (如: 订单 / 弹窗 / 竞价)..." style="width:100%; padding:6px 28px 6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; background:#fff; box-sizing:border-box;" oninput="window.handlePRDSearchInput(this.value)">
             <button id="prd-search-clear-btn" style="position:absolute; right:6px; background:none; border:none; color:#A39A90; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; padding:2px;" onclick="window.clearPRDSearch()" title="清空搜索">&times;</button>
           </div>
         </div>
@@ -6086,24 +6407,24 @@ window.saveEditorModal = async function() {
         </div>
 
         <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
-        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #E8E2D9; display:flex; gap:8px;">
+        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
           <button class="prd-btn-primary" style="flex:1;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
-          <button class="prd-btn-action" style="background:#F3EFEA; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
+          <button class="prd-btn-action" style="background:#f1f5f9; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
         </div>
       </div>
 
       <!-- 2. 半收起紧凑标号竖条 (56px Mini Rail) -->
-      <div class="prd-drawer-mini-rail" style="display:none; flex-direction:column; height:100%; width:100%; background:#FAF9F6; align-items:center; padding:10px 0; box-sizing:border-box; user-select:none;">
+      <div class="prd-drawer-mini-rail" style="display:none; flex-direction:column; height:100%; width:100%; background:#f8fafc; align-items:center; padding:10px 0; box-sizing:border-box; user-select:none;">
         <button class="prd-btn-action" style="width:36px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:12px;" onclick="window.setPRDMode('show')" title="展开完整抽屉">
           ▶
         </button>
-        <div style="font-size:10px; font-weight:800; color:#70685E; margin-bottom:10px; text-align:center;">
+        <div style="font-size:10px; font-weight:800; color:#71717a; margin-bottom:10px; text-align:center;">
           ${escapeHtml(currentVersion)}
         </div>
         <div id="prd-mini-rail-pins" style="display:flex; flex-direction:column; align-items:center; flex:1; overflow-y:auto; overflow-x:visible; width:100%;">
           <!-- 由 renderMiniRailList 动态填充 -->
         </div>
-        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(140,74,40,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
+        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(24, 24, 27,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
           +
         </button>
       </div>
@@ -6166,10 +6487,10 @@ window.saveEditorModal = async function() {
   }, true);
 
   window.addEventListener('resize', () => {
-    if (currentMode !== 'hide') renderPinMarkers();
+    if (isCanvasPinsVisible) renderPinMarkers();
   });
   window.addEventListener('scroll', () => {
-    if (currentMode !== 'hide') renderPinMarkers();
+    if (isCanvasPinsVisible) renderPinMarkers();
   }, true);
 
     // 20. SPA 客户端路由自动监听与无刷新热重绘
@@ -6178,7 +6499,7 @@ window.saveEditorModal = async function() {
     if (window.location.pathname !== lastSPAPathname) {
       lastSPAPathname = window.location.pathname;
       setTimeout(() => {
-        if (currentMode !== 'hide') renderPinMarkers();
+        if (isCanvasPinsVisible) renderPinMarkers();
         renderRightDrawerList();
         renderMiniRailList();
         updateVersionBarUI();
