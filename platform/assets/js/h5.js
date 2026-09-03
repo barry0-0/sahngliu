@@ -903,16 +903,33 @@ const H5App = {
       actionCardHTML = `
         <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
           <div style="font-weight:bold; font-size:13px; color:#d97706; display:flex; align-items:center; gap:6px;">⏳ 等待公布结果</div>
-          <div style="font-size:12px; color:#64748b; line-height:1.4;">报价已截止，商家正在评审定标中。该阶段无法继续提交价格，请关注公布结果。</div>
+          <div style="font-size:12px; color:#64748b; line-height:1.4;">${b.userOffered ? '报价已截止，您已成功提交出价，商家正在评审定标中。请耐心关注定标结果。' : '报价已截止，商家正在评审定标中。您未参与本次竞价，该阶段无法继续提交价格。'}</div>
         </div>
       `;
     } else if (b.status === 4) {
-      actionCardHTML = `
-        <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
-          <div style="font-weight:bold; font-size:13px; color:#0f172a; display:flex; align-items:center; gap:6px;">🏁 竞拍已结束</div>
-          <div style="font-size:12px; color:#64748b; line-height:1.4;">中标买家：<strong style="color:#0f172a;">${b.winner || '买家用户'}</strong> | 最终成交价：<strong style="color:#ef4444; font-family:monospace;">${b.currentMaxOffer}</strong></div>
-        </div>
-      `;
+      if (isWinner) {
+        actionCardHTML = `
+          <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
+            <div style="font-weight:bold; font-size:14px; color:#d97706; display:flex; align-items:center; gap:6px;">🏆 恭喜您中标该项目！</div>
+            <div style="font-size:12px; color:#64748b; line-height:1.4;">您的最终报价 <strong style="color:#ef4444; font-family:monospace;">${b.currentMaxOffer}</strong> 已被商户选为中标！系统已自动为您生成待签署订单，请尽快完成签约与付款。</div>
+            <button class="btn btn-primary w-full" style="height:40px; border-radius:20px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; color:#fff; font-weight:bold; font-size:13px;" onclick="document.getElementById('sheet-h5-bid-detail')?.classList.remove('active'); H5App.switchH5View('view-uc-orders');">去订单中心签约付款</button>
+          </div>
+        `;
+      } else if (b.winner && b.winner !== '-' && b.winner !== '未选定中标人') {
+        actionCardHTML = `
+          <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
+            <div style="font-weight:bold; font-size:13px; color:#0f172a; display:flex; align-items:center; gap:6px;">🏁 竞拍已结束</div>
+            <div style="font-size:12px; color:#64748b; line-height:1.4;">中标买家：<strong style="color:#0f172a;">${b.winner}</strong> | 最终成交价：<strong style="color:#ef4444; font-family:monospace;">${b.currentMaxOffer}</strong></div>
+          </div>
+        `;
+      } else {
+        actionCardHTML = `
+          <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:8px;">
+            <div style="font-weight:bold; font-size:13px; color:#64748b; display:flex; align-items:center; gap:6px;">🏁 项目已流标</div>
+            <div style="font-size:12px; color:#64748b; line-height:1.4;">竞拍已截止，无人出价或未产生中标人，该项目已流标关闭。</div>
+          </div>
+        `;
+      }
     } else if (!b.userApplied) {
       actionCardHTML = `
         <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">

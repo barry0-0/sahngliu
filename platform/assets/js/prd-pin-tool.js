@@ -819,12 +819,26 @@
 
   function getSyncModeBadgeInfo() {
     const mode = getActiveSyncMode();
+    const kv = getKVStorageConfig();
     if (mode === 'supabase') {
-      return { icon: '', label: 'Supabase', color: '#18181b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：Supabase 云端数据库存储 (点击切换模式)' };
+      if (kv.isVerified && kv.supabaseKey) {
+        return { icon: '', label: '🟢 Supabase (已解锁)', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：Supabase (已通过创立人鉴权，可编辑/新增需求，点击管理或锁定)' };
+      } else {
+        return { icon: '', label: '🔒 Supabase (访客只读)', color: '#52525b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：Supabase 访客只读模式 (点击输入 Key 解锁编辑权限)' };
+      }
     } else if (mode === 'jsonbin') {
-      return { icon: '', label: 'JSONBin', color: '#18181b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：JSONBin.io 云端存储打点 (点击切换模式)' };
+      if (kv.isVerified && sessionStorage.getItem('prd_jsonbin_session_key')) {
+        return { icon: '', label: '🟢 JSONBin (已解锁)', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：JSONBin.io (已解锁编辑权限，点击管理或锁定)' };
+      } else {
+        return { icon: '', label: '🔒 JSONBin (访客只读)', color: '#52525b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：JSONBin.io 访客只读 (点击输入 Key 解锁编辑权限)' };
+      }
     } else if (mode === 'github') {
-      return { icon: '', label: 'GitHub', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：GitHub 推送打点 (点击切换模式)' };
+      const gh = getGitHubConfig();
+      if (gh && gh.token) {
+        return { icon: '', label: '🟢 GitHub (已解锁)', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：GitHub 推送打点 (点击切换模式)' };
+      } else {
+        return { icon: '', label: '🔒 GitHub (访客只读)', color: '#52525b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：GitHub 访客只读 (点击配置 Token)' };
+      }
     } else {
       return { icon: '', label: '本地服务', color: '#52525b', bg: '#f8fafc', border: '#d4d4d8', tip: '当前模式：本地 Node.js 服务模式 (点击切换模式)' };
     }
@@ -882,8 +896,8 @@
     "default": "6a8bfab8da38895dfe09944d"
   };
 
-        const DEFAULT_SUPABASE_URL = 'https://xptyvhycdcuegzdtrlzo.supabase.co';
-  const DEFAULT_SUPABASE_KEY = 'sb_publishable_uNeQzELHbWHhcTIGgr5FBw__T5OsA_x';
+  const DEFAULT_SUPABASE_URL = 'https://xptyvhycdcuegzdtrlzo.supabase.co';
+  const DEFAULT_SUPABASE_READ_KEY = 'sb_publishable_uNeQzELHbWHhcTIGgr5FBw__T5OsA_x';
   const DEFAULT_SUPABASE_TABLE = 'sahngliu_prd';
 
   window.getKVStorageConfig = function getKVStorageConfig() {
@@ -893,7 +907,7 @@
     let isVerified = false;
     let customUrl = '';
     let supabaseUrl = DEFAULT_SUPABASE_URL;
-    let supabaseKey = DEFAULT_SUPABASE_KEY;
+    let supabaseKey = '';
     let supabaseTable = DEFAULT_SUPABASE_TABLE;
     let customDocId = '';
     let mode = 'supabase';
@@ -921,7 +935,7 @@
           if (!cachedSecretKey && parsedG.secretKey) cachedSecretKey = parsedG.secretKey;
           if (!customUrl && parsedG.customUrl) customUrl = parsedG.customUrl;
           if (parsedG.supabaseUrl) supabaseUrl = parsedG.supabaseUrl;
-          if (parsedG.supabaseKey) supabaseKey = parsedG.supabaseKey;
+          if (parsedG.supabaseKey && !supabaseKey) supabaseKey = parsedG.supabaseKey;
           if (parsedG.supabaseTable) supabaseTable = parsedG.supabaseTable;
           if (parsedG.customDocId && !customDocId) customDocId = parsedG.customDocId;
           if (parsedG.mode) mode = parsedG.mode;
@@ -934,12 +948,15 @@
     const sessionSbKey = sessionStorage.getItem('prd_supabase_session_key');
     if (sessionSbKey) {
       supabaseKey = sessionSbKey;
+      isVerified = true;
     }
 
     const finalBinId = sessionBin || cachedBin || defaultBin;
     const finalSecretKey = sessionKey || cachedSecretKey || DEFAULT_MASTER_KEY;
 
-    const hasAuthKey = (mode === 'supabase' ? Boolean(supabaseKey) : Boolean(finalSecretKey));
+    // 严谨权限判定：必须通过显式鉴权（持有 Session 会话或本地已验证私钥）
+    const isSupabaseVerified = Boolean(sessionSbKey || (isVerified && supabaseKey));
+    const isJsonBinVerified = Boolean(sessionKey || (isVerified && cachedSecretKey && cachedSecretKey !== DEFAULT_MASTER_KEY));
 
     return {
       provider: mode,
@@ -948,10 +965,10 @@
       secretKey: finalSecretKey,
       customUrl: customUrl || '',
       supabaseUrl: supabaseUrl,
-      supabaseKey: supabaseKey,
+      supabaseKey: supabaseKey, // 访客状态下为空，鉴权通过后为有效 Key
       supabaseTable: supabaseTable,
       customDocId: customDocId,
-      isVerified: Boolean(hasAuthKey && (isVerified || sessionKey || sessionSbKey))
+      isVerified: (mode === 'supabase' ? isSupabaseVerified : (mode === 'jsonbin' ? isJsonBinVerified : true))
     };
   };
 
@@ -966,9 +983,13 @@
       }
       if (config.secretKey) {
         sessionStorage.setItem('prd_jsonbin_session_key', config.secretKey);
+      } else {
+        sessionStorage.removeItem('prd_jsonbin_session_key');
       }
-      if (config.supabaseKey) {
+      if (config.supabaseKey && config.isVerified) {
         sessionStorage.setItem('prd_supabase_session_key', config.supabaseKey);
+      } else {
+        sessionStorage.removeItem('prd_supabase_session_key');
       }
     } catch (e) {}
   }
@@ -977,6 +998,9 @@
     try {
       localStorage.removeItem(KV_STORAGE_KEY);
       localStorage.removeItem('prd_kv_config_global');
+      sessionStorage.removeItem('prd_supabase_session_key');
+      sessionStorage.removeItem('prd_jsonbin_session_key');
+      isBackendApiCached = null;
     } catch (e) {}
   }
 
@@ -989,7 +1013,8 @@
         const docId = cfg.customDocId || pageKey;
         const baseUrl = (cfg.supabaseUrl || DEFAULT_SUPABASE_URL).replace(/\/+$/, '');
         const targetUrl = `${baseUrl}/rest/v1/${cfg.supabaseTable || DEFAULT_SUPABASE_TABLE}?id=eq.${encodeURIComponent(docId)}`;
-        const effectiveKey = (cfg.supabaseKey || DEFAULT_SUPABASE_KEY).trim();
+        // 读取时若无写入密钥，使用默认只读公开 Key，保证所有访客无需鉴权均可即时查看最新规约
+        const effectiveKey = (cfg.supabaseKey || DEFAULT_SUPABASE_READ_KEY).trim();
         const resp = await fetch(targetUrl, {
           headers: {
             'apikey': effectiveKey,
@@ -1031,12 +1056,20 @@
       const baseUrl = (cfg.supabaseUrl || DEFAULT_SUPABASE_URL).replace(/\/+$/, '');
       const targetUrl = `${baseUrl}/rest/v1/${cfg.supabaseTable || DEFAULT_SUPABASE_TABLE}`;
       
-      // 精准确定 Supabase 密钥 (严禁误用 JSONBin 的 $2a$10$ Key)
-      let effectiveKey = (cfg.supabaseKey || DEFAULT_SUPABASE_KEY).trim();
+      // 精准确定 Supabase 写入密钥 (严禁使用空密钥或未授权读Key自动充当写入Key)
+      let effectiveKey = '';
       if (secretKey && (secretKey.startsWith('sb_') || secretKey.startsWith('eyJ') || !secretKey.startsWith('$2'))) {
         effectiveKey = secretKey.trim();
+      } else if (cfg.supabaseKey) {
+        effectiveKey = cfg.supabaseKey.trim();
+      } else {
+        const sessionKey = sessionStorage.getItem('prd_supabase_session_key');
+        if (sessionKey) effectiveKey = sessionKey.trim();
       }
-      if (!effectiveKey) effectiveKey = DEFAULT_SUPABASE_KEY;
+
+      if (!effectiveKey) {
+        throw new Error('未提供有效的 Supabase 创立人管理写入密钥 (API Key)，禁止写入');
+      }
 
       const resp = await fetch(targetUrl, {
         method: 'POST',
@@ -1392,7 +1425,7 @@
     if (pJson && pJson.style.display !== 'none') return 'jsonbin';
     const pGh = document.getElementById('panel-github');
     if (pGh && pGh.style.display !== 'none') return 'github';
-    return 'local';
+    return getActiveSyncMode();
   }
 
   window.handleTestSupabaseConfig = async function() {
@@ -1556,22 +1589,21 @@
     const tab = getCurrentModalActiveTab();
     if (tab === 'supabase') {
       const curCfg = getKVStorageConfig();
-      curCfg.supabaseUrl = '';
       curCfg.supabaseKey = '';
-      curCfg.supabaseTable = '';
+      curCfg.isVerified = false;
       setKVStorageConfig(curCfg);
-      const u = document.getElementById('prd-sb-url'); if (u) u.value = '';
+      try {
+        sessionStorage.removeItem('prd_supabase_session_key');
+      } catch (e) {}
       const k = document.getElementById('prd-sb-key'); if (k) k.value = '';
-      const t = document.getElementById('prd-sb-table'); if (t) t.value = '';
-      showToast('已清除 Supabase 配置', 'info');
+      showToast('已清除 Supabase 权限授权，已恢复为【访客只读模式】', 'info');
     } else if (tab === 'jsonbin') {
       clearKVStorageConfig();
-      showToast('已清除 JSONBin 授权', 'info');
+      showToast('已清除 JSONBin 授权，已恢复为【访客只读模式】', 'info');
     } else if (tab === 'github') {
       clearGitHubConfig();
-      showToast('已清除 GitHub 授权', 'info');
+      showToast('已清除 GitHub 授权，已恢复为【访客只读模式】', 'info');
     }
-    setActiveSyncMode('auto');
     isBackendApiCached = null;
     window.closeKVConfigModal();
     updateVersionBarUI();
@@ -2042,12 +2074,24 @@
     return protocol === 'file:' || host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
   }
 
+  let pendingAuthCallback = null;
+
   window.showOnlineAuthModal = function(actionType = 'edit', callback = null) {
+    pendingAuthCallback = callback;
     const existing = document.getElementById('prd-online-auth-modal');
     if (existing) existing.remove();
 
     const activeMode = getActiveSyncMode();
-    const modeName = activeMode === 'supabase' ? '云端存储打点 (Supabase)' : (activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式'));
+    const modeName = activeMode === 'supabase' ? '云端数据库存储 (Supabase)' : (activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式'));
+
+    const actionTextMap = {
+      edit: '编辑需求规约',
+      add: '新增需求打点',
+      reorder: '排序与删除管理',
+      version: '多版本管理',
+      default: '执行修改操作'
+    };
+    const actionText = actionTextMap[actionType] || actionTextMap.default;
 
     const modal = document.createElement('div');
     modal.id = 'prd-online-auth-modal';
@@ -2069,30 +2113,30 @@
         <!-- Header -->
         <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
-            <span></span>
-            <span>${escapeHtml(t('onlineAuthTitle'))}</span>
+            <span>🔒</span>
+            <span>创立人管理鉴权与权限校验</span>
           </div>
           <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeOnlineAuthModal()">&times;</button>
         </div>
 
         <!-- Body -->
         <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a; display:flex; flex-direction:column; gap:14px;">
-          <div>${t('onlineAuthDesc')}</div>
+          <div>当前您正尝试进行<strong>【${escapeHtml(actionText)}】</strong>。为保证大宗现货平台原型规约的严肃性与安全性，<strong>必须输入创立人 API Key 校验通过后</strong>方可解锁编辑工作台。</div>
 
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:#71717a;">当前项目锁定模式：</span>
+              <span style="color:#71717a;">当前存储模式：</span>
               <span style="font-weight:700; color:#18181b;">${escapeHtml(modeName)}</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:6px; font-family:monospace; font-size:11.5px;">
-              <span style="color:#71717a;">绑定云端数据源：</span>
+              <span style="color:#71717a;">绑定云端数据表：</span>
               <span style="color:#18181b; font-weight:700;">${activeMode==='supabase' ? `Table: ${getKVStorageConfig().supabaseTable} (Doc ID: ${getKVStorageConfig().customDocId || pageKey})` : (activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`)}</span>
             </div>
           </div>
 
           <div>
-            <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:4px; display:block;">${t('onlineAuthKeyLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="password" id="prd-online-auth-key-input" placeholder="${escapeHtml(t('onlineAuthKeyPlaceholder'))}" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
+            <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:4px; display:block;">创立人专属 API Key (写入密钥) <span style="color:#ef4444;">*</span></label>
+            <input type="password" id="prd-online-auth-key-input" placeholder="请输入 Supabase API Key (如 sb_publishable_... 或 secret key)" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
           </div>
 
           <div id="prd-online-auth-tip" style="font-size:12px; min-height:18px;"></div>
@@ -2101,7 +2145,7 @@
         <!-- Footer -->
         <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
           <button class="prd-btn-action" style="font-size:12px;" onclick="window.closeOnlineAuthModal()">保持访客只读</button>
-          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#18181b; border-color:#18181b;" onclick="window.handleVerifyOnlineKey()">${t('onlineAuthSubmitBtn')}</button>
+          <button class="prd-btn-primary" style="padding:7px 20px; font-size:12.5px; background:#18181b; border-color:#18181b;" onclick="window.handleVerifyOnlineKey()">🔓 验证 Key 并解锁编辑权限</button>
         </div>
       </div>
     `;
@@ -2109,13 +2153,19 @@
     document.body.appendChild(modal);
     setTimeout(() => {
       const input = document.getElementById('prd-online-auth-key-input');
-      if (input) input.focus();
+      if (input) {
+        input.focus();
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') window.handleVerifyOnlineKey();
+        });
+      }
     }, 100);
   };
 
   window.closeOnlineAuthModal = function() {
     const modal = document.getElementById('prd-online-auth-modal');
     if (modal) modal.remove();
+    pendingAuthCallback = null;
   };
 
   window.handleVerifyOnlineKey = async function() {
@@ -2128,7 +2178,7 @@
       return;
     }
 
-    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在校验 Key 有效性...</span>`;
+    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在校验 Key 有效性并测试云端写入权限...</span>`;
 
     try {
       if (activeMode === 'supabase') {
@@ -2168,13 +2218,19 @@
       }
 
       isBackendApiCached = true;
-      showToast(t('onlineAuthSuccessToast'), 'success');
+      showToast('创立人身份校验通过，已成功解锁全量编辑权限！', 'success');
       window.closeOnlineAuthModal();
       updateVersionBarUI();
       renderRightDrawerList();
+
+      if (typeof pendingAuthCallback === 'function') {
+        const cb = pendingAuthCallback;
+        pendingAuthCallback = null;
+        setTimeout(() => cb(), 100);
+      }
     } catch (err) {
       if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">校验失败: ${escapeHtml(err.message)}</span>`;
-      showToast(t('onlineAuthFailedToast'), 'error');
+      showToast('权限校验失败，无法解锁编辑模式', 'error');
     }
   };
 
@@ -2185,14 +2241,15 @@
 
     if (activeMode === 'supabase') {
       const kv = getKVStorageConfig();
-      const isOk = !!(kv && kv.supabaseKey && kv.supabaseUrl && kv.supabaseTable);
+      // 严谨校验：必须明确持有已通过校验的有效管理 Key
+      const isOk = Boolean(kv && kv.isVerified && kv.supabaseKey && kv.supabaseUrl && kv.supabaseTable);
       isBackendApiCached = isOk;
       return isOk;
     }
 
     if (activeMode === 'jsonbin') {
       const kv = getKVStorageConfig();
-      const isOk = !!(kv && kv.secretKey);
+      const isOk = Boolean(kv && kv.isVerified && kv.secretKey && (sessionStorage.getItem('prd_jsonbin_session_key') || kv.secretKey !== DEFAULT_MASTER_KEY));
       isBackendApiCached = isOk;
       return isOk;
     }
@@ -2228,11 +2285,11 @@
     return false;
   }
 
-  window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null) {
+  window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null, callback = null) {
     const activeMode = getActiveSyncMode();
     if (activeMode === 'jsonbin' || activeMode === 'supabase' || activeMode === 'github') {
-      // 云端模式下（无论文件打开还是线上）统一唤起【创立人 API Key 鉴权】
-      window.showOnlineAuthModal(actionType);
+      // 云端模式下统一唤起【创立人 API Key 鉴权】
+      window.showOnlineAuthModal(actionType, callback);
       return;
     }
 
@@ -4029,7 +4086,7 @@
     let cur = el;
     while (cur && cur !== document.body && cur !== document.documentElement) {
       const style = window.getComputedStyle(cur);
-      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
       if (cur.classList.contains('modal-overlay') || cur.classList.contains('modal-backdrop') || cur.id.startsWith('modal-') || cur.id.startsWith('sheet-h5-')) {
         if (!cur.classList.contains('active') && style.display === 'none') return false;
       }
@@ -4114,7 +4171,7 @@
   pinsOverlay.style.cssText = 'position: fixed; inset: 0; pointer-events: none; z-index: 1000015;';
   document.body.appendChild(pinsOverlay);
 
-  let isCanvasPinsVisible = false; // 默认不显示打点标记
+  let isCanvasPinsVisible = localStorage.getItem('prd_canvas_pins_visible') !== 'false'; // 默认开启显示页面打点标记
 
   window.updateEdgeTabUI = function updateEdgeTabUI() {
     const edgeTab = document.getElementById('prd-drawer-edge-tab');
@@ -4147,6 +4204,9 @@
   window.toggleCanvasMarkersOnly = function(e) {
     if (e) e.stopPropagation();
     isCanvasPinsVisible = !isCanvasPinsVisible;
+    try {
+      localStorage.setItem('prd_canvas_pins_visible', isCanvasPinsVisible ? 'true' : 'false');
+    } catch (e) {}
     renderPinMarkers();
     window.updateEdgeTabUI();
     if (isCanvasPinsVisible) {
@@ -4770,7 +4830,7 @@
   window.openEditorForPin = async function(id, initialSelector = '') {
     const isApiOk = await checkBackendApiAvailable();
     if (!isApiOk) {
-      window.showNoBackendAlertModal('edit');
+      window.showNoBackendAlertModal('edit', null, () => window.openEditorForPin(id, initialSelector));
       return;
     }
     window.closeInspectBubble();
@@ -5188,7 +5248,7 @@ window.saveEditorModal = async function() {
     if (!isDrawerManageMode) {
       const isApiOk = await checkBackendApiAvailable();
       if (!isApiOk) {
-        window.showNoBackendAlertModal('reorder');
+        window.showNoBackendAlertModal('reorder', null, () => window.toggleDrawerManageMode());
         return;
       }
     }
@@ -5522,7 +5582,7 @@ window.saveEditorModal = async function() {
     if (mode === 'edit' || mode === 'pick') {
       const isApiOk = await checkBackendApiAvailable();
       if (!isApiOk) {
-        window.showNoBackendAlertModal('add');
+        window.showNoBackendAlertModal('add', null, () => window.setPRDMode(mode));
         return;
       }
     }
@@ -6376,7 +6436,7 @@ window.saveEditorModal = async function() {
 
   // 19. 全局 SPA 页面切换/Tab 路由点击监听与标记自适应重绘
   function triggerDelayedMarkersUpdate() {
-    if (currentMode === 'hide') return;
+    if (!isCanvasPinsVisible && currentMode === 'hide') return;
     requestAnimationFrame(() => renderPinMarkers());
     setTimeout(renderPinMarkers, 50);
     setTimeout(renderPinMarkers, 150);
@@ -6393,7 +6453,7 @@ window.saveEditorModal = async function() {
   }, true);
 
   const observer = new MutationObserver(() => {
-    if (currentMode !== 'hide') {
+    if (isCanvasPinsVisible || currentMode !== 'hide') {
       triggerDelayedMarkersUpdate();
     }
   });
