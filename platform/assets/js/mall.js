@@ -194,22 +194,10 @@ window.MallApp = {
   // === 个人中心左侧菜单切换 ===
   initUCTabs() {
     const items = document.querySelectorAll('#uc-menu .uc-menu-item');
-    const views = document.querySelectorAll('.uc-view');
     items.forEach(item => {
       item.addEventListener('click', () => {
         if (!item.dataset.target) return;
-        items.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-
-        views.forEach(v => {
-          v.classList.remove('active');
-          if (v.id === item.dataset.target) {
-            v.classList.add('active');
-            if (v.id === 'uc-cart') MallApp.renderCart();
-            if (v.id === 'uc-bids') MallApp.renderUCBids();
-            if (v.id === 'uc-orders') MallApp.renderUCOrders();
-          }
-        });
+        this.showUCTab(item.dataset.target);
       });
     });
   },
@@ -1481,12 +1469,17 @@ window.MallApp = {
     const views = document.querySelectorAll('.uc-view');
     views.forEach(v => {
       v.classList.remove('active');
-      v.style.display = 'none';
+      v.style.display = '';
     });
     const targetView = document.getElementById(targetId);
     if (targetView) {
       targetView.classList.add('active');
-      targetView.style.display = 'block';
+      targetView.style.display = '';
+      if (targetId === 'uc-cart') this.renderCart();
+      if (targetId === 'uc-bids') this.renderUCBids();
+      if (targetId === 'uc-orders') this.renderUCOrders();
+      if (targetId === 'uc-invoices') this.renderUCInvoices();
+      if (targetId === 'uc-messages') this.renderUCMessages();
     }
     items.forEach(i => {
       i.classList.remove('active');
@@ -1619,12 +1612,20 @@ window.MallApp = {
     }
 
     // 渲染 7步流程图
-    const steps = ['提交订单', '双方签约', '买家的付款', '付款后的审核', '商家发货', '确认收货', '交易完结'];
+    const steps = [
+      { name: '提交订单', time: o.time },
+      { name: '双方签约', time: (st.step >= 1 ? (o.buyerContractTime || '2026-07-07 11:20:00') : '') },
+      { name: '买家的付款', time: (st.step >= 2 ? (o.paymentTime || '2026-07-07 14:00:00') : '') },
+      { name: '付款后的审核', time: (st.step >= 3 ? (o.paymentAuditTime || '2026-07-07 14:30:00') : '') },
+      { name: '商家发货', time: (st.step >= 4 ? (o.shippingTime || '2026-07-08 09:30:00') : '') },
+      { name: '确认收货', time: (st.step >= 5 ? (o.receiveTime || '2026-07-09 08:30:00') : '') },
+      { name: '交易完结', time: (st.step >= 6 ? (o.finishTime || '2026-07-09 10:00:00') : '') }
+    ];
     const currentStepIndex = st.step;
     const stepsContainer = document.getElementById('pc-detail-steps');
     if (stepsContainer) {
-      let stepHtml = '';
-      steps.forEach((stepName, sIdx) => {
+      let stepHtml = `<div style="position:absolute; top:16px; left:6%; right:6%; height:2px; background:#e2e8f0; z-index:1;"></div>`;
+      steps.forEach((stepObj, sIdx) => {
         const isDone = sIdx <= currentStepIndex;
         const isCurrent = sIdx === currentStepIndex;
         const circleStyle = isDone 
@@ -1633,13 +1634,15 @@ window.MallApp = {
         const labelStyle = isCurrent
           ? 'color:var(--primary-color); font-weight:bold;'
           : (isDone ? 'color:#0f172a;' : 'color:#94a3b8;');
+        const timeDisplay = isDone && stepObj.time ? formatTimeSec(stepObj.time) : '';
         
         stepHtml += `
           <div style="display:flex; flex-direction:column; align-items:center; z-index:2; position:relative; flex:1;">
             <div style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; margin-bottom:6px; ${circleStyle}">
               ${isDone ? (sIdx < currentStepIndex ? '✓' : sIdx + 1) : sIdx + 1}
             </div>
-            <div style="font-size:12px; ${labelStyle}">${stepName}</div>
+            <div style="font-size:12px; ${labelStyle}">${stepObj.name}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:4px; min-height:14px; font-family:monospace;">${timeDisplay}</div>
           </div>
         `;
       });
@@ -2075,12 +2078,12 @@ window.MallApp = {
     const container = document.getElementById('cart-grouped-container');
     if (!container || !MockData.cart) return;
 
-    // 更新红点角标数量
-    const totalQty = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
+    // 更新红点角标数量 (购物车有效货品类别/条目数量)
+    const validCategoryCount = MockData.cart.filter(c => c.status === 1).length;
     const ucBadge = document.getElementById('cart-badge-uc');
     if (ucBadge) {
-      if (totalQty > 0) {
-        ucBadge.innerText = totalQty;
+      if (validCategoryCount > 0) {
+        ucBadge.innerText = validCategoryCount;
         ucBadge.style.display = 'inline-block';
       } else {
         ucBadge.style.display = 'none';

@@ -967,6 +967,9 @@
       if (config.secretKey) {
         sessionStorage.setItem('prd_jsonbin_session_key', config.secretKey);
       }
+      if (config.supabaseKey) {
+        sessionStorage.setItem('prd_supabase_session_key', config.supabaseKey);
+      }
     } catch (e) {}
   }
 
@@ -984,11 +987,13 @@
     if (activeMode === 'supabase' || cfg.mode === 'supabase') {
       try {
         const docId = cfg.customDocId || pageKey;
-        const targetUrl = `${cfg.supabaseUrl.replace(/\/+$/, '')}/rest/v1/${cfg.supabaseTable}?id=eq.${encodeURIComponent(docId)}`;
+        const baseUrl = (cfg.supabaseUrl || DEFAULT_SUPABASE_URL).replace(/\/+$/, '');
+        const targetUrl = `${baseUrl}/rest/v1/${cfg.supabaseTable || DEFAULT_SUPABASE_TABLE}?id=eq.${encodeURIComponent(docId)}`;
+        const effectiveKey = (cfg.supabaseKey || DEFAULT_SUPABASE_KEY).trim();
         const resp = await fetch(targetUrl, {
           headers: {
-            'apikey': cfg.supabaseKey,
-            'Authorization': `Bearer ${cfg.supabaseKey}`,
+            'apikey': effectiveKey,
+            'Authorization': `Bearer ${effectiveKey}`,
             'Cache-Control': 'no-cache'
           }
         });
@@ -1023,8 +1028,16 @@
     const cfg = getKVStorageConfig();
     if (activeMode === 'supabase' || cfg.mode === 'supabase') {
       const docId = cfg.customDocId || pageKey;
-      const targetUrl = `${cfg.supabaseUrl.replace(/\/+$/, '')}/rest/v1/${cfg.supabaseTable}`;
-      const effectiveKey = secretKey || cfg.supabaseKey;
+      const baseUrl = (cfg.supabaseUrl || DEFAULT_SUPABASE_URL).replace(/\/+$/, '');
+      const targetUrl = `${baseUrl}/rest/v1/${cfg.supabaseTable || DEFAULT_SUPABASE_TABLE}`;
+      
+      // 精准确定 Supabase 密钥 (严禁误用 JSONBin 的 $2a$10$ Key)
+      let effectiveKey = (cfg.supabaseKey || DEFAULT_SUPABASE_KEY).trim();
+      if (secretKey && (secretKey.startsWith('sb_') || secretKey.startsWith('eyJ') || !secretKey.startsWith('$2'))) {
+        effectiveKey = secretKey.trim();
+      }
+      if (!effectiveKey) effectiveKey = DEFAULT_SUPABASE_KEY;
+
       const resp = await fetch(targetUrl, {
         method: 'POST',
         headers: {
@@ -1092,8 +1105,8 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 24, 21, 0.7);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
       z-index: 10000095;
       display: flex;
       align-items: center;
@@ -1103,14 +1116,14 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>模式切换与数据无缝迁移决策</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeModeSwitchModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeModeSwitchModal()">&times;</button>
         </div>
 
         <!-- Body -->
@@ -1196,8 +1209,8 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 24, 21, 0.65);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
       z-index: 10000070;
       display: flex;
       align-items: center;
@@ -1207,30 +1220,32 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:580px; max-width:94vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>持久化同步中心与模式切换</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeKVConfigModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeKVConfigModal()">&times;</button>
         </div>
 
-        <!-- Mode Switcher Tabs -->
-        <div style="background:#f1f5f9; padding:8px 16px; border-bottom:1px solid #e2e8f0; display:flex; gap:6px;">
-          <button id="tab-btn-supabase" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:11px; font-weight:700; border-radius:6px; background:${activeMode==='supabase'?'#ffffff':'transparent'}; border:${activeMode==='supabase'?'1px solid #d4d4d8':'none'}; color:${activeMode==='supabase'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('supabase')">
-            Supabase 模式 ${activeMode==='supabase'?'<span style=\"color:#059669;\">生效中</span>':''}
-          </button>
-          <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:11px; font-weight:700; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #d4d4d8':'none'}; color:${activeMode==='jsonbin'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('jsonbin')">
-            JSONBin 备用 ${activeMode==='jsonbin'?'<span style=\"color:#059669;\">生效中</span>':''}
-          </button>
-          <button id="tab-btn-github" class="prd-btn-action" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #d4d4d8':'none'}; color:${activeMode==='github'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('github')">
-            GitHub Commit 模式 ${activeMode==='github'?'<span style=\"color:#059669;\">生效中</span>':''}
-          </button>
-          <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #d4d4d8':'none'}; color:${activeMode==='local'?'#18181b':'#71717a'};" onclick="window.switchSyncConfigTab('local')">
-            本地服务 ${activeMode==='local'?'<span style=\"color:#059669;\">生效中</span>':''}
-          </button>
+        <!-- Mode Switcher Tabs (shadcn/ui TabsList) -->
+        <div style="background:#fafafa; padding:12px 20px; border-bottom:1px solid #e4e4e7;">
+          <div style="background:#f4f4f5; padding:3px; border-radius:8px; display:flex; gap:2px; border:1px solid #e4e4e7;">
+            <button id="tab-btn-supabase" class="prd-btn-action" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='supabase'?'#ffffff':'transparent'}; border:${activeMode==='supabase'?'1px solid #e4e4e7':'none'}; color:${activeMode==='supabase'?'#09090b':'#71717a'}; box-shadow:${activeMode==='supabase'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('supabase')">
+              Supabase ${activeMode==='supabase'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
+            </button>
+            <button id="tab-btn-jsonbin" class="prd-btn-action" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='jsonbin'?'#ffffff':'transparent'}; border:${activeMode==='jsonbin'?'1px solid #e4e4e7':'none'}; color:${activeMode==='jsonbin'?'#09090b':'#71717a'}; box-shadow:${activeMode==='jsonbin'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('jsonbin')">
+              JSONBin ${activeMode==='jsonbin'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
+            </button>
+            <button id="tab-btn-github" class="prd-btn-action" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='github'?'#ffffff':'transparent'}; border:${activeMode==='github'?'1px solid #e4e4e7':'none'}; color:${activeMode==='github'?'#09090b':'#71717a'}; box-shadow:${activeMode==='github'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('github')">
+              GitHub ${activeMode==='github'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
+            </button>
+            <button id="tab-btn-local" class="prd-btn-action" style="flex:0.8; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='local'?'#ffffff':'transparent'}; border:${activeMode==='local'?'1px solid #e4e4e7':'none'}; color:${activeMode==='local'?'#09090b':'#71717a'}; box-shadow:${activeMode==='local'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('local')">
+              本地服务 ${activeMode==='local'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
+            </button>
+          </div>
         </div>
 
         <!-- Body Content -->
@@ -1360,8 +1375,9 @@
       const panel = document.getElementById(`panel-${m}`);
       if (btn) {
         btn.style.background = m === mode ? '#ffffff' : 'transparent';
-        btn.style.border = m === mode ? '1px solid #d4d4d8' : 'none';
-        btn.style.color = m === mode ? '#18181b' : '#71717a';
+        btn.style.border = m === mode ? '1px solid #e4e4e7' : 'none';
+        btn.style.color = m === mode ? '#09090b' : '#71717a';
+        btn.style.boxShadow = m === mode ? '0 1px 2px rgba(0,0,0,0.05)' : 'none';
       }
       if (panel) {
         panel.style.display = m === mode ? 'flex' : 'none';
@@ -1879,8 +1895,8 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 24, 21, 0.65);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
       z-index: 10000060;
       display: flex;
       align-items: center;
@@ -1890,14 +1906,14 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:560px; max-width:92vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>${escapeHtml(t('ghModalTitle'))}</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeGitHubConfigModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeGitHubConfigModal()">&times;</button>
         </div>
 
         <!-- Body -->
@@ -2038,8 +2054,8 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 24, 21, 0.7);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
       z-index: 10000080;
       display: flex;
       align-items: center;
@@ -2049,14 +2065,14 @@
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="background:#ffffff; width:520px; max-width:92vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
         <!-- Header -->
-        <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
             <span></span>
             <span>${escapeHtml(t('onlineAuthTitle'))}</span>
           </div>
-          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer;" onclick="window.closeOnlineAuthModal()">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeOnlineAuthModal()">&times;</button>
         </div>
 
         <!-- Body -->
@@ -2230,8 +2246,8 @@
     modal.style.cssText = `
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(28, 24, 21, 0.65);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
       z-index: 10000050;
       display: flex;
       align-items: center;
@@ -2243,9 +2259,9 @@
     if (isGithubPages) {
       // 1. GitHub Pages 云端环境弹窗
       modal.innerHTML = `
-        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
           <!-- Header -->
-          <div style="background:#18181b; color:#ffffff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="background:#ffffff; color:#09090b; border-bottom:1px solid #e4e4e7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
               <span>${t('envTitle')}</span>
               <span style="background:#18181b; color:#fff; font-size:10.5px; padding:2px 8px; border-radius:10px;">${t('envGhBadge')}</span>
@@ -2273,7 +2289,7 @@
     } else {
       // 2. 本地静态 / 离线环境弹窗
       modal.innerHTML = `
-        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(232, 226, 217,0.8); overflow:hidden; display:flex; flex-direction:column;">
+        <div style="background:#ffffff; width:540px; max-width:92vw; border-radius:12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border: 1px solid #e4e4e7; overflow:hidden; display:flex; flex-direction:column;">
           <!-- Header -->
           <div style="background:#fff1f2; border-bottom:1px solid #fecdd3; padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#be123c;">
@@ -2482,38 +2498,59 @@
   style.id = 'prd-tool-styles-v6';
   style.textContent = `
     :root {
+      --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --prd-background: #ffffff;
+      --prd-foreground: #09090b;
+      --prd-card: #ffffff;
+      --prd-card-foreground: #09090b;
+      --prd-popover: #ffffff;
+      --prd-popover-foreground: #09090b;
       --prd-primary: #18181b;
       --prd-primary-hover: #27272a;
-      --prd-bg-panel: rgba(255, 255, 255, 0.98);
-      --prd-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --prd-primary-foreground: #fafafa;
+      --prd-secondary: #f4f4f5;
+      --prd-secondary-hover: #e4e4e7;
+      --prd-secondary-foreground: #18181b;
+      --prd-muted: #f4f4f5;
+      --prd-muted-foreground: #71717a;
+      --prd-accent: #f4f4f5;
+      --prd-accent-foreground: #18181b;
+      --prd-destructive: #ef4444;
+      --prd-destructive-foreground: #fafafa;
+      --prd-border: #e4e4e7;
+      --prd-input: #e4e4e7;
+      --prd-ring: #18181b;
+      --prd-radius: 8px;
     }
 
-    /* 屏幕右边缘快捷控制胶囊 (高雅炭灰 + 小眼睛独立打点开关 + 抽屉展开) */
+    /* 屏幕右边缘快捷控制胶囊 (shadcn/ui 极简磨砂暗色浮动条) */
     .prd-drawer-edge-tab {
       position: fixed;
       top: 140px;
       right: 0;
       z-index: 1000009;
-      background: #18181b;
-      color: #ffffff;
+      background: #09090b;
+      color: #fafafa;
       padding: 0;
-      border-radius: 12px 0 0 12px;
+      border-radius: 10px 0 0 10px;
       cursor: pointer;
-      box-shadow: -4px 6px 22px rgba(0,0,0,0.28);
+      box-shadow: -4px 4px 18px rgba(0, 0, 0, 0.22);
       border: 1px solid #27272a;
       border-right: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       user-select: none;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
-      width: 38px;
+      width: 36px;
       box-sizing: border-box;
+      font-family: var(--prd-font);
     }
     .prd-drawer-edge-tab:hover {
-      box-shadow: -6px 8px 26px rgba(0,0,0,0.35);
+      box-shadow: -6px 6px 24px rgba(0, 0, 0, 0.3);
       transform: translateX(-3px);
+      border-color: #3f3f46;
     }
     .prd-edge-eye-btn {
       width: 100%;
@@ -2521,29 +2558,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      color: #ffffff;
-      background: #27272a;
-      transition: all 0.2s;
+      font-size: 15px;
+      color: #fafafa;
+      background: #18181b;
+      transition: all 0.15s ease;
       cursor: pointer;
     }
     .prd-edge-eye-btn:hover {
-      background: #3f3f46;
+      background: #27272a;
       color: #ffffff;
     }
     .prd-edge-eye-btn.off {
       color: #71717a;
-      background: #18181b;
+      background: #09090b;
       opacity: 0.65;
     }
     .prd-edge-eye-btn.active {
       color: #ffffff;
-      background: #27272a;
+      background: #18181b;
     }
     .prd-edge-handle-divider {
       width: 100%;
       height: 1px;
-      background: rgba(255,255,255,0.15);
+      background: #27272a;
     }
     .prd-edge-drawer-trigger {
       padding: 12px 4px 14px 4px;
@@ -2554,40 +2591,55 @@
       width: 100%;
       box-sizing: border-box;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s ease;
     }
     .prd-edge-drawer-trigger:hover {
-      background: #27272a;
+      background: #18181b;
     }
-    .prd-edge-arrow { font-size: 15px; font-weight: 800; }
+    .prd-edge-arrow { font-size: 14px; font-weight: 700; color: #a1a1aa; }
     .prd-edge-text {
       writing-mode: vertical-rl;
-      letter-spacing: 3px;
-      font-size: 12px;
-      font-weight: 700;
+      letter-spacing: 2px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #fafafa;
     }
 
-    /* 右侧抽屉核心容器 (圆角更大，质感升级) */
-    .prd-right-drawer {
+    /* 右侧抽屉核心容器 (shadcn/ui Sheet 架构) */
+    .prd-right-drawer, #prd-drawer {
       position: fixed;
       top: 0;
-      right: -430px;
-      width: 410px;
+      right: -420px;
+      width: 400px;
       height: 100vh;
       background: #ffffff;
-      box-shadow: -12px 0 40px rgba(28, 24, 21, 0.18);
+      box-shadow: -8px 0 35px rgba(0, 0, 0, 0.08);
       z-index: 1000016;
       display: flex;
       flex-direction: column;
-      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-left: 1px solid #e2e8f0;
-      border-radius: 16px 0 0 16px;
+      transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border-left: 1px solid #e4e4e7;
       font-family: var(--prd-font);
+      box-sizing: border-box;
     }
-    .prd-right-drawer.open { right: 0; }
+    .prd-right-drawer.open, #prd-drawer.open {
+      right: 0 !important;
+      transform: translateX(0) !important;
+    }
+    .prd-right-drawer.semi-open, #prd-drawer.semi-open {
+      right: 0 !important;
+      transform: translateX(0) !important;
+      width: 56px !important;
+      overflow: visible !important;
+    }
+    #prd-drawer.semi-open .prd-drawer-full-content, .prd-right-drawer.semi-open .prd-drawer-full-content {
+      display: none !important;
+    }
+    #prd-drawer.semi-open .prd-drawer-mini-rail, .prd-right-drawer.semi-open .prd-drawer-mini-rail {
+      display: flex !important;
+    }
 
-    /* 抽屉左边缘收起小箭头按钮 */
-    /* 抽屉左边缘控制把手组 (上方全收起 + 下方半收起，按钮朝内指向右侧) */
+    /* 抽屉左边缘快捷控制把手组 */
     .prd-drawer-left-handles {
       position: absolute;
       left: -32px;
@@ -2604,49 +2656,58 @@
     }
     .prd-drawer-handle-btn {
       width: 32px;
-      height: 44px;
+      height: 42px;
       border-radius: 8px 0 0 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: -4px 4px 12px rgba(0,0,0,0.18);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -2px 4px 12px rgba(0, 0, 0, 0.12);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
     }
     .prd-drawer-handle-btn span {
-      font-size: 17px;
-      font-weight: 800;
+      font-size: 16px;
+      font-weight: 700;
       line-height: 1;
     }
-    /* 上方按钮：全收起 (深色科技质感，右向箭头 › 朝内收起) */
     .prd-handle-full-collapse {
-      background: linear-gradient(135deg, #36322F, #48433F);
-      color: #ffffff;
+      background: #18181b;
+      color: #fafafa;
       border: 1px solid #27272a;
       border-right: none;
     }
     .prd-handle-full-collapse:hover {
       background: #ef4444;
-      border-color: #f87171;
-      transform: scale(1.08) translateX(-2px);
-    }
-    /* 下方按钮：半收起 (专业亮蓝，右向紧凑收折标号条图标 ⇥) */
-    .prd-handle-semi-collapse {
-      background: linear-gradient(135deg, #18181b, #27272a);
+      border-color: #ef4444;
       color: #ffffff;
-      border: 1px solid #60a5fa;
+      transform: translateX(-2px);
+    }
+    .prd-handle-semi-collapse {
+      background: #ffffff;
+      color: #18181b;
+      border: 1px solid #e4e4e7;
       border-right: none;
     }
     .prd-handle-semi-collapse:hover {
-      background: #4A352A;
-      border-color: #a1a1aa;
-      transform: scale(1.08) translateX(-2px);
+      background: #f4f4f5;
+      color: #09090b;
+      transform: translateX(-2px);
     }
 
+    .prd-drawer-full-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    /* 抽屉头部 (shadcn SheetHeader) */
     .prd-drawer-header {
-      padding: 12px 14px;
-      border-bottom: 1px solid #f1f5f9;
+      padding: 14px 16px;
+      border-bottom: 1px solid #e4e4e7;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2654,10 +2715,11 @@
       flex-shrink: 0;
     }
 
+    /* 版本选择栏 (shadcn subheader) */
     .prd-version-bar {
-      padding: 8px 12px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 14px;
+      background: #fafafa;
+      border-bottom: 1px solid #e4e4e7;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -2665,31 +2727,67 @@
     }
     .prd-version-select {
       flex: 1;
-      padding: 4px 8px;
+      height: 28px;
+      padding: 0 8px;
       font-size: 11.5px;
-      font-weight: 700;
-      color: #18181b;
+      font-weight: 600;
+      color: #09090b;
       background: #ffffff;
-      border: 1px solid #d4d4d8;
+      border: 1px solid #e4e4e7;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+      transition: all 0.15s ease;
+    }
+    .prd-version-select:focus {
+      border-color: #18181b;
+      box-shadow: 0 0 0 1px #18181b;
     }
 
+    /* 搜索过滤栏 */
+    .prd-drawer-filter-bar {
+      padding: 8px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #prd-drawer-search-input {
+      height: 32px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #09090b;
+      outline: none;
+      background: #ffffff;
+      box-sizing: border-box;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #prd-drawer-search-input:focus {
+      border-color: #18181b;
+      box-shadow: 0 0 0 1px #18181b;
+    }
+
+    /* 抽屉内容列表 */
     .prd-drawer-body {
       flex: 1;
       overflow-y: auto;
-      padding: 14px 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
+      background: #fafafa;
     }
 
-    /* 需求卡片样式 (圆角与间距更大，呼吸感与质感更强) */
+    /* 需求卡片 (shadcn/ui Card Component) */
     .prd-card-item {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
       padding: 12px 14px;
       display: flex;
       flex-direction: column;
@@ -2699,25 +2797,25 @@
       max-height: 144px !important;
       box-sizing: border-box;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
     }
     .prd-card-item:hover {
       border-color: #a1a1aa;
-      background: #f8fafc;
-      box-shadow: 0 4px 10px rgba(24, 24, 27, 0.08);
+      box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
     }
     .prd-card-item.dragging {
       opacity: 0.45;
       background: #f4f4f5;
-      border: 1.5px dashed #52525b;
+      border: 1.5px dashed #71717a;
     }
     .prd-card-item.drag-over {
-      border-top: 3px solid #18181b;
-      background: #f0fdf4;
+      border-top: 2px solid #18181b;
+      background: #f4f4f5;
     }
 
     .prd-card-header {
@@ -2725,8 +2823,9 @@
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
-      font-weight: 700;
-      color: #18181b;
+      font-weight: 600;
+      color: #09090b;
+      letter-spacing: -0.01em;
       height: 22px;
       flex-shrink: 0;
     }
@@ -2746,30 +2845,31 @@
       flex: 1;
     }
     .prd-pin-num-pill {
-      background: #ef4444;
-      color: #fff;
+      background: #18181b;
+      color: #fafafa;
       font-size: 10.5px;
-      font-weight: 800;
-      padding: 1px 6px;
-      border-radius: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 9999px;
       min-width: 14px;
       text-align: center;
       flex-shrink: 0;
       user-select: none;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
     }
     .prd-pin-num-pill.clickable {
       cursor: pointer;
       transition: transform 0.15s;
     }
     .prd-pin-num-pill.clickable:hover {
-      transform: scale(1.15);
-      background: #dc2626;
+      transform: scale(1.1);
+      background: #09090b;
     }
 
     .prd-card-desc {
       font-size: 12px;
       color: #71717a;
-      line-height: 18px;
+      line-height: 1.5;
       height: 36px !important;
       min-height: 36px !important;
       max-height: 36px !important;
@@ -2786,102 +2886,133 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid #f1f5f9;
-      padding-top: 4px;
+      border-top: 1px solid #f4f4f5;
+      padding-top: 6px;
       margin-top: 0;
-      height: 24px;
+      height: 26px;
       flex-shrink: 0;
     }
 
+    /* shadcn/ui Badges */
     .prd-tag {
-      font-size: 10px;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      border: 1px solid #e4e4e7;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 1px 8px;
+      line-height: 1.4;
     }
-    .prd-tag-type { background: #f4f4f5; color: #18181b; }
-    .prd-tag-version { background: #fef3c7; color: #92400e; font-family: monospace; }
+    .prd-tag-type { background: #f4f4f5; color: #18181b; border-color: #e4e4e7; }
+    .prd-tag-version { background: #fafafa; color: #52525b; border-color: #e4e4e7; font-family: ui-monospace, monospace; font-size: 10px; }
 
-    /* 通用按钮 */
+    /* shadcn/ui Button System */
     .prd-btn-action {
       background: #ffffff;
-      border: 1px solid #d4d4d8;
+      border: 1px solid #e4e4e7;
       border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 11px;
-      color: #27272a;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      color: #18181b;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
-      font-weight: 600;
-      transition: all 0.15s;
+      font-weight: 500;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+      font-family: inherit;
     }
     .prd-btn-action:hover {
-      background: #f1f5f9;
-      border-color: #A39A90;
+      background: #f4f4f5;
+      border-color: #d4d4d8;
+      color: #09090b;
+    }
+    .prd-btn-action:active {
+      transform: scale(0.98);
     }
     .prd-btn-primary {
-      background: var(--prd-primary);
-      border: 1px solid var(--prd-primary);
+      background: #18181b;
+      border: 1px solid #18181b;
       border-radius: 6px;
-      padding: 6px 12px;
+      padding: 6px 14px;
       font-size: 12px;
-      color: #ffffff;
+      color: #fafafa;
       cursor: pointer;
-      font-weight: 700;
-      transition: all 0.15s;
+      font-weight: 500;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
     }
     .prd-btn-primary:hover {
-      background: var(--prd-primary-hover);
+      background: #27272a;
+      border-color: #27272a;
     }
-    .prd-panel .btn-danger, .prd-btn-danger { color: #ef4444 !important; border-color: #fecaca !important; }
-    .prd-panel .btn-danger:hover, .prd-btn-danger:hover { background: #fef2f2 !important; border-color: #ef4444 !important; }
+    .prd-btn-primary:active {
+      transform: scale(0.98);
+    }
+    .prd-panel .btn-danger, .prd-btn-danger {
+      color: #ef4444 !important;
+      border-color: #fecaca !important;
+      background: #ffffff !important;
+    }
+    .prd-panel .btn-danger:hover, .prd-btn-danger:hover {
+      background: #fef2f2 !important;
+      border-color: #f87171 !important;
+      color: #dc2626 !important;
+    }
 
-    /* 页面大头针 */
+    /* 页面大头针 (shadcn/ui 高对比度红标) */
     .prd-pin-marker {
       position: absolute;
       width: 22px;
       height: 22px;
-      background: #ef4444;
-      color: #ffffff;
+      background: #18181b;
+      color: #fafafa;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 11px;
-      font-weight: 800;
-      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.45), 0 0 0 2px #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 0 0 2px #ffffff;
       cursor: pointer;
       z-index: 1000015;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
       pointer-events: auto;
       user-select: none;
     }
     .prd-pin-marker:hover {
       transform: scale(1.25);
-      background: #dc2626;
-      box-shadow: 0 6px 14px rgba(220, 38, 38, 0.6), 0 0 0 3px #ffffff;
+      background: #09090b;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 0 3px #ffffff;
     }
     .prd-pin-marker.highlighted {
       animation: prd-pulse-anim 1.2s infinite;
+      background: #ef4444 !important;
     }
     @keyframes prd-pulse-anim {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1.3); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 0 0 2px #ffffff; }
+      70% { transform: scale(1.3); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 0 0 3px #ffffff; }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 0 2px #ffffff; }
     }
 
     .prd-pick-hover-outline {
-      outline: 2px dashed #ef4444 !important;
+      outline: 2px dashed #18181b !important;
       outline-offset: 2px !important;
-      background: rgba(239, 68, 68, 0.05) !important;
+      background: rgba(24, 24, 27, 0.05) !important;
     }
 
     .prd-target-glow-box {
       position: fixed !important;
-      border: 2.5px solid #ef4444 !important;
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.55), inset 0 0 12px rgba(239, 68, 68, 0.2) !important;
+      border: 2px solid #18181b !important;
+      box-shadow: 0 0 20px rgba(24, 24, 27, 0.3), inset 0 0 8px rgba(24, 24, 27, 0.1) !important;
       border-radius: 6px !important;
       pointer-events: none !important;
       z-index: 1000014 !important;
@@ -2895,18 +3026,16 @@
       100% { opacity: 0; }
     }
 
-    /* 悬浮 Popover 气泡 */
-
-    /* 严格保障所有环境下的 Markdown 列表小圆点与序号排版 */
+    /* Markdown 列表排版 */
     ul.prd-md-list, .prd-live-blocks-container ul, .prd-doc-content ul, .prd-drawer-content ul, .prd-inspect-bubble ul, .prd-live-block ul {
       list-style-type: disc !important;
-      padding-left: 24px !important;
+      padding-left: 20px !important;
       margin: 6px 0 !important;
       display: block !important;
     }
     ol.prd-md-list, .prd-live-blocks-container ol, .prd-doc-content ol, .prd-drawer-content ol, .prd-inspect-bubble ol, .prd-live-block ol {
       list-style-type: decimal !important;
-      padding-left: 24px !important;
+      padding-left: 20px !important;
       margin: 6px 0 !important;
       display: block !important;
     }
@@ -2914,77 +3043,41 @@
       display: list-item !important;
       list-style-type: inherit !important;
       margin-bottom: 4px !important;
-      line-height: 1.65 !important;
+      line-height: 1.6 !important;
+      color: #27272a;
     }
     .prd-live-block ul li::marker, .prd-doc-content ul li::marker {
-      color: #18181b !important;
+      color: #71717a !important;
     }
 
-    /* 抽屉全展开 (400px) / 半收起 (56px 标号竖条) / 全收起 状态体系 */
-    #prd-drawer, .prd-right-drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 400px;
-      height: 100vh;
-      background: #ffffff;
-      box-shadow: -4px 0 25px rgba(0, 0, 0, 0.12);
-      z-index: 1000008;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease;
-      box-sizing: border-box;
-      border-left: 1px solid #e2e8f0;
-    }
-    #prd-drawer.open, .prd-right-drawer.open {
-      transform: translateX(0) !important;
-      width: 400px !important;
-    }
-    #prd-drawer.semi-open, .prd-right-drawer.semi-open {
-      transform: translateX(0) !important;
-      width: 56px !important;
-      overflow: visible !important;
-    }
-    #prd-drawer.semi-open .prd-drawer-full-content, .prd-right-drawer.semi-open .prd-drawer-full-content {
-      display: none !important;
-    }
-    #prd-drawer.semi-open .prd-drawer-mini-rail, .prd-right-drawer.semi-open .prd-drawer-mini-rail {
-      display: flex !important;
-    }
-    .prd-drawer-full-content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
+    /* 紧凑竖条 Rail */
     .prd-drawer-mini-rail {
       display: none;
       flex-direction: column;
       height: 100%;
       width: 100%;
-      background: #f8fafc;
+      background: #fafafa;
       align-items: center;
       padding: 10px 0;
       box-sizing: border-box;
       user-select: none;
       overflow-y: auto;
       overflow-x: visible;
+      border-left: 1px solid #e4e4e7;
     }
     .prd-mini-badge-btn {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: #ef4444;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
+      background: #18181b;
+      color: #fafafa;
+      font-size: 12px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #fff;
-      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       margin-bottom: 8px;
       transition: transform 0.15s, background 0.15s;
@@ -2992,63 +3085,41 @@
       position: relative;
     }
     .prd-mini-badge-btn:hover {
-      transform: scale(1.18);
-      background: #dc2626;
+      transform: scale(1.15);
+      background: #09090b;
       z-index: 1000020;
     }
     .prd-mini-badge-btn::after {
       content: attr(data-title);
       position: absolute;
-      right: 44px;
+      right: 42px;
       top: 50%;
       transform: translateY(-50%);
-      background: #3D3B39;
-      color: #fff;
+      background: #09090b;
+      color: #fafafa;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 500;
       padding: 4px 10px;
-      border-radius: 4px;
+      border-radius: 6px;
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.15s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 1000030;
+      border: 1px solid #27272a;
     }
     .prd-mini-badge-btn:hover::after {
       opacity: 1;
     }
-    
-    /* 抽屉左侧折叠把手 */
-    .prd-drawer-edge-handle {
-      position: absolute;
-      left: -24px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 48px;
-      background: #3D3B39;
-      color: #ffffff;
-      border-radius: 6px 0 0 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 12px;
-      box-shadow: -2px 0 8px rgba(0,0,0,0.15);
-      z-index: 1000009;
-      transition: background 0.15s;
-      user-select: none;
-    }
-    .prd-drawer-edge-handle:hover {
-      background: #18181b;
-    }
 
+    /* 悬浮 Popover 气泡 (shadcn/ui Popover Component) */
     .prd-inspect-bubble {
       position: fixed;
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 20px 45px -10px rgba(28, 24, 21, 0.3), 0 0 0 1px rgba(226, 232, 240, 0.95);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e4e4e7;
       padding: 14px 16px;
       width: 520px;
       min-width: 340px;
@@ -3060,7 +3131,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      color: #3D3B39;
+      color: #09090b;
       resize: both;
       overflow: hidden;
       box-sizing: border-box;
@@ -3069,41 +3140,36 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 6px;
+      border-bottom: 1px solid #f4f4f5;
+      padding-bottom: 8px;
       cursor: grab;
       user-select: none;
       flex-shrink: 0;
     }
     .prd-inspect-bubble-header:active { cursor: grabbing; }
 
-    /* 纯白底色 Mermaid 矢量流程图与表格容器 */
+    /* Mermaid 矢量流程图与表格容器 */
     .prd-mermaid-block {
       margin: 10px 0;
-      padding: 18px 14px 28px 14px !important;
-      background: #ffffff !important;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      padding: 16px !important;
+      background: #fafafa !important;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
       overflow-x: auto;
       text-align: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
     }
     .prd-mermaid-block svg {
       max-width: 100% !important;
       height: auto !important;
       display: inline-block;
-      background: #ffffff !important;
-    }
-    .mermaid {
-      background: #ffffff !important;
-      color: #3D3B39;
+      background: transparent !important;
     }
 
     .prd-table-responsive {
       width: 100%;
       overflow-x: auto;
       margin: 8px 0;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #e4e4e7;
       border-radius: 8px;
     }
     .prd-md-rendered table, .prd-md-doc table, .prd-table-responsive table {
@@ -3114,79 +3180,24 @@
       text-align: left;
     }
     .prd-md-rendered th, .prd-md-doc th, .prd-table-responsive th {
-      background: #f8fafc;
-      color: #18181b;
-      font-weight: 700;
-      padding: 9px 12px;
-      border-bottom: 2px solid #e2e8f0;
-      border-right: 1px solid #f1f5f9;
+      background: #fafafa;
+      color: #09090b;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e4e4e7;
+      border-right: 1px solid #f4f4f5;
     }
     .prd-md-rendered td, .prd-md-doc td, .prd-table-responsive td {
       padding: 8px 12px;
-      border-bottom: 1px solid #f1f5f9;
-      border-right: 1px solid #f8fafc;
+      border-bottom: 1px solid #f4f4f5;
+      border-right: 1px solid #f4f4f5;
       color: #27272a;
     }
     .prd-md-rendered tr:hover td, .prd-md-doc tr:hover td, .prd-table-responsive tr:hover td {
-      background: #f8fafc;
+      background: #fafafa;
     }
 
-    /* 交互式可视化直编表格容器 (零管道符，如同 Word/Excel) */
-    .prd-live-table-wrapper {
-      margin: 10px 0;
-      border: 1px solid #d4d4d8;
-      border-radius: 8px;
-      background: #ffffff;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-      flex-shrink: 0;
-      width: 100%;
-      min-height: fit-content;
-      box-sizing: border-box;
-    }
-    .prd-live-table-toolbar {
-      padding: 6px 12px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .prd-visual-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      table-layout: auto;
-    }
-    .prd-visual-table th, .prd-visual-table td {
-      padding: 10px 12px;
-      border: 1px solid #d4d4d8;
-      outline: none;
-      vertical-align: top;
-      min-width: 110px;
-      min-height: 38px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #ffffff;
-      box-sizing: border-box;
-    }
-    .prd-visual-table th {
-      background: #f1f5f9;
-      font-weight: 700;
-      color: #18181b;
-    }
-    .prd-visual-table th:focus, .prd-visual-table td:focus {
-      background: #f4f4f5 !important;
-      box-shadow: inset 0 0 0 2px #18181b;
-    }
-    .prd-visual-table td:empty:before, .prd-visual-table th:empty:before {
-      content: attr(placeholder);
-      color: #A39A90;
-      font-style: italic;
-    }
-
-    /* 纯净无边框逐行即时可视化编辑器 */
+    /* 逐行即时可视化编辑器模态框 (shadcn/ui Dialog Component) */
     .prd-editor-modal {
       position: fixed;
       top: 50%;
@@ -3200,7 +3211,8 @@
       height: 720px;
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 25px 60px -15px rgba(28, 24, 21, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.95);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e4e4e7;
       z-index: 1000019;
       display: flex;
       flex-direction: column;
@@ -3209,9 +3221,10 @@
       overflow: hidden;
     }
     .prd-editor-header {
-      padding: 12px 18px;
-      background: #18181b;
-      color: #ffffff;
+      padding: 14px 20px;
+      background: #ffffff;
+      color: #09090b;
+      border-bottom: 1px solid #e4e4e7;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3223,117 +3236,12 @@
 
     .prd-editor-body {
       flex: 1;
-      padding: 14px 18px;
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       overflow: hidden;
       background: #ffffff;
-    }
-
-    .prd-md-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-wrap: wrap;
-      padding: 6px 8px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      flex-shrink: 0;
-    }
-    .prd-md-tool-btn {
-      background: #fff;
-      border: 1px solid #d4d4d8;
-      border-radius: 4px;
-      padding: 3px 7px;
-      font-size: 11.5px;
-      color: #27272a;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-    .prd-md-tool-btn:hover, .prd-md-tool-btn.active {
-      background: #f4f4f5;
-      border-color: #52525b;
-      color: var(--prd-primary);
-    }
-    .prd-tool-select {
-      padding: 3px 6px;
-      border: 1px solid #d4d4d8;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #27272a;
-      background: #fff;
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* 逐行所见即所得核心文档画布 (去多余外框，保留流畅真实文档感) */
-    .prd-live-blocks-container {
-      flex: 1;
-      border: 1px solid #d4d4d8;
-      border-radius: 8px;
-      padding: 20px 24px;
-      overflow-y: auto;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      cursor: text;
-    }
-    .prd-live-block {
-      border: none !important;
-      outline: none !important;
-      position: relative;
-      margin: 0;
-      padding: 2px 0;
-      flex-shrink: 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .prd-live-block.rendered {
-      cursor: text;
-      min-height: 24px;
-    }
-    .prd-live-block.editing {
-      background: transparent;
-      padding: 2px 0;
-      border-left: 2.5px solid #18181b !important;
-      padding-left: 8px !important;
-    }
-    .prd-live-line-input {
-      width: 100%;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-family: inherit;
-      font-size: 13.5px;
-      line-height: 1.65;
-      resize: none;
-      overflow: hidden;
-      color: #18181b;
-      box-sizing: border-box;
-      display: block;
-      padding: 0;
-      margin: 0;
-    }
-
-    /* 纯文本源码模式备用 */
-    .prd-raw-source-textarea {
-      flex: 1;
-      width: 100%;
-      border: 1px solid #d4d4d8;
-      border-radius: 8px;
-      padding: 14px 16px;
-      font-size: 13px;
-      line-height: 1.65;
-      outline: none;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      resize: none;
-      box-sizing: border-box;
-      background: #ffffff;
-      color: #18181b;
     }
 
     /* 右下角最小化悬浮胶囊 */
@@ -3342,33 +3250,39 @@
       bottom: 24px;
       right: 24px;
       z-index: 1000025;
-      background: #18181b;
-      color: #ffffff;
-      border-radius: 30px;
+      background: #09090b;
+      color: #fafafa;
+      border-radius: 9999px;
       padding: 8px 18px;
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.15);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      border: 1px solid #27272a;
       cursor: pointer;
       font-family: var(--prd-font);
+      font-size: 12px;
+      font-weight: 500;
       animation: prd-dock-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: none;
+      transition: all 0.2s ease;
     }
     @keyframes prd-dock-pop {
       from { transform: translateY(20px) scale(0.9); opacity: 0; }
       to { transform: translateY(0) scale(1); opacity: 1; }
     }
     .prd-editor-mini-dock:hover {
-      background: #3D3B39;
-      box-shadow: 0 12px 35px rgba(2, 132, 199, 0.45);
+      background: #18181b;
+      border-color: #3f3f46;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 20px -3px rgba(0, 0, 0, 0.25);
     }
 
     /* 全屏文档大屏 Modal */
     .prd-doc-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(28, 24, 21, 0.65);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(4px);
       z-index: 1000020;
       display: flex;
@@ -3382,15 +3296,16 @@
       height: 90vh;
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e4e4e7;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     .prd-doc-header {
-      padding: 14px 20px;
+      padding: 14px 24px;
       background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e4e4e7;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3403,55 +3318,57 @@
     }
     .prd-doc-toc {
       width: 260px;
-      border-right: 1px solid #e2e8f0;
-      background: #f8fafc;
-      padding: 14px 10px;
+      border-right: 1px solid #e4e4e7;
+      background: #fafafa;
+      padding: 16px 12px;
       overflow-y: auto;
       flex-shrink: 0;
     }
     .prd-toc-title {
       font-size: 11px;
-      font-weight: 700;
-      color: #A39A90;
+      font-weight: 600;
+      color: #71717a;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 8px;
-      padding: 0 6px;
+      padding: 0 8px;
     }
     .prd-toc-item {
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12.5px;
-      color: #52525b;
+      color: #71717a;
       cursor: pointer;
       display: flex;
       gap: 6px;
       align-items: center;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
     .prd-toc-item:hover, .prd-toc-item.active {
       background: #f4f4f5;
-      color: var(--prd-primary);
-      font-weight: 600;
+      color: #09090b;
+      font-weight: 500;
     }
-    .prd-toc-num { color: #ef4444; font-weight: 700; font-size: 11px; }
+    .prd-toc-num { color: #18181b; font-weight: 700; font-size: 11px; }
     .prd-toc-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     .prd-doc-main-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 30px 40px;
+      padding: 36px 48px;
       background: #ffffff;
     }
-    .prd-doc-paper { max-width: 900px; margin: 0 auto; }
+    .prd-doc-paper { max-width: 860px; margin: 0 auto; }
     .prd-doc-hero {
-      border-bottom: 2px solid #f1f5f9;
+      border-bottom: 1px solid #e4e4e7;
       padding-bottom: 16px;
       margin-bottom: 24px;
     }
     .prd-doc-hero-title {
       font-size: 24px;
-      font-weight: 800;
-      color: #18181b;
+      font-weight: 700;
+      color: #09090b;
+      letter-spacing: -0.02em;
       margin: 0 0 8px 0;
     }
     .prd-doc-hero-meta {
@@ -3465,7 +3382,7 @@
     .prd-doc-article-section {
       margin-top: 28px;
       padding-top: 20px;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid #f4f4f5;
       scroll-margin-top: 80px;
     }
     .prd-doc-article-section:first-of-type {
@@ -3474,9 +3391,10 @@
       border-top: none;
     }
     .prd-doc-sec-heading {
-      font-size: 17px;
-      font-weight: 700;
-      color: #18181b;
+      font-size: 16px;
+      font-weight: 600;
+      color: #09090b;
+      letter-spacing: -0.01em;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -3486,30 +3404,6 @@
       font-size: 13.5px;
       line-height: 1.7;
       color: #27272a;
-    }
-
-    /* 版本上传模态框 */
-    .prd-version-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(28, 24, 21, 0.6);
-      backdrop-filter: blur(2px);
-      z-index: 1000030;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--prd-font);
-    }
-    .prd-version-modal-card {
-      width: 480px;
-      max-width: 92vw;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-      padding: 20px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
     }
   `;
   document.head.appendChild(style);
@@ -3804,7 +3698,6 @@
   }
 
     window.showToast = function showToast(msg, type = 'info') {
-    const showToast = window.showToast;
     try {
       let toastContainer = document.getElementById('prd-global-toast-container');
       if (!toastContainer) {
@@ -3812,49 +3705,58 @@
         toastContainer.id = 'prd-global-toast-container';
         toastContainer.style.cssText = `
           position: fixed;
-          bottom: 24px;
-          right: 24px;
+          bottom: 20px;
+          right: 20px;
           z-index: 10000099;
           display: flex;
           flex-direction: column;
           gap: 8px;
           pointer-events: none;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          font-family: var(--prd-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
         `;
         document.body.appendChild(toastContainer);
       }
 
       const toast = document.createElement('div');
-      const bgMap = {
-        success: 'linear-gradient(135deg, #059669, #10b981)',
-        error: 'linear-gradient(135deg, #dc2626, #ef4444)',
-        info: 'linear-gradient(135deg, #36322F, #48433F)'
+      const iconMap = {
+        success: '<span style="color:#10b981; font-weight:700; font-size:13px;">✓</span>',
+        error: '<span style="color:#ef4444; font-weight:700; font-size:13px;">✕</span>',
+        warning: '<span style="color:#f59e0b; font-weight:700; font-size:13px;">!</span>',
+        info: '<span style="color:#18181b; font-weight:700; font-size:13px;">•</span>'
       };
 
       toast.style.cssText = `
-        background: ${bgMap[type] || bgMap.info};
-        color: #ffffff;
-        padding: 10px 18px;
+        background: #ffffff;
+        color: #09090b;
+        border: 1px solid #e4e4e7;
+        padding: 10px 16px;
         border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+        font-size: 12.5px;
+        font-weight: 500;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
         gap: 8px;
         pointer-events: auto;
         max-width: 400px;
         word-break: break-word;
-        transition: all 0.25s ease-out;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: translateY(8px);
       `;
-      toast.innerHTML = `<span>${msg}</span>`;
+      toast.innerHTML = `${iconMap[type] || iconMap.info}<span>${escapeHtml(msg)}</span>`;
       toastContainer.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+      });
 
       setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        setTimeout(() => toast.remove(), 250);
-      }, 2500);
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 200);
+      }, 2400);
     } catch (e) {}
 
 
@@ -3868,9 +3770,48 @@
 
     const activeMode = getActiveSyncMode();
 
-    // 模式 1: 云端 KV 存储打点 (JSONBin.io)
-    // 严格单一排他：只向云端 JSONBin 发送真实请求，云端成功后才更新本地缓存镜像
-    if (activeMode === 'jsonbin' || activeMode === 'supabase') {
+    // 模式 1: Supabase 云端数据库直读直写
+    if (activeMode === 'supabase') {
+      const kv = getKVStorageConfig();
+      const effectiveKey = (kv.supabaseKey || DEFAULT_SUPABASE_KEY).trim();
+      const effectiveUrl = (kv.supabaseUrl || DEFAULT_SUPABASE_URL).trim();
+      const effectiveTable = (kv.supabaseTable || DEFAULT_SUPABASE_TABLE).trim();
+
+      if (!effectiveKey || !effectiveUrl || !effectiveTable) {
+        showToast('未配置完整的 Supabase 连接参数，保存失败', 'error');
+        return false;
+      }
+      try {
+        showToast('正在实时同步至 Supabase 数据库...', 'info');
+        const res = await saveRemoteKVData(null, effectiveKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        if (!res || (!res.record && !res.metadata)) {
+          throw new Error('Supabase 未返回成功确认');
+        }
+
+        // 云端真实写入确认后，同步更新内存与本地镜像
+        window.INITIAL_PRD_DATA = savedPins;
+        window.PRD_VERSION_REGISTRY = versionRegistry;
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(versionRegistry));
+          localStorage.setItem(cacheVersionKey, PRD_CACHE_VERSION);
+        } catch (e) {}
+
+        const docDisplay = kv.customDocId || pageKey;
+        showToast(`[Supabase] 实时同步成功！(Doc: ${docDisplay})`, 'success');
+        return true;
+      } catch (sbErr) {
+        showToast(`云端 KV 同步失败: ${sbErr.message}`, 'error');
+        return false;
+      }
+    }
+
+    // 模式 2: JSONBin.io 云端 KV 存储
+    if (activeMode === 'jsonbin') {
       const kv = getKVStorageConfig();
       if (!kv || !kv.secretKey) {
         showToast('未配置有效的 JSONBin Master Key，保存失败', 'error');
@@ -3897,7 +3838,7 @@
         } catch (e) {}
 
         const binDisplay = kv.binId ? ` (Bin: ${kv.binId.substring(0, 8)}...)` : '';
-        showToast(`[云端KV] 真实同步成功！${binDisplay}`, 'success');
+        showToast(`[JSONBin] 真实同步成功！${binDisplay}`, 'success');
         return true;
       } catch (kvErr) {
         showToast(`云端 KV 同步失败: ${kvErr.message}`, 'error');
@@ -4293,10 +4234,10 @@
           <strong style="font-size:13px; color:#18181b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(pin.title || '（未命名需求）')}</strong>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button class="prd-btn-action" style="padding:2px 8px; font-size:11px; background:#f1f5f9; color:#52525b; border-radius:4px; border:1px solid #e2e8f0;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
+          <button class="prd-btn-action" style="height:24px; padding:0 8px; font-size:11px; background:#ffffff; color:#18181b; border-radius:6px; border:1px solid #e4e4e7;" onclick="window.toggleDrawerFromBubble()" title="收起/展开右侧侧边栏 (不影响当前需求框)">
             <span id="prd-bubble-drawer-btn-icon">${isDrawerOpen ? '收起侧边栏' : '展开侧边栏'}</span>
           </button>
-          <button style="background:none; border:none; font-size:18px; color:#A39A90; cursor:pointer; padding:0 4px; line-height:1;" onclick="window.closeInspectBubble()" title="关闭当前需求框">&times;</button>
+          <button style="background:none; border:none; font-size:18px; color:#71717a; cursor:pointer; padding:0 4px; line-height:1;" onclick="window.closeInspectBubble()" title="关闭当前需求框">&times;</button>
         </div>
       </div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
@@ -4928,11 +4869,11 @@
       <div class="prd-editor-header" id="prd-editor-drag-handle">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:15px;"></span>
-          <strong>${draft.id ? `${t('editModalTitle')} #${draft.id}` : t('createModalTitle')}</strong>
+          <strong style="font-size:14px; font-weight:600; color:#09090b; letter-spacing:-0.01em;">${draft.id ? `${t('editModalTitle')} #${draft.id}` : t('createModalTitle')}</strong>
           <span class="prd-tag prd-tag-version">${escapeHtml(currentVersion)}</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button class="prd-btn-action" style="color:#ffffff; font-size:16px; background:none; border:none; cursor:pointer;" onclick="window.closeEditorModal()" title="${escapeHtml(t('cancelBtn'))}">&times;</button>
+          <button style="color:#71717a; font-size:18px; background:transparent; border:none; cursor:pointer; padding:2px 6px; border-radius:4px;" onclick="window.closeEditorModal()" title="${escapeHtml(t('cancelBtn'))}">&times;</button>
         </div>
       </div>
 
@@ -4941,11 +4882,11 @@
         <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 12px; flex-shrink:0;">
           <div style="display:flex; flex-direction:column; gap:4px;">
             <label style="font-size:12px; font-weight:700; color:#27272a;">${t('reqTitleLabel')} <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="prd-modal-title" style="padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none;" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
+            <input type="text" id="prd-modal-title" style="padding:7px 11px; border:1px solid #e4e4e7; border-radius:6px; font-size:12.5px; outline:none; background:#ffffff; color:#09090b; box-shadow:0 1px 2px 0 rgba(0,0,0,0.02);" placeholder="${escapeHtml(t('reqTitlePlaceholder'))}" value="${escapeHtml(draft.title || '')}">
           </div>
           <div style="display:flex; flex-direction:column; gap:4px;">
             <label style="font-size:12px; font-weight:700; color:#27272a;">${t('reqTypeLabel')}</label>
-            <select id="prd-modal-type" style="padding:6px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; background:#fff;">
+            <select id="prd-modal-type" style="padding:7px 11px; border:1px solid #e4e4e7; border-radius:6px; font-size:12.5px; outline:none; background:#ffffff; color:#09090b; box-shadow:0 1px 2px 0 rgba(0,0,0,0.02);">
               <option value="业务规则" ${draft.type === '业务规则' ? 'selected' : ''}>${t('reqTypes')['业务规则'] || '业务规则'}</option>
               <option value="交互逻辑" ${draft.type === '交互逻辑' ? 'selected' : ''}>${t('reqTypes')['交互逻辑'] || '交互逻辑'}</option>
               <option value="数据口径" ${draft.type === '数据口径' ? 'selected' : ''}>${t('reqTypes')['数据口径'] || '数据口径'}</option>
@@ -6359,28 +6300,27 @@ window.saveEditorModal = async function() {
 
       <!-- 1. 全展开完整面板 (400px) -->
       <div class="prd-drawer-full-content" style="display:flex; flex-direction:column; height:100%; width:100%; overflow:hidden;">
-        <!-- 抽屉头部 -->
+        <!-- 抽屉头部 (shadcn SheetHeader) -->
         <div class="prd-drawer-header">
-          <div style="font-size:14px; font-weight:700; color:#18181b; display:flex; align-items:center; gap:6px;">
+          <div style="font-size:14px; font-weight:600; color:#09090b; letter-spacing:-0.01em; display:flex; align-items:center; gap:6px;">
             <span>${getCurrentPageTitle()}</span>
-            <span style="background:#f4f4f5; color:#18181b; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;" id="prd-drawer-count">${savedPins.length}</span>
+            <span style="background:#f4f4f5; color:#18181b; font-size:11px; padding:1px 7px; border-radius:9999px; font-weight:600; border:1px solid #e4e4e7;" id="prd-drawer-count">${savedPins.length}</span>
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             <!-- 统一模式切换与状态徽标 -->
-            <button id="prd-mode-badge-btn" class="prd-btn-action" style="padding:2px 7px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; background:${getSyncModeBadgeInfo().bg}; border:1px solid ${getSyncModeBadgeInfo().border}; color:${getSyncModeBadgeInfo().color}; border-radius:6px; cursor:pointer;" onclick="window.showKVConfigModal()" title="${getSyncModeBadgeInfo().tip}">
+            <button id="prd-mode-badge-btn" class="prd-btn-action" style="height:26px; padding:0 8px; font-size:11px; font-weight:500; display:flex; align-items:center; gap:4px; background:#f4f4f5; border:1px solid #e4e4e7; color:#09090b; border-radius:6px; cursor:pointer;" onclick="window.showKVConfigModal()" title="${getSyncModeBadgeInfo().tip}">
               <span>${getSyncModeBadgeInfo().icon}</span>
               <span>${getSyncModeBadgeInfo().label}</span>
             </button>
-            <select id="prd-lang-select"  onchange="window.setPRDLanguage(this.value)" style="padding:2px 4px; border:1px solid #d4d4d8; border-radius:4px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#27272a; font-weight:600;" title="切换语言 (Language)">
+            <select id="prd-lang-select" onchange="window.setPRDLanguage(this.value)" style="height:26px; padding:0 6px; border:1px solid #e4e4e7; border-radius:6px; font-size:11px; outline:none; background:#fff; cursor:pointer; color:#09090b; font-weight:500;" title="切换语言 (Language)">
               <option value="zh-CN" ${currentLang==='zh-CN'?'selected':''}>中文</option>
               <option value="en" ${currentLang==='en'?'selected':''}>EN</option>
               <option value="ja" ${currentLang==='ja'?'selected':''}>日本語</option>
               <option value="ko" ${currentLang==='ko'?'selected':''}>🇰🇷 한국어</option>
             </select>
             
-            
-            <button id="prd-manage-order-btn" class="prd-btn-action" style="font-size:11px; background:#f4f4f5; color:#27272a; padding:3px 6px; border-radius:6px;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
-            <button class="prd-btn-action" style="font-size:16px; padding:0 6px; border-radius:6px;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
+            <button id="prd-manage-order-btn" class="prd-btn-action" style="height:26px; font-size:11px; background:#ffffff; color:#18181b; padding:0 8px; border-radius:6px; border:1px solid #e4e4e7;" onclick="window.toggleDrawerManageMode()" title="${escapeHtml(t('manageOrder'))}">${isDrawerManageMode ? t('doneManage') : t('manageOrder')}</button>
+            <button class="prd-btn-action" style="height:26px; font-size:16px; padding:0 7px; border-radius:6px; color:#71717a; border:none; background:transparent;" onclick="window.setPRDMode('hide')" title="完全收起抽屉">&times;</button>
           </div>
         </div>
 
@@ -6407,9 +6347,9 @@ window.saveEditorModal = async function() {
         </div>
 
         <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
-        <div class="prd-drawer-footer" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
-          <button class="prd-btn-primary" style="flex:1;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
-          <button class="prd-btn-action" style="background:#f1f5f9; padding:8px 14px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
+        <div class="prd-drawer-footer" style="padding:12px 14px; background:#ffffff; border-top:1px solid #e4e4e7; display:flex; gap:8px;">
+          <button class="prd-btn-primary" style="flex:1; height:34px;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
+          <button class="prd-btn-action" style="background:#ffffff; border:1px solid #e4e4e7; padding:0 14px; height:34px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
         </div>
       </div>
 

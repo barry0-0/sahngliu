@@ -140,7 +140,7 @@ window.INITIAL_PRD_DATA = [
     "selector": "#merchant-invoice-modal-overlay",
     "title": "弹窗：开票处理",
     "type": "交互逻辑",
-    "desc": "### 1️⃣ 触发入口\n商家订单列表 → 已完成行（买家已申请开票）→ 点击操作列「开票处理」。\n\n### 2️⃣ 🔄 发票开具流转\n```mermaid\ngraph TB\n    A[订单已完成]:::state\n    A -->|买家申请发票| A1[买家：申请发票]:::btn\n    A1 --> B[待开具]:::state\n    B -->|商家上传电子发票| B1[商家：开票处理]:::btn\n    B1 --> C[已开具]:::endState\n    classDef state fill:#dbeafe,stroke:#2563eb,color:#1e40af\n    classDef btn fill:#dcfce7,stroke:#16a34a,color:#166534\n    classDef endState fill:#f1f5f9,stroke:#64748b,color:#475569\n```\n\n### 3️⃣ 开票核对与凭证上传\n- **买家开票申请详情卡**：展示开票申请状态、发票抬头名称、纳税人识别号、发票类型（增值税专用发票/普通发票）、受票邮箱、申请时间、开票金额。\n- **电子发票上传区**：支持上传 PDF / JPG / PNG 格式电子发票文件，单个文件最大 15MB。\n- **已上传发票卡片**：展示预览与重新上传。\n- **底部操作**：`取消`、`确认上传并标记为已开具`。",
+    "desc": "### 1️⃣ 触发入口\n商家订单列表 → 已完成行（买家已申请开票）→ 点击操作列「开票处理」。\n\n### 2️⃣ 🔄 发票开具流转\n```mermaid\ngraph TB\n    A[订单已完成]:::state\n    A -->|买家申请发票| A1[买家：申请发票]:::btn\n    A1 --> B[待开具]:::state\n    B -->|商家上传电子发票| B1[商家：开票处理]:::btn\n    B1 --> C[已开具]:::endState\n    classDef state fill:#dbeafe,stroke:#2563eb,color:#1e40af\n    classDef btn fill:#dcfce7,stroke:#16a34a,color:#166534\n    classDef endState fill:#f1f5f9,stroke:#64748b,color:#475569\n```\n\n### 3️⃣ 开票核对与凭证上传\n- **买家开票申请详情卡**：展示开票申请状态、发票抬头名称、纳税人识别号、发票类型（增值税专用发票/普通发票）、申请时间、开票金额（精简去化受票邮箱）。\n- **电子发票上传区**：支持上传 PDF / JPG / PNG 格式电子发票文件，单个文件最大 15MB。\n- **已上传发票卡片**：展示预览与重新上传。\n- **底部操作**：`取消`、`确认上传并标记为已开具`。",
     "version": "v1.0.0"
   },
   {

@@ -773,22 +773,22 @@
         <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">抬头类型 <span style="color: #ef4444;">*</span></label>
         <div style="display:flex; gap:20px; font-size:13px; padding: 2px 0;">
           <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
-            <input type="radio" id="h5-inv-type-ent" name="h5-inv-type-choice" value="enterprise" checked style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='block'; document.getElementById('h5-inv-title').value='万通建材有限公司';"> 企业
+            <input type="radio" id="h5-inv-type-ent" name="h5-inv-type-choice" value="enterprise" checked style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='block';"> 企业
           </label>
           <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
-            <input type="radio" id="h5-inv-type-ind" name="h5-inv-type-choice" value="individual" style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='none'; document.getElementById('h5-inv-title').value='个人';"> 个人/非企业
+            <input type="radio" id="h5-inv-type-ind" name="h5-inv-type-choice" value="individual" style="cursor:pointer; width:16px; height:16px;" onchange="document.getElementById('h5-taxno-group').style.display='none';"> 个人/非企业
           </label>
         </div>
       </div>
 
       <div>
         <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">抬头名称 <span style="color: #ef4444;">*</span></label>
-        <input type="text" id="h5-inv-title" class="form-control w-full" value="万通建材有限公司" readonly disabled placeholder="发票抬头" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #64748b; cursor: not-allowed; padding: 0 12px; box-sizing: border-box;">
+        <input type="text" id="h5-inv-title" class="form-control w-full" value="" placeholder="请输入发票抬头名称" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; padding: 0 12px; box-sizing: border-box;">
       </div>
 
       <div id="h5-taxno-group">
         <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 5px;">纳税人识别号 <span style="color: #ef4444;">*</span></label>
-        <input type="text" id="h5-inv-taxno" class="form-control w-full" value="91310115MA1K39999X" readonly disabled placeholder="纳税人识别号" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #64748b; cursor: not-allowed; padding: 0 12px; font-family: monospace; box-sizing: border-box;">
+        <input type="text" id="h5-inv-taxno" class="form-control w-full" value="" placeholder="请输入纳税人识别号" style="height: 38px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; padding: 0 12px; font-family: monospace; box-sizing: border-box;">
       </div>
     </div>
 

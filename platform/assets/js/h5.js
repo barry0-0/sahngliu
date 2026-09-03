@@ -1421,11 +1421,15 @@ const H5App = {
       `;
     }
 
+    this.updateCartBadge();
+  },
+
+  updateCartBadge() {
     const badge = document.getElementById('h5-cart-badge');
     if (badge) {
-      const totalQty = MockData.cart.filter(c => c.status === 1).reduce((sum, item) => sum + item.quantity, 0);
-      if (totalQty > 0) {
-        badge.innerText = totalQty;
+      const validCategoryCount = (MockData.cart || []).filter(c => c.status === 1).length;
+      if (validCategoryCount > 0) {
+        badge.innerText = validCategoryCount;
         badge.style.display = 'inline-block';
       } else {
         badge.style.display = 'none';
@@ -2201,8 +2205,8 @@ const H5App = {
     if (amountEl) amountEl.innerText = amountStr || '¥ 0.00';
     if (entRadio) entRadio.checked = true;
     if (taxGroup) taxGroup.style.display = 'block';
-    if (titleEl) titleEl.value = '万通建材有限公司';
-    if (taxEl) taxEl.value = '91310115MA1K39999X';
+    if (titleEl) titleEl.value = '';
+    if (taxEl) taxEl.value = '';
 
     UI.openModal('sheet-h5-apply-invoice');
   },

@@ -1462,28 +1462,28 @@ Object.assign(window.UI, {
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">抬头类型 *</label>
             <div style="display:flex; gap:20px;">
               <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
-                <input type="radio" name="pc_inv_type" value="enterprise" checked onclick="document.getElementById('inv-tax-group').style.display='block'; document.getElementById('inv-title-input').value='${order.buyerName || '万通建材有限公司'}';" style="cursor:pointer; width:16px; height:16px;"> 企业
+                <input type="radio" name="pc_inv_type" value="enterprise" checked onclick="document.getElementById('inv-tax-group').style.display='block';" style="cursor:pointer; width:16px; height:16px;"> 企业
               </label>
               <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:#1e293b;">
-                <input type="radio" name="pc_inv_type" value="individual" onclick="document.getElementById('inv-tax-group').style.display='none'; document.getElementById('inv-title-input').value='个人';" style="cursor:pointer; width:16px; height:16px;"> 个人/非企业
+                <input type="radio" name="pc_inv_type" value="individual" onclick="document.getElementById('inv-tax-group').style.display='none';" style="cursor:pointer; width:16px; height:16px;"> 个人/非企业
               </label>
             </div>
           </div>
 
           <div>
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">发票抬头名称 *</label>
-            <input type="text" id="inv-title-input" class="form-control" value="${order.buyerName || '万通建材有限公司'}" readonly disabled style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#f1f5f9; color:#64748b; cursor:not-allowed; box-sizing:border-box;">
+            <input type="text" id="inv-title-input" class="form-control" value="" placeholder="请输入发票抬头名称" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#1e293b; box-sizing:border-box;">
           </div>
 
           <div id="inv-tax-group">
             <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">纳税人识别号 *</label>
-            <input type="text" id="inv-tax-input" class="form-control" value="91310115MA1K39999X" readonly disabled style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#f1f5f9; color:#64748b; cursor:not-allowed; box-sizing:border-box;">
+            <input type="text" id="inv-tax-input" class="form-control" value="" placeholder="请输入纳税人识别号" style="width:100%; height:36px; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#1e293b; box-sizing:border-box;">
           </div>
         </div>
 
         <div style="background:#f9fafb; padding:12px 20px; border-top:1px solid #f1f5f9; display:flex; justify-content:flex-end; gap:10px; flex-shrink:0;">
           <button class="btn btn-outline" style="border-radius:6px; padding:6px 16px; font-size:12px;" onclick="this.closest('.modal-overlay').remove()">取消</button>
-          <button class="btn btn-primary" id="inv-submit-btn" style="border-radius:6px; padding:6px 16px; font-size:12px;">提交申请</button>
+          <button class="btn btn-primary" id="inv-submit-btn" style="border-radius:6px; padding:6px 16px; font-size:12px; background:var(--primary-color, #ae86e7); border:none; color:#fff;">提交申请</button>
         </div>
       </div>
     `;
@@ -1506,7 +1506,7 @@ Object.assign(window.UI, {
       }
 
       order.invoiceApplied = true;
-      order.invoiceDetails = { isEnterprise, title, tax, email, time: new Date().toISOString() };
+      order.invoiceDetails = { isEnterprise, title, tax, time: new Date().toISOString() };
 
       const now = new Date();
       const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
@@ -1521,8 +1521,7 @@ Object.assign(window.UI, {
         issueTime: '',
         status: '待开具',
         title: title,
-        taxNo: tax,
-        email: email
+        taxNo: isEnterprise ? tax : ''
       };
       if (!MockData.invoices) MockData.invoices = [];
       MockData.invoices.unshift(newInv);

@@ -2530,7 +2530,6 @@ MerchantApp.openInvoiceUploadModal = function(orderId) {
         <div>发票抬头：<strong style="color:#1e293b;">${inv.title || inv.buyerName || order?.buyerName || '--'}</strong></div>
         <div>纳税人识别号：<span style="font-family:monospace; font-weight:bold;">${inv.taxNo || '91310115MA1K3***88'}</span></div>
         <div>发票类型：<span>${inv.type || '增值税专用发票'}</span></div>
-        <div>受票邮箱：<span>${inv.email || 'finance@buyer.com'}</span></div>
         <div>申请时间：<span>${inv.applyTime || inv.createTime || '--'}</span></div>
         <div>开票金额：<strong style="color:#ef4444; font-family:monospace;">${inv.amount || order?.amount || '--'}</strong></div>
       </div>
