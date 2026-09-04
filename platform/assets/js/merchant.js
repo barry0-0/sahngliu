@@ -720,8 +720,14 @@ const MerchantApp = {
         statusDisplay = '<span class="tag tag-success">已上架</span>';
         acts = `<button class="btn btn-text btn-sm text-danger" onclick="MerchantApp.confirmOfflineProduct('${p.id}')">下架</button>`;
       } else if (dispStatus === '2' || dispStatus === '已下架') {
-        let subReason = p.downReason || p.rejectReason || '自主下架';
-        let reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(原因: ${subReason})</div>`;
+        let reasonStr = '';
+        if (p.rejectReason) {
+          reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(拒审原因：${p.rejectReason})</div>`;
+        } else if (p.offlineReason || p.downReason) {
+          reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(强制下架原因：${p.offlineReason || p.downReason})</div>`;
+        } else {
+          reasonStr = `<div style="font-size:11px; color:#64748b; margin-top:2px;">(自主下架)</div>`;
+        }
         statusDisplay = `<span class="tag tag-danger">已下架</span>${reasonStr}`;
         acts = `
           <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
@@ -1364,8 +1370,17 @@ const MerchantApp = {
         } else if (aStatus === '待审核') {
           tag = `<span class="tag tag-warning" style="background:#fff7e6; color:#fa8c16; border-color:#ffd591;">待审核</span>`;
         } else if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') {
-          const reasonText = a.rejectReason ? `拒审原因：${a.rejectReason}` : (a.offlineReason ? `强制下架原因：${a.offlineReason}` : '(主动下架)');
-          tag = `<span class="tag tag-secondary">已下架</span><div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
+          let reasonText = '';
+          if (a.rejectReason) {
+            reasonText = `(拒审原因：${a.rejectReason})`;
+          } else if (a.offlineReason) {
+            reasonText = `(强制下架原因：${a.offlineReason})`;
+          } else {
+            reasonText = `(自主下架)`;
+          }
+          const isPassive = !!(a.rejectReason || a.offlineReason);
+          const reasonColor = isPassive ? '#ef4444' : '#64748b';
+          tag = `<span class="tag tag-secondary">已下架</span><div style="font-size:11px; color:${reasonColor}; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
         } else if (a.status === 3) {
           tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
         } else if (a.status === 4) {
@@ -1384,9 +1399,8 @@ const MerchantApp = {
           // 待审核：没有操作
           acts = `<span style="color:#94a3b8; font-size:12px;">--</span>`;
         } else if (aStatus === '已拒绝' || aStatus === '已撤回' || aStatus === '已下架') {
-          // 已下架：可以有编辑，提交审核的操作 (无删除按钮)
-          acts += `<button class="btn btn-warning btn-sm" onclick="MerchantApp.openEditAnnModal('${a.id}')">编辑</button>`;
-          acts += `<button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="MerchantApp.resubmitBiddingAnn('${a.id}')">提交审核</button>`;
+          // 已下架：无操作 (展示 --)
+          acts = `<span style="color:#94a3b8; font-size:12px;">--</span>`;
         } else if (aStatus === '已通过') {
           if (a.status === 3) {
             // 等待公布：显示【查看出价】按钮（内含选为中标定标功能）
