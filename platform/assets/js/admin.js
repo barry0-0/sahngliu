@@ -1404,6 +1404,7 @@ const AdminApp = {
             <td><span style="font-family:monospace; color:#0284c7; font-weight:500;">${a.contactPhone || '--'}</span></td>
             <td style="font-weight:bold; color:#ef4444;">${a.currentMaxOffer || a.startPrice}</td>
             <td>${combinedTag}</td>
+            <td class="text-secondary" style="font-size:12px;">${formatTimeSec(a.bidEndTime || '--')}</td>
             <td>${formatTimeSec(a.createdAt || a.createTime || '2026-07-01 09:00:00')}</td>
             <td><div class="flex gap-2">${btn}</div></td>
           </tr>

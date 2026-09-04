@@ -1416,6 +1416,7 @@ const MerchantApp = {
 
         let curMax = (a.currentMaxOffer && a.currentMaxOffer !== '-') ? a.currentMaxOffer : (a.startPrice || '--');
         let createTime = a.createdAt || '2026-07-01 09:00:00';
+        let bidEndTime = a.bidEndTime || '--';
 
         html += `
           <tr>
@@ -1428,12 +1429,13 @@ const MerchantApp = {
             <td><span style="font-family:monospace; color:#0284c7; font-weight:500;">${a.contactPhone || '--'}</span></td>
             <td class="text-danger font-bold">${curMax}</td>
             <td>${tag}</td>
+            <td class="text-secondary" style="font-size:12px;">${bidEndTime}</td>
             <td class="text-secondary" style="font-size:12px;">${createTime}</td>
             <td><div class="flex gap-2">${acts}</div></td>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="11" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="12" class="text-center p-4 text-secondary">没有找到符合条件的竞价公告</td></tr>';
       this._appendPagination(tbody, myAnn.length);
     }
   },
