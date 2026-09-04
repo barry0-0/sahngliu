@@ -789,26 +789,26 @@ const AdminApp = {
       let statusTag = '';
       let actBtn = '';
 
-      if (d.status === 0) {
+      if (d.status === 0 || d.status === '待审核') {
         statusTag = `<span class="tag tag-warning" style="pointer-events:none; cursor:default;">待审核</span>`;
         actBtn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditDemandModal('${d.id}')">审核</button>`;
-      } else if (d.status === 1) {
+      } else if (d.status === 1 || d.status === '展示中') {
         statusTag = `<span class="tag tag-success" style="pointer-events:none; cursor:default;">展示中</span>`;
         actBtn = `
           <button class="btn btn-text btn-sm text-danger" onclick="window.forceOfflineDemand('${d.id}')">强行下架</button>
           <button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px; margin-left:4px;">查看报价 (${d.quotesCount || 0})</button>
         `;
-      } else if (d.status === 2) {
+      } else if (d.status === 2 || d.status === '已完结') {
         statusTag = `<span class="tag tag-secondary" style="pointer-events:none; cursor:default;">已完结</span>`;
         actBtn = `<button class="btn btn-outline btn-sm" onclick="window.openDemandQuotesModal('${d.id}')" style="border-radius:4px; font-size:11px; padding:2px 8px;">查看报价 (${d.quotesCount || 0})</button>`;
-      } else if (d.status === '已下架' || d.status === '审核未通过') {
-        statusTag = `<span class="tag tag-danger" style="pointer-events:none; cursor:default;">已下架</span>`;
+      } else if (d.status === '已下架' || d.status === '审核未通过' || d.status === -1) {
+        statusTag = `<span class="tag tag-secondary" style="pointer-events:none; cursor:default;">已下架</span>`;
         if (d.rejectReason) {
-          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(拒审原因：${d.rejectReason})</div>`;
+          statusTag += `<div style="font-size:11px; color:#94a3b8; margin-top:4px; line-height:1.2;">(拒审原因：${d.rejectReason})</div>`;
         } else if (d.offlineReason) {
-          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(强制下架原因：${d.offlineReason})</div>`;
+          statusTag += `<div style="font-size:11px; color:#94a3b8; margin-top:4px; line-height:1.2;">(强制下架原因：${d.offlineReason})</div>`;
         } else {
-          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
+          statusTag += `<div style="font-size:11px; color:#94a3b8; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       } else {

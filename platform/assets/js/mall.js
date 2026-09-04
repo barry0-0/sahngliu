@@ -688,26 +688,45 @@ window.MallApp = {
         }
         quotePriceHtml = `<div>我的报价: <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
       } else {
-        if (d.status === 0) {
+        if (d.status === 0 || d.status === '待审核') {
           statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">待审核</span>`;
-        } else if (d.status === 1) {
+        } else if (d.status === 1 || d.status === '展示中') {
           statusTag = `<span style="color:#16a34a; font-size:12px; font-weight:bold;">展示中</span>`;
-        } else if (d.status === 2 || d.status === -1 || d.status === '已下架') {
-          statusTag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已下架</span>`;
+        } else if (d.status === 2 || d.status === '已完结') {
+          statusTag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已完结</span>`;
+        } else if (d.status === -1 || d.status === '已下架' || d.status === '审核未通过') {
+          let reasonText = '';
+          if (d.rejectReason) {
+            reasonText = `(拒审原因：${d.rejectReason})`;
+          } else if (d.offlineReason) {
+            reasonText = `(强制下架原因：${d.offlineReason})`;
+          } else {
+            reasonText = `(主动下架)`;
+          }
+          statusTag = `
+            <div style="text-align:right;">
+              <span style="color:#94a3b8; font-size:12px; font-weight:500;">已下架</span>
+              <div style="font-size:11px; color:#94a3b8; margin-top:2px; line-height:1.2;">${reasonText}</div>
+            </div>
+          `;
         }
 
         const quotesCount = MockData.demandQuotes.filter(q => q.demandId === d.id).length;
         if (isMyDemand) {
-          if (d.status === 0 || d.status === 1) {
+          if (d.status === 0 || d.status === 1 || d.status === '待审核' || d.status === '展示中') {
             btn = `<div style="display:flex; gap:12px; width:100%;">
                      <button class="btn btn-outline" style="flex:1; height:36px; border-radius:8px; border:1px solid #cbd5e1; color:#334155; font-size:13px; font-weight:500; cursor:pointer; background:#fff;" onclick="MallApp.cancelDemand('${d.id}')">下架</button>
                      <button class="btn btn-primary" style="flex:1; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="UI.showDemandQuotesModal('${d.id}', false, () => MallApp.renderDemands())">查看报价 (${quotesCount})</button>
                    </div>`;
+          } else if (d.status === 2 || d.status === '已完结') {
+            btn = `<button class="btn btn-outline" style="width:100%; height:36px; border-radius:8px; border:1px solid #cbd5e1; color:#64748b; font-size:13px; font-weight:500; cursor:pointer; background:#fff;" onclick="UI.showDemandQuotesModal('${d.id}', false, () => MallApp.renderDemands())">查看报价 (${quotesCount})</button>`;
           } else {
             btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
           }
         } else {
-          if (d.status === 2 || d.status === -1 || d.status === '已下架') {
+          if (d.status === 2 || d.status === '已完结') {
+            btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已完结</div>`;
+          } else if (d.status === -1 || d.status === '已下架' || d.status === '审核未通过') {
             btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
           } else {
             btn = `<button class="btn btn-primary" style="width:100%; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="MallApp.openQuoteModal('${d.id}')">立即报价</button>`;
@@ -922,31 +941,66 @@ window.MallApp = {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
 
-    // 计算买家实际到达的步骤节点 (0:看货报名, 1:现场看货, 2:参加竞价, 3:等待公布, 4:中标付款)
+    // 5 节点流转判定：前三个节点针对个人参与，后两个节点针对项目进度
     const currentBuyer = this.currentBuyerName || '万通建材采购部';
-    const isWinner = b.winner === currentBuyer || b.winner === '万通建材采购部' || b.winner === 'H5买家用户';
-    let buyerStepIndex = 0;
+    const myOffers = (MockData.biddingOffers || []).filter(o => o.bidId === b.id && (o.buyerName === currentBuyer || o.buyerName === '万通建材采购部' || o.buyerName === 'H5买家用户'));
+    const hasOffered = b.userOffered || myOffers.length > 0;
+    const hasInspected = b.userInspected || hasOffered;
+    const hasApplied = b.userApplied || hasInspected;
+
+    const stepStates = ['pending', 'pending', 'pending', 'pending', 'pending'];
     if (b.status === 4) {
-      buyerStepIndex = isWinner ? 4 : 3;
+      // 项目已结束：5 个节点全部走完打勾！
+      stepStates[0] = 'done';
+      stepStates[1] = 'done';
+      stepStates[2] = 'done';
+      stepStates[3] = 'done';
+      stepStates[4] = 'done';
     } else if (b.status === 3) {
-      buyerStepIndex = 3;
-    } else if (b.userInspected) {
-      buyerStepIndex = 2;
-    } else if (b.userApplied) {
-      buyerStepIndex = 1;
+      // 等待公布：前三个节点全部打勾；节点4(等待公布)进行中高亮；节点5未到达
+      stepStates[0] = 'done';
+      stepStates[1] = 'done';
+      stepStates[2] = 'done';
+      stepStates[3] = 'active';
+      stepStates[4] = 'pending';
     } else {
-      buyerStepIndex = 0;
+      // 竞价中：前三个节点按个人进度流转
+      if (hasOffered) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'done';
+        stepStates[2] = 'done';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else if (hasInspected) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'done';
+        stepStates[2] = 'active';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else if (hasApplied) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'active';
+        stepStates[2] = 'pending';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else {
+        stepStates[0] = 'active';
+        stepStates[1] = 'pending';
+        stepStates[2] = 'pending';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      }
     }
 
     const steps = ['看货报名', '现场看货', '参加竞价', '等待公布', '中标付款'];
     let stepsHtml = '<div class="steps-container">';
     steps.forEach((name, index) => {
-      let stateClass = '';
-      if (index < buyerStepIndex) stateClass = 'done';
-      else if (index === buyerStepIndex) stateClass = 'active';
+      const state = stepStates[index];
+      const stateClass = state === 'done' ? 'done' : (state === 'active' ? 'active' : '');
+      const circleContent = state === 'done' ? '✓' : (index + 1);
       stepsHtml += `
         <div class="step-item ${stateClass}">
-          <div class="step-circle">${index < buyerStepIndex ? '✓' : (index + 1)}</div>
+          <div class="step-circle">${circleContent}</div>
           <div class="step-title">${name}</div>
         </div>
       `;

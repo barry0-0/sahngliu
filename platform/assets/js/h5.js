@@ -450,26 +450,45 @@ const H5App = {
         }
         quotePriceHtml = `<div style="font-size:12px; color:#475569; margin-top:4px;">我的报价: <strong style="color:var(--danger-color);">${myQuote.price}</strong></div>`;
       } else {
-        if (d.status === 0) {
+        if (d.status === 0 || d.status === '待审核') {
           statusTag = `<span class="tag tag-warning" style="background:#fff7e6; color:#d46b08; border:1px solid #ffd591; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:11px;">待审核</span>`;
-        } else if (d.status === 1) {
+        } else if (d.status === 1 || d.status === '展示中') {
           statusTag = `<span style="color:#16a34a; font-size:12px; font-weight:bold;">展示中</span>`;
-        } else if (d.status === 2 || d.status === -1 || d.status === '已下架') {
-          statusTag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已下架</span>`;
+        } else if (d.status === 2 || d.status === '已完结') {
+          statusTag = `<span style="color:#94a3b8; font-size:12px; font-weight:500;">已完结</span>`;
+        } else if (d.status === -1 || d.status === '已下架' || d.status === '审核未通过') {
+          let reasonText = '';
+          if (d.rejectReason) {
+            reasonText = `(拒审原因：${d.rejectReason})`;
+          } else if (d.offlineReason) {
+            reasonText = `(强制下架原因：${d.offlineReason})`;
+          } else {
+            reasonText = `(主动下架)`;
+          }
+          statusTag = `
+            <div style="text-align:right;">
+              <span style="color:#94a3b8; font-size:12px; font-weight:500;">已下架</span>
+              <div style="font-size:11px; color:#94a3b8; margin-top:2px; line-height:1.2;">${reasonText}</div>
+            </div>
+          `;
         }
 
         const quotesCount = MockData.demandQuotes.filter(q => q.demandId === d.id).length;
         if (isMyDemand) {
-          if (d.status === 0 || d.status === 1) {
+          if (d.status === 0 || d.status === 1 || d.status === '待审核' || d.status === '展示中') {
             btn = `<div style="display:flex; gap:10px; width:100%;">
                      <button class="btn btn-outline" style="flex:1; height:36px; border-radius:8px; border:1px solid #cbd5e1; color:#334155; font-size:13px; font-weight:500; cursor:pointer; background:#fff;" onclick="H5App.cancelDemand('${d.id}')">下架</button>
                      <button class="btn btn-primary" style="flex:1; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="UI.showDemandQuotesModal('${d.id}', true, () => H5App.renderDemands())">查看报价 (${quotesCount})</button>
                    </div>`;
+          } else if (d.status === 2 || d.status === '已完结') {
+            btn = `<button class="btn btn-outline" style="width:100%; height:36px; border-radius:8px; border:1px solid #cbd5e1; color:#64748b; font-size:13px; font-weight:500; cursor:pointer; background:#fff;" onclick="UI.showDemandQuotesModal('${d.id}', true, () => H5App.renderDemands())">查看报价 (${quotesCount})</button>`;
           } else {
             btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
           }
         } else {
-          if (d.status === 2 || d.status === -1 || d.status === '已下架') {
+          if (d.status === 2 || d.status === '已完结') {
+            btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已完结</div>`;
+          } else if (d.status === -1 || d.status === '已下架' || d.status === '审核未通过') {
             btn = `<div style="display:flex; justify-content:center; align-items:center; height:36px; color:#94a3b8; font-size:13px; font-weight:500;">已下架</div>`;
           } else {
             btn = `<button class="btn btn-primary" style="width:100%; height:36px; border-radius:8px; background:linear-gradient(135deg, #9a66e4, #7e22ce); border:none; color:#fff; font-size:13px; font-weight:bold; cursor:pointer;" onclick="H5App.openQuoteModal('${d.id}')">立即报价</button>`;
@@ -844,19 +863,54 @@ const H5App = {
     // 清洗标题中的阶段前缀，展现标准：公告标题 + 货品名称 + 规格
     const cleanedTitle = b.title.replace(/【[^】]*阶段】/g, '').replace(/【[^】]*】/g, '').trim();
 
-    // 计算买家实际到达的步骤节点 (0:看货报名, 1:现场看货, 2:参加竞价, 3:等待公布, 4:中标付款)
-    const isWinner = b.winner === 'H5买家用户' || b.winner === '万通建材采购部';
-    let buyerStepIndex = 0;
+    // 5 节点流转判定：前三个节点针对个人参与，后两个节点针对项目进度
+    const myOffers = (MockData.biddingOffers || []).filter(o => o.bidId === b.id && (o.buyerName === 'H5买家用户' || o.buyerName === '万通建材采购部'));
+    const hasOffered = b.userOffered || myOffers.length > 0;
+    const hasInspected = b.userInspected || hasOffered;
+    const hasApplied = b.userApplied || hasInspected;
+
+    const stepStates = ['pending', 'pending', 'pending', 'pending', 'pending'];
     if (b.status === 4) {
-      buyerStepIndex = isWinner ? 4 : 3;
+      // 项目已结束：5 个节点全部走完打勾！
+      stepStates[0] = 'done';
+      stepStates[1] = 'done';
+      stepStates[2] = 'done';
+      stepStates[3] = 'done';
+      stepStates[4] = 'done';
     } else if (b.status === 3) {
-      buyerStepIndex = 3;
-    } else if (b.userInspected) {
-      buyerStepIndex = 2;
-    } else if (b.userApplied) {
-      buyerStepIndex = 1;
+      // 等待公布：前三个节点全部打勾；节点4(等待公布)进行中高亮；节点5未到达
+      stepStates[0] = 'done';
+      stepStates[1] = 'done';
+      stepStates[2] = 'done';
+      stepStates[3] = 'active';
+      stepStates[4] = 'pending';
     } else {
-      buyerStepIndex = 0;
+      // 竞价中：前三个节点按个人进度流转
+      if (hasOffered) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'done';
+        stepStates[2] = 'done';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else if (hasInspected) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'done';
+        stepStates[2] = 'active';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else if (hasApplied) {
+        stepStates[0] = 'done';
+        stepStates[1] = 'active';
+        stepStates[2] = 'pending';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      } else {
+        stepStates[0] = 'active';
+        stepStates[1] = 'pending';
+        stepStates[2] = 'pending';
+        stepStates[3] = 'pending';
+        stepStates[4] = 'pending';
+      }
     }
 
     // 5步流程节点 (横向高颜值进度条)
@@ -864,8 +918,9 @@ const H5App = {
     let stepsHtml = '<div style="display:flex; justify-content:space-between; position:relative; padding:10px 4px; margin-bottom:12px;">';
     stepsHtml += '<div style="position:absolute; top:21px; left:20px; right:20px; height:2px; background:#e2e8f0; z-index:1;"></div>';
     steps.forEach((name, index) => {
-      let isActive = index === buyerStepIndex;
-      let isDone = index < buyerStepIndex;
+      const state = stepStates[index];
+      let isActive = state === 'active';
+      let isDone = state === 'done';
       let dotBg = '#fff';
       let dotBorder = '#cbd5e1';
       let dotColor = '#94a3b8';
@@ -877,11 +932,11 @@ const H5App = {
         dotBorder = '#7e22ce';
         dotColor = '#fff';
         textWeight = 'bold';
-        dotContent = '●';
+        dotContent = index + 1;
       } else if (isDone) {
-        dotBg = '#f0fdf4';
-        dotBorder = '#16a34a';
-        dotColor = '#16a34a';
+        dotBg = '#f8f5ff';
+        dotBorder = '#9a66e4';
+        dotColor = '#7e22ce';
         textWeight = 'bold';
         dotContent = '✓';
       }
@@ -891,7 +946,7 @@ const H5App = {
           <div style="width:24px; height:24px; border-radius:50%; background:${dotBg}; border:2px solid ${dotBorder}; display:flex; align-items:center; justify-content:center; font-size:11px; color:${dotColor}; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
             ${dotContent}
           </div>
-          <span style="font-size:10px; color:${isActive ? '#7e22ce' : (isDone ? '#16a34a' : '#94a3b8')}; font-weight:${textWeight};">${name}</span>
+          <span style="font-size:10px; color:${isActive ? '#7e22ce' : (isDone ? '#7e22ce' : '#94a3b8')}; font-weight:${textWeight};">${name}</span>
         </div>
       `;
     });
@@ -907,6 +962,7 @@ const H5App = {
         </div>
       `;
     } else if (b.status === 4) {
+      const isWinner = b.winner === '万通建材采购部' || b.winner === 'H5买家用户' || b.winner === '当前买家';
       if (isWinner) {
         actionCardHTML = `
           <div style="background:#ffffff; border-radius:16px; padding:16px; box-shadow:0 4px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap:12px;">
