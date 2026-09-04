@@ -601,7 +601,7 @@ const AdminApp = {
         } else if (p.offlineReason || p.downReason) {
           statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2; white-space:nowrap;">(强制下架原因：${p.offlineReason || p.downReason})</div>`;
         } else {
-          statusTag += `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2; white-space:nowrap;">(自主下架)</div>`;
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2; white-space:nowrap;">(主动下架)</div>`;
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       } else if (currentStatus === 3) {
@@ -808,7 +808,7 @@ const AdminApp = {
         } else if (d.offlineReason) {
           statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(强制下架原因：${d.offlineReason})</div>`;
         } else {
-          statusTag += `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(自主下架)</div>`;
+          statusTag += `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
         }
         actBtn = `<span class="text-secondary text-xs" style="color:#94a3b8;">--</span>`;
       } else {
@@ -1363,13 +1363,13 @@ const AdminApp = {
           btn = `<button class="btn btn-primary btn-sm" onclick="window.openAuditBiddingAnnModal('${a.id}')">审核</button>`;
         } else if (aStatus === '已拒绝') {
           combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span>
-                         <div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">拒审原因：${a.rejectReason || '起拍底价设置过低'}</div>`;
+                         <div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(拒审原因：${a.rejectReason || '起拍底价设置过低'})</div>`;
           btn = '';
         } else if (aStatus === '已撤回' || aStatus === '已下架') {
           const reasonTip = a.offlineReason 
             ? `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(强制下架原因：${a.offlineReason})</div>`
-            : `<div style="font-size:11px; color:#64748b; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
-          combinedTag = `<span class="tag tag-secondary" style="background:#f5f5f5; color:#555; border:1px solid #d9d9d9;">已下架</span>
+            : `<div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">(主动下架)</div>`;
+          combinedTag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span>
                          ${reasonTip}`;
           btn = '';
         } else {

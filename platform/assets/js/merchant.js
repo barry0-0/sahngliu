@@ -726,9 +726,9 @@ const MerchantApp = {
         } else if (p.offlineReason || p.downReason) {
           reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(强制下架原因：${p.offlineReason || p.downReason})</div>`;
         } else {
-          reasonStr = `<div style="font-size:11px; color:#64748b; margin-top:2px;">(自主下架)</div>`;
+          reasonStr = `<div style="font-size:11px; color:#ef4444; margin-top:2px;">(主动下架)</div>`;
         }
-        statusDisplay = `<span class="tag tag-danger">已下架</span>${reasonStr}`;
+        statusDisplay = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span>${reasonStr}`;
         acts = `
           <button class="btn btn-text btn-sm text-primary" onclick="MerchantApp.editListedProduct('${p.id}')">编辑</button>
           <button class="btn btn-primary btn-sm" onclick="MerchantApp.submitListedProductForAudit('${p.id}')">提交审核</button>
@@ -997,7 +997,7 @@ const MerchantApp = {
       const prod = MockData.products.find(x => x.id == prodId);
       if (prod) {
         prod.status = 2; // 已下架
-        prod.downReason = '自主下架';
+        prod.downReason = '主动下架';
         UI.toast('商品下架成功', 'info');
         this.renderListedProducts();
         this.renderAllProducts();
@@ -1376,11 +1376,9 @@ const MerchantApp = {
           } else if (a.offlineReason) {
             reasonText = `(强制下架原因：${a.offlineReason})`;
           } else {
-            reasonText = `(自主下架)`;
+            reasonText = `(主动下架)`;
           }
-          const isPassive = !!(a.rejectReason || a.offlineReason);
-          const reasonColor = isPassive ? '#ef4444' : '#64748b';
-          tag = `<span class="tag tag-secondary">已下架</span><div style="font-size:11px; color:${reasonColor}; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
+          tag = `<span class="tag tag-danger" style="background:#fff2f0; color:#ff4d4f; border:1px solid #ffccc7;">已下架</span><div style="font-size:11px; color:#ef4444; margin-top:4px; line-height:1.2;">${reasonText}</div>`;
         } else if (a.status === 3) {
           tag = `<span class="tag tag-success" style="background:#fff0f6; color:#eb2f96; border-color:#ffadd2;">等待公布</span>`;
         } else if (a.status === 4) {
