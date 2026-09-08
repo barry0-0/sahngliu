@@ -1102,7 +1102,7 @@ window.MallApp = {
             </div>
             <button class="btn btn-primary" style="height:38px; border-radius:19px; padding:0 20px; font-weight:bold;" onclick="MallApp.submitBidOffer('${b.id}')">${isReoffer ? '立即加价' : '提交出价'}</button>
           </div>
-          <div style="font-size:11px; color:#94a3b8; margin-top:6px;">* 出价需高于当前最高出价 ¥${curMaxVal.toLocaleString()}，加价幅度不低于 ¥${minStep.toLocaleString()}</div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:6px;">* 出价需高于当前最高出价 ¥${curMaxVal.toLocaleString()}</div>
         </div>
       `;
     }
@@ -1216,11 +1216,15 @@ window.MallApp = {
     this.renderBids();
   },
 
+  submitBidOffer(id) {
+    this.submitBidPrice(id);
+  },
+
   submitBidPrice(id) {
     const b = MockData.biddingAnnouncements.find(x => x.id === id);
     if (!b) return;
     
-    const inputEl = document.getElementById('bid-price-input');
+    const inputEl = document.getElementById('mall-bid-offer-input') || document.getElementById('bid-price-input');
     if (!inputEl) return;
     
     const offerPriceVal = parseFloat(inputEl.value);

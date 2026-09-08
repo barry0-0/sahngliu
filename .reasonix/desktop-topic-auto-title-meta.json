@@ -1,8 +1,8 @@
 {
   "topic_20260807-031855_cd8dcd046fa2aa4c": {
-    "stage": 1,
-    "userTurns": 1,
     "basisHash": "d4cc7cc3893e3fdd",
-    "updatedAt": 1786072823667
+    "stage": 1,
+    "updatedAt": 1786072823667,
+    "userTurns": 1
   }
 }
