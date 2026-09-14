@@ -10,11 +10,16 @@ window.MockData = {
     merchantAuthStatus: 0, // 0: 未认证, 1: 待审核, 2: 已认证
   },
 
-  // --- 购物车数据 (Mock) ---
+  // --- 购物车数据 (Mock - 多店铺多品类扩充) ---
   cart: [
-    { id: 1, productId: 101, name: 'HRB400E 螺纹钢 12mm 9m', price: 3850, quantity: 10, shopId: 10001, shopName: '万通建材', checked: true, status: 1 },
-    { id: 2, productId: 102, name: '中联 PO42.5 水泥 (袋装)', price: 320, quantity: 50, shopId: 10002, shopName: '星辉建筑五金专营', checked: true, status: 1 },
-    { id: 3, productId: 103, name: '樟子松 辐射松 建筑木方', price: 1450, quantity: 5, shopId: 10001, shopName: '万通建材', checked: false, status: 0 } // status: 0 表示失效
+    { id: 1, productId: 101, name: 'HRB400E 螺纹钢 12mm 9m (现货大宗)', price: 3850, quantity: 10, shopId: 10001, shopName: '万通建材', checked: true, status: 1, shelfType: '现货' },
+    { id: 2, productId: 104, name: 'Q235B 热轧花纹板 4.5mm (定制预售)', price: 4200, quantity: 5, shopId: 10001, shopName: '万通建材', checked: true, status: 1, shelfType: '预售' },
+    { id: 3, productId: 103, name: '樟子松 辐射松 建筑木方 40*70*4m (已下架)', price: 1450, quantity: 5, shopId: 10001, shopName: '万通建材', checked: false, status: 0, shelfType: '现货' },
+    { id: 4, productId: 'P1011', name: 'HRB400E 抗震螺纹钢 20mm 12米定尺 (现货)', price: 3850, quantity: 20, shopId: 'S001', shopName: '远大钢铁官方直营店', checked: false, status: 1, shelfType: '现货' },
+    { id: 5, productId: 'P1012', name: 'H型钢 300*300*10*15 防腐大宗批次 (预售)', price: 4350, quantity: 8, shopId: 'S001', shopName: '远大钢铁官方直营店', checked: false, status: 1, shelfType: '预售' },
+    { id: 6, productId: 'P1017', name: 'HRB400E 盘螺 8mm 特惠爆款 (现货·已售罄)', price: 3720, quantity: 15, shopId: 'S001', shopName: '远大钢铁官方直营店', checked: false, status: 0, shelfType: '现货' },
+    { id: 7, productId: 102, name: '中联 PO42.5 水泥 (现货·袋装 50kg)', price: 320, quantity: 50, shopId: 10002, shopName: '星辉建筑五金专营', checked: false, status: 1, shelfType: '现货' },
+    { id: 8, productId: 'P1002', name: '特级富士苹果 产地直供礼盒装 (预售)', price: 120, quantity: 30, shopId: 'S002', shopName: '华东木材集散中心', checked: false, status: 1, shelfType: '预售' }
   ],
 
   // --- 店铺详情 Mock ---

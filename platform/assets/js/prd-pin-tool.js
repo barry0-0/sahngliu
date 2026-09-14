@@ -2474,7 +2474,7 @@
     showToast(`🌐 ${I18N[lang].langName}`, 'info');
   };
 
-  const PRD_CACHE_VERSION = 'full-spec-v12';
+  const PRD_CACHE_VERSION = 'full-spec-v13';
 
   // 1. 多版本数据注册表初始化与向后兼容 (支持项目与页面强隔离、优先使用本地数据文件)
   const presets = Array.isArray(window.INITIAL_PRD_DATA) ? window.INITIAL_PRD_DATA : [];
