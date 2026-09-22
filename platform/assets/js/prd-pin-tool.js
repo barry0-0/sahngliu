@@ -820,7 +820,13 @@
   function getSyncModeBadgeInfo() {
     const mode = getActiveSyncMode();
     const kv = getKVStorageConfig();
-    if (mode === 'supabase') {
+    if (mode === 'cloudflare') {
+      if (kv.isVerified && kv.cfSecretKey) {
+        return { icon: '', label: '🟢 Cloudflare (已解锁)', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：Cloudflare D1 (已通过创立人鉴权，可编辑/新增需求，点击管理或锁定)' };
+      } else {
+        return { icon: '', label: '🔒 Cloudflare (访客只读)', color: '#52525b', bg: '#f4f4f5', border: '#e4e4e7', tip: '当前模式：Cloudflare D1 访客只读模式 (点击输入 Key 解锁编辑权限)' };
+      }
+    } else if (mode === 'supabase') {
       if (kv.isVerified && kv.supabaseKey) {
         return { icon: '', label: '🟢 Supabase (已解锁)', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', tip: '当前模式：Supabase (已通过创立人鉴权，可编辑/新增需求，点击管理或锁定)' };
       } else {
@@ -856,7 +862,15 @@
       <span>${badgeInfo.icon}</span>
       <span>${badgeInfo.label}</span>
     `;
-  }
+  };
+
+  window.handleModeBadgeClick = function handleModeBadgeClick() {
+    if (!isPRDEditAuthorized()) {
+      window.showOnlineAuthModal('edit');
+    } else {
+      window.showKVConfigModal();
+    }
+  };
 
   // ==========================================
   // 持久化同步模式切换与记忆中心 (Sync Mode Switcher & Persistence)
@@ -866,9 +880,9 @@
   function getActiveSyncMode() {
     try {
       const mode = localStorage.getItem(SYNC_MODE_KEY);
-      if (mode && ['supabase', 'jsonbin', 'github', 'local', 'auto'].includes(mode)) return mode;
+      if (mode && ['cloudflare', 'supabase', 'jsonbin', 'github', 'local', 'auto'].includes(mode)) return mode;
     } catch (e) {}
-    return 'supabase';
+    return 'cloudflare';
   }
 
   function setActiveSyncMode(mode) {
@@ -896,6 +910,7 @@
     "default": "6a8bfab8da38895dfe09944d"
   };
 
+  const DEFAULT_CLOUDFLARE_URL = 'https://sahngliu-prd-api-gateway.pages.dev';
   const DEFAULT_SUPABASE_URL = 'https://xptyvhycdcuegzdtrlzo.supabase.co';
   const DEFAULT_SUPABASE_READ_KEY = 'sb_publishable_uNeQzELHbWHhcTIGgr5FBw__T5OsA_x';
   const DEFAULT_SUPABASE_TABLE = 'sahngliu_prd';
@@ -906,11 +921,13 @@
     let cachedSecretKey = '';
     let isVerified = false;
     let customUrl = '';
+    let cfUrl = DEFAULT_CLOUDFLARE_URL;
+    let cfSecretKey = '';
     let supabaseUrl = DEFAULT_SUPABASE_URL;
     let supabaseKey = '';
     let supabaseTable = DEFAULT_SUPABASE_TABLE;
     let customDocId = '';
-    let mode = 'supabase';
+    let mode = 'cloudflare';
 
     try {
       const cached = localStorage.getItem(KV_STORAGE_KEY);
@@ -921,6 +938,8 @@
           if (parsed.secretKey) cachedSecretKey = parsed.secretKey;
           if (parsed.customUrl) customUrl = parsed.customUrl;
           if (parsed.isVerified) isVerified = true;
+          if (parsed.cfUrl) cfUrl = parsed.cfUrl;
+          if (parsed.cfSecretKey) cfSecretKey = parsed.cfSecretKey;
           if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl;
           if (parsed.supabaseKey) supabaseKey = parsed.supabaseKey;
           if (parsed.supabaseTable) supabaseTable = parsed.supabaseTable;
@@ -934,6 +953,8 @@
         if (parsedG) {
           if (!cachedSecretKey && parsedG.secretKey) cachedSecretKey = parsedG.secretKey;
           if (!customUrl && parsedG.customUrl) customUrl = parsedG.customUrl;
+          if (parsedG.cfUrl) cfUrl = parsedG.cfUrl;
+          if (parsedG.cfSecretKey && !cfSecretKey) cfSecretKey = parsedG.cfSecretKey;
           if (parsedG.supabaseUrl) supabaseUrl = parsedG.supabaseUrl;
           if (parsedG.supabaseKey && !supabaseKey) supabaseKey = parsedG.supabaseKey;
           if (parsedG.supabaseTable) supabaseTable = parsedG.supabaseTable;
@@ -946,6 +967,11 @@
     const sessionBin = sessionStorage.getItem(`prd_jsonbin_session_bin_${pageKey}`);
     const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
     const sessionSbKey = sessionStorage.getItem('prd_supabase_session_key');
+    const sessionCfKey = sessionStorage.getItem('prd_cf_session_key');
+    if (sessionCfKey) {
+      cfSecretKey = sessionCfKey;
+      isVerified = true;
+    }
     if (sessionSbKey) {
       supabaseKey = sessionSbKey;
       isVerified = true;
@@ -955,6 +981,7 @@
     const finalSecretKey = sessionKey || cachedSecretKey || DEFAULT_MASTER_KEY;
 
     // 严谨权限判定：必须通过显式鉴权（持有 Session 会话或本地已验证私钥）
+    const isCfVerified = Boolean(sessionCfKey || (isVerified && cfSecretKey));
     const isSupabaseVerified = Boolean(sessionSbKey || (isVerified && supabaseKey));
     const isJsonBinVerified = Boolean(sessionKey || (isVerified && cachedSecretKey && cachedSecretKey !== DEFAULT_MASTER_KEY));
 
@@ -964,12 +991,37 @@
       binId: finalBinId,
       secretKey: finalSecretKey,
       customUrl: customUrl || '',
+      cfUrl: cfUrl,
+      cfSecretKey: cfSecretKey,
       supabaseUrl: supabaseUrl,
       supabaseKey: supabaseKey, // 访客状态下为空，鉴权通过后为有效 Key
       supabaseTable: supabaseTable,
       customDocId: customDocId,
-      isVerified: (mode === 'supabase' ? isSupabaseVerified : (mode === 'jsonbin' ? isJsonBinVerified : true))
+      isVerified: (mode === 'cloudflare' ? isCfVerified : (mode === 'supabase' ? isSupabaseVerified : (mode === 'jsonbin' ? isJsonBinVerified : true)))
     };
+  };
+
+  window.isPRDEditAuthorized = function isPRDEditAuthorized() {
+    const mode = getActiveSyncMode();
+    if (mode === 'cloudflare') {
+      const kv = getKVStorageConfig();
+      const sessionKey = sessionStorage.getItem('prd_cf_session_key');
+      return Boolean(sessionKey || (kv && kv.isVerified && kv.cfSecretKey));
+    } else if (mode === 'supabase') {
+      const kv = getKVStorageConfig();
+      const sessionKey = sessionStorage.getItem('prd_supabase_session_key');
+      return Boolean(sessionKey || (kv && kv.isVerified && kv.supabaseKey));
+    } else if (mode === 'jsonbin') {
+      const kv = getKVStorageConfig();
+      const sessionKey = sessionStorage.getItem('prd_jsonbin_session_key');
+      return Boolean(sessionKey || (kv && kv.isVerified && kv.secretKey && kv.secretKey !== DEFAULT_MASTER_KEY));
+    } else if (mode === 'github') {
+      const gh = getGitHubConfig();
+      return Boolean(gh && gh.token);
+    } else if (mode === 'local') {
+      return isBackendApiCached === true;
+    }
+    return false;
   };
 
   function setKVStorageConfig(config) {
@@ -986,6 +1038,11 @@
       } else {
         sessionStorage.removeItem('prd_jsonbin_session_key');
       }
+      if (config.cfSecretKey && config.isVerified) {
+        sessionStorage.setItem('prd_cf_session_key', config.cfSecretKey);
+      } else {
+        sessionStorage.removeItem('prd_cf_session_key');
+      }
       if (config.supabaseKey && config.isVerified) {
         sessionStorage.setItem('prd_supabase_session_key', config.supabaseKey);
       } else {
@@ -998,6 +1055,7 @@
     try {
       localStorage.removeItem(KV_STORAGE_KEY);
       localStorage.removeItem('prd_kv_config_global');
+      sessionStorage.removeItem('prd_cf_session_key');
       sessionStorage.removeItem('prd_supabase_session_key');
       sessionStorage.removeItem('prd_jsonbin_session_key');
       isBackendApiCached = null;
@@ -1008,6 +1066,29 @@
   async function fetchRemoteKVData(binId, secretKey = '') {
     const activeMode = getActiveSyncMode();
     const cfg = getKVStorageConfig();
+
+    if (activeMode === 'cloudflare' || cfg.mode === 'cloudflare') {
+      try {
+        const docId = cfg.customDocId || pageKey;
+        const baseUrl = (cfg.cfUrl || DEFAULT_CLOUDFLARE_URL).replace(/\/+$/, '');
+        const targetUrl = `${baseUrl}/api/prd/${encodeURIComponent(docId)}?_t=${Date.now()}`;
+        const resp = await fetch(targetUrl, {
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        if (resp.ok) {
+          const json = await resp.json();
+          if (json && json.data) {
+            return json.data;
+          }
+        }
+      } catch (e) {
+        console.error('Cloudflare Fetch Error:', e);
+      }
+      return null;
+    }
+
     if (activeMode === 'supabase' || cfg.mode === 'supabase') {
       try {
         const docId = cfg.customDocId || pageKey;
@@ -1051,6 +1132,45 @@
   async function saveRemoteKVData(binId, secretKey, payload) {
     const activeMode = getActiveSyncMode();
     const cfg = getKVStorageConfig();
+
+    if (activeMode === 'cloudflare' || cfg.mode === 'cloudflare') {
+      const docId = cfg.customDocId || pageKey;
+      const baseUrl = (cfg.cfUrl || DEFAULT_CLOUDFLARE_URL).replace(/\/+$/, '');
+      const targetUrl = `${baseUrl}/api/prd/${encodeURIComponent(docId)}`;
+      
+      let effectiveKey = '';
+      if (secretKey && secretKey.trim()) {
+        effectiveKey = secretKey.trim();
+      } else if (cfg.cfSecretKey) {
+        effectiveKey = cfg.cfSecretKey.trim();
+      } else {
+        const sessionKey = sessionStorage.getItem('prd_cf_session_key');
+        if (sessionKey) effectiveKey = sessionKey.trim();
+      }
+
+      if (!effectiveKey) {
+        throw new Error('未提供有效的 Cloudflare 管理员写入密钥 (API Secret Key)，禁止写入');
+      }
+
+      const resp = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${effectiveKey}`,
+          'apikey': effectiveKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          data: payload
+        })
+      });
+      if (!resp.ok) {
+        const errJson = await resp.json().catch(() => null);
+        const errText = errJson?.message || errJson?.error || (await resp.text().catch(() => ''));
+        throw new Error(`Cloudflare 保存失败 (${resp.status}): ${errText}`);
+      }
+      return { metadata: { id: cfg.cfUrl } };
+    }
+
     if (activeMode === 'supabase' || cfg.mode === 'supabase') {
       const docId = cfg.customDocId || pageKey;
       const baseUrl = (cfg.supabaseUrl || DEFAULT_SUPABASE_URL).replace(/\/+$/, '');
@@ -1125,6 +1245,8 @@
     pendingModeSwitchData = executeCallback;
 
     const modeNames = {
+      cloudflare: 'Cloudflare D1 边缘数据库',
+      supabase: 'Supabase 云端数据库',
       jsonbin: '云端 KV 模式 (JSONBin.io)',
       github: 'GitHub Commit 模式',
       local: '本地 Node.js 服务模式'
@@ -1266,6 +1388,9 @@
         <!-- Mode Switcher Tabs (shadcn/ui TabsList) -->
         <div style="background:#fafafa; padding:12px 20px; border-bottom:1px solid #e4e4e7;">
           <div style="background:#f4f4f5; padding:3px; border-radius:8px; display:flex; gap:2px; border:1px solid #e4e4e7;">
+            <button id="tab-btn-cloudflare" class="prd-btn-action" style="flex:1.1; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='cloudflare'?'#ffffff':'transparent'}; border:${activeMode==='cloudflare'?'1px solid #e4e4e7':'none'}; color:${activeMode==='cloudflare'?'#09090b':'#71717a'}; box-shadow:${activeMode==='cloudflare'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('cloudflare')">
+              Cloudflare ${activeMode==='cloudflare'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
+            </button>
             <button id="tab-btn-supabase" class="prd-btn-action" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; font-weight:500; border-radius:6px; background:${activeMode==='supabase'?'#ffffff':'transparent'}; border:${activeMode==='supabase'?'1px solid #e4e4e7':'none'}; color:${activeMode==='supabase'?'#09090b':'#71717a'}; box-shadow:${activeMode==='supabase'?'0 1px 2px rgba(0,0,0,0.05)':'none'};" onclick="window.switchSyncConfigTab('supabase')">
               Supabase ${activeMode==='supabase'?'<span style=\"color:#10b981; font-weight:700;\">●</span>':''}
             </button>
@@ -1283,6 +1408,37 @@
 
         <!-- Body Content -->
         <div style="padding:20px; font-size:12.5px; line-height:1.6; color:#27272a;">
+          <!-- Tab Panel: Cloudflare (Default & Recommended) -->
+          <div id="panel-cloudflare" style="display:${activeMode==='cloudflare'?'flex':'none'}; flex-direction:column; gap:12px;">
+            <div style="color:#52525b;">
+              <strong>Cloudflare D1 边缘数据库 (推荐·默认)</strong>：全球边缘加速，永不休眠。<br>
+              访客免密只读，输入管理员密钥后解锁全量编辑/新增/保存权限。
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">Cloudflare Worker / Pages 网关 API 域名 <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="prd-cf-url" value="${escapeHtml(config.cfUrl || DEFAULT_CLOUDFLARE_URL)}" placeholder="https://sahngliu-prd-api-gateway.pages.dev" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">管理员写入密钥 (Admin Secret Key) <span style="color:#ef4444;">*</span></label>
+              <input type="password" id="prd-cf-key" value="${escapeHtml(config.cfSecretKey || '')}" placeholder="sb_publishable_uNeQzELHbWHhcTIGgr5FBw__T5OsA_x" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+            </div>
+
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:3px; display:block;">页面关联主键 (Doc ID) <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="prd-cf-doc-id" value="${escapeHtml(config.customDocId || pageKey)}" placeholder="如 mall.html" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #d4d4d8; border-radius:6px; font-size:12px; outline:none; font-family:monospace;">
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:11.5px; color:#52525b; line-height:1.6;">
+              <div style="font-weight:700; color:#18181b; margin-bottom:3px;">⚡ Cloudflare 存储优势：</div>
+              <div>• <strong>毫秒级边缘读取</strong>：全球 CDN 节点就近返回数据，永无跨国网络卡顿。</div>
+              <div>• <strong>强一致性事务</strong>：基于 Cloudflare D1 (SQLite)，保存后立即全端生效。</div>
+            </div>
+
+            <div id="prd-cf-status-tip" style="font-size:12px; min-height:18px;"></div>
+          </div>
+
           <!-- Tab Panel 1: JSONBin -->
           <div id="panel-jsonbin" style="display:${activeMode==='jsonbin'?'flex':'none'}; flex-direction:column; gap:12px;">
             <div style="color:#52525b;">${t('kvModalDesc')}</div>
@@ -1310,10 +1466,9 @@
 
           
           <!-- Tab Panel: Supabase -->
-          <div id="panel-supabase" style="display:${activeMode==='supabase'||activeMode==='auto'?'flex':'none'}; flex-direction:column; gap:12px;">
+          <div id="panel-supabase" style="display:${activeMode==='supabase'?'flex':'none'}; flex-direction:column; gap:12px;">
             <div style="color:#52525b;">
-              <strong>Supabase (推荐)</strong>：容量大，限制宽松。<br>
-              相比 JSONBin，Supabase 免费版提供 500MB 存储且无 API 调用限制。
+              <strong>Supabase</strong>：PostgreSQL 云端托管存储。
             </div>
             
             <div>
@@ -1403,7 +1558,7 @@
   };
 
   window.switchSyncConfigTab = function(mode) {
-    ['supabase', 'jsonbin', 'github', 'local'].forEach(m => {
+    ['cloudflare', 'supabase', 'jsonbin', 'github', 'local'].forEach(m => {
       const btn = document.getElementById(`tab-btn-${m}`);
       const panel = document.getElementById(`panel-${m}`);
       if (btn) {
@@ -1419,6 +1574,8 @@
   };
 
   window.getCurrentModalActiveTab = function getCurrentModalActiveTab() {
+    const pCf = document.getElementById('panel-cloudflare');
+    if (pCf && pCf.style.display !== 'none') return 'cloudflare';
     const pSb = document.getElementById('panel-supabase');
     if (pSb && pSb.style.display !== 'none') return 'supabase';
     const pJson = document.getElementById('panel-jsonbin');
@@ -1426,7 +1583,42 @@
     const pGh = document.getElementById('panel-github');
     if (pGh && pGh.style.display !== 'none') return 'github';
     return getActiveSyncMode();
-  }
+  };
+
+  window.handleTestCloudflareConfig = async function() {
+    const url = (document.getElementById('prd-cf-url')?.value || '').trim();
+    const key = (document.getElementById('prd-cf-key')?.value || '').trim();
+    const tipEl = document.getElementById('prd-cf-status-tip');
+
+    if (!url) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444;">请输入 Cloudflare Worker API 域名</span>`;
+      showToast('请填写 Cloudflare API 域名', 'error');
+      return false;
+    }
+
+    if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在连接 Cloudflare 验证服务与接口...</span>`;
+
+    try {
+      const targetUrl = `${url.replace(/\/+$/, '')}/health`;
+      const resp = await fetch(targetUrl, {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      if (resp.ok) {
+        if (tipEl) tipEl.innerHTML = `<span style="color:#059669; font-weight:700;">验证成功！Cloudflare Worker 服务正常运行，点击右下角保存生效。</span>`;
+        showToast('Cloudflare 服务连通性测试通过！', 'success');
+        return true;
+      } else {
+        if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">服务响应异常 (HTTP ${resp.status})</span>`;
+        showToast(`Cloudflare 验证失败: HTTP ${resp.status}`, 'error');
+        return false;
+      }
+    } catch (e) {
+      if (tipEl) tipEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">网络异常: ${escapeHtml(e.message)}</span>`;
+      showToast(`网络连接失败: ${e.message}`, 'error');
+      return false;
+    }
+  };
 
   window.handleTestSupabaseConfig = async function() {
     const url = (document.getElementById('prd-sb-url')?.value || '').trim();
@@ -1471,7 +1663,9 @@
 
   window.handleTestCurrentModeConfig = async function() {
     const tab = getCurrentModalActiveTab();
-    if (tab === 'supabase') {
+    if (tab === 'cloudflare') {
+      return await window.handleTestCloudflareConfig();
+    } else if (tab === 'supabase') {
       return await window.handleTestSupabaseConfig();
     } else if (tab === 'jsonbin') {
       return await window.handleTestKVConfig();
@@ -1488,7 +1682,36 @@
     const tab = getCurrentModalActiveTab();
 
     const doApplySave = async (shouldMigrate = true) => {
-      if (tab === 'supabase') {
+      if (tab === 'cloudflare') {
+        const url = (document.getElementById('prd-cf-url')?.value || '').trim() || DEFAULT_CLOUDFLARE_URL;
+        const key = (document.getElementById('prd-cf-key')?.value || '').trim();
+        const customDocId = (document.getElementById('prd-cf-doc-id')?.value || '').trim();
+        const curCfg = getKVStorageConfig();
+        curCfg.mode = 'cloudflare';
+        curCfg.cfUrl = url;
+        curCfg.cfSecretKey = key;
+        curCfg.customDocId = customDocId;
+        curCfg.isVerified = Boolean(key);
+        setKVStorageConfig(curCfg);
+        setActiveSyncMode('cloudflare');
+        isBackendApiCached = true;
+
+        if (shouldMigrate && savedPins && savedPins.length > 0 && key) {
+          try {
+            await saveRemoteKVData(null, key, {
+              pageKey,
+              versionRegistry,
+              savedPins,
+              updatedAt: new Date().toISOString()
+            });
+            showToast(`[无缝迁移] 已成功将 ${savedPins.length} 个打点规约同步至 Cloudflare！`, 'success');
+          } catch (e) {
+            showToast(`数据同步失败: ${e.message}`, 'error');
+          }
+        } else {
+          showToast('已成功保存并切换为【Cloudflare D1 同步模式】！', 'success');
+        }
+      } else if (tab === 'supabase') {
         const testOk = await window.handleTestSupabaseConfig();
         if (!testOk) return;
         const url = (document.getElementById('prd-sb-url')?.value || '').trim();
@@ -1587,7 +1810,17 @@
 
   window.handleClearCurrentModeConfig = function() {
     const tab = getCurrentModalActiveTab();
-    if (tab === 'supabase') {
+    if (tab === 'cloudflare') {
+      const curCfg = getKVStorageConfig();
+      curCfg.cfSecretKey = '';
+      curCfg.isVerified = false;
+      setKVStorageConfig(curCfg);
+      try {
+        sessionStorage.removeItem('prd_cf_session_key');
+      } catch (e) {}
+      const k = document.getElementById('prd-cf-key'); if (k) k.value = '';
+      showToast('已清除 Cloudflare 权限授权，已恢复为【访客只读模式】', 'info');
+    } else if (tab === 'supabase') {
       const curCfg = getKVStorageConfig();
       curCfg.supabaseKey = '';
       curCfg.isVerified = false;
@@ -1691,8 +1924,10 @@
   async function syncFromCloudKVOnStartup() {
     const activeMode = getActiveSyncMode();
     const kv = getKVStorageConfig();
-    if (activeMode === 'supabase') {
-      if (!kv || !kv.supabaseUrl || !kv.supabaseKey) return;
+    if (activeMode === 'cloudflare') {
+      if (!kv || !kv.cfUrl) return;
+    } else if (activeMode === 'supabase') {
+      if (!kv || !kv.supabaseUrl) return;
     } else if (activeMode === 'jsonbin') {
       if (!kv || !kv.binId) return;
     } else {
@@ -1701,11 +1936,15 @@
 
     try {
       const remoteData = await fetchRemoteKVData(kv.binId, kv.secretKey);
-      if (remoteData && (remoteData.versionRegistry || Array.isArray(remoteData.savedPins))) {
+      if (remoteData && (remoteData.versionRegistry || Array.isArray(remoteData.savedPins) || Array.isArray(remoteData) || (typeof remoteData === 'object' && remoteData.versions))) {
         if (remoteData.versionRegistry) {
           versionRegistry = remoteData.versionRegistry;
         } else if (Array.isArray(remoteData.savedPins)) {
           versionRegistry = { activeVersion: 'v1.0.0', versions: { 'v1.0.0': remoteData.savedPins } };
+        } else if (Array.isArray(remoteData)) {
+          versionRegistry = { activeVersion: 'v1.0.0', versions: { 'v1.0.0': remoteData } };
+        } else if (typeof remoteData === 'object' && remoteData.versions) {
+          versionRegistry = remoteData;
         }
         currentVersion = versionRegistry.activeVersion || Object.keys(versionRegistry.versions)[0] || 'v1.0.0';
         savedPins = versionRegistry.versions[currentVersion] || [];
@@ -2082,7 +2321,7 @@
     if (existing) existing.remove();
 
     const activeMode = getActiveSyncMode();
-    const modeName = activeMode === 'supabase' ? '云端数据库存储 (Supabase)' : (activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式'));
+    const modeName = activeMode === 'cloudflare' ? 'Cloudflare D1 边缘数据库' : (activeMode === 'supabase' ? '云端数据库存储 (Supabase)' : (activeMode === 'jsonbin' ? '云端存储打点 (JSONBin.io)' : (activeMode === 'github' ? 'GitHub 推送打点' : '本地服务模式')));
 
     const actionTextMap = {
       edit: '编辑需求规约',
@@ -2130,13 +2369,13 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:6px; font-family:monospace; font-size:11.5px;">
               <span style="color:#71717a;">绑定云端数据表：</span>
-              <span style="color:#18181b; font-weight:700;">${activeMode==='supabase' ? `Table: ${getKVStorageConfig().supabaseTable} (Doc ID: ${getKVStorageConfig().customDocId || pageKey})` : (activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`)}</span>
+              <span style="color:#18181b; font-weight:700;">${activeMode==='cloudflare' ? `Cloudflare D1 (Doc ID: ${getKVStorageConfig().customDocId || pageKey})` : (activeMode==='supabase' ? `Table: ${getKVStorageConfig().supabaseTable} (Doc ID: ${getKVStorageConfig().customDocId || pageKey})` : (activeMode==='jsonbin' ? `Bin ID: ${getKVStorageConfig().binId || '默认'}` : `Repo: ${getGitHubConfig().owner}/${getGitHubConfig().repo}`))}</span>
             </div>
           </div>
 
           <div>
             <label style="font-size:11.5px; font-weight:700; color:#52525b; margin-bottom:4px; display:block;">创立人专属 API Key (写入密钥) <span style="color:#ef4444;">*</span></label>
-            <input type="password" id="prd-online-auth-key-input" placeholder="请输入 Supabase API Key (如 sb_publishable_... 或 secret key)" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
+            <input type="password" id="prd-online-auth-key-input" placeholder="请输入管理员密钥 (如 sb_publishable_... 或 PRD_ADMIN_SECRET)" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1px solid #d4d4d8; border-radius:6px; font-size:13px; outline:none; font-family:monospace;">
           </div>
 
           <div id="prd-online-auth-tip" style="font-size:12px; min-height:18px;"></div>
@@ -2181,7 +2420,22 @@
     if (tipEl) tipEl.innerHTML = `<span style="color:#18181b;">正在校验 Key 有效性并测试云端写入权限...</span>`;
 
     try {
-      if (activeMode === 'supabase') {
+      if (activeMode === 'cloudflare') {
+        const kv = getKVStorageConfig();
+        const testRes = await saveRemoteKVData(null, inputKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        kv.cfSecretKey = inputKey;
+        kv.isVerified = true;
+        try {
+          sessionStorage.setItem('prd_cf_session_key', inputKey);
+        } catch (e) {}
+        setKVStorageConfig(kv);
+        isBackendApiCached = true;
+      } else if (activeMode === 'supabase') {
         const kv = getKVStorageConfig();
         const testRes = await saveRemoteKVData(null, inputKey, {
           pageKey,
@@ -2239,6 +2493,13 @@
 
     const activeMode = getActiveSyncMode();
 
+    if (activeMode === 'cloudflare') {
+      const kv = getKVStorageConfig();
+      const isOk = Boolean(kv && kv.isVerified && kv.cfSecretKey && kv.cfUrl);
+      isBackendApiCached = isOk;
+      return isOk;
+    }
+
     if (activeMode === 'supabase') {
       const kv = getKVStorageConfig();
       // 严谨校验：必须明确持有已通过校验的有效管理 Key
@@ -2287,7 +2548,7 @@
 
   window.showNoBackendAlertModal = function(actionType = 'edit', forceEnv = null, callback = null) {
     const activeMode = getActiveSyncMode();
-    if (activeMode === 'jsonbin' || activeMode === 'supabase' || activeMode === 'github') {
+    if (activeMode === 'cloudflare' || activeMode === 'jsonbin' || activeMode === 'supabase' || activeMode === 'github') {
       // 云端模式下统一唤起【创立人 API Key 鉴权】
       window.showOnlineAuthModal(actionType, callback);
       return;
@@ -3827,6 +4088,45 @@
 
     const activeMode = getActiveSyncMode();
 
+    // 模式 0: Cloudflare D1 边缘数据库直读直写 (默认 & 推荐)
+    if (activeMode === 'cloudflare') {
+      const kv = getKVStorageConfig();
+      const effectiveKey = (kv.cfSecretKey || sessionStorage.getItem('prd_cf_session_key') || '').trim();
+      const effectiveUrl = (kv.cfUrl || DEFAULT_CLOUDFLARE_URL).trim();
+
+      if (!effectiveKey) {
+        showToast('未提供有效的 Cloudflare 管理员写入密钥，保存失败', 'error');
+        return false;
+      }
+      try {
+        showToast('正在实时同步至 Cloudflare D1 数据库...', 'info');
+        const res = await saveRemoteKVData(null, effectiveKey, {
+          pageKey,
+          versionRegistry,
+          savedPins,
+          updatedAt: new Date().toISOString()
+        });
+        if (!res) {
+          throw new Error('Cloudflare 未返回成功确认');
+        }
+
+        // 云端真实写入确认后，同步更新内存与本地镜像
+        window.INITIAL_PRD_DATA = savedPins;
+        window.PRD_VERSION_REGISTRY = versionRegistry;
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(versionRegistry));
+          localStorage.setItem(cacheVersionKey, PRD_CACHE_VERSION);
+        } catch (e) {}
+
+        const docDisplay = kv.customDocId || pageKey;
+        showToast(`[Cloudflare D1] 实时同步成功！(Doc: ${docDisplay})`, 'success');
+        return true;
+      } catch (cfErr) {
+        showToast(`Cloudflare 同步失败: ${cfErr.message}`, 'error');
+        return false;
+      }
+    }
+
     // 模式 1: Supabase 云端数据库直读直写
     if (activeMode === 'supabase') {
       const kv = getKVStorageConfig();
@@ -4046,22 +4346,67 @@
 
   window.updateVersionBarUI = function updateVersionBarUI() {
     updateModeBadgeUI();
+    const isAuth = isPRDEditAuthorized();
+
+    // 1. 抽屉顶部【排序管理】按钮显隐
+    const manageOrderBtn = document.getElementById('prd-manage-order-btn');
+    if (manageOrderBtn) {
+      manageOrderBtn.style.display = isAuth ? 'inline-flex' : 'none';
+      manageOrderBtn.innerText = isDrawerManageMode ? t('doneManage') : t('manageOrder');
+    }
+    if (!isAuth && isDrawerManageMode) {
+      isDrawerManageMode = false;
+    }
+
+    // 2. 版本切换下拉框 (未授权只读访客不展示增删改版本选项)
     const select = document.getElementById('prd-version-select');
-    if (!select) return;
-    const verKeys = Object.keys(versionRegistry.versions);
-    let html = '';
-    verKeys.forEach(ver => {
-      html += `<option value="${ver}" ${ver === currentVersion ? 'selected' : ''}>${ver} (${versionRegistry.versions[ver].length}项)</option>`;
-    });
-    html += `
-      <option disabled>──────────</option>
-      <option value="__NEW__">新建空白版本...</option>
-      <option value="__COPY__">复制当前版本副本...</option>
-      <option value="__UPLOAD__">上传版本数据...</option>
-      <option value="__DELETE__">删除当前版本...</option>
-    `;
-    select.innerHTML = html;
-  }
+    if (select) {
+      const verKeys = Object.keys(versionRegistry.versions);
+      let html = '';
+      verKeys.forEach(ver => {
+        html += `<option value="${ver}" ${ver === currentVersion ? 'selected' : ''}>${ver} (${versionRegistry.versions[ver].length}项)</option>`;
+      });
+      if (isAuth) {
+        html += `
+          <option disabled>──────────</option>
+          <option value="__NEW__">新建空白版本...</option>
+          <option value="__COPY__">复制当前版本副本...</option>
+          <option value="__UPLOAD__">上传版本数据...</option>
+          <option value="__DELETE__">删除当前版本...</option>
+        `;
+      }
+      select.innerHTML = html;
+    }
+
+    // 3. 版本栏右侧的新建与导入按钮显隐
+    const newVerBtn = document.getElementById('prd-version-new-btn');
+    const importVerBtn = document.getElementById('prd-version-import-btn');
+    if (newVerBtn) newVerBtn.style.display = isAuth ? 'inline-flex' : 'none';
+    if (importVerBtn) importVerBtn.style.display = isAuth ? 'inline-flex' : 'none';
+
+    // 4. 抽屉底部新增打点与查看PRD按钮显隐及宽度自适应
+    const addPinBtn = document.getElementById('prd-drawer-add-pin-btn');
+    const viewPrdBtn = document.getElementById('prd-drawer-view-prd-btn');
+    if (addPinBtn && viewPrdBtn) {
+      if (isAuth) {
+        addPinBtn.style.display = 'inline-flex';
+        viewPrdBtn.style.flex = '0 0 auto';
+        viewPrdBtn.style.background = '#ffffff';
+        viewPrdBtn.style.color = '#18181b';
+      } else {
+        addPinBtn.style.display = 'none';
+        viewPrdBtn.style.flex = '1';
+        viewPrdBtn.style.background = '#18181b';
+        viewPrdBtn.style.color = '#ffffff';
+      }
+    }
+
+    // 5. Mini-rail 紧凑栏底部的 "+" 新增打点按钮显隐
+    const miniRailAddBtn = document.getElementById('prd-mini-rail-add-btn');
+    if (miniRailAddBtn) {
+      miniRailAddBtn.style.display = isAuth ? 'flex' : 'none';
+    }
+  };
 
   window.handleVersionSelectChange = function(val) {
     if (val === '__NEW__') {
@@ -4310,7 +4655,11 @@
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:6px; margin-top:2px; flex-shrink:0;">
         <span style="font-size:10px; color:#A39A90;">${escapeHtml(pin.pageTitle || pageKey)}</span>
-        <button class="prd-btn-action" style="color:var(--prd-primary);" onclick="window.openEditorForPin(${pin.id})">编辑需求</button>
+        ${isPRDEditAuthorized() ? `
+          <button class="prd-btn-action" style="color:var(--prd-primary);" onclick="window.openEditorForPin(${pin.id})">编辑需求</button>
+        ` : `
+          <span style="font-size:10.5px; color:#71717a; background:#f4f4f5; padding:2px 6px; border-radius:4px;">访客只读</span>
+        `}
       </div>
     `;
 
@@ -5393,6 +5742,7 @@ window.saveEditorModal = async function() {
   function renderRightDrawerList() {
     const container = document.getElementById('prd-drawer-list');
     if (!container) return;
+    const isAuth = isPRDEditAuthorized();
 
     let filtered = savedPins.filter(p => {
       if (searchKeyword && !matchFuzzyTitle(p.title, searchKeyword)) return false;
@@ -5400,7 +5750,7 @@ window.saveEditorModal = async function() {
     });
 
     let headerBannerHtml = '';
-    if (isDrawerManageMode) {
+    if (isAuth && isDrawerManageMode) {
       headerBannerHtml = `
         <div style="background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; padding:6px 12px; border-radius:6px; font-size:11px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
           <span style="font-weight:700;">${t('manageModeBanner')}</span>
@@ -5435,14 +5785,14 @@ window.saveEditorModal = async function() {
     let html = headerBannerHtml;
     filtered.forEach((pin) => {
       html += `
-        <div class="prd-card-item" draggable="${isDrawerManageMode ? 'true' : 'false'}" ondragstart="window.handleCardDragStart(event, ${pin.id})" ondragover="window.handleCardDragOver(event)" ondragleave="window.handleCardDragLeave(event)" ondrop="window.handleCardDrop(event, ${pin.id})" ondragend="window.handleCardDragEnd(event)" onclick="window.locateAndHighlight(${pin.id})">
+        <div class="prd-card-item" draggable="${isAuth && isDrawerManageMode ? 'true' : 'false'}" ondragstart="${isAuth && isDrawerManageMode ? `window.handleCardDragStart(event, ${pin.id})` : ''}" ondragover="${isAuth && isDrawerManageMode ? `window.handleCardDragOver(event)` : ''}" ondragleave="${isAuth && isDrawerManageMode ? `window.handleCardDragLeave(event)` : ''}" ondrop="${isAuth && isDrawerManageMode ? `window.handleCardDrop(event, ${pin.id})` : ''}" ondragend="${isAuth && isDrawerManageMode ? `window.handleCardDragEnd(event)` : ''}" onclick="window.locateAndHighlight(${pin.id})">
           <div class="prd-card-header">
             <div class="prd-num-title">
-              ${isDrawerManageMode ? '<span style="color:#A39A90; font-size:14px; cursor:grab;" title="按住拖拽排序">⠿</span>' : ''}
-              <span class="prd-pin-num-pill ${isDrawerManageMode ? 'clickable' : ''}" onclick="${isDrawerManageMode ? `event.stopPropagation(); window.promptChangePinOrder(${pin.id});` : ''}" title="${isDrawerManageMode ? `点击直接修改序号 (当前 #${pin.id})` : `#${pin.id}`}">${pin.id}</span>
+              ${isAuth && isDrawerManageMode ? '<span style="color:#A39A90; font-size:14px; cursor:grab;" title="按住拖拽排序">⠿</span>' : ''}
+              <span class="prd-pin-num-pill ${isAuth && isDrawerManageMode ? 'clickable' : ''}" onclick="${isAuth && isDrawerManageMode ? `event.stopPropagation(); window.promptChangePinOrder(${pin.id});` : ''}" title="${isAuth && isDrawerManageMode ? `点击直接修改序号 (当前 #${pin.id})` : `#${pin.id}`}">${pin.id}</span>
               <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(pin.title || '（未命名）')}</span>
             </div>
-            ${isDrawerManageMode ? `
+            ${isAuth && isDrawerManageMode ? `
               <div style="display:flex; align-items:center; gap:2px;">
                 <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f4f4f5; color:#27272a; border-radius:4px;" onclick="event.stopPropagation(); window.reorderPinToIndex(${pin.id}, 0)" title="${escapeHtml(t('moveToTopTip'))}">${t('moveToTopBtn')}</button>
                 <button class="prd-btn-action" style="padding:1px 5px; font-size:10px; background:#f1f5f9; border-radius:4px;" onclick="event.stopPropagation(); window.promptChangePinOrder(${pin.id})" title="${escapeHtml(t('clickToReorderTip'))}">${t('moveToBtn')}</button>
@@ -5464,8 +5814,10 @@ window.saveEditorModal = async function() {
             <span style="font-size:10px; color:#A39A90;">${pin.selector ? t('boundComp') : t('unbound')}</span>
             <div style="display:flex; gap:6px;">
               <button class="prd-btn-action" onclick="event.stopPropagation(); window.locateAndHighlight(${pin.id});">${t('locateBtn')}</button>
-              <button class="prd-btn-action" onclick="event.stopPropagation(); window.openEditorForPin(${pin.id});">${t('editBtn')}</button>
-              ${isDrawerManageMode ? `
+              ${isAuth ? `
+                <button class="prd-btn-action" onclick="event.stopPropagation(); window.openEditorForPin(${pin.id});">${t('editBtn')}</button>
+              ` : ''}
+              ${isAuth && isDrawerManageMode ? `
                 <button class="prd-btn-action" style="color: #dc2626; border-color: #fecaca; background: #fef2f2; padding: 2px 10px;" onclick="event.stopPropagation(); window.deletePinItem(${pin.id});" title="删除该需求">删除</button>
               ` : ''}
             </div>
@@ -6006,7 +6358,9 @@ window.saveEditorModal = async function() {
             <button class="prd-btn-action" style="background:#18181b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.openPRDInNewTab()" title="在新浏览器独立标签页中打开大屏文档">${t('openNewTabBtn')}</button>
             <button class="prd-btn-action" style="background:#10b981; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDMarkdown()">${t('exportMdBtn')}</button>
             <button class="prd-btn-action" style="background:#52525b; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.exportPRDJS()">${t('exportJsBtn')}</button>
-            <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">${t('importVersionBtn')}</button>
+            ${isPRDEditAuthorized() ? `
+              <button class="prd-btn-action" style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:600;" onclick="window.triggerImportJS()">${t('importVersionBtn')}</button>
+            ` : ''}
             <input type="file" id="prd-file-import-input" accept=".js,.json,.txt" style="display:none;" onchange="window.handleImportJS(this)">
             <button class="prd-btn-action" style="font-size:22px; padding:4px 8px;" onclick="window.closeCurrentPagePRDDoc()">&times;</button>
           </div>
@@ -6368,7 +6722,7 @@ window.saveEditorModal = async function() {
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             <!-- 统一模式切换与状态徽标 -->
-            <button id="prd-mode-badge-btn" class="prd-btn-action" style="height:26px; padding:0 8px; font-size:11px; font-weight:500; display:flex; align-items:center; gap:4px; background:#f4f4f5; border:1px solid #e4e4e7; color:#09090b; border-radius:6px; cursor:pointer;" onclick="window.showKVConfigModal()" title="${getSyncModeBadgeInfo().tip}">
+            <button id="prd-mode-badge-btn" class="prd-btn-action" style="height:26px; padding:0 8px; font-size:11px; font-weight:500; display:flex; align-items:center; gap:4px; background:#f4f4f5; border:1px solid #e4e4e7; color:#09090b; border-radius:6px; cursor:pointer;" onclick="window.handleModeBadgeClick()" title="${getSyncModeBadgeInfo().tip}">
               <span>${getSyncModeBadgeInfo().icon}</span>
               <span>${getSyncModeBadgeInfo().label}</span>
             </button>
@@ -6389,8 +6743,8 @@ window.saveEditorModal = async function() {
           <select class="prd-version-select" id="prd-version-select" onchange="window.handleVersionSelectChange(this.value)">
             <!-- 动态版本列表 -->
           </select>
-          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">新建</button>
-          <button class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">导入</button>
+          <button id="prd-version-new-btn" class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.promptCreateVersion()" title="新建版本">新建</button>
+          <button id="prd-version-import-btn" class="prd-btn-action" style="padding:3px 6px; font-size:11px;" onclick="window.triggerImportJS()" title="上传版本数据">导入</button>
         </div>
 
         <!-- 搜索过滤栏 (纯标题完全模糊检索 + 快速清空) -->
@@ -6408,8 +6762,8 @@ window.saveEditorModal = async function() {
 
         <!-- 抽屉底部操作栏 (常驻查看完整PRD与新增打点) -->
         <div class="prd-drawer-footer" style="padding:12px 14px; background:#ffffff; border-top:1px solid #e4e4e7; display:flex; gap:8px;">
-          <button class="prd-btn-primary" style="flex:1; height:34px;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
-          <button class="prd-btn-action" style="background:#ffffff; border:1px solid #e4e4e7; padding:0 14px; height:34px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
+          <button id="prd-drawer-add-pin-btn" class="prd-btn-primary" style="flex:1; height:34px;" onclick="window.setPRDMode('edit')">${t('addPinBtn')}</button>
+          <button id="prd-drawer-view-prd-btn" class="prd-btn-action" style="background:#ffffff; border:1px solid #e4e4e7; padding:0 14px; height:34px;" onclick="window.openCurrentPagePRDDoc()">${t('viewFullPrdBtn')}</button>
         </div>
       </div>
 
@@ -6424,7 +6778,7 @@ window.saveEditorModal = async function() {
         <div id="prd-mini-rail-pins" style="display:flex; flex-direction:column; align-items:center; flex:1; overflow-y:auto; overflow-x:visible; width:100%;">
           <!-- 由 renderMiniRailList 动态填充 -->
         </div>
-        <button class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(24, 24, 27,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
+        <button id="prd-mini-rail-add-btn" class="prd-btn-primary" style="width:36px; height:36px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:8px; box-shadow:0 2px 8px rgba(24, 24, 27,0.4);" onclick="window.setPRDMode('edit')" title="新增打点">
           +
         </button>
       </div>

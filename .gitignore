@@ -4,6 +4,17 @@ venv/
 ENV/
 env/
 
+# Cloudflare & Node build / cache files
+.wrangler/
+**/.wrangler/
+node_modules/
+.env
+.env.*
+*.local
+
+# Agent / Hermes internal data
+.hermes/
+
 # OS files
 .DS_Store
 .DS_Store?

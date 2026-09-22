@@ -1,0 +1,13 @@
+name = "sahngliu-prd-api"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sahngliu-prd-db"
+database_id = "1236c4f5-1a67-4bf4-bbad-a821d51134b6"
+
+[vars]
+# For local dev / fallback (Production secrets should be set via `wrangler secret put PRD_ADMIN_SECRET`)
+PRD_ADMIN_SECRET = "YOUR_ADMIN_SECRET"
